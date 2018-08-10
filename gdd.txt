@@ -1,0 +1,79 @@
+1. "kingdoms & castles" / "econauts"
+You are a farm. Tile based building.
+
+- resources
+- - $
+- - crop ($)
+- - - apply to livestock
+- - poop ($/5)
+- - - apply to crop to (sloppily) increases chem levels
+- - fertilizer ($$)
+- - - apply to crop to precisely increases chem levels
+- - valuables (biogas, oils, etc...) ($)
+- - - useless
+- tiles (have phosphorus, nitrogen, potassium)
+- - land (-)
+- - - default
+- - water (-)
+- - - chem minimums produce blooms
+- - storage ($)
+- - - required to hold crop/poop/fertilizer
+- - dump ($)
+- - - can aggregate a lot of material
+- - - can add to, can't remove from
+- - - rain produces runoff
+- - crop ($)
+- - - require minimum chem levels
+- - - deplete chems
+- - - generate crop
+- - - generate $
+- - - rain produces runoff
+- - livestock ($)
+- - - consume crop
+- - - generate poop
+- - - generate $
+- - digester ($$$)
+- - - consume poop
+- - - generate fertilizer
+- - - generate valuables
+- - local transport ($)
+- - - collect/distribute collected/consumed content
+- - global (resource-specific) transport ($$$)
+- - - sells excess
+- progression
+- - you have 1 crop, 1 livestock, 1 local transport, 1 global crop transport
+- - "build a storage"
+- - time passes, accrue food, poop, maybe build another structure
+- - "food delivery service ready- prepare what you want to sell"
+- - "fertilizer sellers taking orders"
+- - time passes, build things with the money you have
+- - "rains"
+- - continue to build
+- - "lake getting gross"
+- tensions
+- - do we offer "gov legistlation" as fail state?
+- - do we offer "gov subsidies" as mechanic?
+- - how to include "consorsium" as solution to afford complex/expensive infrastructure?
+- - following econauts' footsteps infeasable, but easy to see desire for asymmetrical multiplayer ("i play as city", "i play as shit transport startup", etc...)
+
+2. "Sustainable U"
+???
+
+-
+-
+-
+
+3.a "Exploding Unicorns"
+There is a "complex" underlying system. Cards correspond to small widgets within system.
+
+-
+-
+-
+
+3.b "Pandemic"
+You are a farm. Work to grow profits in cooperation/at tension with other farms and the city and the government and ...
+
+-
+-
+-
+
