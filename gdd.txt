@@ -58,17 +58,37 @@ You are a farm. Tile based building.
 
 2. "Sustainable U"
 ???
-
--
+- asymmetric phosphorus cycle (fast in bio, slow in geo)
 -
 -
 
 3.a "Exploding Unicorns"
 There is a "complex" underlying system. Cards correspond to small widgets within system.
 
--
--
--
+- cards
+- - phosphorus
+- - nitrogen
+- - potassium
+- - livestock ($$)
+- - farmland ($)
+- - poop
+- - water
+- tokens
+- - $
+- zones
+- - lake
+- - (my) digester
+- - bank
+- hold 5 cards at a time
+- play 1xP+N+K+water+farmland = 2x$
+- play 1x livestock+water = 3x$+poop
+- play 1x poop = 1xP+N+K+roll dice for additional P+N+K
+- query lake for water- function of pollution+random whether success
+- excess cards either get payed to exhaust, otherwise into the lake
+- pay 5x$ for digester
+- poop+through digester=P+N+K+$
+- every transport costs 1x$ (anyone can pay); other than that, as much as you want
+- first to nx$ wins
 
 3.b "Pandemic"
 You are a farm. Work to grow profits in cooperation/at tension with other farms and the city and the government and ...
@@ -76,4 +96,24 @@ You are a farm. Work to grow profits in cooperation/at tension with other farms 
 -
 -
 -
+
+4. Simmiland
+- dumb automatons
+- you're "city planner"
+- can allocate land as farm
+- produces "some" food
+- can allocate land as livestock
+- produces "some" food, + poop
+- poop is used on farms to up production
+- pollutes land w/ phosphorus
+- (automotons dumb- don't care)
+- lakes source of _great_ pleasure for automatons
+- bathing = happiness
+- work = less happy
+- need to be fed
+- research = less happy
+- roads = faster movement?
+- trains/pipelines/etc...
+- digester = poop more easily transportable + "fuel" (methane)
+- 
 
