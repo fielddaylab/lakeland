@@ -44,6 +44,7 @@ function nthIndex(needle, n, hay)
 
 //math (raw)
 function mapVal(from_min, from_max, to_min, to_max, v) { return ((v-from_min)/(from_max-from_min))*(to_max-to_min)+to_min; }
+function clampMapVal(from_min, from_max, to_min, to_max, v) { return clamp(to_min,to_max,((v-from_min)/(from_max-from_min))*(to_max-to_min)+to_min); }
 function clamp(a,b,v) { if(v < a) return a; if(v > b) return b; return v; }
 function eq(a,b,e) { return (a < b+e && a > b-e); }
 function lerp(s,e,t) { return s+((e-s)*t); }

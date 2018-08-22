@@ -12,11 +12,12 @@ var GamePlayScene = function(game, stage)
     gg.ctx = gg.canv.context;
 
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height}
-    if(hoverer) hoverer.detach();
-    hoverer = new PersistentHoverer({source:gg.canvas});
+    if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
+    if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
   }
   //self.resize(stage); //executed in 'ready'
 
+  var clicker;
   var hoverer;
 
   self.ready = function()
@@ -30,10 +31,22 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].wx = gg.b.wx+rand0()*gg.b.ww/2;
       gg.farmbits[i].wy = gg.b.wy+rand0()*gg.b.ww/2;
     }
+    gg.palette = new palette();
+    gg.inspector = new inspector();
   };
 
   self.tick = function()
   {
+    hoverer.filter(gg.b);
+    //gg.palette.filter(hoverer);
+
+    var check = true;
+    if(check) check = !clicker.filter(gg.b);
+    if(check) check = !gg.palette.filter(clicker);
+
+    hoverer.flush();
+    clicker.flush();
+
     gg.b.tick();
     screenSpace(gg.cam, gg.canv, gg.b);
     for(var i = 0; i < gg.farmbits.length; i++)
@@ -41,8 +54,6 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].tick();
       screenSpace(gg.cam, gg.canv, gg.farmbits[i]);
     }
-    hoverer.filter(gg.b);
-    hoverer.flush();
   };
 
   self.draw = function()
@@ -50,6 +61,8 @@ var GamePlayScene = function(game, stage)
     gg.b.draw();
     for(var i = 0; i < gg.farmbits.length; i++)
       gg.farmbits[i].draw();
+    gg.palette.draw();
+    gg.inspector.draw();
   };
 
   self.cleanup = function()
