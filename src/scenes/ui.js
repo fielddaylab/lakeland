@@ -70,12 +70,12 @@ var inspector = function()
 
     switch(self.tile.type)
     {
-      case GRID_TYPE_NULL:  gg.ctx.fillText("Tile Type: null",x,y);  break;
-      case GRID_TYPE_LAND:  gg.ctx.fillText("Tile Type: land",x,y);  break;
-      case GRID_TYPE_WATER: gg.ctx.fillText("Tile Type: water",x,y); break;
-      case GRID_TYPE_SHORE: gg.ctx.fillText("Tile Type: shore",x,y); break;
-      case GRID_TYPE_FARM:  gg.ctx.fillText("Tile Type: farm",x,y);  break;
-      case GRID_TYPE_COUNT: gg.ctx.fillText("Tile Type: count",x,y); break;
+      case TILE_TYPE_NULL:  gg.ctx.fillText("Tile Type: null",x,y);  break;
+      case TILE_TYPE_LAND:  gg.ctx.fillText("Tile Type: land",x,y);  break;
+      case TILE_TYPE_WATER: gg.ctx.fillText("Tile Type: water",x,y); break;
+      case TILE_TYPE_SHORE: gg.ctx.fillText("Tile Type: shore",x,y); break;
+      case TILE_TYPE_FARM:  gg.ctx.fillText("Tile Type: farm",x,y);  break;
+      case TILE_TYPE_COUNT: gg.ctx.fillText("Tile Type: count",x,y); break;
     }
     y += vspace;
     gg.ctx.fillText("x:"+self.tile.x,x,y);
@@ -86,11 +86,11 @@ var inspector = function()
     y += vspace;
     switch(self.tile.state)
     {
-      case GRID_STATE_NULL:           gg.ctx.fillText("Tile State: null",x,y);  break;
-      case GRID_STATE_FARM_UNPLANTED: gg.ctx.fillText("Tile State: unplanted",x,y);  break;
-      case GRID_STATE_FARM_PLANTED:   gg.ctx.fillText("Tile State: planted",x,y); break;
-      case GRID_STATE_FARM_GROWN:     gg.ctx.fillText("Tile State: grown",x,y); break;
-      case GRID_STATE_COUNT:          gg.ctx.fillText("Tile State: null",x,y);  break;
+      case TILE_STATE_NULL:           gg.ctx.fillText("Tile State: null",x,y);  break;
+      case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Tile State: unplanted",x,y);  break;
+      case TILE_STATE_FARM_PLANTED:   gg.ctx.fillText("Tile State: planted",x,y); break;
+      case TILE_STATE_FARM_GROWN:     gg.ctx.fillText("Tile State: grown",x,y); break;
+      case TILE_STATE_COUNT:          gg.ctx.fillText("Tile State: null",x,y);  break;
     }
     y += vspace;
     gg.ctx.fillText("t:"+self.tile.state_t,x,y);
