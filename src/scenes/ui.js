@@ -41,9 +41,10 @@ var palette = function()
 
   self.draw = function()
   {
+    gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = black;
-    fillBox(self.prod_btn,gg.ctx);
-    fillBox(self.farm_btn,gg.ctx);
+    strokeBox(self.prod_btn,gg.ctx); gg.ctx.fillText("examine",self.prod_btn.x,self.prod_btn.y+20);
+    strokeBox(self.farm_btn,gg.ctx); gg.ctx.fillText("gen farm",self.farm_btn.x,self.farm_btn.y+20);
   }
 }
 
