@@ -1,9 +1,16 @@
+var ENUM = 0;
+var GRID_TYPE_NULL  = ENUM; ENUM++;
+var GRID_TYPE_LAND  = ENUM; ENUM++;
+var GRID_TYPE_WATER = ENUM; ENUM++;
+var GRID_TYPE_COUNT = ENUM; ENUM++;
+
 var tile = function()
 {
   var self = this;
 
   self.x = 0;
   self.y = 0;
+  self.type = GRID_TYPE_LAND;
   self.phosphorus = 0;
 }
 
@@ -21,6 +28,10 @@ var board = function()
     if(x >= self.grid_w) x -= self.grid_w;
     if(y >= self.grid_h) y -= self.grid_h;
     return self.grid_w*y+x;
+  }
+  self.grid_t = function(x,y)
+  {
+    return self.grid[self.grid_i(x,y)];
   }
   self.shuffle_i = [];
 
@@ -48,8 +59,76 @@ var board = function()
         t.x = x;
         t.y = y;
         t.phosphorus = rand();
+        t.phosphorus *= t.phosphorus;
+        t.phosphorus *= t.phosphorus;
+        t.phosphorus *= t.phosphorus;
+        t.phosphorus *= t.phosphorus;
         self.grid[i] = t;
       }
+
+    var atomic_push = function(n,ar)
+    {
+      var found = false;
+      for(var j = 0; j < ar.length; j++) if(ar[j] == n) found = true;
+      if(!found) ar.push(n);
+    }
+
+    var slow_flood_fill = function(fill)
+    {
+      for(var i = 0; i < fill.length; i++)
+      {
+        var t = fill[i];
+        var n;
+        n = self.grid_t(t.x-1,t.y  ); if(n.type == t.type) atomic_push(n,fill);
+        n = self.grid_t(t.x+1,t.y  ); if(n.type == t.type) atomic_push(n,fill);
+        n = self.grid_t(t.x  ,t.y-1); if(n.type == t.type) atomic_push(n,fill);
+        n = self.grid_t(t.x  ,t.y+1); if(n.type == t.type) atomic_push(n,fill);
+      }
+      return fill;
+    }
+
+    var slow_flood_border = function(fill)
+    {
+      var border = [];
+      for(var i = 0; i < fill.length; i++)
+      {
+        var t = fill[i];
+        var n;
+        n = self.grid_t(t.x-1,t.y  ); if(n.type != t.type) atomic_push(n,border);
+        n = self.grid_t(t.x+1,t.y  ); if(n.type != t.type) atomic_push(n,border);
+        n = self.grid_t(t.x  ,t.y-1); if(n.type != t.type) atomic_push(n,border);
+        n = self.grid_t(t.x  ,t.y+1); if(n.type != t.type) atomic_push(n,border);
+      }
+      return border;
+    }
+
+    var n_lakes = 2;
+    for(var i = 0; i < n_lakes; i++)
+    {
+      var src_x = randIntBelow(self.grid_w);
+      var src_y = randIntBelow(self.grid_h);
+      var t = self.grid_t(src_x,src_y);
+      t.type = GRID_TYPE_WATER;
+      var lake_size = 10;
+      var lake_tiles = slow_flood_fill([t]);
+      var lake_border = slow_flood_border(lake_tiles);
+
+      for(var j = 0; j < lake_size; j++)
+      {
+        var b_i = randIntBelow(lake_border.length);
+        var t = lake_border[b_i];
+        t.type = GRID_TYPE_WATER;
+        lake_tiles.push(t);
+        lake_border.splice(b_i,1);
+
+        var n;
+        n = self.grid_t(t.x-1,t.y  ); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.grid_t(t.x+1,t.y  ); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.grid_t(t.x  ,t.y-1); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.grid_t(t.x  ,t.y+1); if(n.type != t.type) atomic_push(n,lake_border);
+      }
+    }
+
     var n = self.grid_w*self.grid_h;
     for(var i = 0; i < n; i++) self.shuffle_i[i] = i;
 
@@ -88,12 +167,13 @@ var board = function()
 
   self.tick = function()
   {
+    return;
     var n = self.grid_w*self.grid_h;
     for(var i = 0; i < n; i++)
     {
       var t = self.grid[i];
-      var right = self.grid[self.grid_i(t.x+1,t.y  )];
-      var top   = self.grid[self.grid_i(t.x  ,t.y+1)];
+      var right = self.grid_t(t.x+1,t.y  );
+      var top   = self.grid_t(t.x  ,t.y+1);
       self.flow(t,right);
       self.flow(t,top);
     }
@@ -106,9 +186,9 @@ var board = function()
     for(var y = 0; y < self.grid_h; y++)
       for(var x = 0; x < self.grid_w; x++)
       {
-        var i = self.grid_i(x,y);
-        var t = self.grid[i];
-        gg.ctx.fillStyle = "rgba("+floor(t.phosphorus*255)+",255,255,1)";
+        var t = self.grid_t(x,y);
+             if(t.type == GRID_TYPE_LAND)  gg.ctx.fillStyle = "rgba("+(255-floor(t.phosphorus*255))+",255,255,1)";
+        else if(t.type == GRID_TYPE_WATER) gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)";
         gg.ctx.fillRect(self.x+x*tw,self.y+self.h-(y+1)*th,tw,th);
       }
     if(self.hovering)
