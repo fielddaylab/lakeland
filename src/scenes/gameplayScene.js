@@ -19,17 +19,30 @@ var GamePlayScene = function(game, stage)
 
   var hoverer;
   var b;
+  var farmbits;
 
   self.ready = function()
   {
     self.resize(stage);
     b = new board();
+    farmbits = [];
+    for(var i = 0; i < 10; i++)
+    {
+      farmbits[i] = new farmbit();
+      farmbits[i].wx = b.wx+rand0()*b.ww/2;
+      farmbits[i].wy = b.wy+rand0()*b.ww/2;
+    }
   };
 
   self.tick = function()
   {
     b.tick();
     screenSpace(gg.cam, gg.canv, b);
+    for(var i = 0; i < farmbits.length; i++)
+    {
+      farmbits[i].tick();
+      screenSpace(gg.cam, gg.canv, farmbits[i]);
+    }
     hoverer.filter(b);
     hoverer.flush();
   };
@@ -37,6 +50,8 @@ var GamePlayScene = function(game, stage)
   self.draw = function()
   {
     b.draw();
+    for(var i = 0; i < farmbits.length; i++)
+      farmbits[i].draw();
   };
 
   self.cleanup = function()

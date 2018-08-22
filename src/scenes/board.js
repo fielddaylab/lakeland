@@ -118,3 +118,58 @@ var board = function()
   }
 }
 
+var farmbit_imgs = [];
+var farmbit = function()
+{
+  var self = this;
+
+  self.wx = 0;
+  self.wy = 0;
+  self.ww = 20;
+  self.wh = 20;
+
+  self.x = 0;
+  self.y = 0;
+  self.w = 0;
+  self.h = 0;
+
+  self.frame_i = 0;
+  self.frame_l = 10;
+  self.frame_t = randIntBelow(self.frame_l);
+
+  if(!farmbit_imgs.length)
+  {
+    var ctx;
+    farmbit_imgs[0] = GenIcon(10,10);
+    ctx = farmbit_imgs[0].context;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,4,1,4); //left_arm
+    ctx.fillRect(7,4,1,4); //right_arm
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+
+    farmbit_imgs[1] = GenIcon(10,10);
+    ctx = farmbit_imgs[1].context;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
+    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+  }
+
+  self.tick = function()
+  {
+    self.frame_t++;
+    if(self.frame_t > self.frame_l)
+    {
+      self.frame_i = (self.frame_i+1)%farmbit_imgs.length;
+      self.frame_t = 0;
+    }
+  }
+
+  self.draw = function()
+  {
+    gg.ctx.drawImage(farmbit_imgs[self.frame_i],self.x,self.y,self.w,self.h);
+  }
+}
+
