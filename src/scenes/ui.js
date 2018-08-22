@@ -84,6 +84,16 @@ var inspector = function()
     y += vspace;
     gg.ctx.fillText("p:"+fdisp(self.tile.phosphorus),x,y);
     y += vspace;
+    switch(self.tile.state)
+    {
+      case GRID_STATE_NULL:           gg.ctx.fillText("Tile State: null",x,y);  break;
+      case GRID_STATE_FARM_UNPLANTED: gg.ctx.fillText("Tile State: unplanted",x,y);  break;
+      case GRID_STATE_FARM_PLANTED:   gg.ctx.fillText("Tile State: planted",x,y); break;
+      case GRID_STATE_FARM_GROWN:     gg.ctx.fillText("Tile State: grown",x,y); break;
+      case GRID_STATE_COUNT:          gg.ctx.fillText("Tile State: null",x,y);  break;
+    }
+    y += vspace;
+    gg.ctx.fillText("t:"+self.tile.state_t,x,y);
   }
 }
 

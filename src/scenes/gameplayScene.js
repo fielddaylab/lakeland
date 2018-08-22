@@ -31,6 +31,7 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].wx = gg.b.wx+rand0()*gg.b.ww/2;
       gg.farmbits[i].wy = gg.b.wy+rand0()*gg.b.ww/2;
     }
+    gg.jobs = [];
     gg.palette = new palette();
     gg.inspector = new inspector();
   };
