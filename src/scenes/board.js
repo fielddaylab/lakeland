@@ -1,8 +1,16 @@
-var ENUM = 0;
+var ENUM;
+
+ENUM = 0;
 var GRID_TYPE_NULL  = ENUM; ENUM++;
 var GRID_TYPE_LAND  = ENUM; ENUM++;
 var GRID_TYPE_WATER = ENUM; ENUM++;
 var GRID_TYPE_COUNT = ENUM; ENUM++;
+
+ENUM = 0;
+var FARMBIT_STATE_NULL   = ENUM; ENUM++;
+var FARMBIT_STATE_IDLE   = ENUM; ENUM++;
+var FARMBIT_STATE_WANDER = ENUM; ENUM++;
+var FARMBIT_STATE_COUNT  = ENUM; ENUM++;
 
 var tile = function()
 {
@@ -102,14 +110,14 @@ var board = function()
       return border;
     }
 
-    var n_lakes = 2;
+    var n_lakes = 4;
     for(var i = 0; i < n_lakes; i++)
     {
       var src_x = randIntBelow(self.grid_w);
       var src_y = randIntBelow(self.grid_h);
       var t = self.grid_t(src_x,src_y);
       t.type = GRID_TYPE_WATER;
-      var lake_size = 10;
+      var lake_size = 50+randIntBelow(100);
       var lake_tiles = slow_flood_fill([t]);
       var lake_border = slow_flood_border(lake_tiles);
 
@@ -187,8 +195,8 @@ var board = function()
       for(var x = 0; x < self.grid_w; x++)
       {
         var t = self.grid_t(x,y);
-             if(t.type == GRID_TYPE_LAND)  gg.ctx.fillStyle = "rgba("+(255-floor(t.phosphorus*255))+",255,255,1)";
-        else if(t.type == GRID_TYPE_WATER) gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)";
+             if(t.type == GRID_TYPE_LAND)  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)";
+        else if(t.type == GRID_TYPE_WATER) gg.ctx.fillStyle = "rgba("+floor(t.phosphorus*255)+",255,255,1)";
         gg.ctx.fillRect(self.x+x*tw,self.y+self.h-(y+1)*th,tw,th);
       }
     if(self.hovering)
@@ -213,6 +221,12 @@ var farmbit = function()
   self.w = 0;
   self.h = 0;
 
+  self.state = FARMBIT_STATE_IDLE;
+  self.state_t = 0;
+  self.walk_speed = 1;
+  self.wander_dir_x = 0.;
+  self.wander_dir_y = 0.;
+
   self.frame_i = 0;
   self.frame_l = 10;
   self.frame_t = randIntBelow(self.frame_l);
@@ -220,21 +234,47 @@ var farmbit = function()
   if(!farmbit_imgs.length)
   {
     var ctx;
-    farmbit_imgs[0] = GenIcon(10,10);
-    ctx = farmbit_imgs[0].context;
+    var s = 10;
+    var i = 0;
+    //idle
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
     ctx.fillRect(3,1,4,6); //body
     ctx.fillRect(2,4,1,4); //left_arm
     ctx.fillRect(7,4,1,4); //right_arm
     ctx.fillRect(3,7,1,3); //left_leg
     ctx.fillRect(6,7,1,3); //right_leg
+    i++
 
-    farmbit_imgs[1] = GenIcon(10,10);
-    ctx = farmbit_imgs[1].context;
+    //shrug
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
     ctx.fillRect(3,1,4,6); //body
     ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
     ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
     ctx.fillRect(3,7,1,3); //left_leg
     ctx.fillRect(6,7,1,3); //right_leg
+    i++
+
+    //walk- fat arms
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(1,4,2,4); //left_arm
+    ctx.fillRect(7,4,1,4); //right_arm
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(5,7,2,3); //right_leg
+    i++
+
+    //idle- fat legs
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,4,1,4); //left_arm
+    ctx.fillRect(7,4,2,4); //right_arm
+    ctx.fillRect(3,7,2,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    i++
   }
 
   self.tick = function()
@@ -242,14 +282,55 @@ var farmbit = function()
     self.frame_t++;
     if(self.frame_t > self.frame_l)
     {
-      self.frame_i = (self.frame_i+1)%farmbit_imgs.length;
+      self.frame_i = (self.frame_i+1)%2;
       self.frame_t = 0;
+    }
+
+    self.state_t++;
+    switch(self.state)
+    {
+      case FARMBIT_STATE_IDLE:
+      {
+        if(rand() < 0.01)
+        {
+          self.state = FARMBIT_STATE_WANDER;
+          self.state_t = 0;
+          var t = rand()*twopi;
+          self.wander_dir_x = cos(t);
+          self.wander_dir_y = sin(t);
+        }
+      }
+      break;
+      case FARMBIT_STATE_WANDER:
+      {
+        if(rand() < 0.01)
+        {
+          self.state = FARMBIT_STATE_IDLE;
+          self.state_t = 0;
+          var t = rand()*twopi;
+          self.wander_dir_x = cos(t);
+          self.wander_dir_y = sin(t);
+        }
+        self.wx += self.wander_dir_x*self.walk_speed;
+        self.wy += self.wander_dir_y*self.walk_speed;
+        if(self.wx < gg.b.wx-gg.b.ww/2) self.wx = gg.b.wx+gg.b.ww/2;
+        if(self.wx > gg.b.wx+gg.b.ww/2) self.wx = gg.b.wx-gg.b.ww/2;
+        if(self.wy < gg.b.wy-gg.b.wh/2) self.wy = gg.b.wy+gg.b.wh/2;
+        if(self.wy > gg.b.wy+gg.b.wh/2) self.wy = gg.b.wy-gg.b.wh/2;
+      }
+      break;
+      default:
+        return;
     }
   }
 
   self.draw = function()
   {
-    gg.ctx.drawImage(farmbit_imgs[self.frame_i],self.x,self.y,self.w,self.h);
+    switch(self.state)
+    {
+      case FARMBIT_STATE_IDLE:   gg.ctx.drawImage(farmbit_imgs[self.frame_i  ],self.x,self.y,self.w,self.h); break;
+      case FARMBIT_STATE_WANDER: gg.ctx.drawImage(farmbit_imgs[self.frame_i+2],self.x,self.y,self.w,self.h); break;
+    }
   }
 }
 

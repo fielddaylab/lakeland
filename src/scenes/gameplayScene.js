@@ -18,40 +18,38 @@ var GamePlayScene = function(game, stage)
   //self.resize(stage); //executed in 'ready'
 
   var hoverer;
-  var b;
-  var farmbits;
 
   self.ready = function()
   {
     self.resize(stage);
-    b = new board();
-    farmbits = [];
+    gg.b = new board();
+    gg.farmbits = [];
     for(var i = 0; i < 10; i++)
     {
-      farmbits[i] = new farmbit();
-      farmbits[i].wx = b.wx+rand0()*b.ww/2;
-      farmbits[i].wy = b.wy+rand0()*b.ww/2;
+      gg.farmbits[i] = new farmbit();
+      gg.farmbits[i].wx = gg.b.wx+rand0()*gg.b.ww/2;
+      gg.farmbits[i].wy = gg.b.wy+rand0()*gg.b.ww/2;
     }
   };
 
   self.tick = function()
   {
-    b.tick();
-    screenSpace(gg.cam, gg.canv, b);
-    for(var i = 0; i < farmbits.length; i++)
+    gg.b.tick();
+    screenSpace(gg.cam, gg.canv, gg.b);
+    for(var i = 0; i < gg.farmbits.length; i++)
     {
-      farmbits[i].tick();
-      screenSpace(gg.cam, gg.canv, farmbits[i]);
+      gg.farmbits[i].tick();
+      screenSpace(gg.cam, gg.canv, gg.farmbits[i]);
     }
-    hoverer.filter(b);
+    hoverer.filter(gg.b);
     hoverer.flush();
   };
 
   self.draw = function()
   {
-    b.draw();
-    for(var i = 0; i < farmbits.length; i++)
-      farmbits[i].draw();
+    gg.b.draw();
+    for(var i = 0; i < gg.farmbits.length; i++)
+      gg.farmbits[i].draw();
   };
 
   self.cleanup = function()
