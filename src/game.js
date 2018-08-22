@@ -49,11 +49,8 @@ var Game = function(init)
     if(old_cur_scene == cur_scene && (DOUBLETIME || slow))
     {
       scenes[cur_scene].tick();
-      //more like QUADRUPLETIME amirite
       if(DOUBLETIME)
       {
-        scenes[cur_scene].tick();
-        scenes[cur_scene].tick();
         scenes[cur_scene].tick();
       }
     }

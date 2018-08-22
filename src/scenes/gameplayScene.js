@@ -1,22 +1,23 @@
+var gg = {};
 var GamePlayScene = function(game, stage)
 {
   var self = this;
 
-  var canv;
-  var canvas;
-  var ctx;
   self.resize = function(s)
   {
     stage = s;
-    canv = stage.canv;
-    canvas = canv.canvas;
-    ctx = canv.context;
+    gg.stage = stage;
+    gg.canv = gg.stage.canv;
+    gg.canvas = gg.canv.canvas;
+    gg.ctx = gg.canv.context;
 
-    cam = {wx:0,wy:0,ww:canvas.width,wh:canvas.height}
+    gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height}
+    if(hoverer) hoverer.detach();
+    hoverer = new PersistentHoverer({source:gg.canvas});
   }
-  self.resize(stage);
+  //self.resize(stage); //executed in 'ready'
 
-  var cam;
+  var hoverer;
   var b;
 
   self.ready = function()
@@ -28,12 +29,14 @@ var GamePlayScene = function(game, stage)
   self.tick = function()
   {
     b.tick();
-    screenSpace(cam, canv, b);
+    screenSpace(gg.cam, gg.canv, b);
+    hoverer.filter(b);
+    hoverer.flush();
   };
 
   self.draw = function()
   {
-    b.draw(ctx);
+    b.draw();
   };
 
   self.cleanup = function()

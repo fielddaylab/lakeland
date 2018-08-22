@@ -284,6 +284,16 @@ var worldSpaceX = function(cam, canv, ww, x) { return ((x/canv.width) -0.5)* cam
 var worldSpaceY = function(cam, canv, wh, y) { return ((y/canv.height)-0.5)*-cam.wh + cam.wy - wh/2; }
 var worldSpaceW = function(cam, canv, w) { return (w/canv.width)*cam.ww; }
 var worldSpaceH = function(cam, canv, h) { return (h/canv.height)*cam.wh; }
+var worldSpacePt = function(cam, canv, pt) //opposite of screenspace, pt
+{
+  pt.wx = ((pt.x/canv.width) -0.5)* cam.ww + cam.wx;
+  pt.wy = ((pt.y/canv.height)-0.5)*-cam.wh + cam.wy;
+}
+var worldSpaceDoEvt = function(cam, canv, evt) //opposite of screenspace, doEvt (same as pt, but accesses do[XY])
+{
+  evt.wx = ((evt.doX/canv.width) -0.5)* cam.ww + cam.wx;
+  evt.wy = ((evt.doY/canv.height)-0.5)*-cam.wh + cam.wy;
+}
 var worldSpaceCoords = function(cam, canv, box) //opposite of screenspace, doesn't alter w/h (to preserve fp precision)
 {
   box.wx = (((box.x/canv.width) -0.5)* cam.ww + cam.wx)+box.ww/2;
@@ -396,6 +406,7 @@ var GenAudio = function(src)
 {
   var aud = new Audio();
   aud.src = src;
+  aud.load();
   return aud;
 }
 
@@ -826,26 +837,6 @@ function strokeRRect(x,y,w,h,r,ctx)
   ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
   ctx.stroke();
-}
-
-var UUIDint = function() //17 digits = 64 bit int; each second guaranteed unique, within a second = 1/99999 chance of collision (aka "not unique")
-{
-  var d = new Date();
-  var id = (""+d.getFullYear()).substring(2); //2
-  if(d.getMonth() < 10) id += "0";
-  id += d.getMonth(); //4
-  if(d.getDay() < 10) id += "0";
-  id += d.getDay(); //6
-  if(d.getHours() < 10) id += "0";
-  id += d.getHours(); //8
-  if(d.getMinutes() < 10)  id += "0";
-  id += d.getMinutes(); //10
-  if(d.getSeconds() < 10)  id += "0";
-  id += d.getSeconds(); //12
-  for(var i = 0; i < 5; i++)
-    id += Math.floor(Math.random()*10); //17
-
-  return parseInt(id);
 }
 
 //straight up stolen from the internet
