@@ -23,16 +23,20 @@ var FARMBIT_STATE_JOB    = ENUM; ENUM++;
 var FARMBIT_STATE_COUNT  = ENUM; ENUM++;
 
 ENUM = 0;
-var JOB_NULL    = ENUM; ENUM++;
-var JOB_PLANT   = ENUM; ENUM++;
-var JOB_HARVEST = ENUM; ENUM++;
-var JOB_COUNT   = ENUM; ENUM++;
+var JOB_TYPE_NULL    = ENUM; ENUM++;
+var JOB_TYPE_PLANT   = ENUM; ENUM++;
+var JOB_TYPE_HARVEST = ENUM; ENUM++;
+var JOB_TYPE_COUNT   = ENUM; ENUM++;
+
+var fullness_motivation_threshhold = 0.4;
+var energy_motivation_threshhold = 0.4;
+var joy_motivation_threshhold = 0.4;
 
 var job = function()
 {
   var self = this;
   self.tile = 0;
-  self.type = JOB_NULL;
+  self.type = JOB_TYPE_NULL;
   self.claimaint = 0;
 }
 var findbitforjob = function(j)
@@ -43,6 +47,13 @@ var findbitforjob = function(j)
   {
     var b = gg.farmbits[i];
     if(b.job) continue;
+    switch(j.type)
+    {
+      case JOB_TYPE_PLANT:
+      case JOB_TYPE_HARVEST:
+        if(b.fullness > fullness_motivation_threshhold) continue;
+        break;
+    }
     var dsqr = distsqr(j.tile.x,j.tile.y,b.tile.x,b.tile.y);
     if(!closest || dsqr < closest_dsqr)
     {
@@ -55,7 +66,20 @@ var findbitforjob = function(j)
 var findjobforbit = function(b)
 {
   for(var i = 0; i < gg.jobs.length; i++)
-    if(!gg.jobs[i].claimaint) return gg.jobs[i];
+  {
+    var j = gg.jobs[i];
+    if(!j.claimaint)
+    {
+      switch(j.type)
+      {
+        case JOB_TYPE_PLANT:
+        case JOB_TYPE_HARVEST:
+          if(b.fullness > fullness_motivation_threshhold) continue;
+          break;
+      }
+      return j;
+    }
+  }
   return 0;
 }
 var enqueuejob = function(j)
@@ -264,7 +288,7 @@ var board = function()
       self.hover_t.state_t = 0;
       var j = new job();
       j.tile = self.hover_t;
-      j.type = JOB_PLANT;
+      j.type = JOB_TYPE_PLANT;
       enqueuejob(j);
     }
   }
@@ -285,7 +309,7 @@ var board = function()
             t.state_t = 0;
             var j = new job();
             j.tile = t;
-            j.type = JOB_HARVEST;
+            j.type = JOB_TYPE_HARVEST;
             enqueuejob(j);
           }
         break;
@@ -347,6 +371,10 @@ var farmbit = function()
   self.move_dir_x = 0.;
   self.move_dir_y = 0.;
   self.job = 0;
+
+  self.fullness = 1;
+  self.joy = 1;
+  self.energy = 1;
 
   self.frame_i = 0;
   self.frame_l = 10;
@@ -451,6 +479,19 @@ var farmbit = function()
       self.frame_t = 0;
     }
 
+    var pre_fullness = self.fullness;
+    self.fullness *= 0.99;
+    var pre_energy = self.energy;
+    self.energy *= 0.99;
+    var pre_joy = self.joy;
+    self.joy *= 0.99;
+    if(!self.job)
+    {
+           if(pre_fullness > fullness_motivation_threshhold && self.fullness < fullness_motivation_threshhold) findjobforbit(self);
+      else if(pre_energy   > energy_motivation_threshhold   && self.energy   < energy_motivation_threshhold) findjobforbit(self);
+      else if(pre_joy      > joy_motivation_threshhold      && self.joy      < joy_motivation_threshhold) findjobforbit(self);
+    }
+
     self.state_t++;
     switch(self.state)
     {
@@ -501,7 +542,7 @@ var farmbit = function()
         {
           switch(self.job.type)
           {
-            case JOB_PLANT:
+            case JOB_TYPE_PLANT:
             {
               self.job.tile.state = GRID_STATE_FARM_PLANTED;
               self.job.tile.state_t = 0;
@@ -513,7 +554,7 @@ var farmbit = function()
               if(j) assignjob(self,j);
             }
               break;
-            case JOB_HARVEST:
+            case JOB_TYPE_HARVEST:
             {
               self.job.tile.state = GRID_STATE_FARM_UNPLANTED;
               self.job.tile.state_t = 0;
@@ -521,7 +562,7 @@ var farmbit = function()
               self.job = 0;
               var j = new job();
               j.tile = self.tile;
-              j.type = JOB_PLANT;
+              j.type = JOB_TYPE_PLANT;
               self.state = FARMBIT_STATE_IDLE;
               self.state_t = 0;
               enqueuejob(j);
