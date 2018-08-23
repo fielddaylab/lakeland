@@ -1,18 +1,21 @@
 var ENUM;
 
 ENUM = 0;
-var TILE_TYPE_NULL  = ENUM; ENUM++;
-var TILE_TYPE_LAND  = ENUM; ENUM++;
-var TILE_TYPE_WATER = ENUM; ENUM++;
-var TILE_TYPE_SHORE = ENUM; ENUM++;
-var TILE_TYPE_FARM  = ENUM; ENUM++;
-var TILE_TYPE_COUNT = ENUM; ENUM++;
+var TILE_TYPE_NULL    = ENUM; ENUM++;
+var TILE_TYPE_LAND    = ENUM; ENUM++;
+var TILE_TYPE_WATER   = ENUM; ENUM++;
+var TILE_TYPE_SHORE   = ENUM; ENUM++;
+var TILE_TYPE_FARM    = ENUM; ENUM++;
+var TILE_TYPE_STORAGE = ENUM; ENUM++;
+var TILE_TYPE_COUNT   = ENUM; ENUM++;
 
 ENUM = 0;
 var TILE_STATE_NULL           = ENUM; ENUM++;
 var TILE_STATE_FARM_UNPLANTED = ENUM; ENUM++;
 var TILE_STATE_FARM_PLANTED   = ENUM; ENUM++;
 var TILE_STATE_FARM_GROWN     = ENUM; ENUM++;
+var TILE_STATE_STORAGE_EMPTY  = ENUM; ENUM++;
+var TILE_STATE_STORAGE_FOOD   = ENUM; ENUM++;
 var TILE_STATE_COUNT          = ENUM; ENUM++;
 
 ENUM = 0;
@@ -115,6 +118,11 @@ var dequeuejob = function(b)
   var j = findjobforbit(b);
   if(j) assignjob(b,j);
 }
+var enqueuetakejob = function(b,j)
+{
+  gg.jobs.push(j);
+  assignjob(b,j);
+}
 var assignjob = function(b,j)
 {
   b.job = j;
@@ -131,6 +139,26 @@ var breakobject = function(o)
 {
   for(var i = 0; i < gg.objects.length; i++)
     if(gg.objects[i] == o) gg.objects.splice(i,1);
+}
+var callforjobs = function()
+{
+  for(var i = 0; i < gg.jobs.length; i++)
+  {
+    var j = gg.jobs[i];
+    if(!j.claimant)
+    {
+      var b = findbitforjob(j);
+      if(b) assignjob(b,j);
+    }
+  }
+}
+var calltowork = function()
+{
+  for(var i = 0; i < gg.farmbits.length; i++)
+  {
+    var b = gg.farmbits[i];
+    b.nudge();
+  }
 }
 
 var tile = function()
@@ -310,15 +338,17 @@ var board = function()
   {
     worldSpaceDoEvt(gg.cam, gg.canv, evt);
     self.hover_t = self.grid_wt(evt.wx,evt.wy);
+    gg.inspector.tile_quick = self.hover_t;
   }
   self.unhover = function(evt)
   {
     self.hover_t = 0;
+    gg.inspector.tile_quick = self.hover_t;
   }
 
   self.click = function(evt)
   {
-    gg.inspector.tile = self.hover_t;
+    gg.inspector.tile_detailed = self.hover_t;
     if(!self.hover_t) return;
 
     if(gg.palette.palette == PALETTE_FARM && self.hover_t.type != TILE_TYPE_FARM)
@@ -330,6 +360,12 @@ var board = function()
       j.tile = self.hover_t;
       j.type = JOB_TYPE_PLANT;
       enqueuejob(j);
+    }
+    if(gg.palette.palette == PALETTE_STORAGE && self.hover_t.type != TILE_TYPE_STORAGE)
+    {
+      self.hover_t.type = TILE_TYPE_STORAGE;
+      self.hover_t.state = TILE_STATE_STORAGE_EMPTY;
+      self.hover_t.state_t = 0;
     }
   }
 
@@ -366,6 +402,7 @@ var board = function()
     var tw = self.w/self.grid_w;
     var th = self.h/self.grid_h;
     for(var y = 0; y < self.grid_h; y++)
+    {
       for(var x = 0; x < self.grid_w; x++)
       {
         var t = self.grid_t(x,y);
@@ -383,10 +420,10 @@ var board = function()
         }
         gg.ctx.fillRect(self.x+x*tw,self.y+self.h-(y+1)*th,tw,th);
       }
-    if(self.hovering)
-    {
-      gg.ctx.strokeRect(self.x+self.hover_t.x*tw,self.y+self.h-(self.hover_t.y+1)*th,tw,th);
     }
+    var t;
+    t = self.hover_t;               if(t) gg.ctx.strokeRect(self.x+t.x*tw,self.y+self.h-(t.y+1)*th,tw,th);
+    t = gg.inspector.tile_detailed; if(t) gg.ctx.strokeRect(self.x+t.x*tw,self.y+self.h-(t.y+1)*th,tw,th);
   }
 }
 
@@ -557,6 +594,11 @@ var farmbit = function()
     i++
   }
 
+  self.nudge = function()
+  {
+
+  }
+
   self.tick = function()
   {
     self.frame_t++;
@@ -703,10 +745,13 @@ var farmbit = function()
                 j = new job();
                 j.object = self.object;
                 j.type = JOB_TYPE_DELIVER;
-                j.claimant = self;
-                enqueuejob(j)
-                dequeuejob(self);
+                enqueuetakejob(j)
               }
+            }
+              break;
+            case JOB_TYPE_DELIVER:
+            {
+              
             }
               break;
           }
