@@ -38,7 +38,7 @@ var Canv = function(init)
 Canv.prototype.clear = function()
 {
   var self = this;
-  self.context.clearRect(0, 0, self.canvas.width/self.scale, self.canvas.height/self.scale);
+  self.context.clearRect(0, 0, self.width, self.height);
 };
 Canv.prototype.blitTo = function(canv)
 {

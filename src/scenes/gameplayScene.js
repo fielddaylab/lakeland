@@ -11,7 +11,8 @@ var GamePlayScene = function(game, stage)
     gg.canvas = gg.canv.canvas;
     gg.ctx = gg.canv.context;
 
-    gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height}
+    gg.cam = {wx:0,wy:0,ww:gg.canv.width,wh:gg.canv.height}
+    gg.ui_cam = {wx:gg.canv.width/2,wy:gg.canv.height/2,ww:gg.canv.width,wh:gg.canv.height}
     if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
     if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
   }
