@@ -1,0 +1,28 @@
+tiles have states
+bits have desires
+seek out tiles to fill desires
+if find a task, propose it to others to see if exist better candidates
+tile change triggers candidate search
+
+stake out board to find do-able tasks
+pick which task is best suitable for me
+propose to others
+
+need to pair tasks to doers efficiently
+
+every frame aggregate all tasks (resource-related and not; sleep, swim, idle)
+nope- bits take care of non-resource-related tasks (triggered on threshhold "willingness to do" or "newly idle")
+
+rank bits by suitability for each task (free(not busy), desire, closeness)
+
+ON
+  b delta (new, newly idle, threshhold broken)
+    findbesttaskforb()
+      take available tasks (resource tied and not)
+        what is task you most want? (don't need to compare to other bs desires: if greater one exists, it would have already been triggered)
+  tile delta (new, new property)
+    findbestbfortask()
+      take idle bs
+        rank desire (threshholds, closeness)
+          give (don't need to compare to its other desires: if greater one exists, it would have already been triggered _unless_ it's "to be triggerd this frame", which, whatever- pretend it didn't know until next frame)
+

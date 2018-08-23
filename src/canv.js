@@ -10,7 +10,7 @@ var Canv = function(init)
     strokeStyle:"#000000",
     lineWidth:2,
     font:"12px vg_font",
-    smoothing:true
+    smoothing:false
   }
 
   var self = this;

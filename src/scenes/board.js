@@ -24,39 +24,136 @@ var OBJECT_TYPE_FOOD  = ENUM; ENUM++;
 var OBJECT_TYPE_COUNT = ENUM; ENUM++;
 
 ENUM = 0;
-var FARMBIT_STATE_NULL   = ENUM; ENUM++;
-var FARMBIT_STATE_IDLE   = ENUM; ENUM++;
-var FARMBIT_STATE_WANDER = ENUM; ENUM++;
-var FARMBIT_STATE_JOB    = ENUM; ENUM++;
-var FARMBIT_STATE_COUNT  = ENUM; ENUM++;
+var OBJECT_STATE_NULL  = ENUM; ENUM++;
+var OBJECT_STATE_COUNT = ENUM; ENUM++;
 
 ENUM = 0;
 var JOB_TYPE_NULL    = ENUM; ENUM++;
+var JOB_TYPE_IDLE    = ENUM; ENUM++;
+var JOB_TYPE_WAIT    = ENUM; ENUM++;
+var JOB_TYPE_SLEEP   = ENUM; ENUM++;
+var JOB_TYPE_PLAY    = ENUM; ENUM++;
 var JOB_TYPE_PLANT   = ENUM; ENUM++;
 var JOB_TYPE_HARVEST = ENUM; ENUM++;
 var JOB_TYPE_GET     = ENUM; ENUM++;
 var JOB_TYPE_DELIVER = ENUM; ENUM++;
 var JOB_TYPE_COUNT   = ENUM; ENUM++;
 
-var fullness_motivation_threshhold = 0.4;
-var energy_motivation_threshhold = 0.4;
-var joy_motivation_threshhold = 0.4;
+ENUM = 0;
+var JOB_STATE_NULL  = ENUM; ENUM++;
+var JOB_STATE_COUNT = ENUM; ENUM++;
 
-var farm_grow_t = 1000;
-
-var job = function()
+var fullness_task_for_b = function(b)
 {
-  var self = this;
-  self.tile = 0;
-  self.object = 0;
-  self.type = JOB_TYPE_NULL;
-  self.claimaint = 0;
-  self.dtile = function()
+  var n;
+  var job;
+  var job_type = JOB_TYPE_NULL;
+  var job_d = 9999;
+  var d;
+
+  var o;
+  n = gg.objects.length;
+  for(var i = 0; i < n; i++)
   {
-    if(self.tile) return self.tile;
-    else if(self.object) return self.object.tile;
+    o = gg.objects[i];
+    if(o.type == OBJECT_TYPE_FOOD && !o.lock)
+    {
+      d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+      if(d < job_d)
+      {
+        job = o;
+        job_type = JOB_TYPE_GET;
+        job_d = d;
+      }
+    }
   }
+
+  if(job_type == JOB_TYPE_NULL)
+  {
+    var t;
+    n = gg.b.tiles.length;
+    for(var i = 0; i < n; i++)
+    {
+      t = gg.b.tiles[i];
+      if(t.type == TILE_TYPE_FARM)
+      {
+        switch(job_type)
+        {
+          case JOB_TYPE_NULL:
+            //break; //DON'T BREAK!
+          case JOB_TYPE_PLANT:
+            if(t.state == TILE_STATE_FARM_UNPLANTED && !t.lock)
+            {
+              if(job_type != JOB_TYPE_PLANT)
+              {
+                job_type = JOB_TYPE_PLANT;
+                job_d = 9999;
+              }
+              d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+              if(d < job_d)
+              {
+                job = t;
+                job_d = d;
+              }
+            }
+            //break; //DON'T BREAK!
+          case JOB_TYPE_HARVEST:
+            if(t.state == TILE_STATE_FARM_GROWN && !t.lock)
+            {
+              if(job_type != JOB_TYPE_HARVEST)
+              {
+                job_type = JOB_TYPE_HARVEST;
+                job_d = 9999;
+              }
+              d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+              if(d < job_d)
+              {
+                job = t;
+                job_d = d;
+              }
+            }
+            break;
+        }
+      }
+    }
+  }
+
+  b.job_type = job_type;
+  b.job = job;
+  closest.lock = 1;
 }
+
+var energy_task_for_b = function(b)
+{
+  b.job_type = JOB_TYPE_SLEEP;
+}
+
+var joy_task_for_b = function(b)
+{
+  b.job_type = JOB_TYPE_PLAY;
+  //find water
+}
+
+var task_for_b = function(b)
+{
+  if(b.task != TASK_TYPE_IDLE) return; //already busy!
+
+  if(b.fullness < fullness_motivated && fullness_task_for_b(b)) return;
+  if(b.energy   < energy_motivated   && energy_task_for_b(b))   return;
+  if(b.joy      < joy_motivated      && joy_task_for_b(b))      return;
+  if(b.purpose  < purpose_motivated  && purpose_task_for_b(b))  return;
+  if(b.fullness < fullness_content   && fullness_task_for_b(b)) return;
+  if(b.energy   < energy_content     && energy_task_for_b(b))   return;
+  if(b.joy      < joy_content        && joy_task_for_b(b))      return;
+  if(b.purpose  < purpose_content    && purpose_task_for_b(b))  return;
+  return;
+}
+
+var b_for_task = function()
+{
+
+}
+
 var findbitforjob = function(j)
 {
   var closest = 0;
@@ -171,37 +268,38 @@ var tile = function()
   self.phosphorus = 0;
   self.state = TILE_STATE_NULL;
   self.state_t = 0;
+  self.lock = 0;
 }
 
 var board = function()
 {
   var self = this;
 
-  self.grid_w = 100;
-  self.grid_h = 100;
-  self.grid = [];
-  self.grid_i = function(x,y)
+  self.tw = board_w;
+  self.th = board_h;
+  self.tiles = [];
+  self.tiles_i = function(tx,ty)
   {
-    if(x <  0)           x += self.grid_w;
-    if(y <  0)           y += self.grid_h;
-    if(x >= self.grid_w) x -= self.grid_w;
-    if(y >= self.grid_h) y -= self.grid_h;
-    return self.grid_w*y+x;
+    if(tx <  0)       tx += self.tw;
+    if(ty <  0)       ty += self.th;
+    if(tx >= self.tw) tx -= self.tw;
+    if(ty >= self.th) ty -= self.th;
+    return self.tw*ty+tx;
   }
-  self.grid_t = function(x,y)
+  self.tiles_t = function(tx,ty)
   {
-    return self.grid[self.grid_i(x,y)];
+    return self.tiles[self.tiles_i(tx,ty)];
   }
-  self.grid_wt = function(wx,wy)
+  self.tiles_wt = function(wx,wy)
   {
-    var x = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.grid_w, wx));
-    var y = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.grid_h, wy));
-    return self.grid_t(x,y);
+    var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
+    var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
+    return self.tiles_t(tx,ty);
   }
-  self.grid_tw = function(t,w)
+  self.tiles_tw = function(t,w)
   {
-    w.wx = self.wx-self.ww/2+((t.x+0.5)*self.ww/self.grid_w);
-    w.wy = self.wy-self.wh/2+((t.y+0.5)*self.wh/self.grid_w);
+    w.wx = self.wx-self.ww/2+((t.x+0.5)*self.ww/self.tw);
+    w.wy = self.wy-self.wh/2+((t.y+0.5)*self.wh/self.th);
   }
   self.shuffle_i = [];
 
@@ -228,19 +326,19 @@ var board = function()
 
   self.init = function()
   {
-    for(var y = 0; y < self.grid_h; y++)
-      for(var x = 0; x < self.grid_w; x++)
+    for(var ty = 0; ty < self.th; ty++)
+      for(var tx = 0; tx < self.tw; tx++)
       {
-        var i = self.grid_i(x,y);
+        var i = self.tiles_i(tx,ty);
         var t = new tile();
-        t.x = x;
-        t.y = y;
+        t.tx = tx;
+        t.ty = ty;
         t.phosphorus = rand();
         t.phosphorus *= t.phosphorus;
         t.phosphorus *= t.phosphorus;
         t.phosphorus *= t.phosphorus;
         t.phosphorus *= t.phosphorus;
-        self.grid[i] = t;
+        self.tiles[i] = t;
       }
 
     var atomic_push = function(n,ar)
@@ -256,10 +354,10 @@ var board = function()
       {
         var t = fill[i];
         var n;
-        n = self.grid_t(t.x-1,t.y  ); if(n.type == t.type) atomic_push(n,fill);
-        n = self.grid_t(t.x+1,t.y  ); if(n.type == t.type) atomic_push(n,fill);
-        n = self.grid_t(t.x  ,t.y-1); if(n.type == t.type) atomic_push(n,fill);
-        n = self.grid_t(t.x  ,t.y+1); if(n.type == t.type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type == t.type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type == t.type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type == t.type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type == t.type) atomic_push(n,fill);
       }
       return fill;
     }
@@ -271,10 +369,10 @@ var board = function()
       {
         var t = fill[i];
         var n;
-        n = self.grid_t(t.x-1,t.y  ); if(n.type != t.type) atomic_push(n,border);
-        n = self.grid_t(t.x+1,t.y  ); if(n.type != t.type) atomic_push(n,border);
-        n = self.grid_t(t.x  ,t.y-1); if(n.type != t.type) atomic_push(n,border);
-        n = self.grid_t(t.x  ,t.y+1); if(n.type != t.type) atomic_push(n,border);
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != t.type) atomic_push(n,border);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != t.type) atomic_push(n,border);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != t.type) atomic_push(n,border);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != t.type) atomic_push(n,border);
       }
       return border;
     }
@@ -282,11 +380,11 @@ var board = function()
     var n_lakes = 4;
     for(var i = 0; i < n_lakes; i++)
     {
-      var src_x = randIntBelow(self.grid_w);
-      var src_y = randIntBelow(self.grid_h);
-      var t = self.grid_t(src_x,src_y);
+      var src_tx = randIntBelow(self.tw);
+      var src_ty = randIntBelow(self.th);
+      var t = self.tiles_t(src_tx,src_ty);
       t.type = TILE_TYPE_WATER;
-      var lake_size = 50+randIntBelow(100);
+      var lake_size = 200+randIntBelow(400);
       var lake_tiles = slow_flood_fill([t]);
       var lake_border = slow_flood_border(lake_tiles);
 
@@ -299,16 +397,16 @@ var board = function()
         lake_border.splice(b_i,1);
 
         var n;
-        n = self.grid_t(t.x-1,t.y  ); if(n.type != t.type) atomic_push(n,lake_border);
-        n = self.grid_t(t.x+1,t.y  ); if(n.type != t.type) atomic_push(n,lake_border);
-        n = self.grid_t(t.x  ,t.y-1); if(n.type != t.type) atomic_push(n,lake_border);
-        n = self.grid_t(t.x  ,t.y+1); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != t.type) atomic_push(n,lake_border);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != t.type) atomic_push(n,lake_border);
       }
       for(var j = 0; j < lake_border.length; j++)
         lake_border[j].type = TILE_TYPE_SHORE;
     }
 
-    var n = self.grid_w*self.grid_h;
+    var n = self.tw*self.th;
     for(var i = 0; i < n; i++) self.shuffle_i[i] = i;
 
     self.hovering = 0;
@@ -317,7 +415,7 @@ var board = function()
 
   self.shuffle = function()
   {
-    var n = self.grid_w*self.grid_h;
+    var n = self.tw*self.th;
     for(var i = 0; i < n; i++)
     {
       var val = self.shuffle_i[i];
@@ -337,7 +435,7 @@ var board = function()
   self.hover = function(evt)
   {
     worldSpaceDoEvt(gg.cam, gg.canv, evt);
-    self.hover_t = self.grid_wt(evt.wx,evt.wy);
+    self.hover_t = self.tiles_wt(evt.wx,evt.wy);
     gg.inspector.tile_quick = self.hover_t;
   }
   self.unhover = function(evt)
@@ -371,10 +469,10 @@ var board = function()
 
   self.tick = function()
   {
-    var n = self.grid_w*self.grid_h;
+    var n = self.tw*self.th;
     for(var i = 0; i < n; i++)
     {
-      var t = self.grid[i];
+      var t = self.tiles[i];
       t.state_t++;
       switch(t.type)
       {
@@ -390,8 +488,8 @@ var board = function()
           }
         break;
       }
-      var right = self.grid_t(t.x+1,t.y  );
-      var top   = self.grid_t(t.x  ,t.y+1);
+      var right = self.tiles_t(t.tx+1,t.ty  );
+      var top   = self.tiles_t(t.tx  ,t.ty+1);
       self.flow(t,right);
       self.flow(t,top);
     }
@@ -399,13 +497,14 @@ var board = function()
 
   self.draw = function()
   {
-    var tw = self.w/self.grid_w;
-    var th = self.h/self.grid_h;
-    for(var y = 0; y < self.grid_h; y++)
+    var w = self.w/self.tw;
+    var h = self.h/self.th;
+    var i = 0;
+    for(var ty = 0; ty < self.th; ty++)
     {
-      for(var x = 0; x < self.grid_w; x++)
+      for(var tx = 0; tx < self.tw; tx++)
       {
-        var t = self.grid_t(x,y);
+        var t = self.tiles[i];
              if(t.type == TILE_TYPE_LAND)  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)";
         else if(t.type == TILE_TYPE_WATER) gg.ctx.fillStyle = "rgba("+floor(t.phosphorus*255)+",255,255,1)";
         else if(t.type == TILE_TYPE_SHORE) gg.ctx.fillStyle = "rgba("+floor((t.phosphorus/2+0.5)*255)+",255,255,1)";
@@ -418,12 +517,13 @@ var board = function()
             case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = "rgba(255,255,"+floor(t.phosphorus*255)+",1)"; break;
           }
         }
-        gg.ctx.fillRect(self.x+x*tw,self.y+self.h-(y+1)*th,tw,th);
+        gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+        i++;
       }
     }
     var t;
-    t = self.hover_t;               if(t) gg.ctx.strokeRect(self.x+t.x*tw,self.y+self.h-(t.y+1)*th,tw,th);
-    t = gg.inspector.tile_detailed; if(t) gg.ctx.strokeRect(self.x+t.x*tw,self.y+self.h-(t.y+1)*th,tw,th);
+    t = self.hover_t;               if(t) gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
+    t = gg.inspector.tile_detailed; if(t) gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
   }
 }
 
@@ -463,7 +563,7 @@ var object = function()
     if(abs(self.wvy) < 0.01) self.wvy = 0;
     if(self.wz < 0.01 && abs(self.wvz) < 0.1) { self.wvz = 0; self.wz = 0; }
 
-    self.tile = gg.b.grid_wt(self.wx,self.wy);
+    self.tile = gg.b.tiles_wt(self.wx,self.wy);
   }
 
   self.draw = function()
@@ -684,7 +784,7 @@ var farmbit = function()
               var o = new object();
               o.type = OBJECT_TYPE_FOOD;
               o.tile = t;
-              gg.b.grid_tw(o.tile,o);
+              gg.b.tiles_tw(o.tile,o);
               var theta = rand()*twopi;
               var s = 2+rand()*5;
               o.wvx = cos(theta)*s;
@@ -749,11 +849,6 @@ var farmbit = function()
               }
             }
               break;
-            case JOB_TYPE_DELIVER:
-            {
-              
-            }
-              break;
           }
         }
       }
@@ -762,7 +857,7 @@ var farmbit = function()
         return;
     }
 
-    self.tile = gg.b.grid_wt(self.wx,self.wy);
+    self.tile = gg.b.tiles_wt(self.wx,self.wy);
   }
 
   self.draw = function()

@@ -392,6 +392,7 @@ var GenIcon = function(w,h)
   icon.context.fillStyle = "#000000";
   icon.context.strokeStyle = "#000000";
   icon.context.textAlign = "center";
+  icon.context.imageSmoothingEnabled = false;
 
   return icon;
 }
