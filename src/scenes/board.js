@@ -603,31 +603,34 @@ var board = function()
 
   self.click = function(evt)
   {
-    var n;
-    var clicked;
-    n = gg.farmbits.length;
-    for(var i = 0; i < n; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
-    if(clicked)
+    if(gg.palette.palette == PALETTE_PROD)
     {
-      gg.inspector.detailed = clicked;
-      gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
-    }
-    if(!clicked)
-    {
-      n = gg.objects.length;
-      for(var i = 0; i < n; i++) { var o = gg.objects[i]; if(ptWithinBox(o,evt.doX,evt.doY)) clicked = o; }
+      var n;
+      var clicked;
+      n = gg.farmbits.length;
+      for(var i = 0; i < n; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
         gg.inspector.detailed = clicked;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_OBJECT;
+        gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
       }
-      else
+      if(!clicked)
       {
-        gg.inspector.detailed = self.hover_t;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+        n = gg.objects.length;
+        for(var i = 0; i < n; i++) { var o = gg.objects[i]; if(ptWithinBox(o,evt.doX,evt.doY)) clicked = o; }
+        if(clicked)
+        {
+          gg.inspector.detailed = clicked;
+          gg.inspector.detailed_type = INSPECTOR_CONTENT_OBJECT;
+        }
+        else
+        {
+          gg.inspector.detailed = self.hover_t;
+          gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+        }
       }
+      if(!self.hover_t) return;
     }
-    if(!self.hover_t) return;
 
     if(gg.palette.palette == PALETTE_FARM && self.hover_t.type != TILE_TYPE_FARM)
     {
@@ -696,8 +699,8 @@ var board = function()
       }
     }
     var t;
-    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = self.hover_t;          gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
-    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
+    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
+    if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
   }
 }
 
@@ -869,6 +872,114 @@ var farmbit = function()
     //walk- fat legs- water
     farmbit_imgs[i] = GenIcon(s,s);
     ctx = farmbit_imgs[i].context;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,4,1,4); //left_arm
+    ctx.fillRect(7,4,2,4); //right_arm
+    ctx.fillRect(3,7,2,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    ctx.clearRect(0,5,10,5); //clear
+    i++
+
+    //idle- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,4,1,4); //left_arm
+    ctx.fillRect(7,4,1,4); //right_arm
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    i++
+
+    //shrug- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
+    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    i++
+
+    //walk- fat arms- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(1,4,2,4); //left_arm
+    ctx.fillRect(7,4,1,4); //right_arm
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(5,7,2,3); //right_leg
+    i++
+
+    //walk- fat legs- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,4,1,4); //left_arm
+    ctx.fillRect(7,4,2,4); //right_arm
+    ctx.fillRect(3,7,2,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    i++
+
+    //idle- water- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,4,1,4); //left_arm
+    ctx.fillRect(7,4,1,4); //right_arm
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    ctx.clearRect(0,5,10,5); //clear
+    i++
+
+    //shrug- water- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
+    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(6,7,1,3); //right_leg
+    ctx.clearRect(0,5,10,5); //clear
+    i++
+
+    //walk- fat arms- water- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
+    ctx.fillRect(3,1,4,6); //body
+    ctx.fillRect(1,4,2,4); //left_arm
+    ctx.fillRect(7,4,1,4); //right_arm
+    ctx.fillRect(3,7,1,3); //left_leg
+    ctx.fillRect(5,7,2,3); //right_leg
+    ctx.clearRect(0,5,10,5); //clear
+    i++
+
+    //walk- fat legs- water- selected
+    farmbit_imgs[i] = GenIcon(s,s);
+    ctx = farmbit_imgs[i].context;
+    ctx.fillStyle = green;
+    ctx.fillRect(2,0,6,6);
+    ctx.fillStyle = black;
     ctx.fillRect(3,1,4,6); //body
     ctx.fillRect(2,4,1,4); //left_arm
     ctx.fillRect(7,4,2,4); //right_arm
@@ -1191,6 +1302,8 @@ var farmbit = function()
   {
     var off = 0;
     if(self.tile.type == TILE_TYPE_WATER || self.tile.type == TILE_TYPE_SHORE) off += 4;
+         if(gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT && gg.inspector.detailed == self) off += 8;
+    else if(gg.inspector.quick_type    == INSPECTOR_CONTENT_FARMBIT && gg.inspector.quick    == self) off += 8;
     switch(self.job_state)
     {
       case JOB_STATE_ACT:

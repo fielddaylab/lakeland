@@ -29,9 +29,9 @@ var palette = function()
   var h = 40;
   x += 10;
   y += 10;
-  self.prod_btn    = new ButtonBox(x,y,w,h,function(){self.palette = PALETTE_PROD;});    y += h+10;
-  self.farm_btn    = new ButtonBox(x,y,w,h,function(){self.palette = PALETTE_FARM;});    y += h+10;
-  self.storage_btn = new ButtonBox(x,y,w,h,function(){self.palette = PALETTE_STORAGE;}); y += h+10;
+  self.prod_btn    = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_PROD;    });    y += h+10;
+  self.farm_btn    = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_FARM;    });    y += h+10;
+  self.storage_btn = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_STORAGE; }); y += h+10;
 
   self.filter = function(filter)
   {
