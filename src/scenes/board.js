@@ -447,9 +447,12 @@ var tile = function()
   self.tx = 0;
   self.ty = 0;
   self.type = TILE_TYPE_LAND;
-  self.phosphorus = 0;
   self.state = TILE_STATE_NULL;
   self.state_t = 0;
+  self.val = 0;
+  self.phosphorus = 0;
+  self.withdraw_locks = 0;
+  self.deposit_locks = 0;
   self.lock = 0;
 }
 
@@ -1284,7 +1287,9 @@ var farmbit = function()
                 for(var i = 0; i < n; i++)
                 {
                   t = gg.b.tiles[i];
-                  if(t.type == TILE_TYPE_STORAGE)
+                  if(t.type == TILE_TYPE_STORAGE &&
+                    (t.state == TILE_STATE_STORAGE_EMPTY || t.state == TILE_STATE_STORAGE_FOOD) &&
+                    t.val+t.deposit_locks < storage_food_max)
                   {
                     d = distsqr(t.tx,t.ty,self.tile.tx,self.tile.ty);
                     if(d < job_d)
@@ -1297,6 +1302,7 @@ var farmbit = function()
                 if(job)
                 {
                   self.job = job;
+                  self.job.deposit_locks++;
                   self.object = o;
                   self.job_type = JOB_TYPE_DELIVER;
                   self.job_state = JOB_STATE_SEEK;
@@ -1337,6 +1343,9 @@ var farmbit = function()
             case TILE_TYPE_STORAGE:
             {
               break_object(self.object);
+              t.state = TILE_STATE_STORAGE_FOOD;
+              t.deposit_locks--;
+              t.val++;
               self.object = 0;
               self.fulfillment = 1;
               self.fulfillment_state = FARMBIT_STATE_CONTENT;

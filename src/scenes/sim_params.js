@@ -14,4 +14,5 @@ var joy_content           = 0.4;
 var fulfillment_content   = 0.4;
 
 var farm_grow_t = 1000;
+var storage_food_max = 10;
 
