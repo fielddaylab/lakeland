@@ -86,12 +86,13 @@ var inspector = function()
     str = "Type: ";
     switch(t.type)
     {
-      case TILE_TYPE_NULL:  str += "null";  break;
-      case TILE_TYPE_LAND:  str += "land";  break;
-      case TILE_TYPE_WATER: str += "water"; break;
-      case TILE_TYPE_SHORE: str += "shore"; break;
-      case TILE_TYPE_FARM:  str += "farm";  break;
-      case TILE_TYPE_COUNT: str += "count"; break;
+      case TILE_TYPE_NULL:    str += "null";  break;
+      case TILE_TYPE_LAND:    str += "land";  break;
+      case TILE_TYPE_WATER:   str += "water"; break;
+      case TILE_TYPE_SHORE:   str += "shore"; break;
+      case TILE_TYPE_FARM:    str += "farm";  break;
+      case TILE_TYPE_STORAGE: str += "storage";  break;
+      case TILE_TYPE_COUNT:   str += "count"; break;
     }
     gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
     y += vspace;
@@ -102,10 +103,21 @@ var inspector = function()
       case TILE_STATE_FARM_UNPLANTED: str += "unplanted"; break;
       case TILE_STATE_FARM_PLANTED:   str += "planted";   break;
       case TILE_STATE_FARM_GROWN:     str += "grown";     break;
+      case TILE_STATE_STORAGE_EMPTY:  str += "empty";     break;
+      case TILE_STATE_STORAGE_FOOD:   str += "food";      break;
       case TILE_STATE_COUNT:          str += "null";      break;
     }
     gg.ctx.fillText(str,x,y);
     y += vspace;
+    if(t.type == TILE_TYPE_STORAGE)
+    {
+      gg.ctx.fillText("val:"+t.val,x,y);
+      y += vspace;
+      gg.ctx.fillText("withdraw_lock:"+t.withdraw_lock,x,y);
+      y += vspace;
+      gg.ctx.fillText("deposit_lock:"+t.deposit_lock,x,y);
+      y += vspace;
+    }
     gg.ctx.fillText("t:"+t.state_t,x,y);
     y += vspace;
     gg.ctx.fillText("phosphorus:"+fdisp(t.phosphorus),x,y);
@@ -142,16 +154,17 @@ var inspector = function()
     str = "Job: ";
     switch(b.job_type)
     {
-      case JOB_TYPE_NULL:    str += "null";    break;
-      case JOB_TYPE_IDLE:    str += "idle";    break;
-      case JOB_TYPE_WAIT:    str += "wait";    break;
-      case JOB_TYPE_SLEEP:   str += "sleep";   break;
-      case JOB_TYPE_PLAY:    str += "play";    break;
-      case JOB_TYPE_PLANT:   str += "plant";   break;
-      case JOB_TYPE_HARVEST: str += "harvest"; break;
-      case JOB_TYPE_GET:     str += "get";     break;
-      case JOB_TYPE_DELIVER: str += "deliver"; break;
-      case JOB_TYPE_COUNT:   str += "count";   break;
+      case JOB_TYPE_NULL:     str += "null";     break;
+      case JOB_TYPE_IDLE:     str += "idle";     break;
+      case JOB_TYPE_WAIT:     str += "wait";     break;
+      case JOB_TYPE_SLEEP:    str += "sleep";    break;
+      case JOB_TYPE_PLAY:     str += "play";     break;
+      case JOB_TYPE_PLANT:    str += "plant";    break;
+      case JOB_TYPE_HARVEST:  str += "harvest";  break;
+      case JOB_TYPE_GET:      str += "get";      break;
+      case JOB_TYPE_DELIVER:  str += "deliver";  break;
+      case JOB_TYPE_WITHDRAW: str += "withdraw"; break;
+      case JOB_TYPE_COUNT:    str += "count";    break;
     }
     gg.ctx.fillText(str+" ("+b.tile.tx+","+b.tile.ty+")",x,y);
     y += vspace;

@@ -28,16 +28,17 @@ var OBJECT_STATE_NULL  = ENUM; ENUM++;
 var OBJECT_STATE_COUNT = ENUM; ENUM++;
 
 ENUM = 0;
-var JOB_TYPE_NULL    = ENUM; ENUM++;
-var JOB_TYPE_IDLE    = ENUM; ENUM++;
-var JOB_TYPE_WAIT    = ENUM; ENUM++;
-var JOB_TYPE_SLEEP   = ENUM; ENUM++;
-var JOB_TYPE_PLAY    = ENUM; ENUM++;
-var JOB_TYPE_PLANT   = ENUM; ENUM++;
-var JOB_TYPE_HARVEST = ENUM; ENUM++;
-var JOB_TYPE_GET     = ENUM; ENUM++;
-var JOB_TYPE_DELIVER = ENUM; ENUM++;
-var JOB_TYPE_COUNT   = ENUM; ENUM++;
+var JOB_TYPE_NULL     = ENUM; ENUM++;
+var JOB_TYPE_IDLE     = ENUM; ENUM++;
+var JOB_TYPE_WAIT     = ENUM; ENUM++;
+var JOB_TYPE_SLEEP    = ENUM; ENUM++;
+var JOB_TYPE_PLAY     = ENUM; ENUM++;
+var JOB_TYPE_PLANT    = ENUM; ENUM++;
+var JOB_TYPE_HARVEST  = ENUM; ENUM++;
+var JOB_TYPE_GET      = ENUM; ENUM++;
+var JOB_TYPE_DELIVER  = ENUM; ENUM++;
+var JOB_TYPE_WITHDRAW = ENUM; ENUM++;
+var JOB_TYPE_COUNT    = ENUM; ENUM++;
 
 ENUM = 0;
 var JOB_STATE_NULL        = ENUM; ENUM++;
@@ -124,6 +125,25 @@ var fullness_job_for_b = function(b)
               }
             }
             break;
+          default:
+            break;
+        }
+      }
+      else if(t.type == TILE_TYPE_STORAGE)
+      {
+        if(t.state == TILE_STATE_STORAGE_FOOD && t.val-t.withdraw_lock > 0)
+        {
+          if(job_type != JOB_TYPE_WITHDRAW)
+          {
+            job_type = JOB_TYPE_WITHDRAW;
+            job_d = 9999;
+          }
+          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+          if(d < job_d)
+          {
+            job = t;
+            job_d = d;
+          }
         }
       }
     }
@@ -133,9 +153,17 @@ var fullness_job_for_b = function(b)
   {
     b.go_idle();
     b.job_type = job_type;
-    b.job_state = JOB_STATE_SEEK;
     b.job = job;
-    b.job.lock = 1;
+    b.job_state = JOB_STATE_SEEK;
+    switch(job_type)
+    {
+      case JOB_TYPE_PLANT:
+      case JOB_TYPE_HARVEST:
+        b.job.lock = 1;
+        break;
+      case JOB_TYPE_WITHDRAW:
+        b.job.withdraw_lock++;
+    }
     return 1;
   }
   return 0;
@@ -451,8 +479,8 @@ var tile = function()
   self.state_t = 0;
   self.val = 0;
   self.phosphorus = 0;
-  self.withdraw_locks = 0;
-  self.deposit_locks = 0;
+  self.withdraw_lock = 0;
+  self.deposit_lock = 0;
   self.lock = 0;
 }
 
@@ -1076,6 +1104,72 @@ var farmbit = function()
     self.job_state_t = 0;
   }
 
+  self.handle_object = function()
+  {
+    var o = self.object;
+    switch(o.type)
+    {
+      case OBJECT_TYPE_FOOD:
+      {
+        var consume = 0;
+             if(self.fullness_state    == FARMBIT_STATE_DESPERATE) consume = 1;
+        else if(self.fulfillment_state == FARMBIT_STATE_DESPERATE) consume = 0;
+        else if(self.fullness_state    == FARMBIT_STATE_MOTIVATED) consume = 1;
+        else if(self.fulfillment_state == FARMBIT_STATE_MOTIVATED) consume = 0;
+        if(consume)
+        {
+          break_object(o);
+          self.fullness = 1;
+          self.fullness_state = FARMBIT_STATE_CONTENT;
+          job_for_b(self);
+        }
+        else //deliver
+        {
+          var t;
+          var job;
+          var job_d = 9999;
+          var d;
+          var n = gg.b.tiles.length;
+          for(var i = 0; i < n; i++)
+          {
+            t = gg.b.tiles[i];
+            if(t.type == TILE_TYPE_STORAGE &&
+              (t.state == TILE_STATE_STORAGE_EMPTY || t.state == TILE_STATE_STORAGE_FOOD) &&
+              t.val+t.deposit_lock < storage_food_max)
+            {
+              d = distsqr(t.tx,t.ty,self.tile.tx,self.tile.ty);
+              if(d < job_d)
+              {
+                job = t;
+                job_d = d;
+              }
+            }
+          }
+          if(job)
+          {
+            self.job = job;
+            self.job.deposit_lock++;
+            self.job_type = JOB_TYPE_DELIVER;
+            self.job_state = JOB_STATE_SEEK;
+            self.job_state_t = 1;
+          }
+          else //kick
+          {
+            self.object = 0;
+            o.lock = 0;
+            var theta = rand()*twopi;
+            var s = 2+rand()*5;
+            o.wvx = cos(theta)*s;
+            o.wvy = sin(theta)*s;
+            o.wvz = s/2;
+            job_for_b(self);
+          }
+        }
+      }
+        break;
+    }
+  }
+
   self.tick = function()
   {
     self.frame_t++;
@@ -1259,70 +1353,9 @@ var farmbit = function()
         }
         else //self.tile == o.tile && object "still"
         {
-          switch(o.type)
-          {
-            case OBJECT_TYPE_FOOD:
-            {
-              var consume = 0;
-                   if(self.fullness_state    == FARMBIT_STATE_DESPERATE) consume = 1;
-              else if(self.fulfillment_state == FARMBIT_STATE_DESPERATE) consume = 0;
-              else if(self.fullness_state    == FARMBIT_STATE_MOTIVATED) consume = 1;
-              else if(self.fulfillment_state == FARMBIT_STATE_MOTIVATED) consume = 0;
-              if(consume)
-              {
-                self.job_state = JOB_STATE_ACT;
-                break_object(o);
-                self.fullness = 1;
-                self.fullness_state = FARMBIT_STATE_CONTENT;
-                self.go_idle();
-                job_for_b(self);
-              }
-              else
-              {
-                var t;
-                var job;
-                var job_d = 9999;
-                var d;
-                var n = gg.b.tiles.length;
-                for(var i = 0; i < n; i++)
-                {
-                  t = gg.b.tiles[i];
-                  if(t.type == TILE_TYPE_STORAGE &&
-                    (t.state == TILE_STATE_STORAGE_EMPTY || t.state == TILE_STATE_STORAGE_FOOD) &&
-                    t.val+t.deposit_locks < storage_food_max)
-                  {
-                    d = distsqr(t.tx,t.ty,self.tile.tx,self.tile.ty);
-                    if(d < job_d)
-                    {
-                      job = t;
-                      job_d = d;
-                    }
-                  }
-                }
-                if(job)
-                {
-                  self.job = job;
-                  self.job.deposit_locks++;
-                  self.object = o;
-                  self.job_type = JOB_TYPE_DELIVER;
-                  self.job_state = JOB_STATE_SEEK;
-                  self.job_state_t = 1;
-                }
-                else
-                {
-                  o.lock = 0;
-                  var theta = rand()*twopi;
-                  var s = 2+rand()*5;
-                  o.wvx = cos(theta)*s;
-                  o.wvy = sin(theta)*s;
-                  o.wvz = s/2;
-                  self.go_idle();
-                  job_for_b(self);
-                }
-              }
-            }
-              break;
-          }
+          self.object = o;
+          self.go_idle();
+          self.handle_object();
         }
       }
         break;
@@ -1344,7 +1377,7 @@ var farmbit = function()
             {
               break_object(self.object);
               t.state = TILE_STATE_STORAGE_FOOD;
-              t.deposit_locks--;
+              t.deposit_lock--;
               t.val++;
               self.object = 0;
               self.fulfillment = 1;
@@ -1356,7 +1389,46 @@ var farmbit = function()
           }
         }
       }
-      break;
+        break;
+      case JOB_TYPE_WITHDRAW:
+      {
+        var t = self.job;
+        if(self.tile != t)
+        {
+          self.job_state = JOB_STATE_SEEK;
+          self.walk_toward_tile(t);
+        }
+        else //self.tile == t
+        {
+          switch(t.type)
+          {
+            case TILE_TYPE_STORAGE:
+            {
+              t.withdraw_lock--;
+              t.val--;
+              switch(t.state)
+              {
+                case TILE_STATE_STORAGE_FOOD:
+                {
+                  var o = new object();
+                  o.type = OBJECT_TYPE_FOOD;
+                  o.tile = t;
+                  gg.b.tiles_tw(o.tile,o);
+                  gg.objects.push(o);
+                  self.object = o;
+                  self.go_idle();
+                  self.handle_object();
+                }
+                  break;
+              }
+            }
+              break;
+            default:
+              self.go_idle();
+          }
+        }
+      }
+        break;
       default:
         return;
     }
