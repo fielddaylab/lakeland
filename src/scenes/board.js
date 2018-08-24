@@ -205,6 +205,56 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
+  if(job_type == JOB_TYPE_NULL)
+  {
+    var t;
+    n = gg.b.tiles.length;
+    for(var i = 0; i < n; i++)
+    {
+      t = gg.b.tiles[i];
+      if(t.type == TILE_TYPE_FARM)
+      {
+        switch(job_type)
+        {
+          case JOB_TYPE_NULL:
+            //break; //DON'T BREAK!
+          case JOB_TYPE_PLANT:
+            if(t.state == TILE_STATE_FARM_UNPLANTED && !t.lock)
+            {
+              if(job_type != JOB_TYPE_PLANT)
+              {
+                job_type = JOB_TYPE_PLANT;
+                job_d = 9999;
+              }
+              d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+              if(d < job_d)
+              {
+                job = t;
+                job_d = d;
+              }
+            }
+            //break; //DON'T BREAK!
+          case JOB_TYPE_HARVEST:
+            if(t.state == TILE_STATE_FARM_GROWN && !t.lock)
+            {
+              if(job_type != JOB_TYPE_HARVEST)
+              {
+                job_type = JOB_TYPE_HARVEST;
+                job_d = 9999;
+              }
+              d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+              if(d < job_d)
+              {
+                job = t;
+                job_d = d;
+              }
+            }
+            break;
+        }
+      }
+    }
+  }
+
   if(job)
   {
     b.go_idle();
@@ -682,17 +732,22 @@ var board = function()
       for(var tx = 0; tx < self.tw; tx++)
       {
         var t = self.tiles[i];
-             if(t.type == TILE_TYPE_LAND)  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)";
-        else if(t.type == TILE_TYPE_WATER) gg.ctx.fillStyle = "rgba("+floor(t.phosphorus*255)+",255,255,1)";
-        else if(t.type == TILE_TYPE_SHORE) gg.ctx.fillStyle = "rgba("+floor((t.phosphorus/2+0.5)*255)+",255,255,1)";
-        else if(t.type == TILE_TYPE_FARM)
+        switch(t.type)
         {
-          switch(t.state)
+          case TILE_TYPE_LAND:  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)"; break;
+          case TILE_TYPE_WATER: gg.ctx.fillStyle = "rgba("+floor(t.phosphorus*255)+",255,255,1)"; break;
+          case TILE_TYPE_SHORE: gg.ctx.fillStyle = "rgba("+floor((t.phosphorus/2+0.5)*255)+",255,255,1)"; break;
+          case TILE_TYPE_FARM:
           {
-            case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = "rgba(255,255,"+floor((t.phosphorus/2+0.5)*255)+",1)"; break;
-            case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.state_t/farm_grow_t*255)+","+floor(t.phosphorus*255)+",1)"; break;
-            case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = "rgba(255,255,"+floor(t.phosphorus*255)+",1)"; break;
+            switch(t.state)
+            {
+              case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
+              case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.state_t/farm_grow_t*255)+",0,1)"; break;
+              case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
+            }
           }
+            break;
+          case TILE_TYPE_STORAGE: gg.ctx.fillStyle = purple; break;
         }
         gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
         i++;
@@ -1027,10 +1082,10 @@ var farmbit = function()
       self.frame_t = 0;
     }
 
-    self.fullness    *= 0.99;
+    self.fullness    *= 0.999;
     self.energy      *= 0.999;
     self.joy         *= 0.999;
-    self.fulfillment *= 0.99;
+    self.fulfillment *= 0.999;
 
     var dirty = false;
     switch(self.fullness_state)
@@ -1231,7 +1286,7 @@ var farmbit = function()
                   t = gg.b.tiles[i];
                   if(t.type == TILE_TYPE_STORAGE)
                   {
-                    d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+                    d = distsqr(t.tx,t.ty,self.tile.tx,self.tile.ty);
                     if(d < job_d)
                     {
                       job = t;
@@ -1271,6 +1326,8 @@ var farmbit = function()
         if(self.tile != t)
         {
           self.job_state = JOB_STATE_SEEK;
+          self.object.wvx += (self.wx-self.object.wx)*0.01;
+          self.object.wvy += (self.wy-self.object.wy)*0.01;
           self.walk_toward_tile(t);
         }
         else //self.tile == t

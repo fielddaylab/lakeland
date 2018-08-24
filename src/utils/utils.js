@@ -24,6 +24,7 @@ var cyan    = "#00FFFF";
 var magenta = "#FF00FF";
 var yellow  = "#FFFF00";
 
+var brown   = "#6D4227";
 var purple  = "#7856CB";
 var orange  = "#EE682C";
 var gray    = "#888888";

@@ -110,6 +110,8 @@ var inspector = function()
     y += vspace;
     gg.ctx.fillText("phosphorus:"+fdisp(t.phosphorus),x,y);
     y += vspace;
+    gg.ctx.fillText("lock:"+t.lock,x,y);
+    y += vspace;
     y += vspace;
     return y;
   }

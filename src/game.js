@@ -1,3 +1,4 @@
+var DOUBLETIME = 0;
 var Game = function(init)
 {
   var default_init =
@@ -37,7 +38,6 @@ var Game = function(init)
     tick();
   };
 
-  var DOUBLETIME = 0;
   var tick = function()
   {
     requestAnimFrame(tick,stage.canv.canvas);

@@ -15,11 +15,22 @@ var GamePlayScene = function(game, stage)
     gg.ui_cam = {wx:gg.canv.width/2,wy:gg.canv.height/2,ww:gg.canv.width,wh:gg.canv.height}
     if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
     if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
+    if(keyer)   keyer.detach();   keyer   = new Keyer({source:gg.canvas});
   }
   //self.resize(stage); //executed in 'ready'
 
   var clicker;
   var hoverer;
+  var keyer;
+  var keycatch = {
+    key:function(evt)
+    {
+      switch(evt.key)
+      {
+        case "d": DOUBLETIME = !DOUBLETIME;
+      }
+    }
+  }
 
   self.ready = function()
   {
@@ -47,8 +58,11 @@ var GamePlayScene = function(game, stage)
     if(check) check = !clicker.filter(gg.b);
     if(check) check = !gg.palette.filter(clicker);
 
+    keyer.filter(keycatch);
+
     hoverer.flush();
     clicker.flush();
+    keyer.flush();
 
     gg.b.tick();
     screenSpace(gg.cam, gg.canv, gg.b);
