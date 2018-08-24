@@ -1127,10 +1127,6 @@ var farmbit = function()
     }
 
     self.tile = gg.b.tiles_wt(self.wx,self.wy);
-    if(!self.tile)
-    {
-      console.log("WUT");
-    }
   }
 
   self.draw = function()
@@ -1140,11 +1136,20 @@ var farmbit = function()
     switch(self.job_state)
     {
       case JOB_STATE_ACT:
+        gg.ctx.fillStyle = black;
+        switch(self.job_type)
+        {
+          case JOB_TYPE_SLEEP: gg.ctx.fillText("ZZ",self.x,self.y-10); break;
+          case JOB_TYPE_PLAY:  gg.ctx.fillText(":)",self.x,self.y-10); break;
+        }
+        //break; //don't break!
       case JOB_STATE_IDLE_CHILL:
-        gg.ctx.drawImage(farmbit_imgs[self.frame_i  +off],self.x,self.y,self.w,self.h); break;
+        gg.ctx.drawImage(farmbit_imgs[self.frame_i  +off],self.x,self.y,self.w,self.h);
+        break;
       case JOB_STATE_SEEK:
       case JOB_STATE_IDLE_WANDER:
-        gg.ctx.drawImage(farmbit_imgs[self.frame_i+2+off],self.x,self.y,self.w,self.h); break;
+        gg.ctx.drawImage(farmbit_imgs[self.frame_i+2+off],self.x,self.y,self.w,self.h);
+        break;
     }
   }
 }
