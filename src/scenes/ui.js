@@ -95,7 +95,7 @@ var inspector = function()
           case TILE_TYPE_FARM:  str += "farm";  break;
           case TILE_TYPE_COUNT: str += "count"; break;
         }
-        gg.ctx.fillText(str+" ("+t.x+","+t.y+")",x,y);
+        gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
         y += vspace;
         str = "State: ";
         switch(t.state)

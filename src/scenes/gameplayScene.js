@@ -27,7 +27,7 @@ var GamePlayScene = function(game, stage)
     gg.b = new board();
     gg.objects = [];
     gg.farmbits = [];
-    for(var i = 0; i < 10; i++)
+    for(var i = 0; i < farmbits_start_n; i++)
     {
       gg.farmbits[i] = new farmbit();
       gg.farmbits[i].wx = gg.b.wx+rand0()*gg.b.ww/2;
