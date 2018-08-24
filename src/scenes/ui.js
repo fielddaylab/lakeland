@@ -6,6 +6,13 @@ var PALETTE_FARM    = ENUM; ENUM++;
 var PALETTE_STORAGE = ENUM; ENUM++;
 var PALETTE_COUNT   = ENUM; ENUM++;
 
+ENUM = 0;
+var INSPECTOR_CONTENT_NULL    = ENUM; ENUM++;
+var INSPECTOR_CONTENT_FARMBIT = ENUM; ENUM++;
+var INSPECTOR_CONTENT_OBJECT  = ENUM; ENUM++;
+var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
+var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
+
 var palette = function()
 {
   var self = this;
@@ -65,60 +72,167 @@ var inspector = function()
   self.x = gg.canv.width-self.w-10;
   self.y = 0;
 
-  self.tile_detailed = 0;
-  self.tile_quick = 0;
+  self.detailed = 0;
+  self.detailed_type = INSPECTOR_CONTENT_NULL;
+  self.quick = 0;
+  self.quick_type = INSPECTOR_CONTENT_NULL;
+
+  var vspace = 20;
+
+  self.print_tile = function(t, x, y)
+  {
+    gg.ctx.fillText("TILE",x,y);
+    y += vspace;
+    str = "Type: ";
+    switch(t.type)
+    {
+      case TILE_TYPE_NULL:  str += "null";  break;
+      case TILE_TYPE_LAND:  str += "land";  break;
+      case TILE_TYPE_WATER: str += "water"; break;
+      case TILE_TYPE_SHORE: str += "shore"; break;
+      case TILE_TYPE_FARM:  str += "farm";  break;
+      case TILE_TYPE_COUNT: str += "count"; break;
+    }
+    gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
+    y += vspace;
+    str = "State: ";
+    switch(t.state)
+    {
+      case TILE_STATE_NULL:           str += "null";      break;
+      case TILE_STATE_FARM_UNPLANTED: str += "unplanted"; break;
+      case TILE_STATE_FARM_PLANTED:   str += "planted";   break;
+      case TILE_STATE_FARM_GROWN:     str += "grown";     break;
+      case TILE_STATE_COUNT:          str += "null";      break;
+    }
+    gg.ctx.fillText(str,x,y);
+    y += vspace;
+    gg.ctx.fillText("t:"+t.state_t,x,y);
+    y += vspace;
+    gg.ctx.fillText("phosphorus:"+fdisp(t.phosphorus),x,y);
+    y += vspace;
+    y += vspace;
+    return y;
+  }
+
+  self.print_object = function(o, x, y)
+  {
+    gg.ctx.fillText("OBJECT",x,y);
+    y += vspace;
+    str = "Type: ";
+    switch(o.type)
+    {
+      case OBJECT_TYPE_NULL:  str += "null";  break;
+      case OBJECT_TYPE_FOOD:  str += "food";  break;
+      case OBJECT_TYPE_COUNT: str += "count"; break;
+    }
+    gg.ctx.fillText(str+" ("+o.tile.tx+","+o.tile.ty+")",x,y);
+    y += vspace;
+    gg.ctx.fillText("lock:"+o.lock,x,y);
+    y += vspace;
+    y += vspace;
+    return y;
+  }
+
+  self.print_farmbit = function(b, x, y)
+  {
+    gg.ctx.fillText("FARMBIT",x,y);
+    y += vspace;
+    str = "Job: ";
+    switch(b.job_type)
+    {
+      case JOB_TYPE_NULL:    str += "null";    break;
+      case JOB_TYPE_IDLE:    str += "idle";    break;
+      case JOB_TYPE_WAIT:    str += "wait";    break;
+      case JOB_TYPE_SLEEP:   str += "sleep";   break;
+      case JOB_TYPE_PLAY:    str += "play";    break;
+      case JOB_TYPE_PLANT:   str += "plant";   break;
+      case JOB_TYPE_HARVEST: str += "harvest"; break;
+      case JOB_TYPE_GET:     str += "get";     break;
+      case JOB_TYPE_DELIVER: str += "deliver"; break;
+      case JOB_TYPE_COUNT:   str += "count";   break;
+    }
+    gg.ctx.fillText(str+" ("+b.tile.tx+","+b.tile.ty+")",x,y);
+    y += vspace;
+    str = "Job State: ";
+    switch(b.job_state)
+    {
+      case JOB_STATE_NULL:        str += "null";   break;
+      case JOB_STATE_SEEK:        str += "seek";   break;
+      case JOB_STATE_ACT:         str += "act";    break;
+      case JOB_STATE_IDLE_CHILL:  str += "chill";  break;
+      case JOB_STATE_IDLE_WANDER: str += "wander"; break;
+      case JOB_STATE_COUNT:       str += "null";   break;
+    }
+    gg.ctx.fillText(str,x,y);
+    y += vspace;
+
+    str = "fullness: "+fdisp(b.fullness)+" ";
+    switch(b.fullness_state)
+    {
+      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
+      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
+      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+    }
+    gg.ctx.fillText(str,x,y);
+    y += vspace;
+
+    str = "energy: "+fdisp(b.energy)+" ";
+    switch(b.energy_state)
+    {
+      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
+      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
+      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+    }
+    gg.ctx.fillText(str,x,y);
+    y += vspace;
+
+    str = "joy: "+fdisp(b.joy)+" ";
+    switch(b.joy_state)
+    {
+      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
+      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
+      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+    }
+    gg.ctx.fillText(str,x,y);
+    y += vspace;
+
+    str = "fulfillment: "+fdisp(b.fulfillment)+" ";
+    switch(b.fulfillment_state)
+    {
+      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
+      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
+      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+    }
+    gg.ctx.fillText(str,x,y);
+    y += vspace;
+
+    gg.ctx.fillText("t:"+b.job_state_t,x,y);
+    y += vspace;
+    y += vspace;
+    return y;
+  }
 
   self.draw = function()
   {
     var x = self.x;
     var y = self.y;
-    var vspace = 20;
     gg.ctx.fillStyle = black;
 
     x += 10;
     y += vspace;
-    for(var i = 0; i < 2; i++)
+    switch(self.detailed_type)
     {
-      var t;
-      var str;
-      if(i == 0) t = self.tile_detailed;
-      if(i == 1) t = self.tile_quick;
-      if(t)
-      {
-        str = "Type: ";
-        switch(t.type)
-        {
-          case TILE_TYPE_NULL:  str += "null";  break;
-          case TILE_TYPE_LAND:  str += "land";  break;
-          case TILE_TYPE_WATER: str += "water"; break;
-          case TILE_TYPE_SHORE: str += "shore"; break;
-          case TILE_TYPE_FARM:  str += "farm";  break;
-          case TILE_TYPE_COUNT: str += "count"; break;
-        }
-        gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
-        y += vspace;
-        str = "State: ";
-        switch(t.state)
-        {
-          case TILE_STATE_NULL:           str += "null";      break;
-          case TILE_STATE_FARM_UNPLANTED: str += "unplanted"; break;
-          case TILE_STATE_FARM_PLANTED:   str += "planted";   break;
-          case TILE_STATE_FARM_GROWN:     str += "grown";     break;
-          case TILE_STATE_COUNT:          str += "null";      break;
-        }
-        gg.ctx.fillText(str,x,y);
-        y += vspace;
-        gg.ctx.fillText("t:"+t.state_t,x,y);
-        y += vspace;
-        gg.ctx.fillText("phosphorus:"+fdisp(t.phosphorus),x,y);
-        y += vspace;
-        y += vspace;
-      }
-      else
-      {
-        gg.ctx.fillText("(No tile selected)",x,y);
-        y += vspace;
-      }
+      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",x,y); y += vspace; break;
+      case INSPECTOR_CONTENT_TILE:    y += self.print_tile(self.detailed,x,y); break;
+      case INSPECTOR_CONTENT_OBJECT:  y += self.print_object(self.detailed,x,y); break;
+      case INSPECTOR_CONTENT_FARMBIT: y += self.print_farmbit(self.detailed,x,y); break;
+    }
+    switch(self.quick_type)
+    {
+      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing hovered)",x,y); y += vspace; break;
+      case INSPECTOR_CONTENT_TILE:    y += self.print_tile(self.quick,x,y); break;
+      case INSPECTOR_CONTENT_OBJECT:  y += self.print_object(self.quick,x,y); break;
+      case INSPECTOR_CONTENT_FARMBIT: y += self.print_farmbit(self.quick,x,y); break;
     }
   }
 }
