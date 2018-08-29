@@ -1443,17 +1443,23 @@ var farmbit = function()
           case JOB_STATE_GET:
             var o = self.job_object;
             var t = self.job_object.tile;
-            if(self.tile != t)
-              self.walk_toward_tile(t);
-            else
+
+            if(o.thing == THING_TYPE_ITEM)
             {
-              if(o.thing == THING_TYPE_ITEM)
+              if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
+                self.walk_toward_tile(t);
+              else
               {
                 self.item = o;
                 self.job_state = JOB_STATE_ACT;
                 self.job_state_t = 0;
               }
-              else if(self.job_object.thing == THING_TYPE_TILE)
+            }
+            else if(self.job_object.thing == THING_TYPE_TILE)
+            {
+              if(self.tile != t)
+                self.walk_toward_tile(t);
+              else
               {
                 t.withdraw_lock--;
                 t.val--;
