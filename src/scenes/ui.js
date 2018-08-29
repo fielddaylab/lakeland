@@ -105,15 +105,15 @@ var inspector = function()
     str = "State: ";
     switch(t.state)
     {
-      case TILE_STATE_NULL:           str += "null";      break;
-      case TILE_STATE_FARM_UNPLANTED: str += "unplanted"; break;
-      case TILE_STATE_FARM_PLANTED:   str += "planted";   break;
-      case TILE_STATE_FARM_GROWN:     str += "grown";     break;
-      case TILE_STATE_LIVESTOCK_IDLE: str += "unplanted"; break;
-      case TILE_STATE_STORAGE_EMPTY:  str += "empty";     break;
-      case TILE_STATE_STORAGE_FOOD:   str += "food";      break;
-      case TILE_STATE_STORAGE_POOP:   str += "poop";      break;
-      case TILE_STATE_COUNT:          str += "null";      break;
+      case TILE_STATE_NULL:               str += "null";       break;
+      case TILE_STATE_FARM_UNPLANTED:     str += "unplanted";  break;
+      case TILE_STATE_FARM_PLANTED:       str += "planted";    break;
+      case TILE_STATE_FARM_GROWN:         str += "grown";      break;
+      case TILE_STATE_LIVESTOCK_IDLE:     str += "unplanted";  break;
+      case TILE_STATE_STORAGE_UNASSIGNED: str += "unassigned"; break;
+      case TILE_STATE_STORAGE_FOOD:       str += "food";       break;
+      case TILE_STATE_STORAGE_POOP:       str += "poop";       break;
+      case TILE_STATE_COUNT:              str += "null";       break;
     }
     gg.ctx.fillText(str,x,y);
     y += vspace;
@@ -181,17 +181,18 @@ var inspector = function()
     str = "Job: ";
     switch(b.job_type)
     {
-      case JOB_TYPE_NULL:     str += "null";     break;
-      case JOB_TYPE_IDLE:     str += "idle";     break;
-      case JOB_TYPE_WAIT:     str += "wait";     break;
-      case JOB_TYPE_SLEEP:    str += "sleep";    break;
-      case JOB_TYPE_PLAY:     str += "play";     break;
-      case JOB_TYPE_PLANT:    str += "plant";    break;
-      case JOB_TYPE_HARVEST:  str += "harvest";  break;
-      case JOB_TYPE_GET:      str += "get";      break;
-      case JOB_TYPE_DELIVER:  str += "deliver";  break;
-      case JOB_TYPE_WITHDRAW: str += "withdraw"; break;
-      case JOB_TYPE_COUNT:    str += "count";    break;
+      case JOB_TYPE_NULL:      str += "null";      break;
+      case JOB_TYPE_IDLE:      str += "idle";      break;
+      case JOB_TYPE_WAIT:      str += "wait";      break;
+      case JOB_TYPE_EAT:       str += "eat";       break;
+      case JOB_TYPE_SLEEP:     str += "sleep";     break;
+      case JOB_TYPE_PLAY:      str += "play";      break;
+      case JOB_TYPE_PLANT:     str += "plant";     break;
+      case JOB_TYPE_HARVEST:   str += "harvest";   break;
+      case JOB_TYPE_FERTILIZE: str += "fertilize"; break;
+      case JOB_TYPE_STORE:     str += "store";     break;
+      case JOB_TYPE_KICK:      str += "kick";      break;
+      case JOB_TYPE_COUNT:     str += "count";     break;
     }
     gg.ctx.fillText(str+" ("+b.tile.tx+","+b.tile.ty+")",x,y);
     y += vspace;
@@ -199,6 +200,7 @@ var inspector = function()
     switch(b.job_state)
     {
       case JOB_STATE_NULL:        str += "null";   break;
+      case JOB_STATE_GET:         str += "get";    break;
       case JOB_STATE_SEEK:        str += "seek";   break;
       case JOB_STATE_ACT:         str += "act";    break;
       case JOB_STATE_IDLE_CHILL:  str += "chill";  break;
