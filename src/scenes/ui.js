@@ -10,7 +10,7 @@ var PALETTE_COUNT     = ENUM; ENUM++;
 ENUM = 0;
 var INSPECTOR_CONTENT_NULL    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_FARMBIT = ENUM; ENUM++;
-var INSPECTOR_CONTENT_OBJECT  = ENUM; ENUM++;
+var INSPECTOR_CONTENT_ITEM  = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
@@ -154,21 +154,21 @@ var inspector = function()
     return y;
   }
 
-  self.print_object = function(o, x, y)
+  self.print_item = function(it, x, y)
   {
-    gg.ctx.fillText("OBJECT",x,y);
+    gg.ctx.fillText("ITEM",x,y);
     y += vspace;
     str = "Type: ";
-    switch(o.type)
+    switch(it.type)
     {
-      case OBJECT_TYPE_NULL:  str += "null";  break;
-      case OBJECT_TYPE_FOOD:  str += "food";  break;
-      case OBJECT_TYPE_POOP:  str += "poop";  break;
-      case OBJECT_TYPE_COUNT: str += "count"; break;
+      case ITEM_TYPE_NULL:  str += "null";  break;
+      case ITEM_TYPE_FOOD:  str += "food";  break;
+      case ITEM_TYPE_POOP:  str += "poop";  break;
+      case ITEM_TYPE_COUNT: str += "count"; break;
     }
-    gg.ctx.fillText(str+" ("+o.tile.tx+","+o.tile.ty+")",x,y);
+    gg.ctx.fillText(str+" ("+it.tile.tx+","+it.tile.ty+")",x,y);
     y += vspace;
-    gg.ctx.fillText("lock:"+o.lock,x,y);
+    gg.ctx.fillText("lock:"+it.lock,x,y);
     y += vspace;
     y += vspace;
     return y;
@@ -266,14 +266,14 @@ var inspector = function()
     {
       case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",x,y); y += vspace; break;
       case INSPECTOR_CONTENT_TILE:    y += self.print_tile(self.detailed,x,y); break;
-      case INSPECTOR_CONTENT_OBJECT:  y += self.print_object(self.detailed,x,y); break;
+      case INSPECTOR_CONTENT_ITEM:  y += self.print_item(self.detailed,x,y); break;
       case INSPECTOR_CONTENT_FARMBIT: y += self.print_farmbit(self.detailed,x,y); break;
     }
     switch(self.quick_type)
     {
       case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing hovered)",x,y); y += vspace; break;
       case INSPECTOR_CONTENT_TILE:    y += self.print_tile(self.quick,x,y); break;
-      case INSPECTOR_CONTENT_OBJECT:  y += self.print_object(self.quick,x,y); break;
+      case INSPECTOR_CONTENT_ITEM:  y += self.print_item(self.quick,x,y); break;
       case INSPECTOR_CONTENT_FARMBIT: y += self.print_farmbit(self.quick,x,y); break;
     }
   }

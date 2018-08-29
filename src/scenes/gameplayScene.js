@@ -36,7 +36,7 @@ var GamePlayScene = function(game, stage)
   {
     self.resize(stage);
     gg.b = new board();
-    gg.objects = [];
+    gg.items = [];
     gg.farmbits = [];
     for(var i = 0; i < farmbits_start_n; i++)
     {
@@ -66,9 +66,9 @@ var GamePlayScene = function(game, stage)
 
     gg.b.tick();
     screenSpace(gg.cam, gg.canv, gg.b);
-    for(var i = 0; i < gg.objects.length; i++)
+    for(var i = 0; i < gg.items.length; i++)
     {
-      var o = gg.objects[i];
+      var o = gg.items[i];
       o.tick();
       screenSpace(gg.cam, gg.canv, o);
       o.y -= o.wz;
@@ -86,8 +86,8 @@ var GamePlayScene = function(game, stage)
     gg.b.draw();
     for(var i = 0; i < gg.farmbits.length; i++)
       gg.farmbits[i].draw();
-    for(var i = 0; i < gg.objects.length; i++)
-      gg.objects[i].draw();
+    for(var i = 0; i < gg.items.length; i++)
+      gg.items[i].draw();
     gg.palette.draw();
     gg.inspector.draw();
   };
