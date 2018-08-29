@@ -1,26 +1,37 @@
 var ENUM;
 
 ENUM = 0;
-var TILE_TYPE_NULL    = ENUM; ENUM++;
-var TILE_TYPE_LAND    = ENUM; ENUM++;
-var TILE_TYPE_WATER   = ENUM; ENUM++;
-var TILE_TYPE_SHORE   = ENUM; ENUM++;
-var TILE_TYPE_FARM    = ENUM; ENUM++;
-var TILE_TYPE_STORAGE = ENUM; ENUM++;
-var TILE_TYPE_COUNT   = ENUM; ENUM++;
+var THING_TYPE_NULL    = ENUM; ENUM++;
+var THING_TYPE_TILE    = ENUM; ENUM++;
+var THING_TYPE_OBJECT  = ENUM; ENUM++;
+var THING_TYPE_FARMBIT = ENUM; ENUM++;
+var THING_TYPE_COUNT   = ENUM; ENUM++;
+
+ENUM = 0;
+var TILE_TYPE_NULL      = ENUM; ENUM++;
+var TILE_TYPE_LAND      = ENUM; ENUM++;
+var TILE_TYPE_WATER     = ENUM; ENUM++;
+var TILE_TYPE_SHORE     = ENUM; ENUM++;
+var TILE_TYPE_FARM      = ENUM; ENUM++;
+var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
+var TILE_TYPE_STORAGE   = ENUM; ENUM++;
+var TILE_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
 var TILE_STATE_NULL           = ENUM; ENUM++;
 var TILE_STATE_FARM_UNPLANTED = ENUM; ENUM++;
 var TILE_STATE_FARM_PLANTED   = ENUM; ENUM++;
 var TILE_STATE_FARM_GROWN     = ENUM; ENUM++;
+var TILE_STATE_LIVESTOCK_IDLE = ENUM; ENUM++;
 var TILE_STATE_STORAGE_EMPTY  = ENUM; ENUM++;
 var TILE_STATE_STORAGE_FOOD   = ENUM; ENUM++;
+var TILE_STATE_STORAGE_POOP   = ENUM; ENUM++;
 var TILE_STATE_COUNT          = ENUM; ENUM++;
 
 ENUM = 0;
 var OBJECT_TYPE_NULL  = ENUM; ENUM++;
 var OBJECT_TYPE_FOOD  = ENUM; ENUM++;
+var OBJECT_TYPE_POOP  = ENUM; ENUM++;
 var OBJECT_TYPE_COUNT = ENUM; ENUM++;
 
 ENUM = 0;
@@ -28,20 +39,22 @@ var OBJECT_STATE_NULL  = ENUM; ENUM++;
 var OBJECT_STATE_COUNT = ENUM; ENUM++;
 
 ENUM = 0;
-var JOB_TYPE_NULL     = ENUM; ENUM++;
-var JOB_TYPE_IDLE     = ENUM; ENUM++;
-var JOB_TYPE_WAIT     = ENUM; ENUM++;
-var JOB_TYPE_SLEEP    = ENUM; ENUM++;
-var JOB_TYPE_PLAY     = ENUM; ENUM++;
-var JOB_TYPE_PLANT    = ENUM; ENUM++;
-var JOB_TYPE_HARVEST  = ENUM; ENUM++;
-var JOB_TYPE_GET      = ENUM; ENUM++;
-var JOB_TYPE_DELIVER  = ENUM; ENUM++;
-var JOB_TYPE_WITHDRAW = ENUM; ENUM++;
-var JOB_TYPE_COUNT    = ENUM; ENUM++;
+var JOB_TYPE_NULL      = ENUM; ENUM++;
+var JOB_TYPE_IDLE      = ENUM; ENUM++;
+var JOB_TYPE_WAIT      = ENUM; ENUM++;
+var JOB_TYPE_EAT       = ENUM; ENUM++;
+var JOB_TYPE_SLEEP     = ENUM; ENUM++;
+var JOB_TYPE_PLAY      = ENUM; ENUM++;
+var JOB_TYPE_PLANT     = ENUM; ENUM++;
+var JOB_TYPE_HARVEST   = ENUM; ENUM++;
+var JOB_TYPE_FERTILIZE = ENUM; ENUM++;
+var JOB_TYPE_STORE     = ENUM; ENUM++;
+var JOB_TYPE_KICK      = ENUM; ENUM++;
+var JOB_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
 var JOB_STATE_NULL        = ENUM; ENUM++;
+var JOB_STATE_GET         = ENUM; ENUM++;
 var JOB_STATE_SEEK        = ENUM; ENUM++;
 var JOB_STATE_ACT         = ENUM; ENUM++;
 var JOB_STATE_IDLE_CHILL  = ENUM; ENUM++;
@@ -57,10 +70,16 @@ var FARMBIT_STATE_COUNT     = ENUM; ENUM++;
 
 var fullness_job_for_b = function(b)
 {
+  /*
+  //priorities:
+  JOB_TYPE_
+  */
+
   var n;
-  var job;
   var job_type = JOB_TYPE_NULL;
-  var job_d = 9999;
+  var job_subject = 0;
+  var job_object = 0;
+  var job_d = max_dist;
   var d;
 
   var o;
@@ -73,8 +92,8 @@ var fullness_job_for_b = function(b)
       d = distsqr(o.tile.tx,o.tile.ty,b.tile.tx,b.tile.ty);
       if(d < job_d)
       {
-        job = o;
-        job_type = JOB_TYPE_GET;
+        job_type = JOB_TYPE_EAT;
+        job_object = o;
         job_d = d;
       }
     }
@@ -96,15 +115,13 @@ var fullness_job_for_b = function(b)
           case JOB_TYPE_PLANT:
             if(t.state == TILE_STATE_FARM_UNPLANTED && !t.lock)
             {
-              if(job_type != JOB_TYPE_PLANT)
-              {
-                job_type = JOB_TYPE_PLANT;
-                job_d = 9999;
-              }
+              if(job_type != JOB_TYPE_PLANT) job_d = max_dist;
               d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
               if(d < job_d)
               {
-                job = t;
+                job_type = JOB_TYPE_PLANT;
+                job_subject = t;
+                job_object = 0;
                 job_d = d;
               }
             }
@@ -112,15 +129,13 @@ var fullness_job_for_b = function(b)
           case JOB_TYPE_HARVEST:
             if(t.state == TILE_STATE_FARM_GROWN && !t.lock)
             {
-              if(job_type != JOB_TYPE_HARVEST)
-              {
-                job_type = JOB_TYPE_HARVEST;
-                job_d = 9999;
-              }
+              if(job_type != JOB_TYPE_HARVEST) job_d = max_dist;
               d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
               if(d < job_d)
               {
-                job = t;
+                job_type = JOB_TYPE_HARVEST;
+                job_subject = t;
+                job_object = 0;
                 job_d = d;
               }
             }
@@ -133,15 +148,13 @@ var fullness_job_for_b = function(b)
       {
         if(t.state == TILE_STATE_STORAGE_FOOD && t.val-t.withdraw_lock > 0)
         {
-          if(job_type != JOB_TYPE_WITHDRAW)
-          {
-            job_type = JOB_TYPE_WITHDRAW;
-            job_d = 9999;
-          }
+          if(job_type != JOB_TYPE_EAT) job_d = max_dist;
           d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
           if(d < job_d)
           {
-            job = t;
+            job_type = JOB_TYPE_EAT;
+            job_subject = 0;
+            job_object = t;
             job_d = d;
           }
         }
@@ -149,20 +162,21 @@ var fullness_job_for_b = function(b)
     }
   }
 
-  if(job)
+  if(job_type != JOB_TYPE_NULL)
   {
     b.go_idle();
     b.job_type = job_type;
-    b.job = job;
+    b.job_subject = job_subject;
+    b.job_object = job_object;
     b.job_state = JOB_STATE_SEEK;
     switch(job_type)
     {
       case JOB_TYPE_PLANT:
       case JOB_TYPE_HARVEST:
-        b.job.lock = 1;
+        b.job_subject.lock = 1;
         break;
       case JOB_TYPE_WITHDRAW:
-        b.job.withdraw_lock++;
+        b.job_subject.withdraw_lock++;
     }
     return 1;
   }
@@ -171,17 +185,43 @@ var fullness_job_for_b = function(b)
 
 var energy_job_for_b = function(b)
 {
-  b.go_idle();
-  b.job_type = JOB_TYPE_SLEEP;
-  b.job_state = JOB_STATE_SEEK;
-  return 1;
+  /*
+  //priorities:
+  JOB_TYPE_
+  */
+
+  var job_type = JOB_TYPE_NULL;
+  var job_subject = 0;
+  var job_object = 0;
+
+  job_type = JOB_TYPE_SLEEP;
+  job_subject = 0;
+  job_object = 0;
+
+  if(job_type != JOB_TYPE_NULL)
+  {
+    b.go_idle();
+    b.job_type = job_type;
+    b.job_subject = job_subject;
+    b.job_object = job_object;
+    b.job_state = JOB_STATE_SEEK;
+    return 1;
+  }
+  return 0;
 }
 
 var joy_job_for_b = function(b)
 {
+  /*
+  //priorities:
+  JOB_TYPE_
+  */
+
   var d;
-  var job_d = 9999;
-  var job;
+  var job_d = max_dist;
+  var job_type = JOB_TYPE_NULL;
+  var job_subject = 0;
+  var job_object = 0;
   var t;
   n = gg.b.tiles.length;
   for(var i = 0; i < n; i++)
@@ -189,20 +229,23 @@ var joy_job_for_b = function(b)
     t = gg.b.tiles[i];
     if(t.type == TILE_TYPE_WATER && !t.lock)
     {
+      job_type = JOB_TYPE_PLAY;
       d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
       if(d < job_d)
       {
-        job = t;
+        job_subject = t;
+        job_object = 0;
         job_d = d;
       }
     }
   }
-  if(job)
+  if(job_type != JOB_TYPE_NULL)
   {
     b.go_idle();
-    b.job_type = JOB_TYPE_PLAY;
+    b.job_type = job_type;
+    b.job_subject = job_subject;
+    b.job_object = job_object;
     b.job_state = JOB_STATE_SEEK;
-    b.job = job;
     return 1;
   }
   return 0;
@@ -210,13 +253,27 @@ var joy_job_for_b = function(b)
 
 var fulfillment_job_for_b = function(b)
 {
+  /*
+  //priorities:
+  JOB_TYPE_FERTILIZE
+  JOB_TYPE_STORE
+  JOB_TYPE_HARVEST
+  JOB_TYPE_PLANT
+  JOB_TYPE_KICK
+  */
+
   var n;
-  var job;
+
   var job_type = JOB_TYPE_NULL;
-  var job_d = 9999;
+  var job_subject = 0;
+  var job_object = 0;
+
+  var job_d = max_dist;
   var d;
 
+  var t;
   var o;
+
   n = gg.objects.length;
   for(var i = 0; i < n; i++)
   {
@@ -226,16 +283,44 @@ var fulfillment_job_for_b = function(b)
       d = distsqr(o.tile.tx,o.tile.ty,b.tile.tx,b.tile.ty);
       if(d < job_d)
       {
-        job = o;
-        job_type = JOB_TYPE_GET;
+        job_type = JOB_TYPE_KICK; //overwrite kick to STORE if possible later
+        job_subject = 0;
+        job_object = o;
         job_d = d;
       }
     }
   }
 
-  if(job_type == JOB_TYPE_NULL)
+  if(job_type == JOB_TYPE_KICK)
+  { //try to convert to JOB_TYPE_STORE (look for available storage)
+    job_d = max_dist;
+    n = gg.b.tiles.length;
+    for(var i = 0; i < n; i++)
+    {
+      t = gg.b.tiles[i];
+      if(t.type == TILE_TYPE_STORAGE &&
+          (
+            t.state == TILE_STATE_STORAGE_EMPTY ||
+            (t.state == TILE_STATE_STORAGE_FOOD && job_object.type == OBJECT_TYPE_FOOD) ||
+            (t.state == TILE_STATE_STORAGE_POOP && job_object.type == OBJECT_TYPE_POOP)
+          )
+        )
+      {
+        d = distsqr(t.tx,t.ty,job_object.tile.tx,job_object.tile.ty);
+        if(d < job_d)
+        {
+          job_type = JOB_TYPE_STORE;
+          job_d = d;
+          job_subject = t;
+        }
+      }
+    }
+  }
+
+  if(job_type == JOB_TYPE_NULL ||
+     job_type == JOB_TYPE_KICK)
   {
-    var t;
+    job_d = max_dist;
     n = gg.b.tiles.length;
     for(var i = 0; i < n; i++)
     {
@@ -249,15 +334,13 @@ var fulfillment_job_for_b = function(b)
           case JOB_TYPE_PLANT:
             if(t.state == TILE_STATE_FARM_UNPLANTED && !t.lock)
             {
-              if(job_type != JOB_TYPE_PLANT)
-              {
-                job_type = JOB_TYPE_PLANT;
-                job_d = 9999;
-              }
+              if(job_type != JOB_TYPE_PLANT) job_d = max_dist;
               d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
               if(d < job_d)
               {
-                job = t;
+                job_type = JOB_TYPE_PLANT;
+                job_subject = t;
+                job_object = 0;
                 job_d = d;
               }
             }
@@ -265,15 +348,13 @@ var fulfillment_job_for_b = function(b)
           case JOB_TYPE_HARVEST:
             if(t.state == TILE_STATE_FARM_GROWN && !t.lock)
             {
-              if(job_type != JOB_TYPE_HARVEST)
-              {
-                job_type = JOB_TYPE_HARVEST;
-                job_d = 9999;
-              }
+              if(job_type != JOB_TYPE_HARVEST) job_d = max_dist;
               d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
               if(d < job_d)
               {
-                job = t;
+                job_type = JOB_TYPE_HARVEST;
+                job_subject = t;
+                job_object = 0;
                 job_d = d;
               }
             }
@@ -283,13 +364,30 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
-  if(job)
+  if(job_type != JOB_TYPE_NULL)
   {
     b.go_idle();
     b.job_type = job_type;
+    b.job_subject = job_subject;
+    b.job_object = job_object;
     b.job_state = JOB_STATE_SEEK;
-    b.job = job;
-    b.job.lock = 1;
+    switch(b.job_type)
+    {
+      case JOB_TYPE_FERTILIZE:
+        console.log("FINISH");
+        break;
+      case JOB_TYPE_STORE:
+        b.job_object = 1;
+        b.job_subject.deposit_lock++;
+        break;
+      case JOB_TYPE_HARVEST:
+      case JOB_TYPE_PLANT:
+        b.job_subject.lock = 1;
+        break;
+      case JOB_TYPE_KICK:
+        b.job_object.lock = 1;
+        break;
+    }
     return 1;
   }
   return 0;
@@ -297,6 +395,14 @@ var fulfillment_job_for_b = function(b)
 
 var job_for_b = function(b)
 {
+  /*
+  //priorities:
+  fullness
+  energy
+  joy
+  fulfillment
+  */
+
   if(b.job_type != JOB_TYPE_IDLE) return; //already busy!
 
   if(b.fullness_state     == FARMBIT_STATE_DESPERATE && fullness_job_for_b(b))     return;
@@ -310,20 +416,77 @@ var job_for_b = function(b)
   return;
 }
 
-var b_for_job = function(job, job_type)
+var b_for_job = function(job_type, job_subject, job_object)
 {
   var n = gg.farmbits.length;
-  if(!n) return;
+  if(!n) return 0;
   var b;
+  var t;
+  var o;
   switch(job_type)
   {
+    case JOB_TYPE_NULL:
+    case JOB_TYPE_EAT:
+    {
+      /*
+      //priorities:
+      closest low fullness farmbit
+      */
+
+      var best;
+      var b_rank = -1;
+      var b_d = max_dist;
+      var rank = -1;
+      var d;
+      for(var i = 0; i < n; i++)
+      {
+        b = gg.farmbits[i];
+        if(b.job_type != JOB_TYPE_IDLE) continue;
+        rank = -1;
+             if(b.fullness_state == FARMBIT_STATE_DESPERATE && b_rank <= 2) rank = 2;
+        else if(b.fullness_state == FARMBIT_STATE_MOTIVATED && b_rank <= 1) rank = 1;
+        if(rank > b_rank)
+        {
+          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+          b_rank = rank;
+          b_d = d;
+          best = b;
+        }
+        else if(rank == b_rank)
+        {
+          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+          if(d < b_d)
+          {
+            b_rank = rank;
+            b_d = d;
+            best = b;
+          }
+        }
+      }
+      if(best)
+      {
+        best.job = job;
+        best.job.lock = 1;
+        best.job_type = job_type;
+        best.job_state = JOB_STATE_SEEK;
+        best.job_state_t = 0;
+        return 1;
+      }
+    }
+      break;
     case JOB_TYPE_PLANT:
     case JOB_TYPE_HARVEST:
     {
+      /*
+      //priorities:
+      closest low fullness bit
+      closest low fulfillment bit
+      */
+
       var t = job;
       var best;
       var b_rank = -1;
-      var b_d = 9999;
+      var b_d = max_dist;
       var rank = -1;
       var d;
       for(var i = 0; i < n; i++)
@@ -360,11 +523,17 @@ var b_for_job = function(job, job_type)
         best.job_type = job_type;
         best.job_state = JOB_STATE_SEEK;
         best.job_state_t = 0;
+        return 1;
       }
     }
       break;
-    case JOB_TYPE_GET:
+    case JOB_TYPE_STORE:
     {
+      /*
+      //priorities:
+      closest low fulfillment bit
+      */
+
       var o = job;
       switch(o.type)
       {
@@ -372,7 +541,7 @@ var b_for_job = function(job, job_type)
         {
           var best;
           var b_rank = -1;
-          var b_d = 9999;
+          var b_d = max_dist;
           var rank = -1;
           var d;
           for(var i = 0; i < n; i++)
@@ -409,6 +578,7 @@ var b_for_job = function(job, job_type)
             best.job_type = job_type;
             best.job_state = JOB_STATE_SEEK;
             best.job_state_t = 0;
+            return 1;
           }
         }
           break;
@@ -416,7 +586,7 @@ var b_for_job = function(job, job_type)
         {
           var best;
           var b_rank = -1;
-          var b_d = 9999;
+          var b_d = max_dist;
           var rank = -1;
           var d;
           for(var i = 0; i < n; i++)
@@ -451,6 +621,7 @@ var b_for_job = function(job, job_type)
             best.job_type = job_type;
             best.job_state = JOB_STATE_SEEK;
             best.job_state_t = 0;
+            return 1;
           }
         }
           break;
@@ -468,9 +639,19 @@ var break_object = function(o)
     if(gg.objects[i] == o) gg.objects.splice(i,1);
 }
 
+var kick_object = function(o)
+{
+  var theta = rand()*twopi;
+  var s = 2+rand()*5;
+  o.wvx = cos(theta)*s;
+  o.wvy = sin(theta)*s;
+  o.wvz = s/2;
+}
+
 var tile = function()
 {
   var self = this;
+  self.thing = THING_TYPE_TILE;
 
   self.tx = 0;
   self.ty = 0;
@@ -641,8 +822,8 @@ var board = function()
   self.flow = function(from, to)
   {
     var d = from.phosphorus-to.phosphorus;
-    from.phosphorus -= d*0.001;
-    to.phosphorus   += d*0.001;
+    from.phosphorus -= d*0.0001;
+    to.phosphorus   += d*0.0001;
   }
 
   self.hover = function(evt)
@@ -720,6 +901,12 @@ var board = function()
       self.hover_t.state_t = 0;
       b_for_job(self.hover_t, JOB_TYPE_PLANT);
     }
+    if(gg.palette.palette == PALETTE_LIVESTOCK && self.hover_t.type != TILE_TYPE_LIVESTOCK)
+    {
+      self.hover_t.type = TILE_TYPE_LIVESTOCK;
+      self.hover_t.state = TILE_STATE_LIVESTOCK_IDLE;
+      self.hover_t.state_t = 0;
+    }
     if(gg.palette.palette == PALETTE_STORAGE && self.hover_t.type != TILE_TYPE_STORAGE)
     {
       self.hover_t.type = TILE_TYPE_STORAGE;
@@ -738,13 +925,41 @@ var board = function()
       switch(t.type)
       {
         case TILE_TYPE_FARM:
-          if(t.state == TILE_STATE_FARM_PLANTED && t.state_t > farm_grow_t)
+        {
+          if(t.state == TILE_STATE_FARM_PLANTED)
           {
-            t.state = TILE_STATE_FARM_GROWN;
-            t.state_t = 0;
-            b_for_job(t,JOB_TYPE_HARVEST);
+            var d = min(t.phosphorus*farm_phosphorus_uptake_p,farm_phosphorus_uptake_max);
+            t.val += d;
+            t.phosphorus -= d;
+            if(t.val > farm_grow_v)
+            {
+              t.state = TILE_STATE_FARM_GROWN;
+              t.val = 0;
+              t.state_t = 0;
+              b_for_job(t,JOB_TYPE_HARVEST);
+            }
           }
-        break;
+        }
+          break;
+        case TILE_TYPE_LIVESTOCK:
+        {
+          if(t.state == TILE_STATE_LIVESTOCK_IDLE && t.state_t > livestock_poop_t)
+          {
+            t.state = TILE_STATE_LIVESTOCK_IDLE;
+            t.state_t = 0;
+
+            //gen poop
+            var o = new object();
+            o.type = OBJECT_TYPE_POOP;
+            o.tile = t;
+            gg.b.tiles_tw(o.tile,o);
+            kick_object(o);
+            gg.objects.push(o);
+
+            if(!b_for_job(o,JOB_TYPE_FERTILIZE)) b_for_job(o,JOB_TYPE_STORE);
+          }
+        }
+          break;
       }
       var right = self.tiles_t(t.tx+1,t.ty  );
       var top   = self.tiles_t(t.tx  ,t.ty+1);
@@ -773,12 +988,13 @@ var board = function()
             switch(t.state)
             {
               case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
-              case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.state_t/farm_grow_t*255)+",0,1)"; break;
+              case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_grow_v*255)+",0,1)"; break;
               case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
             }
           }
             break;
-          case TILE_TYPE_STORAGE: gg.ctx.fillStyle = purple; break;
+          case TILE_TYPE_LIVESTOCK: gg.ctx.fillStyle = blue;   break;
+          case TILE_TYPE_STORAGE:   gg.ctx.fillStyle = purple; break;
         }
         gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
         i++;
@@ -793,6 +1009,7 @@ var board = function()
 var object = function()
 {
   var self = this;
+  self.thing = THING_TYPE_OBJECT;
 
   self.wx = 0;
   self.wy = 0;
@@ -842,6 +1059,7 @@ var farmbit_imgs = [];
 var farmbit = function()
 {
   var self = this;
+  self.thing = THING_TYPE_FARMBIT;
 
   self.wx = 0;
   self.wy = 0;
@@ -858,10 +1076,11 @@ var farmbit = function()
   self.move_dir_y = 0.;
 
   self.job_type = JOB_TYPE_IDLE;
-  self.job = 0;
-  self.object = 0;
+  self.job_subject = 0;
+  self.job_object = 0;
   self.job_state = JOB_STATE_IDLE_CHILL;
   self.job_state_t = 0;
+  self.object = 0;
   self.tile;
 
   self.fullness    = 1;
@@ -1098,8 +1317,9 @@ var farmbit = function()
 
   self.go_idle = function()
   {
-    self.job = 0;
     self.job_type = JOB_TYPE_IDLE;
+    self.job_subject = 0;
+    self.job_object = 0;
     self.job_state = JOB_STATE_IDLE_CHILL;
     self.job_state_t = 0;
   }
@@ -1127,7 +1347,7 @@ var farmbit = function()
         {
           var t;
           var job;
-          var job_d = 9999;
+          var job_d = max_dist;
           var d;
           var n = gg.b.tiles.length;
           for(var i = 0; i < n; i++)
@@ -1140,7 +1360,7 @@ var farmbit = function()
               d = distsqr(t.tx,t.ty,self.tile.tx,self.tile.ty);
               if(d < job_d)
               {
-                job = t;
+                job_subject = t;
                 job_d = d;
               }
             }
@@ -1149,7 +1369,7 @@ var farmbit = function()
           {
             self.job = job;
             self.job.deposit_lock++;
-            self.job_type = JOB_TYPE_DELIVER;
+            self.job_type = JOB_TYPE_STORE;
             self.job_state = JOB_STATE_SEEK;
             self.job_state_t = 1;
           }
@@ -1157,11 +1377,7 @@ var farmbit = function()
           {
             self.object = 0;
             o.lock = 0;
-            var theta = rand()*twopi;
-            var s = 2+rand()*5;
-            o.wvx = cos(theta)*s;
-            o.wvy = sin(theta)*s;
-            o.wvz = s/2;
+            kick_object(o);
             job_for_b(self);
           }
         }
@@ -1328,22 +1544,18 @@ var farmbit = function()
           o.type = OBJECT_TYPE_FOOD;
           o.tile = t;
           gg.b.tiles_tw(o.tile,o);
-          var theta = rand()*twopi;
-          var s = 2+rand()*5;
-          o.wvx = cos(theta)*s;
-          o.wvy = sin(theta)*s;
-          o.wvz = s/2;
+          kick_object(o);
           gg.objects.push(o);
 
           self.fulfillment += 0.2;
           self.go_idle();
-          b_for_job(o,JOB_TYPE_GET);
+          if(!b_for_job(o,JOB_TYPE_EAT)) b_for_job(o,JOB_TYPE_STORE);
           b_for_job(t,JOB_TYPE_PLANT);
           if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
         }
       }
         break;
-      case JOB_TYPE_GET:
+      case JOB_TYPE_STORE:
       {
         var o = self.job;
         if(self.tile != o.tile || abs(o.wvz) > 0.01 || o.wz > 0.01)
@@ -1359,7 +1571,7 @@ var farmbit = function()
         }
       }
         break;
-      case JOB_TYPE_DELIVER:
+      case JOB_TYPE_STORE:
       {
         var t = self.job;
         if(self.tile != t)
