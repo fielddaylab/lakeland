@@ -72,7 +72,10 @@ var fullness_job_for_b = function(b)
 {
   /*
   //priorities:
-  JOB_TYPE_
+  JOB_TYPE_EAT
+  JOB_TYPE_HARVEST
+  JOB_TYPE_FERTILIZE
+  JOB_TYPE_PLANT
   */
 
   var n;
@@ -168,15 +171,27 @@ var fullness_job_for_b = function(b)
     b.job_type = job_type;
     b.job_subject = job_subject;
     b.job_object = job_object;
-    b.job_state = JOB_STATE_SEEK;
     switch(job_type)
     {
+      case JOB_TYPE_EAT:
+        if(b.job_object.thing == THING_TYPE_OBJECT) b.job_object.lock = 1;
+        if(b.job_object.thing == THING_TYPE_TILE)   b.job_object.withdraw_lock++;
+        b.job_state = JOB_STATE_GET;
+        break;
       case JOB_TYPE_PLANT:
+        b.job_subject.lock = 1;
+        b.job_state = JOB_STATE_SEEK;
+        break;
+      case JOB_TYPE_FERTILIZE:
+        if(b.job_object.thing == THING_TYPE_OBJECT) b.job_object.lock = 1;
+        if(b.job_object.thing == THING_TYPE_TILE)   b.job_object.withdraw_lock++;
+        b.job_subject.lock = 1;
+        b.job_state = JOB_STATE_SEEK;
+        break;
       case JOB_TYPE_HARVEST:
         b.job_subject.lock = 1;
+        b.job_state = JOB_STATE_SEEK;
         break;
-      case JOB_TYPE_WITHDRAW:
-        b.job_subject.withdraw_lock++;
     }
     return 1;
   }
@@ -301,8 +316,8 @@ var fulfillment_job_for_b = function(b)
       if(t.type == TILE_TYPE_STORAGE &&
           (
             t.state == TILE_STATE_STORAGE_EMPTY ||
-            (t.state == TILE_STATE_STORAGE_FOOD && job_object.type == OBJECT_TYPE_FOOD) ||
-            (t.state == TILE_STATE_STORAGE_POOP && job_object.type == OBJECT_TYPE_POOP)
+            (t.state == TILE_STATE_STORAGE_FOOD && job_object.type == OBJECT_TYPE_FOOD && t.val+t.deposit_lock < storage_food_max) ||
+            (t.state == TILE_STATE_STORAGE_POOP && job_object.type == OBJECT_TYPE_POOP && t.val+t.deposit_lock < storage_poop_max)
           )
         )
       {
@@ -374,7 +389,7 @@ var fulfillment_job_for_b = function(b)
     switch(b.job_type)
     {
       case JOB_TYPE_FERTILIZE:
-        console.log("FINISH");
+        console.log("FINISH");//handle whether object or storage
         break;
       case JOB_TYPE_STORE:
         b.job_object = 1;
@@ -426,6 +441,10 @@ var b_for_job = function(job_type, job_subject, job_object)
   switch(job_type)
   {
     case JOB_TYPE_NULL:
+    case JOB_TYPE_IDLE:
+    case JOB_TYPE_WAIT:
+      console.log("FINISH");//figure out what to do
+      break;
     case JOB_TYPE_EAT:
     {
       /*
@@ -438,41 +457,43 @@ var b_for_job = function(job_type, job_subject, job_object)
       var b_d = max_dist;
       var rank = -1;
       var d;
+      o = job_object;
       for(var i = 0; i < n; i++)
       {
         b = gg.farmbits[i];
         if(b.job_type != JOB_TYPE_IDLE) continue;
-        rank = -1;
-             if(b.fullness_state == FARMBIT_STATE_DESPERATE && b_rank <= 2) rank = 2;
-        else if(b.fullness_state == FARMBIT_STATE_MOTIVATED && b_rank <= 1) rank = 1;
-        if(rank > b_rank)
+
+             if(b.fullness_state == FARMBIT_STATE_DESPERATE) rank = 2;
+        else if(b.fullness_state == FARMBIT_STATE_MOTIVATED) rank = 1;
+        else                                                 rank = -1;
+
+             if(rank > b_rank) { b_d = max_dist; d = distsqr(o.tx,o.ty,b.tile.tx,b.tile.ty); }
+        else if(rank < b_rank) {                 d = max_dist;                               }
+        else                   {                 d = distsqr(o.tx,o.ty,b.tile.tx,b.tile.ty); }
+
+        if(d < b_d)
         {
-          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
           b_rank = rank;
           b_d = d;
           best = b;
         }
-        else if(rank == b_rank)
-        {
-          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
-          if(d < b_d)
-          {
-            b_rank = rank;
-            b_d = d;
-            best = b;
-          }
-        }
       }
       if(best)
       {
-        best.job = job;
-        best.job.lock = 1;
-        best.job_type = job_type;
+        best.job_type = JOB_TYPE_EAT;
+        best.job_subject = job_subject;
+        best.job_object = job_object;
+        best.job_object.lock = 1;
         best.job_state = JOB_STATE_SEEK;
         best.job_state_t = 0;
+        console.log("FINISH");//handle whether object or storage (FOR NOW ASSUMES OBJECT)
         return 1;
       }
     }
+      break;
+    case JOB_TYPE_SLEEP:
+    case JOB_TYPE_PLAY:
+      console.log("FINISH"); //figure out what to do
       break;
     case JOB_TYPE_PLANT:
     case JOB_TYPE_HARVEST:
@@ -483,7 +504,82 @@ var b_for_job = function(job_type, job_subject, job_object)
       closest low fulfillment bit
       */
 
-      var t = job;
+      var best;
+      var b_rank = -1;
+      var b_d = max_dist;
+      var rank = -1;
+      var d;
+      t = job_subject;
+      for(var i = 0; i < n; i++)
+      {
+        b = gg.farmbits[i];
+        if(b.job_type != JOB_TYPE_IDLE) continue;
+
+             if(b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 4;
+        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 3;
+        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 2;
+        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
+        else                                                    rank = -1;
+
+             if(rank > b_rank) { b_d = max_dist; d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
+        else if(rank < b_rank) {                 d = max_dist;                               }
+        else                   {                 d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
+
+        if(d < b_d)
+        {
+          b_rank = rank;
+          b_d = d;
+          best = b;
+        }
+      }
+      if(best)
+      {
+        best.job_type = job_type;
+        best.job_subject = job_subject;
+        best.job_object = job_object;
+        best.job_subject.lock = 1;
+        best.job_state = JOB_STATE_SEEK;
+        best.job_state_t = 0;
+        return 1;
+      }
+    }
+      break;
+    case JOB_TYPE_FERTILIZE:
+      console.log("FINISH"); //figure out what to do
+      break;
+    case JOB_TYPE_STORE:
+    {
+      /*
+      //priorities:
+      closest low fulfillment bit
+      */
+
+      if(!job_subject)
+      {
+        var job_d = max_dist;
+        n = gg.b.tiles.length;
+        for(var i = 0; i < n; i++)
+        {
+          t = gg.b.tiles[i];
+          if(t.type == TILE_TYPE_STORAGE &&
+              (
+                t.state == TILE_STATE_STORAGE_EMPTY ||
+                (t.state == TILE_STATE_STORAGE_FOOD && job_object.type == OBJECT_TYPE_FOOD && t.val+t.deposit_lock < storage_food_max) ||
+                (t.state == TILE_STATE_STORAGE_POOP && job_object.type == OBJECT_TYPE_POOP && t.val+t.deposit_lock < storage_poop_max)
+              )
+            )
+          {
+            d = distsqr(t.tx,t.ty,job_object.tile.tx,job_object.tile.ty);
+            if(d < job_d)
+            {
+              job_d = d;
+              job_subject = t;
+            }
+          }
+        }
+      }
+      if(!job_subject) return 0;
+
       var best;
       var b_rank = -1;
       var b_d = max_dist;
@@ -493,139 +589,40 @@ var b_for_job = function(job_type, job_subject, job_object)
       {
         b = gg.farmbits[i];
         if(b.job_type != JOB_TYPE_IDLE) continue;
-        rank = -1;
-             if(b.fullness_state    == FARMBIT_STATE_DESPERATE && b_rank <= 4) rank = 4;
-        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE && b_rank <= 3) rank = 3;
-        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED && b_rank <= 2) rank = 2;
-        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED && b_rank <= 1) rank = 1;
-        if(rank > b_rank)
+
+             if(b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 4;
+        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 3;
+        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 2;
+        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
+        else                                                    rank = -1;
+
+             if(rank > b_rank) { b_d = max_dist; d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
+        else if(rank < b_rank) {                 d = max_dist;                                                           }
+        else                   {                 d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
+
+        if(d < b_d)
         {
-          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
           b_rank = rank;
           b_d = d;
           best = b;
         }
-        else if(rank == b_rank)
-        {
-          d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
-          if(d < b_d)
-          {
-            b_rank = rank;
-            b_d = d;
-            best = b;
-          }
-        }
       }
       if(best)
       {
-        best.job = job;
-        best.job.lock = 1;
         best.job_type = job_type;
+        best.job_subject = job_subject;
+        best.job_object = job_object;
         best.job_state = JOB_STATE_SEEK;
         best.job_state_t = 0;
+        best.job_object.lock = 1;
+        best.job_subject.deposit_lock++;
         return 1;
       }
     }
       break;
-    case JOB_TYPE_STORE:
+    case JOB_TYPE_KICK:
     {
-      /*
-      //priorities:
-      closest low fulfillment bit
-      */
-
-      var o = job;
-      switch(o.type)
-      {
-        case OBJECT_TYPE_FOOD:
-        {
-          var best;
-          var b_rank = -1;
-          var b_d = max_dist;
-          var rank = -1;
-          var d;
-          for(var i = 0; i < n; i++)
-          {
-            b = gg.farmbits[i];
-            if(b.job_type != JOB_TYPE_IDLE) continue;
-            rank = -1;
-                 if(b.fullness_state    == FARMBIT_STATE_DESPERATE && b_rank <= 4) rank = 4;
-            else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE && b_rank <= 3) rank = 3;
-            else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED && b_rank <= 2) rank = 2;
-            else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED && b_rank <= 1) rank = 1;
-            if(rank > b_rank)
-            {
-              d = distsqr(o.tile.tx,o.tile.ty,b.tile.tx,b.tile.ty);
-              b_rank = rank;
-              b_d = d;
-              best = b;
-            }
-            else if(rank == b_rank)
-            {
-              d = distsqr(o.tile.tx,o.tile.ty,b.tile.tx,b.tile.ty);
-              if(d < b_d)
-              {
-                b_rank = rank;
-                b_d = d;
-                best = b;
-              }
-            }
-          }
-          if(best)
-          {
-            best.job = job;
-            best.job.lock = 1;
-            best.job_type = job_type;
-            best.job_state = JOB_STATE_SEEK;
-            best.job_state_t = 0;
-            return 1;
-          }
-        }
-          break;
-        default:
-        {
-          var best;
-          var b_rank = -1;
-          var b_d = max_dist;
-          var rank = -1;
-          var d;
-          for(var i = 0; i < n; i++)
-          {
-            b = gg.farmbits[i];
-            if(b.job_type != JOB_TYPE_IDLE) continue;
-            rank = -1;
-                 if(b.fulfillment_state == FARMBIT_STATE_DESPERATE && b_rank <= 2) rank = 2;
-            else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED && b_rank <= 1) rank = 1;
-            if(rank > b_rank)
-            {
-              d = distsqr(o.tile.tx,o.tile.ty,b.tile.tx,b.tile.ty);
-              b_rank = rank;
-              b_d = d;
-              best = b;
-            }
-            else if(rank == b_rank)
-            {
-              d = distsqr(o.tile.tx,o.tile.ty,b.tile.tx,b.tile.ty);
-              if(d < b_d)
-              {
-                b_rank = rank;
-                b_d = d;
-                best = b;
-              }
-            }
-          }
-          if(best)
-          {
-            best.job = job;
-            best.job.lock = 1;
-            best.job_type = job_type;
-            best.job_state = JOB_STATE_SEEK;
-            best.job_state_t = 0;
-            return 1;
-          }
-        }
-          break;
-      }
+      console.log("FINISH");//figure out
     }
       break;
     default:
@@ -653,6 +650,7 @@ var tile = function()
   var self = this;
   self.thing = THING_TYPE_TILE;
 
+  self.tile = self; //trick that allows all thing.tile to reference a tile
   self.tx = 0;
   self.ty = 0;
   self.type = TILE_TYPE_LAND;
@@ -899,7 +897,7 @@ var board = function()
       self.hover_t.type = TILE_TYPE_FARM;
       self.hover_t.state = TILE_STATE_FARM_UNPLANTED;
       self.hover_t.state_t = 0;
-      b_for_job(self.hover_t, JOB_TYPE_PLANT);
+      b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
     }
     if(gg.palette.palette == PALETTE_LIVESTOCK && self.hover_t.type != TILE_TYPE_LIVESTOCK)
     {
@@ -936,7 +934,7 @@ var board = function()
               t.state = TILE_STATE_FARM_GROWN;
               t.val = 0;
               t.state_t = 0;
-              b_for_job(t,JOB_TYPE_HARVEST);
+              b_for_job(JOB_TYPE_HARVEST, t, 0);
             }
           }
         }
@@ -956,7 +954,7 @@ var board = function()
             kick_object(o);
             gg.objects.push(o);
 
-            if(!b_for_job(o,JOB_TYPE_FERTILIZE)) b_for_job(o,JOB_TYPE_STORE);
+            if(!b_for_job(JOB_TYPE_FERTILIZE, 0, o)) b_for_job(JOB_TYPE_STORE, 0 ,o);
           }
         }
           break;
@@ -1315,6 +1313,25 @@ var farmbit = function()
     self.walk_toward_tile(t);
   }
 
+  self.calibrate_stats = function()
+  {
+         if(self.fullness > fullness_content)   self.fullness_state = FARMBIT_STATE_CONTENT;
+    else if(self.fullness > fullness_motivated) self.fullness_state = FARMBIT_STATE_MOTIVATED;
+    else                                        self.fullness_state = FARMBIT_STATE_DESPERATE;
+
+         if(self.energy > energy_content)   self.energy_state = FARMBIT_STATE_CONTENT;
+    else if(self.energy > energy_motivated) self.energy_state = FARMBIT_STATE_MOTIVATED;
+    else                                    self.energy_state = FARMBIT_STATE_DESPERATE;
+
+         if(self.joy > joy_content)   self.joy_state = FARMBIT_STATE_CONTENT;
+    else if(self.joy > joy_motivated) self.joy_state = FARMBIT_STATE_MOTIVATED;
+    else                              self.joy_state = FARMBIT_STATE_DESPERATE;
+
+         if(self.fulfillment > fulfillment_content)   self.fulfillment_state = FARMBIT_STATE_CONTENT;
+    else if(self.fulfillment > fulfillment_motivated) self.fulfillment_state = FARMBIT_STATE_MOTIVATED;
+    else                                              self.fulfillment_state = FARMBIT_STATE_DESPERATE;
+  }
+
   self.go_idle = function()
   {
     self.job_type = JOB_TYPE_IDLE;
@@ -1425,11 +1442,14 @@ var farmbit = function()
       case FARMBIT_STATE_MOTIVATED: if(self.fulfillment < fulfillment_motivated) { self.fulfillment_state = FARMBIT_STATE_DESPERATE; dirty = 1; } break;
       default: break;
     }
-    if(dirty && self.job_type == JOB_TYPE_IDLE) job_for_b(self)
+    if(dirty && self.job_type == JOB_TYPE_IDLE) job_for_b(self);
 
     self.job_state_t++;
     switch(self.job_type)
     {
+      case JOB_TYPE_NULL:
+        console.log("GAH!"); //shouldn't get here
+        break;
       case JOB_TYPE_IDLE:
       {
         switch(self.job_state)
@@ -1462,10 +1482,58 @@ var farmbit = function()
         break;
       case JOB_TYPE_WAIT:
       {
-        if(self.job_state_t > 10)
+        if(self.job_state_t > wait_t)
         {
           self.go_idle();
           job_for_b(self);
+        }
+      }
+        break;
+      case JOB_TYPE_EAT:
+      {
+        switch(self.job_state)
+        {
+          case JOB_STATE_GET:
+            var t = self.job_object.tile;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+            {
+              if(self.job_object.thing == THING_TYPE_OBJECT)
+              {
+                self.object = o;
+                self.job_state = JOB_STATE_ACT;
+                self.job_state_t = 0;
+              }
+              else if(self.job_object.thing == THING_TYPE_TILE)
+              {
+                t.withdraw_lock--;
+                t.val--;
+                if(t.val == 0 && t.deposit_lock == 0) t.state = TILE_STATE_STORAGE_EMPTY;
+
+                //pop object out of storage
+                var o = new object();
+                o.type = OBJECT_TYPE_FOOD;
+                o.tile = t;
+                gg.b.tiles_tw(o.tile,o);
+                kick_object(o);
+                gg.objects.push(o);
+                o.lock = 1;
+
+                self.job_object = o;
+                self.job_state = JOB_STATE_GET;
+                self.job_state_t = 0;
+              }
+            }
+            break;
+          case JOB_STATE_ACT:
+            break_object(self.object);
+            self.object = 0;
+            self.fullness = 1;
+            self.fullness_state = FARMBIT_STATE_CONTENT;
+            self.go_idle();
+            job_for_b(self);
+            break;
         }
       }
         break;
@@ -1484,160 +1552,179 @@ var farmbit = function()
         break;
       case JOB_TYPE_PLAY:
       {
-        var t = self.job;
-        if(self.tile != t)
+        switch(self.job_state)
         {
-          self.job_state = JOB_STATE_SEEK;
-          self.walk_toward_tile(t);
-        }
-        else
-        {
-          self.job_state = JOB_STATE_ACT;
-          self.joy += 0.02;
-          if(self.joy > 1)
+          case JOB_STATE_SEEK:
           {
-            self.joy = 1;
-            self.joy_state = FARMBIT_STATE_CONTENT;
-            self.go_idle();
-            job_for_b(self);
+            var t = self.job_subject;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+              self.job_state = JOB_STATE_ACT;
           }
+            break;
+          case JOB_STATE_ACT:
+          {
+            self.joy += 0.02;
+            if(self.joy > 1)
+            {
+              self.joy = 1;
+              self.joy_state = FARMBIT_STATE_CONTENT;
+              self.go_idle();
+              job_for_b(self);
+            }
+          }
+            break;
         }
       }
         break;
       case JOB_TYPE_PLANT:
       {
-        var t = self.job;
-        if(self.tile != t)
+        switch(self.job_state)
         {
-          self.job_state = JOB_STATE_SEEK;
-          self.walk_toward_tile(t);
-        }
-        else
-        {
-          self.job_state = JOB_STATE_ACT;
-          self.job.state = TILE_STATE_FARM_PLANTED;
-          self.job.state_t = 0;
-          self.job.lock = 0;
-          self.fulfillment += 0.2;
-          self.go_idle();
-          job_for_b(self);
+          case JOB_STATE_SEEK:
+          {
+            var t = self.job_subject;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+              self.job_state = JOB_STATE_ACT;
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            var t = self.job_subject;
+            t.state = TILE_STATE_FARM_PLANTED;
+            t.state_t = 0;
+            t.lock = 0;
+            self.fulfillment += harvest_fulfillment;
+            self.calibrate_stats();
+            self.go_idle();
+            job_for_b(self);
+          }
+            break;
         }
       }
-        break;
+          break;
       case JOB_TYPE_HARVEST:
       {
-        var t = self.job;
-        if(self.tile != t)
+        switch(self.job_state)
         {
-          self.job_state = JOB_STATE_SEEK;
-          self.walk_toward_tile(t);
-        }
-        else //self.tile == t
-        {
-          self.job_state = JOB_STATE_ACT;
-          t.state = TILE_STATE_FARM_UNPLANTED;
-          t.state_t = 0;
-          t.lock = 0;
+          case JOB_STATE_SEEK:
+          {
+            var t = self.job_subject;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+              self.job_state = JOB_STATE_ACT;
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            var t = self.job_subject;
+            t.state = TILE_STATE_FARM_UNPLANTED;
+            t.state_t = 0;
+            t.lock = 0;
 
-          //gen food
-          var o = new object();
-          o.type = OBJECT_TYPE_FOOD;
-          o.tile = t;
-          gg.b.tiles_tw(o.tile,o);
-          kick_object(o);
-          gg.objects.push(o);
+            //gen food
+            var o = new object();
+            o.type = OBJECT_TYPE_FOOD;
+            o.tile = t;
+            gg.b.tiles_tw(o.tile,o);
+            kick_object(o);
+            gg.objects.push(o);
 
-          self.fulfillment += 0.2;
-          self.go_idle();
-          if(!b_for_job(o,JOB_TYPE_EAT)) b_for_job(o,JOB_TYPE_STORE);
-          b_for_job(t,JOB_TYPE_PLANT);
-          if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
+            self.fulfillment += harvest_fulfillment;
+            self.calibrate_stats();
+            self.go_idle();
+
+            if(!b_for_job(JOB_TYPE_EAT, 0, o)) b_for_job(JOB_TYPE_STORE, 0, o);
+            b_for_job(JOB_TYPE_PLANT, t, 0);
+            if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
+          }
+            break;
         }
+      }
+        break;
+      case JOB_TYPE_FERTILIZE:
+      {
+        console.log("FINISH");//do
       }
         break;
       case JOB_TYPE_STORE:
       {
-        var o = self.job;
-        if(self.tile != o.tile || abs(o.wvz) > 0.01 || o.wz > 0.01)
+        switch(self.job_state)
         {
-          self.job_state = JOB_STATE_SEEK;
-          self.walk_toward_object(o);
-        }
-        else //self.tile == o.tile && object "still"
-        {
-          self.object = o;
-          self.go_idle();
-          self.handle_object();
+          case JOB_STATE_GET:
+          {
+            var o = self.job_object;
+            var t = o.tile;
+            if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
+              self.walk_toward_object(o);
+            else
+            {
+              self.object = self.job_object;
+              self.job_state = JOB_STATE_SEEK;
+            }
+          }
+            break;
+          case JOB_STATE_SEEK:
+          {
+            var t = self.job_subject;
+            self.object.wvx += (self.wx-self.object.wx)*0.01;
+            self.object.wvy += (self.wy-self.object.wy)*0.01;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+              self.job_state = JOB_STATE_ACT;
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            break_object(self.object);
+            self.object = 0;
+
+            t.deposit_lock--;
+            t.val++;
+
+            self.fulfillment = 1;
+            self.fulfillment_state = FARMBIT_STATE_CONTENT;
+            self.go_idle();
+            job_for_b(self);
+          }
+            break;
         }
       }
         break;
-      case JOB_TYPE_STORE:
+      case JOB_TYPE_KICK:
       {
-        var t = self.job;
-        if(self.tile != t)
+        switch(self.job_state)
         {
-          self.job_state = JOB_STATE_SEEK;
-          self.object.wvx += (self.wx-self.object.wx)*0.01;
-          self.object.wvy += (self.wy-self.object.wy)*0.01;
-          self.walk_toward_tile(t);
-        }
-        else //self.tile == t
-        {
-          switch(t.type)
+          case JOB_STATE_GET:
           {
-            case TILE_TYPE_STORAGE:
+            var o = self.job_object;
+            var t = o.tile;
+            if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
+              self.walk_toward_object(o);
+            else
             {
-              break_object(self.object);
-              t.state = TILE_STATE_STORAGE_FOOD;
-              t.deposit_lock--;
-              t.val++;
-              self.object = 0;
-              self.fulfillment = 1;
-              self.fulfillment_state = FARMBIT_STATE_CONTENT;
-              self.go_idle();
-              job_for_b(self);
+              self.object = self.job_object;
+              self.job_state = JOB_STATE_ACT;
             }
-              break;
           }
-        }
-      }
-        break;
-      case JOB_TYPE_WITHDRAW:
-      {
-        var t = self.job;
-        if(self.tile != t)
-        {
-          self.job_state = JOB_STATE_SEEK;
-          self.walk_toward_tile(t);
-        }
-        else //self.tile == t
-        {
-          switch(t.type)
+            break;
+          case JOB_STATE_ACT:
           {
-            case TILE_TYPE_STORAGE:
-            {
-              t.withdraw_lock--;
-              t.val--;
-              switch(t.state)
-              {
-                case TILE_STATE_STORAGE_FOOD:
-                {
-                  var o = new object();
-                  o.type = OBJECT_TYPE_FOOD;
-                  o.tile = t;
-                  gg.b.tiles_tw(o.tile,o);
-                  gg.objects.push(o);
-                  self.object = o;
-                  self.go_idle();
-                  self.handle_object();
-                }
-                  break;
-              }
-            }
-              break;
-            default:
-              self.go_idle();
+            kick_object(self.object);
+            self.object.lock = 0;
+
+            self.fulfillment += kick_fulfillment;
+            self.calibrate_stats();
+
+            self.go_idle();
+            job_for_b(self);
           }
+            break;
         }
       }
         break;
