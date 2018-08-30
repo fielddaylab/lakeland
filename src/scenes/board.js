@@ -1194,6 +1194,7 @@ var board = function()
             //gen poop
             var it = new item();
             it.type = ITEM_TYPE_POOP;
+            it.carryability = poop_carryability;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
@@ -1271,6 +1272,7 @@ var item = function()
   self.tile;
   self.type = ITEM_TYPE_NULL;
   self.state = ITEM_STATE_NULL;
+  self.carryability = 1;
   self.lock = 0;
 
   self.tick = function()
@@ -1548,8 +1550,10 @@ var farmbit = function()
       self.move_dir_y /= l;
     }
 
-    self.wx += self.move_dir_x*self.walk_speed;
-    self.wy += self.move_dir_y*self.walk_speed;
+    var carry = 1;
+    if(self.item) carry = self.item.carryability;
+    self.wx += self.move_dir_x*self.walk_speed*carry;
+    self.wy += self.move_dir_y*self.walk_speed*carry;
   }
 
   self.walk_toward_item = function(it)
@@ -1656,8 +1660,10 @@ var farmbit = function()
               self.job_state = JOB_STATE_IDLE_CHILL;
               self.job_state_t = 0;
             }
-            self.wx += self.move_dir_x*self.walk_speed;
-            self.wy += self.move_dir_y*self.walk_speed;
+            var carry = 1;
+            if(self.item) carry = self.item.carryability;
+            self.wx += self.move_dir_x*self.walk_speed*carry;
+            self.wy += self.move_dir_y*self.walk_speed*carry;
             gg.b.wrapw(self);
           }
         }
@@ -1704,6 +1710,7 @@ var farmbit = function()
                 //pop item out of storage
                 var it = new item();
                 it.type = ITEM_TYPE_FOOD;
+                it.carryability = food_carryability;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);
@@ -1819,6 +1826,7 @@ var farmbit = function()
             //gen food
             var it = new item();
             it.type = ITEM_TYPE_FOOD;
+            it.carryability = food_carryability;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
@@ -1874,6 +1882,7 @@ var farmbit = function()
                 //pop item out of storage
                 var it = new item();
                 it.type = ITEM_TYPE_FOOD;
+                it.carryability = food_carryability;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);
