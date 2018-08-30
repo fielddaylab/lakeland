@@ -1,7 +1,7 @@
 var board_w = 100;
 var board_h = 100;
 
-var farmbits_start_n = 1;
+var farmbits_start_n = 100;
 
 //in order of priority
 var fullness_motivated    = 0.2;

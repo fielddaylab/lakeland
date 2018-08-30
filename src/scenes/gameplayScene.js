@@ -1,4 +1,5 @@
 var gg = {};
+RESUME_SIM = 1;
 var GamePlayScene = function(game, stage)
 {
   var self = this;
@@ -27,7 +28,8 @@ var GamePlayScene = function(game, stage)
     {
       switch(evt.key)
       {
-        case "d": DOUBLETIME = !DOUBLETIME;
+        case "d": DOUBLETIME = !DOUBLETIME; break;
+        case "p": RESUME_SIM = !RESUME_SIM; break;
       }
     }
   }
@@ -66,18 +68,21 @@ var GamePlayScene = function(game, stage)
 
     gg.b.tick();
     screenSpace(gg.cam, gg.canv, gg.b);
-    for(var i = 0; i < gg.items.length; i++)
+    if(RESUME_SIM)
     {
-      var o = gg.items[i];
-      o.tick();
-      screenSpace(gg.cam, gg.canv, o);
-      o.y -= o.wz;
-    }
-    for(var i = 0; i < gg.farmbits.length; i++)
-    {
-      var f = gg.farmbits[i];
-      f.tick();
-      screenSpace(gg.cam, gg.canv, f);
+      for(var i = 0; i < gg.items.length; i++)
+      {
+        var o = gg.items[i];
+        o.tick();
+        screenSpace(gg.cam, gg.canv, o);
+        o.y -= o.wz;
+      }
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        var f = gg.farmbits[i];
+        f.tick();
+        screenSpace(gg.cam, gg.canv, f);
+      }
     }
   };
 

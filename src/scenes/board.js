@@ -91,9 +91,10 @@ var fullness_job_for_b = function(b)
   for(var i = 0; i < n; i++)
   {
     it = gg.items[i];
+    t = it.tile;
     if(it.type == ITEM_TYPE_FOOD && !it.lock)
     {
-      d = distsqr(it.tile.tx,it.tile.ty,b.tile.tx,b.tile.ty);
+      d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
       if(d < job_d)
       {
         job_type = JOB_TYPE_EAT; //spare food
@@ -295,9 +296,10 @@ var fulfillment_job_for_b = function(b)
   for(var i = 0; i < n; i++)
   {
     it = gg.items[i];
+    t = it.tile;
     if(!it.lock)
     {
-      d = distsqr(it.tile.tx,it.tile.ty,b.tile.tx,b.tile.ty);
+      d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
       if(d < job_d)
       {
         job_type = JOB_TYPE_KICK; //overwrite kick to STORE if possible later
@@ -440,7 +442,7 @@ var job_for_b = function(b)
 
 var b_for_job = function(job_type, job_subject, job_object)
 {
-  var n = gg.farmbits.length;
+  var n;
   if(!n) return 0;
   var b;
   var t;
@@ -465,6 +467,8 @@ var b_for_job = function(job_type, job_subject, job_object)
       var rank = -1;
       var d;
       it = job_object;
+      t = it.tile;
+      n = gg.farmbits.length;
       for(var i = 0; i < n; i++)
       {
         b = gg.farmbits[i];
@@ -474,9 +478,9 @@ var b_for_job = function(job_type, job_subject, job_object)
         else if(b.fullness_state == FARMBIT_STATE_MOTIVATED) rank = 1;
         else                                                 rank = -1;
 
-             if(rank > b_rank) { b_d = max_dist; d = distsqr(it.tx,it.ty,b.tile.tx,b.tile.ty); }
-        else if(rank < b_rank) {                 d = max_dist;                                 }
-        else                   {                 d = distsqr(it.tx,it.ty,b.tile.tx,b.tile.ty); }
+             if(rank > b_rank) { b_d = max_dist; d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
+        else if(rank < b_rank) {                 d = max_dist;                                }
+        else                   {                 d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
 
         if(d < b_d)
         {
@@ -517,6 +521,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       var rank = -1;
       var d;
       t = job_subject;
+      n = gg.farmbits.length;
       for(var i = 0; i < n; i++)
       {
         b = gg.farmbits[i];
@@ -592,6 +597,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       var b_d = max_dist;
       var rank = -1;
       var d;
+      n = gg.farmbits.length;
       for(var i = 0; i < n; i++)
       {
         b = gg.farmbits[i];
@@ -620,7 +626,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_type = job_type;
         best.job_subject = job_subject;
         best.job_object = job_object;
-        best.job_state = JOB_STATE_SEEK;
+        best.job_state = JOB_STATE_GET;
         best.job_object.lock = 1;
         best.job_subject.deposit_lock++;
         if(best.job_object.type == ITEM_TYPE_FOOD) best.job_subject.state = TILE_STATE_STORAGE_FOOD;
@@ -1672,13 +1678,20 @@ var farmbit = function()
             break;
           case JOB_STATE_ACT:
           {
-            kick_item(self.item);
-            self.item.lock = 0;
+            var it = self.item;
+            self.item = 0;
+            kick_item(it);
+            it.lock = 0;
 
             self.fulfillment += kick_fulfillment;
             self.calibrate_stats();
 
             self.go_idle();
+            switch(it.type)
+            {
+              case ITEM_TYPE_FOOD: if(!b_for_job(JOB_TYPE_EAT,       0, it)) b_for_job(JOB_TYPE_STORE, 0, it); break;
+              case ITEM_TYPE_POOP: if(!b_for_job(JOB_TYPE_FERTILIZE, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it); break;
+            }
             job_for_b(self);
           }
             break;
