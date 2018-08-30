@@ -437,7 +437,7 @@ var fulfillment_job_for_b = function(b)
               if(d < job_d)
               {
                 var ob_d = max_dist;
-                var ob;
+                var ob = 0;
                 var od;
                 var ot;
                 for(var j = 0; j < gg.items.length; j++)
@@ -499,12 +499,12 @@ var fulfillment_job_for_b = function(b)
           {
             if(t.val < livestock_feed_threshhold && !t.lock)
             {
-              if(job_type != JOB_TYPE_FEED) job_d = max_dist;
+              if(job_type != JOB_TYPE_FEED) job_d = max_dist; //oughtn't do until verified existing object!!!
               d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
               if(d < job_d)
               {
                 var ob_d = max_dist;
-                var ob;
+                var ob = 0;
                 var od;
                 var ot;
                 for(var j = 0; j < gg.items.length; j++)
