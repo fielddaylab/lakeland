@@ -1335,7 +1335,7 @@ var board = function()
           break;
         case TILE_TYPE_LIVESTOCK:
         {
-          t.val *= 0.999;
+          t.val *= livestock_fullness_depletion_rate;
           if(t.state == TILE_STATE_LIVESTOCK_IDLE && t.state_t > livestock_poop_t)
           {
             t.state = TILE_STATE_LIVESTOCK_IDLE;
@@ -1445,12 +1445,14 @@ var item = function()
 
   self.draw = function()
   {
-    gg.ctx.fillStyle = blue;
-    fillBox(self,gg.ctx);
+    switch(self.type)
+    {
+      case ITEM_TYPE_FOOD: drawImageBox(food_img,self,gg.ctx); break;
+      case ITEM_TYPE_POOP: drawImageBox(poop_img,self,gg.ctx); break;
+    }
   }
 }
 
-var farmbit_imgs = [];
 var farmbit = function()
 {
   var self = this;
@@ -1490,204 +1492,6 @@ var farmbit = function()
   self.frame_i = 0;
   self.frame_l = 10;
   self.frame_t = randIntBelow(self.frame_l);
-
-  if(!farmbit_imgs.length)
-  {
-    var ctx;
-    var s = 10;
-    var i = 0;
-    //idle
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    i++
-
-    //shrug
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    i++
-
-    //walk- fat arms
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(1,4,2,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(5,7,2,3); //right_leg
-    i++
-
-    //walk- fat legs
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,2,4); //right_arm
-    ctx.fillRect(3,7,2,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    i++
-
-    //idle- water
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //shrug- water
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //walk- fat arms- water
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(1,4,2,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(5,7,2,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //walk- fat legs- water
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,2,4); //right_arm
-    ctx.fillRect(3,7,2,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //idle- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    i++
-
-    //shrug- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    i++
-
-    //walk- fat arms- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(1,4,2,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(5,7,2,3); //right_leg
-    i++
-
-    //walk- fat legs- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,2,4); //right_arm
-    ctx.fillRect(3,7,2,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    i++
-
-    //idle- water- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //shrug- water- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-    ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //walk- fat arms- water- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(1,4,2,4); //left_arm
-    ctx.fillRect(7,4,1,4); //right_arm
-    ctx.fillRect(3,7,1,3); //left_leg
-    ctx.fillRect(5,7,2,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-
-    //walk- fat legs- water- selected
-    farmbit_imgs[i] = GenIcon(s,s);
-    ctx = farmbit_imgs[i].context;
-    ctx.fillStyle = green;
-    ctx.fillRect(2,0,6,6);
-    ctx.fillStyle = black;
-    ctx.fillRect(3,1,4,6); //body
-    ctx.fillRect(2,4,1,4); //left_arm
-    ctx.fillRect(7,4,2,4); //right_arm
-    ctx.fillRect(3,7,2,3); //left_leg
-    ctx.fillRect(6,7,1,3); //right_leg
-    ctx.clearRect(0,5,10,5); //clear
-    i++
-  }
 
   self.walk_toward_tile = function(t)
   {
@@ -1749,10 +1553,10 @@ var farmbit = function()
       self.frame_t = 0;
     }
 
-    self.fullness    *= 0.999;
-    self.energy      *= 0.999;
-    self.joy         *= 0.999;
-    self.fulfillment *= 0.999;
+    self.fullness    *= fullness_depletion_rate;
+    self.energy      *= energy_depletion_rate;
+    self.joy         *= joy_depletion_rate;
+    self.fulfillment *= fulfillment_depletion_rate;
 
     var dirty = false;
     switch(self.fullness_state)
@@ -2062,7 +1866,7 @@ var farmbit = function()
             t.val += livestock_food_val;
             t.lock = 0;
 
-            self.fulfillment = 1;
+            self.fulfillment += feed_fulfillment;
             self.fulfillment_state = FARMBIT_STATE_CONTENT;
             self.go_idle();
             job_for_b(self);
@@ -2139,7 +1943,7 @@ var farmbit = function()
             t.nutrition += farm_nutrition_req;
             t.lock = 0;
 
-            self.fulfillment = 1;
+            self.fulfillment += fertilize_fulfillment;
             self.fulfillment_state = FARMBIT_STATE_CONTENT;
             self.go_idle();
             job_for_b(self);
@@ -2186,7 +1990,7 @@ var farmbit = function()
             t.deposit_lock--;
             t.val++;
 
-            self.fulfillment = 1;
+            self.fulfillment += store_fulfillment;
             self.fulfillment_state = FARMBIT_STATE_CONTENT;
             self.go_idle();
             job_for_b(self);
