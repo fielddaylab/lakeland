@@ -269,6 +269,11 @@ var screenSpaceX = function(cam, canv, ww, wx) { return (((( wx-ww/2)-cam.wx)+(c
 var screenSpaceY = function(cam, canv, wh, wy) { return ((((-wy-wh/2)+cam.wy)+(cam.wh/2))/cam.wh)*canv.height; }
 var screenSpaceW = function(cam, canv, ww) { return (ww/cam.ww)*canv.width;  }
 var screenSpaceH = function(cam, canv, wh) { return (wh/cam.wh)*canv.height; }
+var screenSpacePt = function(cam, canv, pt) //only operates on points!
+{
+  pt.x = (((( pt.wx)-cam.wx)+(cam.ww/2))/cam.ww)*canv.width;
+  pt.y = ((((-pt.wy)+cam.wy)+(cam.wh/2))/cam.wh)*canv.height;
+}
 var screenSpace  = function(cam, canv, box)
 {
   //assumng xywh counterparts in world space (wx,wy,ww,wh,etc...)
