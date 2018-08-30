@@ -66,10 +66,10 @@ var GamePlayScene = function(game, stage)
     clicker.flush();
     keyer.flush();
 
-    gg.b.tick();
-    screenSpace(gg.cam, gg.canv, gg.b);
     if(RESUME_SIM)
     {
+      gg.b.tick();
+      screenSpace(gg.cam, gg.canv, gg.b);
       for(var i = 0; i < gg.items.length; i++)
       {
         var o = gg.items[i];

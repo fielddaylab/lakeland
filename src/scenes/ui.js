@@ -126,7 +126,7 @@ var inspector = function()
         break;
       case TILE_TYPE_FARM:
       {
-        gg.ctx.fillText("val:"+fdisp(t.val)+" ("+fdisp(t.val*100/farm_grow_v)+"%)",x,y);
+        gg.ctx.fillText("val:"+fdisp(t.val)+" ("+fdisp(t.val*100/farm_nutrition_req)+"%)",x,y);
         y += vspace;
       }
         break;
@@ -146,7 +146,7 @@ var inspector = function()
     }
     gg.ctx.fillText("t:"+t.state_t,x,y);
     y += vspace;
-    gg.ctx.fillText("phosphorus:"+fdisp(t.phosphorus),x,y);
+    gg.ctx.fillText("nutrition:"+fdisp(t.nutrition),x,y);
     y += vspace;
     gg.ctx.fillText("lock:"+t.lock,x,y);
     y += vspace;

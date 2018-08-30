@@ -47,6 +47,7 @@ var JOB_TYPE_SLEEP     = ENUM; ENUM++;
 var JOB_TYPE_PLAY      = ENUM; ENUM++;
 var JOB_TYPE_PLANT     = ENUM; ENUM++;
 var JOB_TYPE_HARVEST   = ENUM; ENUM++;
+var JOB_TYPE_FEED      = ENUM; ENUM++;
 var JOB_TYPE_FERTILIZE = ENUM; ENUM++;
 var JOB_TYPE_STORE     = ENUM; ENUM++;
 var JOB_TYPE_KICK      = ENUM; ENUM++;
@@ -75,8 +76,8 @@ var fullness_job_for_b = function(b)
   JOB_TYPE_EAT (spare food)
   JOB_TYPE_HARVEST
   JOB_TYPE_EAT (stored food)
-  JOB_TYPE_FERTILIZE
   JOB_TYPE_PLANT
+  JOB_TYPE_FERTILIZE
   */
 
   var n;
@@ -116,6 +117,20 @@ var fullness_job_for_b = function(b)
         switch(job_type)
         {
           case JOB_TYPE_NULL:
+            //break; //DON'T BREAK!
+          case JOB_TYPE_FERTILIZE:
+            if(t.state == TILE_STATE_FARM_PLANTED && !t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
+            {
+              if(job_type != JOB_TYPE_FERTILIZE) job_d = max_dist;
+              d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+              if(d < job_d)
+              {
+                job_type = JOB_TYPE_FERTILIZE;
+                job_subject = t;
+                job_object = 0; //set location of fertilizer later
+                job_d = d;
+              }
+            }
             //break; //DON'T BREAK!
           case JOB_TYPE_PLANT:
             if(t.state == TILE_STATE_FARM_UNPLANTED && !t.lock)
@@ -168,6 +183,51 @@ var fullness_job_for_b = function(b)
     }
   }
 
+  if(job_type == JOB_TYPE_FERTILIZE)
+  { //make sure there is actually fertilizer to use
+    job_d = max_dist;
+    n = gg.items.length;
+    for(var i = 0; i < n; i++)
+    {
+      it = gg.items[i];
+      t = it.tile;
+      if(it.type == ITEM_TYPE_POOP && !it.lock)
+      {
+        d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+        if(d < job_d)
+        {
+          job_d = d;
+          job_object = it;
+        }
+      }
+    }
+
+    if(!job_object)
+    {
+      job_d = max_dist;
+      n = gg.b.tiles.length;
+      for(var i = 0; i < n; i++)
+      {
+        t = gg.b.tiles[i];
+        if(t.type == TILE_TYPE_STORAGE && t.state == TILE_STATE_STORAGE_POOP && t.val-t.withdraw_lock > 0)
+        {
+          d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+          if(d < job_d)
+          {
+            job_d = d;
+            job_object = t;
+          }
+        }
+      }
+    }
+
+    if(!job_object)
+    {
+      job_type = JOB_TYPE_NULL;
+      job_subject = 0;
+    }
+  }
+
   if(job_type != JOB_TYPE_NULL)
   {
     b.go_idle();
@@ -187,9 +247,9 @@ var fullness_job_for_b = function(b)
         break;
       case JOB_TYPE_FERTILIZE:
         if(b.job_object.thing == THING_TYPE_ITEM) b.job_object.lock = 1;
-        if(b.job_object.thing == THING_TYPE_TILE)   b.job_object.withdraw_lock++;
+        if(b.job_object.thing == THING_TYPE_TILE) b.job_object.withdraw_lock++;
         b.job_subject.lock = 1;
-        b.job_state = JOB_STATE_SEEK;
+        b.job_state = JOB_STATE_GET;
         break;
       case JOB_TYPE_HARVEST:
         b.job_subject.lock = 1;
@@ -273,6 +333,7 @@ var fulfillment_job_for_b = function(b)
 {
   /*
   //priorities:
+  JOB_TYPE_FEED
   JOB_TYPE_FERTILIZE
   JOB_TYPE_STORE
   JOB_TYPE_HARVEST
@@ -378,6 +439,63 @@ var fulfillment_job_for_b = function(b)
                 job_d = d;
               }
             }
+            //break; //DON'T BREAK!
+          case JOB_TYPE_FERTILIZE:
+            if(t.state == TILE_STATE_FARM_PLANTED && !t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
+            {
+              if(job_type != JOB_TYPE_FERTILIZE) job_d = max_dist;
+              d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
+              if(d < job_d)
+              {
+
+
+                var ob_d = max_dist;
+                var ob;
+                var od;
+                n = gg.items.length;
+                for(var i = 0; i < n; i++)
+                {
+                  it = gg.items[i];
+                  t = it.tile;
+                  if(it.type == ITEM_TYPE_POOP && !it.lock)
+                  {
+                    od = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+                    if(od < ob_d)
+                    {
+                      ob_d = od;
+                      ob = it;
+                    }
+                  }
+                }
+
+                if(!ob)
+                {
+                  ob_d = max_dist;
+                  n = gg.b.tiles.length;
+                  for(var i = 0; i < n; i++)
+                  {
+                    var ot = gg.b.tiles[i];
+                    if(ot.type == TILE_TYPE_STORAGE && ot.state == TILE_STATE_STORAGE_POOP && ot.val-ot.withdraw_lock > 0)
+                    {
+                      od = distsqr(ot.tx,ot.ty,job_subject.tx,job_subject.ty);
+                      if(od < ob_d)
+                      {
+                        ob_d = od;
+                        ob = ot;
+                      }
+                    }
+                  }
+                }
+
+                if(ob)
+                {
+                  job_type = JOB_TYPE_FERTILIZE;
+                  job_subject = t;
+                  job_object = ob;
+                  job_d = d;
+                }
+              }
+            }
             break;
         }
       }
@@ -392,8 +510,14 @@ var fulfillment_job_for_b = function(b)
     b.job_object = job_object;
     switch(b.job_type)
     {
-      case JOB_TYPE_FERTILIZE:
+      case JOB_TYPE_FEED:
         console.log("FINISH");//handle whether item or storage
+        break;
+      case JOB_TYPE_FERTILIZE:
+        if(b.job_object.thing == THING_TYPE_ITEM) b.job_object.lock = 1;
+        if(b.job_object.thing == THING_TYPE_TILE) b.job_object.withdraw_lock++;
+        b.job_subject.lock = 1;
+        b.job_state = JOB_STATE_GET;
         break;
       case JOB_TYPE_STORE:
         b.job_state = JOB_STATE_GET;
@@ -556,8 +680,114 @@ var b_for_job = function(job_type, job_subject, job_object)
       }
     }
       break;
-    case JOB_TYPE_FERTILIZE:
+    case JOB_TYPE_FEED:
       console.log("FINISH"); //figure out what to do
+      break;
+    case JOB_TYPE_FERTILIZE:
+    {
+      if(!job_subject && !job_object) return; //not going to waste time "looking to find some bit and some farm and some fertilizer and get 'em goin"
+
+      if(!job_subject)
+      {
+        job_d = max_dist;
+        n = gg.b.tiles.length;
+        for(var i = 0; i < n; i++)
+        {
+          t = gg.b.tiles[i];
+          if(t.type == TILE_TYPE_FARM && t.state == TILE_STATE_FARM_PLANTED && !t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
+          {
+            d = distsqr(t.tx,t.ty,job_object.tile.tx,job_object.tile.ty);
+            if(d < job_d)
+            {
+              job_subject = t;
+              job_d = d;
+            }
+          }
+        }
+      }
+      if(!job_subject) return 0;
+
+      if(!job_object)
+      { //look for free items
+        job_d = max_dist;
+        n = gg.items.length;
+        for(var i = 0; i < n; i++)
+        {
+          it = gg.items[i];
+          t = it.tile;
+          if(it.type == ITEM_TYPE_POOP && !it.lock)
+          {
+            d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+            if(d < job_d)
+            {
+              job_object = it;
+              job_d = d;
+            }
+          }
+        }
+      }
+
+      if(!job_object)
+      { //look for stored items
+        job_d = max_dist;
+        n = gg.b.tiles.length;
+        for(var i = 0; i < n; i++)
+        {
+          if(t.type == TILE_TYPE_STORAGE && t.state == TILE_STATE_STORAGE_POOP && t.val-t.withdraw_lock > 0)
+          {
+            d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+            if(d < job_d)
+            {
+              job_object = t;
+              job_d = d;
+            }
+          }
+        }
+      }
+      if(!job_object) return 0;
+
+      var best;
+      var b_rank = -1;
+      var b_d = max_dist;
+      var rank = -1;
+      var d;
+      n = gg.farmbits.length;
+      for(var i = 0; i < n; i++)
+      {
+        b = gg.farmbits[i];
+        if(b.job_type != JOB_TYPE_IDLE) continue;
+
+             if(b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 4;
+        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 3;
+        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 2;
+        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
+        else                                                    rank = -1;
+
+             if(rank > b_rank) { b_d = max_dist; d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
+        else if(rank < b_rank) {                 d = max_dist;                                                           }
+        else                   {                 d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
+
+        if(d < b_d)
+        {
+          b_rank = rank;
+          b_d = d;
+          best = b;
+        }
+      }
+
+      if(best)
+      {
+        best.go_idle();
+        best.job_type = job_type;
+        best.job_subject = job_subject;
+        best.job_object = job_object;
+        if(best.job_object.thing == THING_TYPE_ITEM) best.job_object.lock = 1;
+        if(best.job_object.thing == THING_TYPE_TILE) best.job_object.withdraw_lock++;
+        best.job_subject.lock = 1;
+        best.job_state = JOB_STATE_GET;
+        return 1;
+      }
+    }
       break;
     case JOB_TYPE_STORE:
     {
@@ -672,7 +902,7 @@ var tile = function()
   self.state = TILE_STATE_NULL;
   self.state_t = 0;
   self.val = 0;
-  self.phosphorus = 0;
+  self.nutrition = 0;
   self.withdraw_lock = 0;
   self.deposit_lock = 0;
   self.lock = 0;
@@ -740,11 +970,11 @@ var board = function()
         var t = new tile();
         t.tx = tx;
         t.ty = ty;
-        t.phosphorus = rand();
-        t.phosphorus *= t.phosphorus;
-        t.phosphorus *= t.phosphorus;
-        t.phosphorus *= t.phosphorus;
-        t.phosphorus *= t.phosphorus;
+        t.nutrition = rand();
+        t.nutrition *= t.nutrition;
+        t.nutrition *= t.nutrition;
+        t.nutrition *= t.nutrition;
+        t.nutrition *= t.nutrition;
         self.tiles[i] = t;
       }
 
@@ -834,9 +1064,9 @@ var board = function()
 
   self.flow = function(from, to)
   {
-    var d = from.phosphorus-to.phosphorus;
-    from.phosphorus -= d*0.0001;
-    to.phosphorus   += d*0.0001;
+    var d = from.nutrition-to.nutrition;
+    from.nutrition -= d*0.0001;
+    to.nutrition   += d*0.0001;
   }
 
   self.hover = function(evt)
@@ -941,10 +1171,10 @@ var board = function()
         {
           if(t.state == TILE_STATE_FARM_PLANTED)
           {
-            var d = min(t.phosphorus*farm_phosphorus_uptake_p,farm_phosphorus_uptake_max);
+            var d = min(t.nutrition*farm_nutrition_uptake_p,farm_nutrition_uptake_max);
             t.val += d;
-            t.phosphorus -= d;
-            if(t.val > farm_grow_v)
+            t.nutrition -= d;
+            if(t.val > farm_nutrition_req)
             {
               t.state = TILE_STATE_FARM_GROWN;
               t.val = 0;
@@ -993,15 +1223,15 @@ var board = function()
         var t = self.tiles[i];
         switch(t.type)
         {
-          case TILE_TYPE_LAND:  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.phosphorus*255))+",255,1)"; break;
-          case TILE_TYPE_WATER: gg.ctx.fillStyle = "rgba("+floor(t.phosphorus*255)+",255,255,1)"; break;
-          case TILE_TYPE_SHORE: gg.ctx.fillStyle = "rgba("+floor((t.phosphorus/2+0.5)*255)+",255,255,1)"; break;
+          case TILE_TYPE_LAND:  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.nutrition*255))+",255,1)"; break;
+          case TILE_TYPE_WATER: gg.ctx.fillStyle = "rgba("+floor(t.nutrition*255)+",255,255,1)"; break;
+          case TILE_TYPE_SHORE: gg.ctx.fillStyle = "rgba("+floor((t.nutrition/2+0.5)*255)+",255,255,1)"; break;
           case TILE_TYPE_FARM:
           {
             switch(t.state)
             {
               case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
-              case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_grow_v*255)+",0,1)"; break;
+              case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
               case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
             }
           }
@@ -1606,9 +1836,85 @@ var farmbit = function()
         }
       }
         break;
-      case JOB_TYPE_FERTILIZE:
+      case JOB_TYPE_FEED:
       {
         console.log("FINISH");//do
+      }
+        break;
+      case JOB_TYPE_FERTILIZE:
+      {
+        switch(self.job_state)
+        {
+          case JOB_STATE_GET:
+          {
+            var o = self.job_object;
+            var t = self.job_object.tile;
+
+            if(o.thing == THING_TYPE_ITEM)
+            {
+              if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
+                self.walk_toward_tile(t);
+              else
+              {
+                self.item = o;
+                self.job_state = JOB_STATE_SEEK;
+                self.job_state_t = 0;
+              }
+            }
+            else if(self.job_object.thing == THING_TYPE_TILE)
+            {
+              if(self.tile != t)
+                self.walk_toward_tile(t);
+              else
+              {
+                t.withdraw_lock--;
+                t.val--;
+                if(t.val == 0 && t.deposit_lock == 0) t.state = TILE_STATE_STORAGE_UNASSIGNED;
+
+                //pop item out of storage
+                var it = new item();
+                it.type = ITEM_TYPE_FOOD;
+                it.tile = t;
+                gg.b.tiles_tw(it.tile,it);
+                kick_item(it);
+                gg.items.push(it);
+                it.lock = 1;
+
+                self.job_object = it;
+                self.job_state = JOB_STATE_GET;
+                self.job_state_t = 0;
+              }
+            }
+          }
+            break;
+          case JOB_STATE_SEEK:
+          {
+            var t = self.job_subject;
+            self.item.wvx += (self.wx-self.item.wx)*0.01;
+            self.item.wvy += (self.wy-self.item.wy)*0.01;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+              self.job_state = JOB_STATE_ACT;
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            var t = self.job_subject;
+
+            break_item(self.item);
+            self.item = 0;
+
+            t.nutrition += farm_nutrition_req;
+            t.lock = 0;
+
+            self.fulfillment = 1;
+            self.fulfillment_state = FARMBIT_STATE_CONTENT;
+            self.go_idle();
+            job_for_b(self);
+          }
+            break;
+        }
       }
         break;
       case JOB_TYPE_STORE:
