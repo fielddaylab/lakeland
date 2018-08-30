@@ -1,7 +1,7 @@
 var board_w = 100;
 var board_h = 100;
 
-var farmbits_start_n = 100;
+var farmbits_start_n = 1;
 
 //in order of priority
 var fullness_motivated    = 0.2;
@@ -20,6 +20,8 @@ var farm_nutrition_uptake_max = 0.0002; //+v
 var farm_nutrition_req = 0.1;
 var farm_nutrition_fertilize_threshhold = 0.2;
 var livestock_poop_t = 1000;
+var livestock_feed_threshhold = 0.2;
+var livestock_food_val = 1;
 var storage_food_max = 10;
 var storage_poop_max = 10;
 
