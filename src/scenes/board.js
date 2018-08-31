@@ -1829,20 +1829,24 @@ var farmbit = function()
             t.state_t = 0;
             t.lock = 0;
 
-            //gen food
-            var it = new item();
-            it.type = ITEM_TYPE_FOOD;
-            it.tile = t;
-            gg.b.tiles_tw(it.tile,it);
-            kick_item(it);
-            gg.items.push(it);
-
             gg.money += harvest_profit;
             self.fulfillment += harvest_fulfillment;
             self.calibrate_stats();
             self.go_idle();
 
-            if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
+            //gen food
+            var it;
+            for(var i = 0; i < 2; i++)
+            {
+              it = new item();
+              it.type = ITEM_TYPE_FOOD;
+              it.tile = t;
+              gg.b.tiles_tw(it.tile,it);
+              kick_item(it);
+              gg.items.push(it);
+              if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
+            }
+
             b_for_job(JOB_TYPE_PLANT, t, 0);
             if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
           }
