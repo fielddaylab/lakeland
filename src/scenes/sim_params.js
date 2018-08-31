@@ -1,5 +1,8 @@
-var board_w = 100;
-var board_h = 100;
+var board_w = 50;
+var board_h = 50;
+var n_lakes = 4;
+var lake_size_min = 50;
+var lake_size_max = 100;
 
 var farmbits_start_n = 1;
 var money_start_n = 100;

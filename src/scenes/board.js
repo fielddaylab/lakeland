@@ -1033,14 +1033,20 @@ var kick_item = function(it)
   it.wvz = s/2;
 }
 
+var GenDirector = function()
+{
+  return {x:0,y:0,g:0,h:0};
+}
 var tile = function()
 {
   var self = this;
   self.thing = THING_TYPE_TILE;
 
   self.tile = self; //trick that allows all thing.tile to reference a tile
+  self.directions = [];
   self.tx = 0;
   self.ty = 0;
+  self.i = 0;
   self.type = TILE_TYPE_LAND;
   self.state = TILE_STATE_NULL;
   self.state_t = 0;
@@ -1069,7 +1075,10 @@ var board = function()
   }
   self.tiles_t = function(tx,ty)
   {
-    return self.tiles[self.tiles_i(tx,ty)];
+    var i = self.tiles_i(tx,ty);
+    if(!self.tiles[i])
+      console.log("SHOCK");
+    return self.tiles[i];
   }
   self.tiles_wt = function(wx,wy)
   {
@@ -1113,6 +1122,7 @@ var board = function()
         var t = new tile();
         t.tx = tx;
         t.ty = ty;
+        t.i = i;
         t.nutrition = rand();
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
@@ -1120,6 +1130,34 @@ var board = function()
         t.nutrition *= t.nutrition;
         self.tiles[i] = t;
       }
+
+    var to;
+    var from;
+    var dx;
+    var dy;
+    var d;
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      to = self.tiles[i];
+      for(var j = 0; j < self.tiles.length; j++)
+      {
+        from = self.tiles[j];
+        to.directions[j] = GenDirector();
+        dx = to.tx-from.tx;
+        dy = to.ty-from.ty;
+        d = sqrt(dx*dx+dy*dy);
+        if(d == 0)
+        {
+          to.directions[j].x = 0;
+          to.directions[j].y = 0;
+        }
+        else
+        {
+          to.directions[j].x = dx/d;
+          to.directions[j].y = dy/d;
+        }
+      }
+    }
 
     var atomic_push = function(n,ar)
     {
@@ -1157,14 +1195,13 @@ var board = function()
       return border;
     }
 
-    var n_lakes = 4;
     for(var i = 0; i < n_lakes; i++)
     {
       var src_tx = randIntBelow(self.tw);
       var src_ty = randIntBelow(self.th);
       var t = self.tiles_t(src_tx,src_ty);
       t.type = TILE_TYPE_WATER;
-      var lake_size = 200+randIntBelow(400);
+      var lake_size = lake_size_min+randIntBelow(lake_size_max-lake_size_min);
       var lake_tiles = slow_flood_fill([t]);
       var lake_border = slow_flood_border(lake_tiles);
 
@@ -1562,18 +1599,9 @@ var farmbit = function()
 
   self.walk_toward_tile = function(t)
   {
-    self.move_dir_x = t.tx-self.tile.tx;
-    self.move_dir_y = t.ty-self.tile.ty;
-    var l = sqrt(self.move_dir_x*self.move_dir_x+self.move_dir_y*self.move_dir_y);
-    if(l != 0)
-    {
-      self.move_dir_x /= l;
-      self.move_dir_y /= l;
-    }
-
     var mod = self.walk_mod();
-    self.wx += self.move_dir_x*self.walk_speed*mod;
-    self.wy += self.move_dir_y*self.walk_speed*mod;
+    self.wx += t.directions[self.tile.i].x*self.walk_speed*mod;
+    self.wy += t.directions[self.tile.i].y*self.walk_speed*mod;
   }
 
   self.walk_toward_item = function(it)
