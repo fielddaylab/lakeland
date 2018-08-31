@@ -1335,6 +1335,8 @@ var board = function()
       var evt = gg.hand.released_evt;
       gg.hand.released_evt = 0;
 
+      if(!self.hover_t) return;
+
       if(c.type == CARD_TYPE_BIT)
       {
         var b = new farmbit();

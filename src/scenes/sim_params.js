@@ -44,7 +44,7 @@ var kick_fulfillment      = 0.1;
 
 var max_dist = 9999999;
 
-var farmbit_cost = 100;
+var farmbit_cost = 500;
 var farm_cost = 100;
 var livestock_cost = 200;
 var storage_cost = 10;

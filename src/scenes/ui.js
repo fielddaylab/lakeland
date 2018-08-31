@@ -29,12 +29,12 @@ var shop = function()
   var h = 40;
   x += 10;
   y += 10;
-  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost)   return; gg.money -= farmbit_cost;   gg.hand.add(CARD_TYPE_BIT);       }); y += h+10;
-  self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      gg.hand.add(CARD_TYPE_FARM);      }); y += h+10;
-  self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; gg.hand.add(CARD_TYPE_LIVESTOCK); }); y += h+10;
-  self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   gg.hand.add(CARD_TYPE_STORAGE);   }); y += h+10;
-  self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      gg.hand.add(CARD_TYPE_ROAD);      }); y += h+10;
-  self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money;                                                                             }); y += h+10;
+  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost)   return; gg.money -= farmbit_cost;   var c = gg.hand.add(CARD_TYPE_BIT);       gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      var c = gg.hand.add(CARD_TYPE_FARM);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      var c = gg.hand.add(CARD_TYPE_ROAD);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money;                                                                                                                                }); y += h+10;
 
   self.filter = function(filter)
   {
@@ -194,7 +194,10 @@ var hand = function()
     c.type = type;
     c.wx = 0;
     c.wy = 0;
+    c.wxv = 10;
+    c.wyv = 100;
     self.cards.push(c);
+    return c;
   }
 
   self.destroy = function(c)
