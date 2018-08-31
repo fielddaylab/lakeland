@@ -1311,7 +1311,6 @@ var board = function()
             //gen poop
             var it = new item();
             it.type = ITEM_TYPE_POOP;
-            it.carryability = poop_carryability;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
@@ -1452,7 +1451,6 @@ var item = function()
   self.tile;
   self.type = ITEM_TYPE_NULL;
   self.state = ITEM_STATE_NULL;
-  self.carryability = 1;
   self.lock = 0;
 
   self.tick = function()
@@ -1523,6 +1521,33 @@ var farmbit = function()
   self.frame_l = 10;
   self.frame_t = randIntBelow(self.frame_l);
 
+  self.walk_mod = function()
+  {
+    var mod = 1;
+    if(self.item)
+    {
+      switch(self.item.type)
+      {
+        case ITEM_TYPE_FOOD: mod *= food_carryability; break;
+        case ITEM_TYPE_POOP: mod *= poop_carryability; break;
+      }
+    }
+    if(self.tile)
+    {
+      switch(self.tile.type)
+      {
+        case TILE_TYPE_LAND:      mod *= land_walkability;      break;
+        case TILE_TYPE_WATER:     mod *= water_walkability;     break;
+        case TILE_TYPE_SHORE:     mod *= shore_walkability;     break;
+        case TILE_TYPE_FARM:      mod *= farm_walkability;      break;
+        case TILE_TYPE_LIVESTOCK: mod *= livestock_walkability; break;
+        case TILE_TYPE_STORAGE:   mod *= storage_walkability;   break;
+        case TILE_TYPE_ROAD:      mod *= road_walkability;      break;
+      }
+    }
+    return mod;
+  }
+
   self.walk_toward_tile = function(t)
   {
     self.move_dir_x = t.tx-self.tile.tx;
@@ -1534,10 +1559,9 @@ var farmbit = function()
       self.move_dir_y /= l;
     }
 
-    var carry = 1;
-    if(self.item) carry = self.item.carryability;
-    self.wx += self.move_dir_x*self.walk_speed*carry;
-    self.wy += self.move_dir_y*self.walk_speed*carry;
+    var mod = self.walk_mod();
+    self.wx += self.move_dir_x*self.walk_speed*mod;
+    self.wy += self.move_dir_y*self.walk_speed*mod;
   }
 
   self.walk_toward_item = function(it)
@@ -1644,10 +1668,9 @@ var farmbit = function()
               self.job_state = JOB_STATE_IDLE_CHILL;
               self.job_state_t = 0;
             }
-            var carry = 1;
-            if(self.item) carry = self.item.carryability;
-            self.wx += self.move_dir_x*self.walk_speed*carry;
-            self.wy += self.move_dir_y*self.walk_speed*carry;
+            var mod = self.walk_mod();
+            self.wx += self.move_dir_x*self.walk_speed*mod;
+            self.wy += self.move_dir_y*self.walk_speed*mod;
             gg.b.wrapw(self);
           }
         }
@@ -1694,7 +1717,6 @@ var farmbit = function()
                 //pop item out of storage
                 var it = new item();
                 it.type = ITEM_TYPE_FOOD;
-                it.carryability = food_carryability;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);
@@ -1810,7 +1832,6 @@ var farmbit = function()
             //gen food
             var it = new item();
             it.type = ITEM_TYPE_FOOD;
-            it.carryability = food_carryability;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
@@ -1862,7 +1883,6 @@ var farmbit = function()
                 //pop item out of storage
                 var it = new item();
                 it.type = ITEM_TYPE_FOOD;
-                it.carryability = food_carryability;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);
@@ -1939,7 +1959,6 @@ var farmbit = function()
                 //pop item out of storage
                 var it = new item();
                 it.type = ITEM_TYPE_POOP;
-                it.carryability = food_carryability;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);

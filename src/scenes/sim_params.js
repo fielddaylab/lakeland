@@ -35,6 +35,14 @@ var storage_poop_max = 10;
 var food_carryability = 0.8;
 var poop_carryability = 0.2;
 
+var land_walkability      = 1;
+var water_walkability     = 0.5;
+var shore_walkability     = 0.8;
+var farm_walkability      = 0.4;
+var livestock_walkability = 0.2;
+var storage_walkability   = 0.1;
+var road_walkability      = 10;
+
 var plant_fulfillment     = 0.1;
 var harvest_fulfillment   = 0.1;
 var fertilize_fulfillment = 0.1;
