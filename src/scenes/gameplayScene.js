@@ -16,12 +16,14 @@ var GamePlayScene = function(game, stage)
     gg.ui_cam = {wx:gg.canv.width/2,wy:gg.canv.height/2,ww:gg.canv.width,wh:gg.canv.height}
     if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
     if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
+    if(dragger) dragger.detach(); dragger = new Dragger({source:gg.canvas});
     if(keyer)   keyer.detach();   keyer   = new Keyer({source:gg.canvas});
   }
   //self.resize(stage); //executed in 'ready'
 
   var clicker;
   var hoverer;
+  var dragger;
   var keyer;
   var keycatch = {
     key:function(evt)
@@ -38,6 +40,7 @@ var GamePlayScene = function(game, stage)
   {
     self.resize(stage);
     gg.b = new board();
+    gg.money = money_start_n;
     gg.items = [];
     gg.farmbits = [];
     for(var i = 0; i < farmbits_start_n; i++)
@@ -47,23 +50,26 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].wy = gg.b.wy+rand0()*gg.b.ww/2;
     }
     gg.jobs = [];
-    gg.palette = new palette();
+    gg.shop = new shop();
+    gg.hand = new hand();
     gg.inspector = new inspector();
   };
 
   self.tick = function()
   {
     hoverer.filter(gg.b);
-    //gg.palette.filter(hoverer);
+    gg.hand.filter_hover(hoverer);
 
     var check = true;
+    if(check) check = !gg.hand.filter_drag(dragger);
     if(check) check = !clicker.filter(gg.b);
-    if(check) check = !gg.palette.filter(clicker);
+    if(check) check = !gg.shop.filter(clicker);
 
     keyer.filter(keycatch);
 
-    hoverer.flush();
     clicker.flush();
+    hoverer.flush();
+    dragger.flush();
     keyer.flush();
 
     if(RESUME_SIM)
@@ -83,6 +89,8 @@ var GamePlayScene = function(game, stage)
         f.tick();
         screenSpace(gg.cam, gg.canv, f);
       }
+      gg.shop.tick();
+      gg.hand.tick();
     }
   };
 
@@ -93,7 +101,8 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].draw();
     for(var i = 0; i < gg.items.length; i++)
       gg.items[i].draw();
-    gg.palette.draw();
+    gg.shop.draw();
+    gg.hand.draw();
     gg.inspector.draw();
   };
 

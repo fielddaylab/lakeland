@@ -1,12 +1,12 @@
 var ENUM;
 ENUM = 0;
-var PALETTE_NULL      = ENUM; ENUM++;
-var PALETTE_PROD      = ENUM; ENUM++;
-var PALETTE_BIT       = ENUM; ENUM++;
-var PALETTE_FARM      = ENUM; ENUM++;
-var PALETTE_LIVESTOCK = ENUM; ENUM++;
-var PALETTE_STORAGE   = ENUM; ENUM++;
-var PALETTE_COUNT     = ENUM; ENUM++;
+var CARD_TYPE_NULL      = ENUM; ENUM++;
+var CARD_TYPE_BIT       = ENUM; ENUM++;
+var CARD_TYPE_FARM      = ENUM; ENUM++;
+var CARD_TYPE_LIVESTOCK = ENUM; ENUM++;
+var CARD_TYPE_STORAGE   = ENUM; ENUM++;
+var CARD_TYPE_ROAD      = ENUM; ENUM++;
+var CARD_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
 var INSPECTOR_CONTENT_NULL    = ENUM; ENUM++;
@@ -15,7 +15,7 @@ var INSPECTOR_CONTENT_ITEM  = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
-var palette = function()
+var shop = function()
 {
   var self = this;
   self.x = 0;
@@ -23,28 +23,28 @@ var palette = function()
   self.w = 100;
   self.h = 200;
 
-  self.palette = PALETTE_PROD;
-
   var x = self.x;
-  var y = self.y;
+  var y = self.y+30;
   var w = 40;
   var h = 40;
   x += 10;
   y += 10;
-  self.prod_btn      = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_PROD;      }); y += h+10;
-  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_BIT;       }); y += h+10;
-  self.farm_btn      = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_FARM;      }); y += h+10;
-  self.livestock_btn = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_LIVESTOCK; }); y += h+10;
-  self.storage_btn   = new ButtonBox(x,y,w,h,function(){ self.palette = PALETTE_STORAGE;   }); y += h+10;
+  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost)   return; gg.money -= farmbit_cost;   gg.hand.add(CARD_TYPE_BIT);       }); y += h+10;
+  self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      gg.hand.add(CARD_TYPE_FARM);      }); y += h+10;
+  self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; gg.hand.add(CARD_TYPE_LIVESTOCK); }); y += h+10;
+  self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   gg.hand.add(CARD_TYPE_STORAGE);   }); y += h+10;
+  self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      gg.hand.add(CARD_TYPE_ROAD);      }); y += h+10;
+  self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money;                                                                             }); y += h+10;
 
   self.filter = function(filter)
   {
     var check = true;
-    if(check) check = !filter.filter(self.prod_btn);
     if(check) check = !filter.filter(self.bit_btn);
     if(check) check = !filter.filter(self.farm_btn);
     if(check) check = !filter.filter(self.livestock_btn);
     if(check) check = !filter.filter(self.storage_btn);
+    if(check) check = !filter.filter(self.road_btn);
+    if(check) check = !filter.filter(self.money_btn);
     return !check;
   }
 
@@ -57,20 +57,216 @@ var palette = function()
   {
     gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = gray;
-    switch(self.palette)
-    {
-      case PALETTE_PROD:      fillBox(self.prod_btn,gg.ctx);      break;
-      case PALETTE_BIT:       fillBox(self.bit_btn,gg.ctx);       break;
-      case PALETTE_FARM:      fillBox(self.farm_btn,gg.ctx);      break;
-      case PALETTE_LIVESTOCK: fillBox(self.livestock_btn,gg.ctx); break;
-      case PALETTE_STORAGE:   fillBox(self.storage_btn,gg.ctx);   break;
-    }
+
+    if(gg.money < farmbit_cost)   fillBox(self.bit_btn,gg.ctx);
+    if(gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
+    if(gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
+    if(gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
+    if(gg.money < road_cost)      fillBox(self.road_btn,gg.ctx);
+
     gg.ctx.fillStyle = black;
-    strokeBox(self.prod_btn,gg.ctx);      gg.ctx.fillText("examine",   self.prod_btn.x,      self.prod_btn.y+20);
-    strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",       self.bit_btn.x,       self.bit_btn.y+20);
-    strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",      self.farm_btn.x,      self.farm_btn.y+20);
-    strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock", self.livestock_btn.x, self.livestock_btn.y+20);
-    strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",   self.storage_btn.x,   self.storage_btn.y+20);
+    gg.ctx.fillText("$"+gg.money,10,30);
+
+    strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",       self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30);
+    strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",      self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
+    strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock", self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
+    strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",   self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
+    strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("road",      self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
+    strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",     self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
+  }
+}
+
+var card = function()
+{
+  var self = this;
+
+  self.ww = 100;
+  self.wh = 200;
+  self.wx = 0;
+  self.wy = 0;
+
+  self.wxv = 0;
+  self.wyv = 0;
+
+  self.type = CARD_TYPE_NULL;
+
+  self.w = 0;
+  self.h = 0;
+  self.x = 0;
+  self.y = 0;
+
+  self.hover = function(evt)
+  {
+    if(gg.hand.hovered_card && gg.hand.hovered_card.wy < self.wy) return;
+    gg.hand.hovered_card = self;
+  }
+  self.unhover = function()
+  {
+    if(gg.hand.hovered_card == self) gg.hand.hovered_card = 0;
+  }
+
+  self.dragStart = function(evt)
+  {
+    if(gg.hand.hovered_card != self) return 0;
+    gg.hand.selected_card = self;
+    gg.hand.im_hit = 1;
+  }
+  self.drag = function(evt)
+  {
+    if(gg.hand.selected_card != self) return;
+    else gg.hand.dragging_evt = evt;
+  }
+  self.dragFinish = function(evt)
+  {
+    if(gg.hand.selected_card != self) return;
+    else
+    {
+      gg.hand.released_card = gg.hand.selected_card;
+      gg.hand.released_evt = gg.hand.dragging_evt;
+      gg.hand.selected_card = 0;
+      gg.hand.dragging_evt = 0;
+    }
+  }
+
+  self.tick = function()
+  {
+  }
+
+  self.draw = function()
+  {
+    gg.ctx.fillStyle = white;
+    fillBox(self,gg.ctx);
+    gg.ctx.fillStyle = black;
+    gg.ctx.strokeStyle = black;
+    if(gg.hand.hovered_card == self) gg.ctx.strokeStyle = green;
+    if(gg.hand.selected_card == self) gg.ctx.strokeStyle = blue;
+    strokeBox(self,gg.ctx);
+    switch(self.type)
+    {
+      case CARD_TYPE_BIT:       gg.ctx.fillText("Bit",       self.x+10,self.y+20); break;
+      case CARD_TYPE_FARM:      gg.ctx.fillText("Farm",      self.x+10,self.y+20); break;
+      case CARD_TYPE_LIVESTOCK: gg.ctx.fillText("Livestock", self.x+10,self.y+20); break;
+      case CARD_TYPE_STORAGE:   gg.ctx.fillText("Storage",   self.x+10,self.y+20); break;
+      case CARD_TYPE_ROAD:      gg.ctx.fillText("Road",      self.x+10,self.y+20); break;
+    }
+    /*
+    gg.ctx.strokeStyle = green;
+    var x = self.x+self.w/2;
+    var y = self.y+self.h/2;
+    drawArrow(x,y,x+(self.wxv*10),y-(self.wyv*10),10,gg.ctx);
+    */
+  }
+}
+
+var hand = function()
+{
+  var self = this;
+
+  self.w = gg.canv.width;
+  self.h = gg.canv.height;
+  self.x = 0;
+  self.y = 0;
+
+  self.hovered_card = 0;
+  self.selected_card = 0;
+  self.dragging_evt = 0;
+  self.released_card = 0;
+  self.released_evt = 0;
+
+  self.cards = [];
+
+  self.sortish = function() //1 pass bubble sort
+  {
+    for(var i = 0; i < self.cards.length-1; i++)
+    {
+      if(self.cards[i].wy < self.cards[i+1].wy)
+      {
+        var t = self.cards[i];
+        self.cards[i] = self.cards[i+1];
+        self.cards[i+1] = t;
+      }
+    }
+  }
+
+  self.add = function(type)
+  {
+    var c = new card();
+    c.type = type;
+    c.wx = 0;
+    c.wy = 0;
+    self.cards.push(c);
+  }
+
+  self.destroy = function(c)
+  {
+    for(var i = 0; i < self.cards.length; i++)
+      if(self.cards[i] == c) self.cards.splice(i,1);
+  }
+
+  self.filter_hover = function(hoverer)
+  {
+    for(var i = 0; i < self.cards.length; i++)
+      hoverer.filter(self.cards[i]);
+  }
+  self.filter_drag = function(dragger)
+  {
+    self.im_hit = 0; //wow bogus signalling of cards
+    for(var i = 0; i < self.cards.length; i++)
+      dragger.filter(self.cards[i]);
+    var im_hit = self.im_hit;
+    self.im_hit = 0;
+    return im_hit;
+  }
+
+  self.tick = function()
+  {
+    self.sortish();
+    for(var i = 0; i < self.cards.length; i++)
+    {
+      var c = self.cards[i];
+      c.wxv += (gg.canv.width/2-c.wx)*0.001;
+           if(self.selected_card == c) c.wyv += (150-c.wy)*0.05;
+      else if(self.hovered_card  == c) c.wyv += (110-c.wy)*0.01;
+      else                             c.wyv += (100-c.wy)*0.005;
+    }
+    for(var i = 0; i < self.cards.length; i++)
+    {
+      var c = self.cards[i];
+      for(var j = i+1; j < self.cards.length; j++)
+      {
+        var c2 = self.cards[j];
+        var dx = (c2.wx-c.wx);
+        var dy = (c2.wy-c.wy);
+        var d2 = dx*dx+dy*dy
+        var d = sqrt(d2);
+        dx /= d;
+        dy /= d;
+        dx *= (1/d2)*1000;
+        dy *= (1/d2)*1000;
+        c.wxv -= dx;
+        c.wyv -= dy;
+        c2.wxv += dx;
+        c2.wyv += dy;
+      }
+    }
+    for(var i = 0; i < self.cards.length; i++)
+    {
+      var c = self.cards[i];
+      c.wxv *= 0.95;
+      c.wyv *= 0.95;
+      c.wxv = mind(c.wxv,10);
+      c.wyv = mind(c.wyv,10);
+      c.wx += c.wxv;
+      c.wy += c.wyv;
+      screenSpace(gg.ui_cam, gg.canv, c);
+      c.tick();
+    }
+  }
+
+  self.draw = function()
+  {
+    for(var i = 0; i < self.cards.length; i++)
+      self.cards[i].draw();
   }
 }
 
@@ -96,14 +292,15 @@ var inspector = function()
     str = "Type: ";
     switch(t.type)
     {
-      case TILE_TYPE_NULL:      str += "null";  break;
-      case TILE_TYPE_LAND:      str += "land";  break;
-      case TILE_TYPE_WATER:     str += "water"; break;
-      case TILE_TYPE_SHORE:     str += "shore"; break;
-      case TILE_TYPE_FARM:      str += "farm";  break;
-      case TILE_TYPE_LIVESTOCK: str += "livestock";  break;
-      case TILE_TYPE_STORAGE:   str += "storage";  break;
-      case TILE_TYPE_COUNT:     str += "count"; break;
+      case TILE_TYPE_NULL:      str += "null";      break;
+      case TILE_TYPE_LAND:      str += "land";      break;
+      case TILE_TYPE_WATER:     str += "water";     break;
+      case TILE_TYPE_SHORE:     str += "shore";     break;
+      case TILE_TYPE_FARM:      str += "farm";      break;
+      case TILE_TYPE_LIVESTOCK: str += "livestock"; break;
+      case TILE_TYPE_STORAGE:   str += "storage";   break;
+      case TILE_TYPE_ROAD:      str += "road";      break;
+      case TILE_TYPE_COUNT:     str += "count";     break;
     }
     gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
     y += vspace;
@@ -147,7 +344,9 @@ var inspector = function()
         y += vspace;
       }
         break;
+      case TILE_TYPE_ROAD:
       case TILE_TYPE_COUNT:
+        break;
     }
     gg.ctx.fillText("t:"+t.state_t,x,y);
     y += vspace;

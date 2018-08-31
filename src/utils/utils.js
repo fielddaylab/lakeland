@@ -48,6 +48,7 @@ function mapVal(from_min, from_max, to_min, to_max, v) { return ((v-from_min)/(f
 function clampMapVal(from_min, from_max, to_min, to_max, v) { return clamp(to_min,to_max,((v-from_min)/(from_max-from_min))*(to_max-to_min)+to_min); }
 function clamp(a,b,v) { if(v < a) return a; if(v > b) return b; return v; }
 function eq(a,b,e) { return (a < b+e && a > b-e); }
+function dir(v) { if(v > 0) return 1; else if(v < 0) return -1; else return 0; }
 function lerp(s,e,t) { return s+((e-s)*t); }
 function invlerp(s,e,v) { return (v-s)/(e-s); }
 function easein(x)  { return x*x; } //only valid from 0-1
@@ -104,6 +105,8 @@ var ceil = Math.ceil;
 var abs = Math.abs;
 var min = Math.min;
 var max = Math.max;
+var maxd = function(d,v) { if(v < 0) return -max(d,-v); else return max(d,v); }
+var mind = function(d,v) { if(v < 0) return -min(d,-v); else return min(d,v); }
 var pow = Math.pow;
 var sqrt = Math.sqrt;
 var sin = Math.sin;

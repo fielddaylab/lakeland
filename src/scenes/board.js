@@ -15,6 +15,7 @@ var TILE_TYPE_SHORE     = ENUM; ENUM++;
 var TILE_TYPE_FARM      = ENUM; ENUM++;
 var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
 var TILE_TYPE_STORAGE   = ENUM; ENUM++;
+var TILE_TYPE_ROAD      = ENUM; ENUM++;
 var TILE_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
@@ -1248,63 +1249,29 @@ var board = function()
 
   self.click = function(evt)
   {
-    if(gg.palette.palette == PALETTE_PROD)
+    var clicked;
+    for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
+    if(clicked)
     {
-      var clicked;
-      for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
+      gg.inspector.detailed = clicked;
+      gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
+    }
+    if(!clicked)
+    {
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
       if(clicked)
       {
         gg.inspector.detailed = clicked;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
+        gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
       }
-      if(!clicked)
+      else
       {
-        for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
-        if(clicked)
-        {
-          gg.inspector.detailed = clicked;
-          gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
-        }
-        else
-        {
-          gg.inspector.detailed = self.hover_t;
-          gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
-        }
+        gg.inspector.detailed = self.hover_t;
+        gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
       }
-      if(!self.hover_t) return;
     }
+    if(!self.hover_t) return;
 
-    if(gg.palette.palette == PALETTE_BIT)
-    {
-      var b = new farmbit();
-      b.tile = self.hover_t;
-      gg.b.tiles_tw(self.hover_t,b);
-      gg.farmbits.push(b);
-      job_for_b(b);
-    }
-
-    if(gg.palette.palette == PALETTE_FARM && self.hover_t.type != TILE_TYPE_FARM)
-    {
-      self.hover_t.type = TILE_TYPE_FARM;
-      self.hover_t.state = TILE_STATE_FARM_UNPLANTED;
-      self.hover_t.state_t = 0;
-      self.hover_t.val = 0;
-      b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
-    }
-    if(gg.palette.palette == PALETTE_LIVESTOCK && self.hover_t.type != TILE_TYPE_LIVESTOCK)
-    {
-      self.hover_t.type = TILE_TYPE_LIVESTOCK;
-      self.hover_t.state = TILE_STATE_LIVESTOCK_IDLE;
-      self.hover_t.state_t = 0;
-      self.hover_t.val = 1; //fullness
-    }
-    if(gg.palette.palette == PALETTE_STORAGE && self.hover_t.type != TILE_TYPE_STORAGE)
-    {
-      self.hover_t.type = TILE_TYPE_STORAGE;
-      self.hover_t.state = TILE_STATE_STORAGE_UNASSIGNED;
-      self.hover_t.state_t = 0;
-      self.hover_t.val = 0;
-    }
   }
 
   self.tick = function()
@@ -1360,6 +1327,66 @@ var board = function()
       self.flow(t,right);
       self.flow(t,top);
     }
+
+    if(gg.hand.released_card)
+    {
+      var c = gg.hand.released_card;
+      gg.hand.released_card = 0;
+      var evt = gg.hand.released_evt;
+      gg.hand.released_evt = 0;
+
+      if(c.type == CARD_TYPE_BIT)
+      {
+        var b = new farmbit();
+        b.tile = self.hover_t;
+        gg.b.tiles_tw(self.hover_t,b);
+        gg.farmbits.push(b);
+        job_for_b(b);
+        gg.hand.destroy(c);
+        return;
+      }
+
+      if(c.type == CARD_TYPE_FARM && self.hover_t.type != TILE_TYPE_FARM)
+      {
+        self.hover_t.type = TILE_TYPE_FARM;
+        self.hover_t.state = TILE_STATE_FARM_UNPLANTED;
+        self.hover_t.state_t = 0;
+        self.hover_t.val = 0;
+        b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
+        gg.hand.destroy(c);
+        return;
+      }
+
+      if(c.type == CARD_TYPE_LIVESTOCK && self.hover_t.type != TILE_TYPE_LIVESTOCK)
+      {
+        self.hover_t.type = TILE_TYPE_LIVESTOCK;
+        self.hover_t.state = TILE_STATE_LIVESTOCK_IDLE;
+        self.hover_t.state_t = 0;
+        self.hover_t.val = 1; //fullness
+        gg.hand.destroy(c);
+        return;
+      }
+
+      if(c.type == CARD_TYPE_STORAGE && self.hover_t.type != TILE_TYPE_STORAGE)
+      {
+        self.hover_t.type = TILE_TYPE_STORAGE;
+        self.hover_t.state = TILE_STATE_STORAGE_UNASSIGNED;
+        self.hover_t.state_t = 0;
+        self.hover_t.val = 0;
+        gg.hand.destroy(c);
+        return;
+      }
+
+      if(c.type == CARD_TYPE_ROAD && self.hover_t.type != TILE_TYPE_ROAD)
+      {
+        self.hover_t.type = TILE_TYPE_ROAD;
+        self.hover_t.state = TILE_STATE_NULL;
+        self.hover_t.state_t = 0;
+        self.hover_t.val = 0;
+        gg.hand.destroy(c);
+        return;
+      }
+    }
   }
 
   self.draw = function()
@@ -1389,6 +1416,7 @@ var board = function()
             break;
           case TILE_TYPE_LIVESTOCK: gg.ctx.fillStyle = blue;   break;
           case TILE_TYPE_STORAGE:   gg.ctx.fillStyle = purple; break;
+          case TILE_TYPE_ROAD:      gg.ctx.fillStyle = gray;   break;
         }
         gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
         i++;
@@ -1786,6 +1814,7 @@ var farmbit = function()
             kick_item(it);
             gg.items.push(it);
 
+            gg.money += harvest_profit;
             self.fulfillment += harvest_fulfillment;
             self.calibrate_stats();
             self.go_idle();

@@ -2,6 +2,7 @@ var board_w = 100;
 var board_h = 100;
 
 var farmbits_start_n = 1;
+var money_start_n = 100;
 
 //in order of priority
 var fullness_motivated    = 0.2;
@@ -42,4 +43,13 @@ var store_fulfillment     = 0.1;
 var kick_fulfillment      = 0.1;
 
 var max_dist = 9999999;
+
+var farmbit_cost = 100;
+var farm_cost = 100;
+var livestock_cost = 200;
+var storage_cost = 10;
+var road_cost = 1;
+var free_money = 100;
+
+var harvest_profit = 10;
 
