@@ -1035,7 +1035,7 @@ var kick_item = function(it)
 
 var GenDirector = function()
 {
-  return {x:0,y:0,g:0,h:0};
+  return {x:0,y:0,v:0,d:0};
 }
 var tile = function()
 {
@@ -1112,6 +1112,79 @@ var board = function()
 
   self.hovering;
   self.hover_t;
+
+  var direction_insert = function(index,directions,list)
+  {
+    var d = directions[index];
+    for(var i = 0; i < list.length; i++)
+      if(d.d > directions[list[i]].d) { list.splice(i,0,index); return; }
+    list.push(index); //closest
+  }
+  var walkability_check = function(type)
+  {
+    switch(type)
+    {
+      case TILE_TYPE_LAND:      return land_walkability;      break;
+      case TILE_TYPE_WATER:     return water_walkability;     break;
+      case TILE_TYPE_SHORE:     return shore_walkability;     break;
+      case TILE_TYPE_FARM:      return farm_walkability;      break;
+      case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
+      case TILE_TYPE_STORAGE:   return storage_walkability;   break;
+      case TILE_TYPE_ROAD:      return road_walkability;      break;
+    }
+    return 1;
+  }
+  var handle = function(from_d,directions,nindex,list)
+  {
+    var nd = directions[nindex];
+    if(!nd.v)
+    {
+      var nt = gg.b.tiles[nindex];
+      nd.v = 1;
+      nd.d = from_d.d+(1/walkability_check(nt.type));
+      direction_insert(nindex,directions,list);
+    }
+  }
+  self.calculate_directions = function(t)
+  {
+    var check = []; //holds INDEXES; closest at _end_ for quick pop
+    for(var i = 0; i < t.directions.length; i++) { t.directions[i].v = 0; t.directions[i].d = max_dist; }
+    var cindex;
+    var ct;
+    var cd;
+
+    cindex = t.i;
+    cd = t.directions[cindex];
+
+    cd.v = 1;
+    cd.d = 0;
+    cd.x = 0;
+    cd.y = 0;
+
+    check.push(cindex);
+
+    while(check.length)
+    {
+      cindex = check.pop();
+      ct = gg.b.tiles[cindex];
+      cd = t.directions[cindex];
+      if(ct.tx > 0)         handle(cd,t.directions,cindex-1      ,check); //check left
+      if(ct.tx < self.tw-1) handle(cd,t.directions,cindex+1      ,check); //check right
+      if(ct.ty > 0)         handle(cd,t.directions,cindex-self.tw,check); //check bottom
+      if(ct.ty < self.th-1) handle(cd,t.directions,cindex+self.tw,check); //check top
+    }
+
+    for(var i = 0; i < t.directions.length; i++)
+    {
+      var d = t.directions[i];
+      var ct = self.tiles[i];
+      var lowest_d = max_dist;
+      if(ct.tx > 0         && t.directions[i-1      ].d < lowest_d) { d.x = -1; d.y =  0; lowest_d = t.directions[i-1      ].d; }
+      if(ct.tx < self.tw-1 && t.directions[i+1      ].d < lowest_d) { d.x =  1; d.y =  0; lowest_d = t.directions[i+1      ].d; }
+      if(ct.ty > 0         && t.directions[i-self.tw].d < lowest_d) { d.x =  0; d.y = -1; lowest_d = t.directions[i-self.tw].d; }
+      if(ct.ty < self.th-1 && t.directions[i+self.tw].d < lowest_d) { d.x =  0; d.y =  1; lowest_d = t.directions[i+self.tw].d; }
+    }
+  }
 
   self.init = function()
   {
@@ -1329,6 +1402,7 @@ var board = function()
       {
         gg.inspector.detailed = self.hover_t;
         gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+        gg.b.calculate_directions(self.hover_t);
       }
     }
     if(!self.hover_t) return;
@@ -1475,6 +1549,27 @@ var board = function()
     var t;
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
+
+    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
+    {
+      gg.ctx.strokeStyle = green;
+      var l = 10;
+      var g = 1;
+      var d = gg.inspector.detailed;
+      var i = 0;
+      for(var ty = 0; ty < self.th; ty++)
+      {
+        for(var tx = 0; tx < self.tw; tx++)
+        {
+          var t = d.directions[i];
+          var x = self.x+tx*w+w/2;
+          var y = self.y+self.h-(ty*h)-h/2;
+          //drawArrow(x,y,x+t.x*l,y-t.y*l,g,gg.ctx);
+          drawLine(x,y,x+t.x*l,y+t.y*l,gg.ctx);
+          i++;
+        }
+      }
+    }
   }
 }
 
