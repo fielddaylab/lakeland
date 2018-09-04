@@ -52,6 +52,9 @@ var Game = function(init)
       if(DOUBLETIME)
       {
         scenes[cur_scene].tick();
+        scenes[cur_scene].tick();
+        scenes[cur_scene].tick();
+        scenes[cur_scene].tick();
       }
     }
     if(old_cur_scene == cur_scene) //still in same scene- draw

@@ -1097,6 +1097,7 @@ var board = function()
   self.wy = 0;
   self.ww = 660;
   self.wh = 660;
+  self.nutrition_view = 0;
 
   self.wrapw = function(o)
   {
@@ -1213,6 +1214,12 @@ var board = function()
       self.tiles[i].directions_dirty = 1;
   }
 
+  self.tile_colors = [];
+  self.tile_color = function(type, nutrition)
+  {
+    return self.tile_colors[type][floor(min(nutrition*255,255))];
+  }
+
   self.init = function()
   {
     for(var ty = 0; ty < self.th; ty++)
@@ -1224,6 +1231,8 @@ var board = function()
         t.ty = ty;
         t.i = i;
         t.nutrition = rand();
+        t.nutrition *= t.nutrition;
+        t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
@@ -1331,6 +1340,101 @@ var board = function()
       self.tile_groups[t.type].push(t);
     }
 
+    var type;
+    var p;
+    var r;
+    var g;
+    var b;
+
+    type = TILE_TYPE_NULL;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = (255-i);
+      b = 255;
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_LAND;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = (255-i);
+      b = 255;
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_WATER;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 0;
+      g = floor(p*150);
+      b = 255-floor(p*150);
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_SHORE;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 150;
+      g = 150+floor(p*75);
+      b = 255-floor(p*75);
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_FARM;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = 255;
+      b = 255;
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_LIVESTOCK;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = 255;
+      b = 255;
+      self.tile_colors[type][i] = blue;
+    }
+
+    type = TILE_TYPE_STORAGE;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = 255;
+      b = 255;
+      self.tile_colors[type][i] = purple;
+    }
+
+    type = TILE_TYPE_ROAD;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = 255;
+      b = 255;
+      self.tile_colors[type][i] = gray;
+    }
+
+
     self.hovering = 0;
   }
   self.init();
@@ -1368,11 +1472,25 @@ var board = function()
     self.dirty_directions();
   }
 
-  self.flow = function(from, to)
+  self.flow = function(from, to) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
   {
-    var d = from.nutrition-to.nutrition;
-    from.nutrition -= d*0.0001;
-    to.nutrition   += d*0.0001;
+    var d = clamp(-1,1,from.nutrition-to.nutrition);
+    if(
+      (d < 0 && from.type == TILE_TYPE_WATER) ||
+      (d > 0 && to.type   == TILE_TYPE_WATER)
+    )
+    { //destination is water
+      d *= nutrition_flow_rate;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+    else
+    { //destination is anything else
+      d *= d*d;
+      d *= nutrition_flow_rate;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
   }
 
   self.hover = function(evt)
@@ -1450,8 +1568,9 @@ var board = function()
           if(t.state == TILE_STATE_FARM_PLANTED)
           {
             var d = min(t.nutrition*farm_nutrition_uptake_p,farm_nutrition_uptake_max);
-            t.val += d;
             t.nutrition -= d;
+            d = max(d,farm_nutrition_uptake_min); //nutrition created out of thin air!
+            t.val += d;
             if(t.val > farm_nutrition_req)
             {
               t.state = TILE_STATE_FARM_GROWN;
@@ -1545,39 +1664,58 @@ var board = function()
     var w = self.w/self.tw;
     var h = self.h/self.th;
     var i = 0;
-    for(var ty = 0; ty < self.th; ty++)
-    {
-      for(var tx = 0; tx < self.tw; tx++)
+    if(self.nutrition_view)
+    { //nutrition view
+      for(var ty = 0; ty < self.th; ty++)
       {
-        var t = self.tiles[i];
-        switch(t.type)
+        for(var tx = 0; tx < self.tw; tx++)
         {
-          case TILE_TYPE_LAND:  gg.ctx.fillStyle = "rgba(255,"+(255-floor(t.nutrition*255))+",255,1)"; break;
-          case TILE_TYPE_WATER: gg.ctx.fillStyle = "rgba("+floor(t.nutrition*255)+",255,255,1)"; break;
-          case TILE_TYPE_SHORE: gg.ctx.fillStyle = "rgba("+floor((t.nutrition/2+0.5)*255)+",255,255,1)"; break;
-          case TILE_TYPE_FARM:
-          {
-            switch(t.state)
-            {
-              case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
-              case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
-              case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
-            }
-          }
-            break;
-          case TILE_TYPE_LIVESTOCK: gg.ctx.fillStyle = blue;   break;
-          case TILE_TYPE_STORAGE:   gg.ctx.fillStyle = purple; break;
-          case TILE_TYPE_ROAD:      gg.ctx.fillStyle = gray;   break;
+          var t = self.tiles[i];
+          gg.ctx.fillStyle = self.tile_color(TILE_TYPE_NULL, t.nutrition);
+          gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+          i++;
         }
-        gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
-        i++;
       }
     }
+    else
+    { //normal view
+      for(var ty = 0; ty < self.th; ty++)
+      {
+        for(var tx = 0; tx < self.tw; tx++)
+        {
+          var t = self.tiles[i];
+          switch(t.type)
+          {
+            case TILE_TYPE_LAND:
+            case TILE_TYPE_WATER:
+            case TILE_TYPE_SHORE:
+            case TILE_TYPE_LIVESTOCK:
+            case TILE_TYPE_STORAGE:
+            case TILE_TYPE_ROAD:
+              gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
+              break;
+            case TILE_TYPE_FARM:
+            {
+              switch(t.state)
+              {
+                case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
+                case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
+                case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
+              }
+            }
+              break;
+          }
+          gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+          i++;
+        }
+      }
+    }
+
     var t;
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
 
-    if(0 && gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
+    if(debug_pathfinding && gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
     {
       gg.ctx.strokeStyle = green;
       var l = 10;
@@ -2272,11 +2410,11 @@ var farmbit = function()
         gg.b.tiles_tw(self.job_subject,self.job_subject);
         screenSpacePt(gg.cam, gg.canv, self.job_subject);
       }
-      gg.ctx.strokeStyle = green;
-      gg.ctx.beginPath();
-      gg.ctx.moveTo(self.x+self.w/2,self.y+self.h/2);
-      gg.ctx.lineTo(self.job_subject.x,self.job_subject.y);
-      gg.ctx.stroke();
+      if(debug_jobs)
+      {
+        gg.ctx.strokeStyle = green;
+        drawLine(self.x+self.w/2,self.y+self.h/2,self.job_subject.x,self.job_subject.y,gg.ctx);
+      }
     }
     if(self.job_object)
     {
@@ -2285,11 +2423,11 @@ var farmbit = function()
         gg.b.tiles_tw(self.job_object,self.job_object);
         screenSpacePt(gg.cam, gg.canv, self.job_object);
       }
-      gg.ctx.strokeStyle = green;
-      gg.ctx.beginPath();
-      gg.ctx.moveTo(self.x+self.w/2,self.y+self.h/2);
-      gg.ctx.lineTo(self.job_object.x,self.job_object.y);
-      gg.ctx.stroke();
+      if(debug_jobs)
+      {
+        gg.ctx.strokeStyle = green;
+        drawLine(self.x+self.w/2,self.y+self.h/2,self.job_object.x,self.job_object.y,gg.ctx);
+      }
     }
 
     var w = self.w/4;

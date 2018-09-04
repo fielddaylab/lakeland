@@ -24,10 +24,12 @@ var fulfillment_depletion_rate = 0.999;
 
 var wait_t = 10;
 
+var nutrition_flow_rate = 0.001;
 var farm_nutrition_uptake_p = 0.0005; //*%
 var farm_nutrition_uptake_max = 0.0002; //+v
+var farm_nutrition_uptake_min = 0.00001; //+v //difference created out of thin air!
 var farm_nutrition_req = 0.1;
-var farm_nutrition_fertilize_threshhold = 0.2;
+var farm_nutrition_fertilize_threshhold = 1;//0.2;
 var livestock_poop_t = 1000;
 var livestock_feed_threshhold = 0.2;
 var livestock_food_val = 1;
@@ -44,7 +46,7 @@ var shore_walkability     = 0.8;
 var farm_walkability      = 0.4;
 var livestock_walkability = 0.2;
 var storage_walkability   = 0.1;
-var road_walkability      = 10;
+var road_walkability      = 4;
 
 var plant_fulfillment     = 0.1;
 var harvest_fulfillment   = 0.1;
@@ -63,4 +65,7 @@ var road_cost = 1;
 var free_money = 100;
 
 var harvest_profit = 10;
+
+var debug_pathfinding = 0;
+var debug_jobs = 0;
 
