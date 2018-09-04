@@ -33,6 +33,7 @@ var GamePlayScene = function(game, stage)
         case "d": DOUBLETIME = !DOUBLETIME; break;
         case "p": RESUME_SIM = !RESUME_SIM; break;
         case "n": gg.b.nutrition_view = !gg.b.nutrition_view; break;
+        case "r": gg.b.raining = !gg.b.raining; break;
       }
     }
   }

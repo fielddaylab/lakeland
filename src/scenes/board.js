@@ -1043,6 +1043,7 @@ var tile = function()
   self.thing = THING_TYPE_TILE;
 
   self.tile = self; //trick that allows all thing.tile to reference a tile
+  self.shed = self; //<- set to tile corresponding to direction of flow in rainfall
   self.directions = [];
   self.directions_dirty = 1;
   self.tx = 0;
@@ -1077,8 +1078,6 @@ var board = function()
   self.tiles_t = function(tx,ty)
   {
     var i = self.tiles_i(tx,ty);
-    if(!self.tiles[i])
-      console.log("SHOCK");
     return self.tiles[i];
   }
   self.tiles_wt = function(wx,wy)
@@ -1097,6 +1096,7 @@ var board = function()
   self.wy = 0;
   self.ww = 660;
   self.wh = 660;
+  self.raining = 0;
   self.nutrition_view = 0;
 
   self.wrapw = function(o)
@@ -1304,6 +1304,7 @@ var board = function()
       return border;
     }
 
+    //fill lakes
     for(var i = 0; i < n_lakes; i++)
     {
       var src_tx = randIntBelow(self.tw);
@@ -1332,12 +1333,44 @@ var board = function()
         lake_border[j].type = TILE_TYPE_SHORE;
     }
 
+    //group tiles
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
       self.tile_groups[i] = [];
     for(var i = 0; i < self.tiles.length; i++)
+      self.tile_groups[t.type].push(self.tiles[i]);
+
+    //find sheds
+    for(var i = 0; i < self.tiles.length; i++)
     {
       var t = self.tiles[i];
-      self.tile_groups[t.type].push(t);
+      if(t.type == TILE_TYPE_WATER) continue;
+      var closest_d = max_dist;
+      var d;
+      var tt;
+      for(var ti = 0; ti < self.tiles.length; ti++)
+      {
+        var tt = self.tiles[ti];
+        if(tt.type != TILE_TYPE_WATER) continue;
+        d = distsqr(t.tx,t.ty,tt.tx,tt.ty);
+        if(d < closest_d)
+        {
+          closest_d = d;
+          t.shed = tt;
+        }
+      }
+      var xdir = 0;
+      var ydir = 0;
+      if(t.shed.tx < t.tx) xdir = -1;
+      if(t.shed.tx > t.tx) xdir =  1;
+      if(t.shed.ty < t.ty) ydir = -1;
+      if(t.shed.ty > t.ty) ydir =  1;
+      if(xdir == 0 && rand() < 0.8) xdir = randIntBelow(3)-1;
+      if(ydir == 0 && rand() < 0.8) ydir = randIntBelow(3)-1;
+      if(xdir ==  1 && t.tx == self.tw-1) xdir = 0;
+      if(xdir == -1 && t.tx == 0)         xdir = 0;
+      if(ydir ==  1 && t.ty == self.th-1) ydir = 0;
+      if(ydir == -1 && t.ty == 0)         ydir = 0;
+      t.shed = self.tiles[t.i+xdir+ydir*self.tw];
     }
 
     var type;
@@ -1493,6 +1526,12 @@ var board = function()
     }
   }
 
+  self.rainflow = function(t)
+  {
+    t.shed.nutrition += t.nutrition*0.01;
+    t.nutrition *= 0.99;
+  }
+
   self.hover = function(evt)
   {
     worldSpaceDoEvt(gg.cam, gg.canv, evt);
@@ -1606,6 +1645,7 @@ var board = function()
       var top   = self.tiles_t(t.tx  ,t.ty+1);
       self.flow(t,right);
       self.flow(t,top);
+      if(self.raining) self.rainflow(t);
     }
 
     if(gg.hand.released_card)
@@ -1733,6 +1773,17 @@ var board = function()
           drawLine(x,y,x+t.x*l,y-t.y*l,gg.ctx);
           i++;
         }
+      }
+    }
+
+    if(self.raining)
+    {
+      gg.ctx.fillStyle = blue;
+      for(var i = 0; i < 1000; i++)
+      {
+        var x = rand()*self.w;
+        var y = rand()*self.h;
+        gg.ctx.fillRect(self.x+x-1,self.y+y-1,2,2);
       }
     }
   }
