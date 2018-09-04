@@ -1044,6 +1044,7 @@ var tile = function()
 
   self.tile = self; //trick that allows all thing.tile to reference a tile
   self.directions = [];
+  self.directions_dirty = 1;
   self.tx = 0;
   self.ty = 0;
   self.i = 0;
@@ -1184,6 +1185,12 @@ var board = function()
       if(ct.ty > 0         && flow_d[i-self.tw] < lowest_d) { d.x =  0; d.y = -1; lowest_d = flow_d[i-self.tw]; }
       if(ct.ty < self.th-1 && flow_d[i+self.tw] < lowest_d) { d.x =  0; d.y =  1; lowest_d = flow_d[i+self.tw]; }
     }
+    t.directions_dirty = 0;
+  }
+  self.dirty_directions = function()
+  {
+    for(var i = 0; i < self.tiles.length; i++)
+      self.tiles[i].directions_dirty = 1;
   }
 
   self.init = function()
@@ -1338,6 +1345,7 @@ var board = function()
         break;
     }
     self.tile_groups[type].push(t);
+    self.dirty_directions();
   }
 
   self.flow = function(from, to)
@@ -1402,7 +1410,6 @@ var board = function()
       {
         gg.inspector.detailed = self.hover_t;
         gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
-        gg.b.calculate_directions(self.hover_t);
       }
     }
     if(!self.hover_t) return;
@@ -1694,6 +1701,7 @@ var farmbit = function()
 
   self.walk_toward_tile = function(t)
   {
+    if(t.directions_dirty) gg.b.calculate_directions(t);
     var mod = self.walk_mod();
     self.wx += t.directions[self.tile.i].x*self.walk_speed*mod;
     self.wy += t.directions[self.tile.i].y*self.walk_speed*mod;
