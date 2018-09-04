@@ -228,9 +228,9 @@ var hand = function()
     {
       var c = self.cards[i];
       c.wxv += (gg.canv.width/2-c.wx)*0.001;
-           if(self.selected_card == c) c.wyv += (150-c.wy)*0.05;
-      else if(self.hovered_card  == c) c.wyv += (110-c.wy)*0.01;
-      else                             c.wyv += (100-c.wy)*0.005;
+           if(self.selected_card == c) c.wyv += (50-c.wy)*0.05;
+      else if(self.hovered_card  == c) c.wyv += (30-c.wy)*0.01;
+      else                             c.wyv += (20-c.wy)*0.005;
     }
     for(var i = 0; i < self.cards.length; i++)
     {

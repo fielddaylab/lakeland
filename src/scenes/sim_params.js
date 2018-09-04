@@ -25,6 +25,7 @@ var fulfillment_depletion_rate = 0.999;
 var wait_t = 10;
 
 var nutrition_flow_rate = 0.001;
+var poop_nutrition_leak = 0.0001;
 var farm_nutrition_uptake_p = 0.0005; //*%
 var farm_nutrition_uptake_max = 0.0002; //+v
 var farm_nutrition_uptake_min = 0.00001; //+v //difference created out of thin air!

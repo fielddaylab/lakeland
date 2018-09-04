@@ -1778,6 +1778,8 @@ var item = function()
     if(self.wz < 0.01 && abs(self.wvz) < 0.1) { self.wvz = 0; self.wz = 0; }
 
     self.tile = gg.b.tiles_wt(self.wx,self.wy);
+    if(self.type == ITEM_TYPE_POOP)
+      self.tile.nutrition += poop_nutrition_leak;
   }
 
   self.draw = function()
