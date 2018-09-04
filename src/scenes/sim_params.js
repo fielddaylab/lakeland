@@ -44,6 +44,7 @@ var poop_carryability = 0.2;
 var land_walkability      = 1;
 var water_walkability     = 0.5;
 var shore_walkability     = 0.8;
+var home_walkability      = 0.4;
 var farm_walkability      = 0.4;
 var livestock_walkability = 0.2;
 var storage_walkability   = 0.1;
@@ -59,6 +60,7 @@ var kick_fulfillment      = 0.1;
 var max_dist = 9999999;
 
 var farmbit_cost = 500;
+var home_cost = 100;
 var farm_cost = 100;
 var livestock_cost = 200;
 var storage_cost = 10;

@@ -2,6 +2,7 @@ var ENUM;
 ENUM = 0;
 var CARD_TYPE_NULL      = ENUM; ENUM++;
 var CARD_TYPE_BIT       = ENUM; ENUM++;
+var CARD_TYPE_HOME      = ENUM; ENUM++;
 var CARD_TYPE_FARM      = ENUM; ENUM++;
 var CARD_TYPE_LIVESTOCK = ENUM; ENUM++;
 var CARD_TYPE_STORAGE   = ENUM; ENUM++;
@@ -11,7 +12,7 @@ var CARD_TYPE_COUNT     = ENUM; ENUM++;
 ENUM = 0;
 var INSPECTOR_CONTENT_NULL    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_FARMBIT = ENUM; ENUM++;
-var INSPECTOR_CONTENT_ITEM  = ENUM; ENUM++;
+var INSPECTOR_CONTENT_ITEM    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
@@ -30,6 +31,7 @@ var shop = function()
   x += 10;
   y += 10;
   self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost)   return; gg.money -= farmbit_cost;   var c = gg.hand.add(CARD_TYPE_BIT);       gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.home_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      var c = gg.hand.add(CARD_TYPE_HOME);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
   self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      var c = gg.hand.add(CARD_TYPE_FARM);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
   self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
@@ -40,6 +42,7 @@ var shop = function()
   {
     var check = true;
     if(check) check = !filter.filter(self.bit_btn);
+    if(check) check = !filter.filter(self.home_btn);
     if(check) check = !filter.filter(self.farm_btn);
     if(check) check = !filter.filter(self.livestock_btn);
     if(check) check = !filter.filter(self.storage_btn);
@@ -59,6 +62,7 @@ var shop = function()
     gg.ctx.fillStyle = gray;
 
     if(gg.money < farmbit_cost)   fillBox(self.bit_btn,gg.ctx);
+    if(gg.money < home_cost)      fillBox(self.home_btn,gg.ctx);
     if(gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
     if(gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
     if(gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
@@ -68,6 +72,7 @@ var shop = function()
     gg.ctx.fillText("$"+gg.money,10,30);
 
     strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",       self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30);
+    strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",      self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30);
     strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",      self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
     strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock", self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
     strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",   self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
@@ -144,6 +149,7 @@ var card = function()
     switch(self.type)
     {
       case CARD_TYPE_BIT:       gg.ctx.fillText("Bit",       self.x+10,self.y+20); break;
+      case CARD_TYPE_HOME:      gg.ctx.fillText("Home",      self.x+10,self.y+20); break;
       case CARD_TYPE_FARM:      gg.ctx.fillText("Farm",      self.x+10,self.y+20); break;
       case CARD_TYPE_LIVESTOCK: gg.ctx.fillText("Livestock", self.x+10,self.y+20); break;
       case CARD_TYPE_STORAGE:   gg.ctx.fillText("Storage",   self.x+10,self.y+20); break;
@@ -299,6 +305,7 @@ var inspector = function()
       case TILE_TYPE_LAND:      str += "land";      break;
       case TILE_TYPE_WATER:     str += "water";     break;
       case TILE_TYPE_SHORE:     str += "shore";     break;
+      case TILE_TYPE_HOME:      str += "home";      break;
       case TILE_TYPE_FARM:      str += "farm";      break;
       case TILE_TYPE_LIVESTOCK: str += "livestock"; break;
       case TILE_TYPE_STORAGE:   str += "storage";   break;
@@ -311,6 +318,8 @@ var inspector = function()
     switch(t.state)
     {
       case TILE_STATE_NULL:               str += "null";       break;
+      case TILE_STATE_HOME_VACANT:        str += "vacant";     break;
+      case TILE_STATE_HOME_OCCUPIED:      str += "occupied";   break;
       case TILE_STATE_FARM_UNPLANTED:     str += "unplanted";  break;
       case TILE_STATE_FARM_PLANTED:       str += "planted";    break;
       case TILE_STATE_FARM_GROWN:         str += "grown";      break;

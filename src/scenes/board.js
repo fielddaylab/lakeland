@@ -12,6 +12,7 @@ var TILE_TYPE_NULL      = ENUM; ENUM++;
 var TILE_TYPE_LAND      = ENUM; ENUM++;
 var TILE_TYPE_WATER     = ENUM; ENUM++;
 var TILE_TYPE_SHORE     = ENUM; ENUM++;
+var TILE_TYPE_HOME      = ENUM; ENUM++;
 var TILE_TYPE_FARM      = ENUM; ENUM++;
 var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
 var TILE_TYPE_STORAGE   = ENUM; ENUM++;
@@ -20,6 +21,8 @@ var TILE_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
 var TILE_STATE_NULL               = ENUM; ENUM++;
+var TILE_STATE_HOME_VACANT        = ENUM; ENUM++;
+var TILE_STATE_HOME_OCCUPIED      = ENUM; ENUM++;
 var TILE_STATE_FARM_UNPLANTED     = ENUM; ENUM++;
 var TILE_STATE_FARM_PLANTED       = ENUM; ENUM++;
 var TILE_STATE_FARM_GROWN         = ENUM; ENUM++;
@@ -69,6 +72,22 @@ var FARMBIT_STATE_DESPERATE = ENUM; ENUM++;
 var FARMBIT_STATE_MOTIVATED = ENUM; ENUM++;
 var FARMBIT_STATE_CONTENT   = ENUM; ENUM++;
 var FARMBIT_STATE_COUNT     = ENUM; ENUM++;
+
+var walkability_check = function(type)
+{
+  switch(type)
+  {
+    case TILE_TYPE_LAND:      return land_walkability;      break;
+    case TILE_TYPE_WATER:     return water_walkability;     break;
+    case TILE_TYPE_SHORE:     return shore_walkability;     break;
+    case TILE_TYPE_HOME:      return home_walkability;      break;
+    case TILE_TYPE_FARM:      return farm_walkability;      break;
+    case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
+    case TILE_TYPE_STORAGE:   return storage_walkability;   break;
+    case TILE_TYPE_ROAD:      return road_walkability;      break;
+  }
+  return 1;
+}
 
 var fullness_job_for_b = function(b)
 {
@@ -1115,20 +1134,6 @@ var board = function()
   self.hovering;
   self.hover_t;
 
-  var walkability_check = function(type)
-  {
-    switch(type)
-    {
-      case TILE_TYPE_LAND:      return land_walkability;      break;
-      case TILE_TYPE_WATER:     return water_walkability;     break;
-      case TILE_TYPE_SHORE:     return shore_walkability;     break;
-      case TILE_TYPE_FARM:      return farm_walkability;      break;
-      case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
-      case TILE_TYPE_STORAGE:   return storage_walkability;   break;
-      case TILE_TYPE_ROAD:      return road_walkability;      break;
-    }
-    return 1;
-  }
   var direction_insert = function(index,directions,flow_d,list)
   {
     for(var i = 0; i < list.length; i++)
@@ -1337,7 +1342,10 @@ var board = function()
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
       self.tile_groups[i] = [];
     for(var i = 0; i < self.tiles.length; i++)
-      self.tile_groups[t.type].push(self.tiles[i]);
+    {
+      var t = self.tiles[i];
+      self.tile_groups[t.type].push(t);
+    }
 
     //find sheds
     for(var i = 0; i < self.tiles.length; i++)
@@ -1423,6 +1431,17 @@ var board = function()
       self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
     }
 
+    type = TILE_TYPE_HOME;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = 0;
+      b = 0;
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
     type = TILE_TYPE_FARM;
     self.tile_colors[type] = [];
     for(var i = 0; i <= 255; i++)
@@ -1487,6 +1506,18 @@ var board = function()
       case TILE_TYPE_WATER:
         break;
       case TILE_TYPE_SHORE:
+        break;
+      case TILE_TYPE_HOME:
+        t.state = TILE_STATE_HOME_VACANT;
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          if(!gg.farmbits[i].home)
+          {
+            gg.farmbits[i].home = t;
+            t.state = TILE_STATE_HOME_OCCUPIED;
+            break;
+          }
+        }
         break;
       case TILE_TYPE_FARM:
         t.state = TILE_STATE_FARM_UNPLANTED;
@@ -1602,6 +1633,8 @@ var board = function()
       t.state_t++;
       switch(t.type)
       {
+        case TILE_TYPE_HOME:
+          break;
         case TILE_TYPE_FARM:
         {
           if(t.state == TILE_STATE_FARM_PLANTED)
@@ -1668,6 +1701,13 @@ var board = function()
         return;
       }
 
+      if(c.type == CARD_TYPE_HOME && self.hover_t.type != TILE_TYPE_HOME)
+      {
+        self.alterTile(self.hover_t,TILE_TYPE_HOME);
+        gg.hand.destroy(c);
+        return;
+      }
+
       if(c.type == CARD_TYPE_FARM && self.hover_t.type != TILE_TYPE_FARM)
       {
         self.alterTile(self.hover_t,TILE_TYPE_FARM);
@@ -1729,6 +1769,7 @@ var board = function()
             case TILE_TYPE_LAND:
             case TILE_TYPE_WATER:
             case TILE_TYPE_SHORE:
+            case TILE_TYPE_HOME:
             case TILE_TYPE_LIVESTOCK:
             case TILE_TYPE_STORAGE:
             case TILE_TYPE_ROAD:
@@ -1862,6 +1903,7 @@ var farmbit = function()
   self.move_dir_x = 0.;
   self.move_dir_y = 0.;
 
+  self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
   self.job_subject = 0;
   self.job_object = 0;
@@ -1894,19 +1936,7 @@ var farmbit = function()
         case ITEM_TYPE_POOP: mod *= poop_carryability; break;
       }
     }
-    if(self.tile)
-    {
-      switch(self.tile.type)
-      {
-        case TILE_TYPE_LAND:      mod *= land_walkability;      break;
-        case TILE_TYPE_WATER:     mod *= water_walkability;     break;
-        case TILE_TYPE_SHORE:     mod *= shore_walkability;     break;
-        case TILE_TYPE_FARM:      mod *= farm_walkability;      break;
-        case TILE_TYPE_LIVESTOCK: mod *= livestock_walkability; break;
-        case TILE_TYPE_STORAGE:   mod *= storage_walkability;   break;
-        case TILE_TYPE_ROAD:      mod *= road_walkability;      break;
-      }
-    }
+    if(self.tile) mod *= walkability_check(self.tile.type);
     return mod;
   }
 
@@ -2096,14 +2126,28 @@ var farmbit = function()
         break;
       case JOB_TYPE_SLEEP:
       {
-        self.job_state = JOB_STATE_ACT;
-        self.energy += 0.01;
-        if(self.energy > 1)
+        switch(self.job_state)
         {
-          self.energy = 1;
-          self.energy_state = FARMBIT_STATE_CONTENT;
-          self.go_idle();
-          job_for_b(self);
+          case JOB_STATE_SEEK:
+          {
+            if(self.home && self.tile != self.home)
+              self.walk_toward_tile(self.home);
+            else
+              self.job_state = JOB_STATE_ACT;
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            self.energy += 0.01;
+            if(self.energy > 1)
+            {
+              self.energy = 1;
+              self.energy_state = FARMBIT_STATE_CONTENT;
+              self.go_idle();
+              job_for_b(self);
+            }
+          }
+            break;
         }
       }
         break;
