@@ -1035,7 +1035,7 @@ var kick_item = function(it)
 
 var GenDirector = function()
 {
-  return {x:0,y:0,v:0,d:0};
+  return {x:0,y:0};
 }
 var tile = function()
 {
@@ -1113,13 +1113,6 @@ var board = function()
   self.hovering;
   self.hover_t;
 
-  var direction_insert = function(index,directions,list)
-  {
-    var d = directions[index];
-    for(var i = 0; i < list.length; i++)
-      if(d.d > directions[list[i]].d) { list.splice(i,0,index); return; }
-    list.push(index); //closest
-  }
   var walkability_check = function(type)
   {
     switch(type)
@@ -1134,21 +1127,28 @@ var board = function()
     }
     return 1;
   }
-  var handle = function(from_d,directions,nindex,list)
+  var direction_insert = function(index,directions,flow_d,list)
   {
-    var nd = directions[nindex];
-    if(!nd.v)
+    for(var i = 0; i < list.length; i++)
+      if(flow_d[index] > flow_d[list[i]]) { list.splice(i,0,index); return; }
+    list.push(index); //closest
+  }
+  var handle = function(cindex,directions,flow_v,flow_d,nindex,list)
+  {
+    if(!flow_v[nindex])
     {
       var nt = gg.b.tiles[nindex];
-      nd.v = 1;
-      nd.d = from_d.d+(1/walkability_check(nt.type));
-      direction_insert(nindex,directions,list);
+      flow_v[nindex] = 1;
+      flow_d[nindex] = flow_d[cindex]+(1/walkability_check(nt.type));
+      direction_insert(nindex,directions,flow_d,list);
     }
   }
+  var flow_v = [];
+  var flow_d = [];
   self.calculate_directions = function(t)
   {
     var check = []; //holds INDEXES; closest at _end_ for quick pop
-    for(var i = 0; i < t.directions.length; i++) { t.directions[i].v = 0; t.directions[i].d = max_dist; }
+    for(var i = 0; i < t.directions.length; i++) { flow_v[i] = 0; flow_d[i] = max_dist; }
     var cindex;
     var ct;
     var cd;
@@ -1156,8 +1156,8 @@ var board = function()
     cindex = t.i;
     cd = t.directions[cindex];
 
-    cd.v = 1;
-    cd.d = 0;
+    flow_v[cindex] = 1;
+    flow_d[cindex] = 0;
     cd.x = 0;
     cd.y = 0;
 
@@ -1168,10 +1168,10 @@ var board = function()
       cindex = check.pop();
       ct = gg.b.tiles[cindex];
       cd = t.directions[cindex];
-      if(ct.tx > 0)         handle(cd,t.directions,cindex-1      ,check); //check left
-      if(ct.tx < self.tw-1) handle(cd,t.directions,cindex+1      ,check); //check right
-      if(ct.ty > 0)         handle(cd,t.directions,cindex-self.tw,check); //check bottom
-      if(ct.ty < self.th-1) handle(cd,t.directions,cindex+self.tw,check); //check top
+      if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-1      ,check); //check left
+      if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+1      ,check); //check right
+      if(ct.ty > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,check); //check bottom
+      if(ct.ty < self.th-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,check); //check top
     }
 
     for(var i = 0; i < t.directions.length; i++)
@@ -1179,10 +1179,10 @@ var board = function()
       var d = t.directions[i];
       var ct = self.tiles[i];
       var lowest_d = max_dist;
-      if(ct.tx > 0         && t.directions[i-1      ].d < lowest_d) { d.x = -1; d.y =  0; lowest_d = t.directions[i-1      ].d; }
-      if(ct.tx < self.tw-1 && t.directions[i+1      ].d < lowest_d) { d.x =  1; d.y =  0; lowest_d = t.directions[i+1      ].d; }
-      if(ct.ty > 0         && t.directions[i-self.tw].d < lowest_d) { d.x =  0; d.y = -1; lowest_d = t.directions[i-self.tw].d; }
-      if(ct.ty < self.th-1 && t.directions[i+self.tw].d < lowest_d) { d.x =  0; d.y =  1; lowest_d = t.directions[i+self.tw].d; }
+      if(ct.tx > 0         && flow_d[i-1      ] < lowest_d) { d.x = -1; d.y =  0; lowest_d = flow_d[i-1      ]; }
+      if(ct.tx < self.tw-1 && flow_d[i+1      ] < lowest_d) { d.x =  1; d.y =  0; lowest_d = flow_d[i+1      ]; }
+      if(ct.ty > 0         && flow_d[i-self.tw] < lowest_d) { d.x =  0; d.y = -1; lowest_d = flow_d[i-self.tw]; }
+      if(ct.ty < self.th-1 && flow_d[i+self.tw] < lowest_d) { d.x =  0; d.y =  1; lowest_d = flow_d[i+self.tw]; }
     }
   }
 
@@ -1565,7 +1565,7 @@ var board = function()
           var x = self.x+tx*w+w/2;
           var y = self.y+self.h-(ty*h)-h/2;
           //drawArrow(x,y,x+t.x*l,y-t.y*l,g,gg.ctx);
-          drawLine(x,y,x+t.x*l,y+t.y*l,gg.ctx);
+          drawLine(x,y,x+t.x*l,y-t.y*l,gg.ctx);
           i++;
         }
       }
