@@ -1134,13 +1134,13 @@ var board = function()
       if(flow_d[index] > flow_d[list[i]]) { list.splice(i,0,index); return; }
     list.push(index); //closest
   }
-  var handle = function(cindex,directions,flow_v,flow_d,nindex,list)
+  var handle = function(cindex,directions,flow_v,flow_d,nindex,tax,list)
   {
     if(!flow_v[nindex])
     {
       var nt = gg.b.tiles[nindex];
       flow_v[nindex] = 1;
-      flow_d[nindex] = flow_d[cindex]+(1/walkability_check(nt.type));
+      flow_d[nindex] = flow_d[cindex]+(1/walkability_check(nt.type))*tax;
       direction_insert(nindex,directions,flow_d,list);
     }
   }
@@ -1169,10 +1169,20 @@ var board = function()
       cindex = check.pop();
       ct = gg.b.tiles[cindex];
       cd = t.directions[cindex];
-      if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-1      ,check); //check left
-      if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+1      ,check); //check right
-      if(ct.ty > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,check); //check bottom
-      if(ct.ty < self.th-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,check); //check top
+      if(ct.ty > 0)
+      {
+        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw-1,1.4,check); //check bottom left
+                              handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,    1,check); //check bottom
+        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw+1,1.4,check); //check bottom right
+      }
+      if(ct.ty < self.th-1)
+      {
+        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw-1,1.4,check); //check top left
+                              handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,    1,check); //check top
+        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw+1,1.4,check); //check top right
+      }
+      if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-1,1,check); //check left
+      if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+1,1,check); //check right
     }
 
     for(var i = 0; i < t.directions.length; i++)
@@ -1180,10 +1190,20 @@ var board = function()
       var d = t.directions[i];
       var ct = self.tiles[i];
       var lowest_d = max_dist;
-      if(ct.tx > 0         && flow_d[i-1      ] < lowest_d) { d.x = -1; d.y =  0; lowest_d = flow_d[i-1      ]; }
-      if(ct.tx < self.tw-1 && flow_d[i+1      ] < lowest_d) { d.x =  1; d.y =  0; lowest_d = flow_d[i+1      ]; }
-      if(ct.ty > 0         && flow_d[i-self.tw] < lowest_d) { d.x =  0; d.y = -1; lowest_d = flow_d[i-self.tw]; }
-      if(ct.ty < self.th-1 && flow_d[i+self.tw] < lowest_d) { d.x =  0; d.y =  1; lowest_d = flow_d[i+self.tw]; }
+      if(ct.ty > 0) //bottom
+      {
+        if(ct.tx > 0         && flow_d[i-self.tw-1] < lowest_d) { d.x = -.7; d.y = -.7; lowest_d = flow_d[i-self.tw-1]; } //bottom left
+        if(                     flow_d[i-self.tw  ] < lowest_d) { d.x =   0; d.y =  -1; lowest_d = flow_d[i-self.tw  ]; } //bottom
+        if(ct.tx < self.tw-1 && flow_d[i-self.tw+1] < lowest_d) { d.x =  .7; d.y = -.7; lowest_d = flow_d[i-self.tw+1]; } //bottom right
+      }
+      if(ct.ty < self.th-1) //top
+      {
+        if(ct.tx > 0         && flow_d[i+self.tw-1] < lowest_d) { d.x = -.7; d.y =  .7; lowest_d = flow_d[i+self.tw-1]; } //top left
+        if(                     flow_d[i+self.tw  ] < lowest_d) { d.x =   0; d.y =   1; lowest_d = flow_d[i+self.tw  ]; } //top
+        if(ct.tx < self.tw-1 && flow_d[i+self.tw+1] < lowest_d) { d.x =  .7; d.y =  .7; lowest_d = flow_d[i+self.tw+1]; } //top right
+      }
+        if(ct.tx > 0         && flow_d[i-1        ] < lowest_d) { d.x =  -1; d.y =   0; lowest_d = flow_d[i-1        ]; } //left
+        if(ct.tx < self.tw-1 && flow_d[i+1        ] < lowest_d) { d.x =   1; d.y =   0; lowest_d = flow_d[i+1        ]; } //right
     }
     t.directions_dirty = 0;
   }
@@ -1557,7 +1577,7 @@ var board = function()
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
 
-    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
+    if(0 && gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
     {
       gg.ctx.strokeStyle = green;
       var l = 10;
