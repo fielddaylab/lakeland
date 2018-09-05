@@ -76,6 +76,18 @@ var FARMBIT_STATE_MOTIVATED = ENUM; ENUM++;
 var FARMBIT_STATE_CONTENT   = ENUM; ENUM++;
 var FARMBIT_STATE_COUNT     = ENUM; ENUM++;
 
+ENUM = 0;
+var DIRECTION_NULL  = ENUM; ENUM++;
+var DIRECTION_R     = ENUM; ENUM++;
+var DIRECTION_DR    = ENUM; ENUM++;
+var DIRECTION_D     = ENUM; ENUM++;
+var DIRECTION_DL    = ENUM; ENUM++;
+var DIRECTION_L     = ENUM; ENUM++;
+var DIRECTION_UL    = ENUM; ENUM++;
+var DIRECTION_U     = ENUM; ENUM++;
+var DIRECTION_UR    = ENUM; ENUM++;
+var DIRECTION_COUNT = ENUM; ENUM++;
+
 var walkability_check = function(type)
 {
   switch(type)
@@ -1145,10 +1157,6 @@ var kick_item = function(it)
   it.wvz = s/2;
 }
 
-var GenDirector = function()
-{
-  return {x:0,y:0};
-}
 var tile = function()
 {
   var self = this;
@@ -1287,23 +1295,22 @@ var board = function()
 
     for(var i = 0; i < t.directions.length; i++)
     {
-      var d = t.directions[i];
       var ct = self.tiles[i];
       var lowest_d = max_dist;
       if(ct.ty > 0) //bottom
       {
-        if(ct.tx > 0         && flow_d[i-self.tw-1] < lowest_d) { d.x = -.7; d.y = -.7; lowest_d = flow_d[i-self.tw-1]; } //bottom left
-        if(                     flow_d[i-self.tw  ] < lowest_d) { d.x =   0; d.y =  -1; lowest_d = flow_d[i-self.tw  ]; } //bottom
-        if(ct.tx < self.tw-1 && flow_d[i-self.tw+1] < lowest_d) { d.x =  .7; d.y = -.7; lowest_d = flow_d[i-self.tw+1]; } //bottom right
+        if(ct.tx > 0         && flow_d[i-self.tw-1] < lowest_d) { t.directions[i] = DIRECTION_DL; lowest_d = flow_d[i-self.tw-1]; } //bottom left
+        if(                     flow_d[i-self.tw  ] < lowest_d) { t.directions[i] = DIRECTION_D;  lowest_d = flow_d[i-self.tw  ]; } //bottom
+        if(ct.tx < self.tw-1 && flow_d[i-self.tw+1] < lowest_d) { t.directions[i] = DIRECTION_DR; lowest_d = flow_d[i-self.tw+1]; } //bottom right
       }
       if(ct.ty < self.th-1) //top
       {
-        if(ct.tx > 0         && flow_d[i+self.tw-1] < lowest_d) { d.x = -.7; d.y =  .7; lowest_d = flow_d[i+self.tw-1]; } //top left
-        if(                     flow_d[i+self.tw  ] < lowest_d) { d.x =   0; d.y =   1; lowest_d = flow_d[i+self.tw  ]; } //top
-        if(ct.tx < self.tw-1 && flow_d[i+self.tw+1] < lowest_d) { d.x =  .7; d.y =  .7; lowest_d = flow_d[i+self.tw+1]; } //top right
+        if(ct.tx > 0         && flow_d[i+self.tw-1] < lowest_d) { t.directions[i] = DIRECTION_UL; lowest_d = flow_d[i+self.tw-1]; } //top left
+        if(                     flow_d[i+self.tw  ] < lowest_d) { t.directions[i] = DIRECTION_U;  lowest_d = flow_d[i+self.tw  ]; } //top
+        if(ct.tx < self.tw-1 && flow_d[i+self.tw+1] < lowest_d) { t.directions[i] = DIRECTION_UR; lowest_d = flow_d[i+self.tw+1]; } //top right
       }
-        if(ct.tx > 0         && flow_d[i-1        ] < lowest_d) { d.x =  -1; d.y =   0; lowest_d = flow_d[i-1        ]; } //left
-        if(ct.tx < self.tw-1 && flow_d[i+1        ] < lowest_d) { d.x =   1; d.y =   0; lowest_d = flow_d[i+1        ]; } //right
+        if(ct.tx > 0         && flow_d[i-1        ] < lowest_d) { t.directions[i] = DIRECTION_L; lowest_d = flow_d[i-1        ]; } //left
+        if(ct.tx < self.tw-1 && flow_d[i+1        ] < lowest_d) { t.directions[i] = DIRECTION_R; lowest_d = flow_d[i+1        ]; } //right
     }
     t.directions_dirty = 0;
   }
@@ -1350,19 +1357,23 @@ var board = function()
       for(var j = 0; j < self.tiles.length; j++)
       {
         from = self.tiles[j];
-        to.directions[j] = GenDirector();
+        to.directions[j] = DIRECTION_NULL;
         dx = to.tx-from.tx;
         dy = to.ty-from.ty;
         d = sqrt(dx*dx+dy*dy);
-        if(d == 0)
-        {
-          to.directions[j].x = 0;
-          to.directions[j].y = 0;
-        }
+        if(d == 0) to.directions[j] = DIRECTION_NULL;
         else
         {
-          to.directions[j].x = dx/d;
-          to.directions[j].y = dy/d;
+          var t = atan2(dy/2,dx/d)
+               if(t < twopi/16*1 ) to.directions[j] = DIRECTION_R;
+          else if(t < twopi/16*3 ) to.directions[j] = DIRECTION_UR;
+          else if(t < twopi/16*5 ) to.directions[j] = DIRECTION_U;
+          else if(t < twopi/16*7 ) to.directions[j] = DIRECTION_UL;
+          else if(t < twopi/16*9 ) to.directions[j] = DIRECTION_L;
+          else if(t < twopi/16*11) to.directions[j] = DIRECTION_DL;
+          else if(t < twopi/16*13) to.directions[j] = DIRECTION_D;
+          else if(t < twopi/16*15) to.directions[j] = DIRECTION_DR;
+          else if(t < twopi/16*17) to.directions[j] = DIRECTION_R;
         }
       }
     }
@@ -2003,8 +2014,22 @@ var board = function()
           var t = d.directions[i];
           var x = self.x+tx*w+w/2;
           var y = self.y+self.h-(ty*h)-h/2;
-          //drawArrow(x,y,x+t.x*l,y-t.y*l,g,gg.ctx);
-          drawLine(x,y,x+t.x*l,y-t.y*l,gg.ctx);
+          var dx;
+          var dy;
+          switch(d.directions[i])
+          {
+            case DIRECTION_NULL: dx =  0;   dy =  0;   break;
+            case DIRECTION_R:    dx =  1;   dy =  0;   break;
+            case DIRECTION_DR:   dx =  0.7; dy = -0.7; break;
+            case DIRECTION_D:    dx =  0;   dy = -1;   break;
+            case DIRECTION_DL:   dx = -0.7; dy = -0.7; break;
+            case DIRECTION_L:    dx = -1;   dy =  0;   break;
+            case DIRECTION_UL:   dx = -0.7; dy =  0.7; break;
+            case DIRECTION_U:    dx =  0;   dy =  1;   break;
+            case DIRECTION_UR:   dx =  0.7; dy =  0.7; break;
+          }
+          //drawArrow(x,y,x+dx*l,y-dy*l,g,gg.ctx);
+          drawLine(x,y,x+dx*l,y-dy*l,gg.ctx);
           i++;
         }
       }
@@ -2137,9 +2162,23 @@ var farmbit = function()
   self.walk_toward_tile = function(t)
   {
     if(t.directions_dirty) gg.b.calculate_directions(t);
+    var dx;
+    var dy;
+    switch(t.directions[self.tile.i])
+    {
+      case DIRECTION_NULL: dx =  0;   dy =  0;   break;
+      case DIRECTION_R:    dx =  1;   dy =  0;   break;
+      case DIRECTION_DR:   dx =  0.7; dy = -0.7; break;
+      case DIRECTION_D:    dx =  0;   dy = -1;   break;
+      case DIRECTION_DL:   dx = -0.7; dy = -0.7; break;
+      case DIRECTION_L:    dx = -1;   dy =  0;   break;
+      case DIRECTION_UL:   dx = -0.7; dy =  0.7; break;
+      case DIRECTION_U:    dx =  0;   dy =  1;   break;
+      case DIRECTION_UR:   dx =  0.7; dy =  0.7; break;
+    }
     var mod = self.walk_mod();
-    self.wx += t.directions[self.tile.i].x*self.walk_speed*mod;
-    self.wy += t.directions[self.tile.i].y*self.walk_speed*mod;
+    self.wx += dx*self.walk_speed*mod;
+    self.wy += dy*self.walk_speed*mod;
   }
 
   self.walk_toward_item = function(it)
