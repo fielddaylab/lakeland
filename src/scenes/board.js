@@ -135,7 +135,7 @@ var fullness_job_for_b = function(b)
         case JOB_TYPE_NULL:
           //break; //DON'T BREAK!
         case JOB_TYPE_FERTILIZE:
-          if(t.state == TILE_STATE_FARM_PLANTED && !t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
+          if(!t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
           {
             if(job_type != JOB_TYPE_FERTILIZE) job_d = max_dist;
             d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
@@ -465,7 +465,7 @@ var fulfillment_job_for_b = function(b)
             }
             //break; //DON'T BREAK!
           case JOB_TYPE_FERTILIZE:
-            if(t.state == TILE_STATE_FARM_PLANTED && !t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
+            if(!t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
             {
               if(job_type != JOB_TYPE_FERTILIZE) job_d = max_dist;
               d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty);
@@ -915,7 +915,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
         {
           t = gg.b.tile_groups[TILE_TYPE_FARM][i];
-          if(t.state == TILE_STATE_FARM_PLANTED && !t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
+          if(!t.lock && t.nutrition < farm_nutrition_fertilize_threshhold)
           {
             d = distsqr(t.tx,t.ty,job_object.tile.tx,job_object.tile.ty);
             if(d < job_d)

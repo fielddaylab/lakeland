@@ -65,7 +65,7 @@ var farm_cost = 100;
 var livestock_cost = 200;
 var storage_cost = 10;
 var road_cost = 1;
-var free_money = 100;
+var free_money = 1000;
 
 var harvest_profit = 10;
 
