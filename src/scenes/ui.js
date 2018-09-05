@@ -154,8 +154,25 @@ var card = function()
     fillBox(self,gg.ctx);
     gg.ctx.fillStyle = black;
     gg.ctx.strokeStyle = black;
-    if(gg.hand.hovered_card == self) gg.ctx.strokeStyle = green;
-    if(gg.hand.selected_card == self) gg.ctx.strokeStyle = blue;
+    if(gg.hand.hovered_card == self) gg.ctx.strokeStyle = blue;
+    if(gg.hand.selected_card == self)
+    {
+      var playable = false;
+      if(gg.b.hover_t)
+      {
+        switch(self.type)
+        {
+          case CARD_TYPE_BIT:       playable = 1; break;
+          case CARD_TYPE_HOME:      playable = buildability_check(TILE_TYPE_HOME,      gg.b.hover_t.type); break;
+          case CARD_TYPE_FARM:      playable = buildability_check(TILE_TYPE_FARM,      gg.b.hover_t.type); break;
+          case CARD_TYPE_LIVESTOCK: playable = buildability_check(TILE_TYPE_LIVESTOCK, gg.b.hover_t.type); break;
+          case CARD_TYPE_STORAGE:   playable = buildability_check(TILE_TYPE_STORAGE,   gg.b.hover_t.type); break;
+          case CARD_TYPE_ROAD:      playable = buildability_check(TILE_TYPE_ROAD,      gg.b.hover_t.type); break;
+        }
+      }
+      if(playable) gg.ctx.strokeStyle = green;
+      else gg.ctx.strokeStyle = red;
+    }
     strokeBox(self,gg.ctx);
     switch(self.type)
     {
