@@ -51,10 +51,10 @@ var food_carryability = 0.8;
 var poop_carryability = 0.2;
 
 var land_walkability      = 1;
-var rock_walkability      = 0.8;
+var rock_walkability      = 0.7;
 var water_walkability     = 0.5;
 var shore_walkability     = 0.8;
-var forrest_walkability   = 0.7;
+var forrest_walkability   = 0.6;
 var home_walkability      = 0.9;
 var farm_walkability      = 0.9;
 var livestock_walkability = 0.8;

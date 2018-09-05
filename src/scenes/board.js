@@ -1261,6 +1261,7 @@ var board = function()
     var cindex;
     var ct;
     var cd;
+    var diagonal_tax = 1.4;
 
     cindex = t.i;
     cd = t.directions[cindex];
@@ -1279,15 +1280,15 @@ var board = function()
       cd = t.directions[cindex];
       if(ct.ty > 0)
       {
-        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw-1,1.4,check); //check bottom left
-                              handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,    1,check); //check bottom
-        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw+1,1.4,check); //check bottom right
+        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw-1,diagonal_tax,check); //check bottom left
+                              handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,             1,check); //check bottom
+        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw+1,diagonal_tax,check); //check bottom right
       }
       if(ct.ty < self.th-1)
       {
-        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw-1,1.4,check); //check top left
-                              handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,    1,check); //check top
-        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw+1,1.4,check); //check top right
+        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw-1,diagonal_tax,check); //check top left
+                              handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,             1,check); //check top
+        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw+1,diagonal_tax,check); //check top right
       }
       if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-1,1,check); //check left
       if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+1,1,check); //check right
@@ -1364,7 +1365,8 @@ var board = function()
         if(d == 0) to.directions[j] = DIRECTION_NULL;
         else
         {
-          var t = atan2(dy/2,dx/d)
+          var t = atan2(dy/d,dx/d)
+          if(t < 0) t+=twopi;
                if(t < twopi/16*1 ) to.directions[j] = DIRECTION_R;
           else if(t < twopi/16*3 ) to.directions[j] = DIRECTION_UR;
           else if(t < twopi/16*5 ) to.directions[j] = DIRECTION_U;
