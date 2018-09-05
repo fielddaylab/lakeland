@@ -1972,7 +1972,6 @@ var board = function()
             case TILE_TYPE_LAND:
             case TILE_TYPE_WATER:
             case TILE_TYPE_SHORE:
-            case TILE_TYPE_FORREST:
             case TILE_TYPE_LIVESTOCK:
             case TILE_TYPE_STORAGE:
             case TILE_TYPE_ROAD:
@@ -1981,6 +1980,9 @@ var board = function()
               break;
             case TILE_TYPE_ROCK:
               gg.ctx.drawImage(rock_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              break;
+            case TILE_TYPE_FORREST:
+              gg.ctx.drawImage(forrest_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
               break;
             case TILE_TYPE_HOME:
               gg.ctx.drawImage(home_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);

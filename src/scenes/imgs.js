@@ -251,6 +251,19 @@ var rock_img;
   ctx.fillRect(4,7,3,1);
 }
 
+var forrest_img;
+{
+  var ctx;
+  var s = 10;
+  forrest_img = GenIcon(s,s);
+  ctx = forrest_img.context;
+  ctx.fillStyle = "#007733";
+  ctx.fillRect(0,0,s,s);
+  ctx.fillStyle = "#00AA44";
+  ctx.fillRect(1,3,3,1);
+  ctx.fillRect(4,7,3,1);
+}
+
 var home_img;
 {
   var ctx;
