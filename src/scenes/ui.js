@@ -30,12 +30,12 @@ var shop = function()
   var h = 40;
   x += 10;
   y += 10;
-  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) return; gg.money -= farmbit_cost;   var c = gg.hand.add(CARD_TYPE_BIT);       gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
-  self.home_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      var c = gg.hand.add(CARD_TYPE_HOME);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
-  self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      var c = gg.hand.add(CARD_TYPE_FARM);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
-  self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
-  self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
-  self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      var c = gg.hand.add(CARD_TYPE_ROAD);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) return; gg.money -= farmbit_cost; var c = gg.hand.add(CARD_TYPE_BIT); gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.home_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      var c = gg.hand.add(CARD_TYPE_HOME);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      var c = gg.hand.add(CARD_TYPE_FARM);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      var c = gg.hand.add(CARD_TYPE_ROAD);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money;                                                                                                                                }); y += h+10;
 
   self.filter = function(filter)
@@ -72,14 +72,14 @@ var shop = function()
     gg.ctx.fillStyle = black;
     gg.ctx.fillText("$"+gg.money,10,30);
 
-    strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",       self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30);
-    gg.ctx.fillText(gg.farmbits.length+"/"+gg.b.tile_groups[TILE_TYPE_HOME].length, self.bit_btn.x, self.bit_btn.y+self.bit_btn.h);
-    strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",      self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30);
-    strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",      self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
-    strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock", self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
-    strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",   self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
-    strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx10",   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
-    strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",     self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
+    strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",                    self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30);
+    gg.ctx.fillText(gg.farmbits.length+"/"+gg.b.tile_groups[TILE_TYPE_HOME].length, self.bit_btn.x,       self.bit_btn.y+self.bit_btn.h);
+    strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",                   self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30);
+    strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",                   self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
+    strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
+    strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
+    strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_card,   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
+    strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
   }
 }
 
@@ -117,6 +117,7 @@ var card = function()
     if(gg.hand.hovered_card != self) return 0;
     if(gg.b.spewing_road) return;
     gg.hand.selected_card = self;
+    gg.hand.selected_card_drag_t = 0;
     gg.hand.im_hit = 1;
   }
   self.drag = function(evt)
@@ -127,11 +128,18 @@ var card = function()
   self.dragFinish = function(evt)
   {
     if(gg.hand.selected_card != self) return;
+    else if(gg.hand.selected_card_drag_t < min_card_drag_t)
+    {
+      gg.hand.selected_card = 0;
+      gg.hand.selected_card_drag_t = 0;
+      gg.hand.dragging_evt = 0;
+    }
     else
     {
       gg.hand.released_card = gg.hand.selected_card;
       gg.hand.released_evt = gg.hand.dragging_evt;
       gg.hand.selected_card = 0;
+      gg.hand.selected_card_drag_t = 0;
       gg.hand.dragging_evt = 0;
     }
   }
@@ -178,6 +186,7 @@ var hand = function()
 
   self.hovered_card = 0;
   self.selected_card = 0;
+  self.selected_card_drag_t = 0;
   self.dragging_evt = 0;
   self.released_card = 0;
   self.released_evt = 0;
@@ -232,6 +241,7 @@ var hand = function()
 
   self.tick = function()
   {
+    if(self.selected_card) self.selected_card_drag_t++;
     self.sortish();
     for(var i = 0; i < self.cards.length; i++)
     {

@@ -34,6 +34,8 @@ var GamePlayScene = function(game, stage)
         case "p": RESUME_SIM = !RESUME_SIM; break;
         case "n": gg.b.nutrition_view = !gg.b.nutrition_view; break;
         case "r": gg.b.raining = !gg.b.raining; break;
+        case "a": debug_pathfinding = !debug_pathfinding; break;
+        case "j": debug_jobs = !debug_jobs; break;
       }
     }
   }
@@ -106,6 +108,16 @@ var GamePlayScene = function(game, stage)
     gg.shop.draw();
     gg.hand.draw();
     gg.inspector.draw();
+
+    var x = 10;
+    var y = 450;
+    h = 25;
+    gg.ctx.fillText("d- speed time",    x,y); y += h;
+    gg.ctx.fillText("p- pause",         x,y); y += h;
+    gg.ctx.fillText("n- nutrition view",x,y); y += h;
+    gg.ctx.fillText("r- rain",          x,y); y += h;
+    gg.ctx.fillText("a- debug pathing", x,y); y += h;
+    gg.ctx.fillText("j- debug jobs",    x,y); y += h;
   };
 
   self.cleanup = function()

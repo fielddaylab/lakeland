@@ -80,6 +80,9 @@ var free_money = 1000;
 
 var harvest_profit = 10;
 
+var roads_per_card = 10;
+var min_card_drag_t = 50;
+
 var debug_pathfinding = 0;
 var debug_jobs = 0;
 

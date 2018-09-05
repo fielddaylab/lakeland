@@ -94,6 +94,42 @@ var walkability_check = function(type)
   return 1;
 }
 
+var buildability_check = function(building,over)
+{
+  switch(building)
+  {
+    case TILE_TYPE_LAND:
+    case TILE_TYPE_ROCK:
+    case TILE_TYPE_WATER:
+    case TILE_TYPE_SHORE:
+    case TILE_TYPE_FORREST:
+      return 1;
+      break;
+    case TILE_TYPE_HOME:
+    case TILE_TYPE_FARM:
+    case TILE_TYPE_LIVESTOCK:
+    case TILE_TYPE_STORAGE:
+      return over == TILE_TYPE_LAND;
+      break;
+    case TILE_TYPE_ROAD:
+    {
+      switch(over)
+      {
+        case TILE_TYPE_LAND:
+        case TILE_TYPE_ROCK:
+        case TILE_TYPE_WATER:
+        case TILE_TYPE_SHORE:
+          return 1;
+          break;
+        default:
+          return 0;
+          break;
+      }
+    }
+      break;
+  }
+}
+
 var fullness_job_for_b = function(b)
 {
   /*
@@ -1429,12 +1465,18 @@ var board = function()
       var src_tx = randIntBelow(self.tw);
       var src_ty = randIntBelow(self.th);
       var t = self.tiles_t(src_tx,src_ty);
+      while(t.type != TILE_TYPE_LAND)
+      {
+        src_tx = randIntBelow(self.tw);
+        src_ty = randIntBelow(self.th);
+        t = self.tiles_t(src_tx,src_ty);
+      }
       t.type = TILE_TYPE_FORREST;
       var forrest_size = forrest_size_min+randIntBelow(forrest_size_max-forrest_size_min);
       var forrest_tiles = slow_flood_fill([t]);
       var forrest_border = slow_flood_border(forrest_tiles);
 
-      for(var j = 0; j < forrest_size; j++)
+      for(var j = 0; forrest_border.length && j < forrest_size; j++)
       {
         var b_i = randIntBelow(forrest_border.length);
         var t = forrest_border[b_i];
@@ -1723,7 +1765,7 @@ var board = function()
         gg.inspector.quick_type = INSPECTOR_CONTENT_TILE;
       }
     }
-    if(self.spewing_road && self.hover_t && (self.hover_t.type == TILE_TYPE_LAND || self.hover_t.type == TILE_TYPE_SHORE || self.hover_t.type == TILE_TYPE_WATER))
+    if(self.spewing_road && self.hover_t && buildability_check(TILE_TYPE_ROAD,self.hover_t.type))
     {
       self.alterTile(self.hover_t,TILE_TYPE_ROAD);
       self.spewing_road--;
@@ -1758,6 +1800,7 @@ var board = function()
       {
         gg.inspector.detailed = self.hover_t;
         gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+        if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
       }
     }
     if(!self.hover_t) return;
@@ -1840,14 +1883,14 @@ var board = function()
         return;
       }
 
-      if(c.type == CARD_TYPE_HOME && self.hover_t.type == TILE_TYPE_LAND)
+      if(c.type == CARD_TYPE_HOME && buildability_check(TILE_TYPE_HOME,self.hover_t.type))
       {
         self.alterTile(self.hover_t,TILE_TYPE_HOME);
         gg.hand.destroy(c);
         return;
       }
 
-      if(c.type == CARD_TYPE_FARM && self.hover_t.type == TILE_TYPE_LAND)
+      if(c.type == CARD_TYPE_FARM && buildability_check(TILE_TYPE_FARM,self.hover_t.type))
       {
         self.alterTile(self.hover_t,TILE_TYPE_FARM);
         b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
@@ -1855,25 +1898,33 @@ var board = function()
         return;
       }
 
-      if(c.type == CARD_TYPE_LIVESTOCK && self.hover_t.type == TILE_TYPE_LAND)
+      if(c.type == CARD_TYPE_LIVESTOCK && buildability_check(TILE_TYPE_LIVESTOCK,self.hover_t.type))
       {
         self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
         gg.hand.destroy(c);
         return;
       }
 
-      if(c.type == CARD_TYPE_STORAGE && self.hover_t.type == TILE_TYPE_LAND)
+      if(c.type == CARD_TYPE_STORAGE && buildability_check(TILE_TYPE_STORAGE,self.hover_t.type))
       {
         self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
         gg.hand.destroy(c);
         return;
       }
 
-      if(c.type == CARD_TYPE_ROAD && (self.hover_t.type == TILE_TYPE_LAND || self.hover_t.type == TILE_TYPE_SHORE || self.hover_t.type == TILE_TYPE_WATER))
+      if(c.type == CARD_TYPE_ROAD && buildability_check(TILE_TYPE_ROAD,self.hover_t.type))
       {
         self.alterTile(self.hover_t,TILE_TYPE_ROAD);
         gg.hand.destroy(c);
-        self.spewing_road = 9;
+        self.spewing_road = roads_per_card-1;
+        return;
+      }
+
+      if(c.type == CARD_TYPE_ROAD && self.hover_t.type == CARD_TYPE_ROAD)
+      {
+        self.alterTile(self.hover_t,TILE_TYPE_ROAD);
+        gg.hand.destroy(c);
+        self.spewing_road = roads_per_card;
         return;
       }
     }
