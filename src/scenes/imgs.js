@@ -225,3 +225,44 @@ var poop_img;
   ctx.fillRect(6,1,1,3); //stink right
 }
 
+var water_img;
+{
+  var ctx;
+  var s = 10;
+  water_img = GenIcon(s,s);
+  ctx = water_img.context;
+  ctx.fillStyle = blue;
+  ctx.fillRect(0,0,s,s);
+  ctx.fillStyle = "#8888FF";
+  ctx.fillRect(1,3,3,1);
+  ctx.fillRect(4,7,3,1);
+}
+
+var rock_img;
+{
+  var ctx;
+  var s = 10;
+  rock_img = GenIcon(s,s);
+  ctx = rock_img.context;
+  ctx.fillStyle = gray;
+  ctx.fillRect(0,0,s,s);
+  ctx.fillStyle = "#AAAAAA";
+  ctx.fillRect(1,3,3,1);
+  ctx.fillRect(4,7,3,1);
+}
+
+var home_img;
+{
+  var ctx;
+  var s = 10;
+  home_img = GenIcon(s,s);
+  ctx = home_img.context;
+  ctx.clearRect(0,0,s,s);
+  ctx.fillStyle = blue;
+  ctx.fillRect(2,3,6,7);
+  ctx.fillStyle = red;
+  ctx.fillRect(1,2,8,1);
+  ctx.fillRect(2,1,6,1);
+  ctx.fillRect(3,0,4,1);
+}
+

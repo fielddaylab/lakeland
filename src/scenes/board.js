@@ -1970,15 +1970,20 @@ var board = function()
           switch(t.type)
           {
             case TILE_TYPE_LAND:
-            case TILE_TYPE_ROCK:
             case TILE_TYPE_WATER:
             case TILE_TYPE_SHORE:
             case TILE_TYPE_FORREST:
-            case TILE_TYPE_HOME:
             case TILE_TYPE_LIVESTOCK:
             case TILE_TYPE_STORAGE:
             case TILE_TYPE_ROAD:
               gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
+              gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              break;
+            case TILE_TYPE_ROCK:
+              gg.ctx.drawImage(rock_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              break;
+            case TILE_TYPE_HOME:
+              gg.ctx.drawImage(home_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
               break;
             case TILE_TYPE_FARM:
             {
@@ -1988,10 +1993,10 @@ var board = function()
                 case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
                 case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
               }
+              gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
             }
               break;
           }
-          gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
           i++;
         }
       }
@@ -2097,7 +2102,7 @@ var item = function()
   {
     switch(self.type)
     {
-      case ITEM_TYPE_WATER: gg.ctx.fillStyle = blue; fillBox(self,gg.ctx); break;
+      case ITEM_TYPE_WATER: drawImageBox(water_img,self,gg.ctx); break;
       case ITEM_TYPE_FOOD:  drawImageBox(food_img,self,gg.ctx); break;
       case ITEM_TYPE_POOP:  drawImageBox(poop_img,self,gg.ctx); break;
     }
