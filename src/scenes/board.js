@@ -1933,9 +1933,8 @@ var board = function()
         return;
       }
 
-      if(c.type == CARD_TYPE_ROAD && self.hover_t.type == CARD_TYPE_ROAD)
+      if(c.type == CARD_TYPE_ROAD && self.hover_t.type == TILE_TYPE_ROAD)
       {
-        self.alterTile(self.hover_t,TILE_TYPE_ROAD);
         gg.hand.destroy(c);
         self.spewing_road = roads_per_card;
         return;

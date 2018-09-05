@@ -167,7 +167,7 @@ var card = function()
           case CARD_TYPE_FARM:      playable = buildability_check(TILE_TYPE_FARM,      gg.b.hover_t.type); break;
           case CARD_TYPE_LIVESTOCK: playable = buildability_check(TILE_TYPE_LIVESTOCK, gg.b.hover_t.type); break;
           case CARD_TYPE_STORAGE:   playable = buildability_check(TILE_TYPE_STORAGE,   gg.b.hover_t.type); break;
-          case CARD_TYPE_ROAD:      playable = buildability_check(TILE_TYPE_ROAD,      gg.b.hover_t.type); break;
+          case CARD_TYPE_ROAD:      playable =(buildability_check(TILE_TYPE_ROAD,      gg.b.hover_t.type) || gg.b.hover_t.type == TILE_TYPE_ROAD); break;
         }
       }
       if(playable) gg.ctx.strokeStyle = green;
