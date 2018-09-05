@@ -1170,6 +1170,7 @@ var board = function()
   self.wh = 660;
   self.raining = 0;
   self.nutrition_view = 0;
+  self.spewing_road = 0;
 
   self.wrapw = function(o)
   {
@@ -1642,6 +1643,11 @@ var board = function()
         gg.inspector.quick_type = INSPECTOR_CONTENT_TILE;
       }
     }
+    if(self.spewing_road && self.hover_t && (self.hover_t.type == TILE_TYPE_LAND || self.hover_t.type == TILE_TYPE_SHORE || self.hover_t.type == TILE_TYPE_WATER))
+    {
+      self.alterTile(self.hover_t,TILE_TYPE_ROAD);
+      self.spewing_road--;
+    }
   }
   self.unhover = function(evt)
   {
@@ -1652,6 +1658,7 @@ var board = function()
 
   self.click = function(evt)
   {
+    if(self.spewing_road) return;
     var clicked;
     for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
     if(clicked)
@@ -1674,7 +1681,6 @@ var board = function()
       }
     }
     if(!self.hover_t) return;
-
   }
 
   self.tick = function()
@@ -1754,14 +1760,14 @@ var board = function()
         return;
       }
 
-      if(c.type == CARD_TYPE_HOME && self.hover_t.type != TILE_TYPE_HOME)
+      if(c.type == CARD_TYPE_HOME && self.hover_t.type == TILE_TYPE_LAND)
       {
         self.alterTile(self.hover_t,TILE_TYPE_HOME);
         gg.hand.destroy(c);
         return;
       }
 
-      if(c.type == CARD_TYPE_FARM && self.hover_t.type != TILE_TYPE_FARM)
+      if(c.type == CARD_TYPE_FARM && self.hover_t.type == TILE_TYPE_LAND)
       {
         self.alterTile(self.hover_t,TILE_TYPE_FARM);
         b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
@@ -1769,24 +1775,25 @@ var board = function()
         return;
       }
 
-      if(c.type == CARD_TYPE_LIVESTOCK && self.hover_t.type != TILE_TYPE_LIVESTOCK)
+      if(c.type == CARD_TYPE_LIVESTOCK && self.hover_t.type == TILE_TYPE_LAND)
       {
         self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
         gg.hand.destroy(c);
         return;
       }
 
-      if(c.type == CARD_TYPE_STORAGE && self.hover_t.type != TILE_TYPE_STORAGE)
+      if(c.type == CARD_TYPE_STORAGE && self.hover_t.type == TILE_TYPE_LAND)
       {
         self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
         gg.hand.destroy(c);
         return;
       }
 
-      if(c.type == CARD_TYPE_ROAD && self.hover_t.type != TILE_TYPE_ROAD)
+      if(c.type == CARD_TYPE_ROAD && (self.hover_t.type == TILE_TYPE_LAND || self.hover_t.type == TILE_TYPE_SHORE || self.hover_t.type == TILE_TYPE_WATER))
       {
         self.alterTile(self.hover_t,TILE_TYPE_ROAD);
         gg.hand.destroy(c);
+        self.spewing_road = 9;
         return;
       }
     }

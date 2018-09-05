@@ -40,6 +40,7 @@ var shop = function()
 
   self.filter = function(filter)
   {
+    if(gg.b.spewing_road) return;
     var check = true;
     if(check) check = !filter.filter(self.bit_btn);
     if(check) check = !filter.filter(self.home_btn);
@@ -77,7 +78,7 @@ var shop = function()
     strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",      self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
     strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock", self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
     strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",   self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
-    strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("road",      self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
+    strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx10",   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
     strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",     self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
   }
 }
@@ -114,6 +115,7 @@ var card = function()
   self.dragStart = function(evt)
   {
     if(gg.hand.hovered_card != self) return 0;
+    if(gg.b.spewing_road) return;
     gg.hand.selected_card = self;
     gg.hand.im_hit = 1;
   }
