@@ -10,8 +10,10 @@ var THING_TYPE_COUNT   = ENUM; ENUM++;
 ENUM = 0;
 var TILE_TYPE_NULL      = ENUM; ENUM++;
 var TILE_TYPE_LAND      = ENUM; ENUM++;
+var TILE_TYPE_ROCK      = ENUM; ENUM++;
 var TILE_TYPE_WATER     = ENUM; ENUM++;
 var TILE_TYPE_SHORE     = ENUM; ENUM++;
+var TILE_TYPE_FORREST   = ENUM; ENUM++;
 var TILE_TYPE_HOME      = ENUM; ENUM++;
 var TILE_TYPE_FARM      = ENUM; ENUM++;
 var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
@@ -79,8 +81,10 @@ var walkability_check = function(type)
   switch(type)
   {
     case TILE_TYPE_LAND:      return land_walkability;      break;
+    case TILE_TYPE_ROCK:      return rock_walkability;      break;
     case TILE_TYPE_WATER:     return water_walkability;     break;
     case TILE_TYPE_SHORE:     return shore_walkability;     break;
+    case TILE_TYPE_FORREST:   return forrest_walkability;   break;
     case TILE_TYPE_HOME:      return home_walkability;      break;
     case TILE_TYPE_FARM:      return farm_walkability;      break;
     case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
@@ -1099,7 +1103,7 @@ var break_item = function(it)
 var kick_item = function(it)
 {
   var theta = rand()*twopi;
-  var s = 2+rand()*5;
+  var s = 2+rand()*3;
   it.wvx = cos(theta)*s;
   it.wvy = sin(theta)*s;
   it.wvz = s/2;
@@ -1363,6 +1367,33 @@ var board = function()
       return border;
     }
 
+    //fill rocks
+    for(var i = 0; i < n_rock_deposits; i++)
+    {
+      var src_tx = randIntBelow(self.tw);
+      var src_ty = randIntBelow(self.th);
+      var t = self.tiles_t(src_tx,src_ty);
+      t.type = TILE_TYPE_ROCK;
+      var rock_size = rock_size_min+randIntBelow(rock_size_max-rock_size_min);
+      var rock_tiles = slow_flood_fill([t]);
+      var rock_border = slow_flood_border(rock_tiles);
+
+      for(var j = 0; j < rock_size; j++)
+      {
+        var b_i = randIntBelow(rock_border.length);
+        var t = rock_border[b_i];
+        t.type = TILE_TYPE_ROCK;
+        rock_tiles.push(t);
+        rock_border.splice(b_i,1);
+
+        var n;
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != t.type) atomic_push(n,rock_border);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != t.type) atomic_push(n,rock_border);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != t.type) atomic_push(n,rock_border);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != t.type) atomic_push(n,rock_border);
+      }
+    }
+
     //fill lakes
     for(var i = 0; i < n_lakes; i++)
     {
@@ -1390,6 +1421,33 @@ var board = function()
       }
       for(var j = 0; j < lake_border.length; j++)
         lake_border[j].type = TILE_TYPE_SHORE;
+    }
+
+    //fill forrests
+    for(var i = 0; i < n_forrests; i++)
+    {
+      var src_tx = randIntBelow(self.tw);
+      var src_ty = randIntBelow(self.th);
+      var t = self.tiles_t(src_tx,src_ty);
+      t.type = TILE_TYPE_FORREST;
+      var forrest_size = forrest_size_min+randIntBelow(forrest_size_max-forrest_size_min);
+      var forrest_tiles = slow_flood_fill([t]);
+      var forrest_border = slow_flood_border(forrest_tiles);
+
+      for(var j = 0; j < forrest_size; j++)
+      {
+        var b_i = randIntBelow(forrest_border.length);
+        var t = forrest_border[b_i];
+        t.type = TILE_TYPE_FORREST;
+        forrest_tiles.push(t);
+        forrest_border.splice(b_i,1);
+
+        var n;
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
+      }
     }
 
     //group tiles
@@ -1457,9 +1515,20 @@ var board = function()
     for(var i = 0; i <= 255; i++)
     {
       p = i/255;
-      r = 255;
-      g = (255-i);
-      b = 255;
+      r = i;
+      g = floor((255-i)/2);
+      b = 50;
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_ROCK;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 100;
+      g = 100;
+      b = 100;
       self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
     }
 
@@ -1482,6 +1551,17 @@ var board = function()
       r = 150;
       g = 150+floor(p*75);
       b = 255-floor(p*75);
+      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
+    }
+
+    type = TILE_TYPE_FORREST;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 0;
+      g = 100;
+      b = 50;
       self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
     }
 
@@ -1827,8 +1907,10 @@ var board = function()
           switch(t.type)
           {
             case TILE_TYPE_LAND:
+            case TILE_TYPE_ROCK:
             case TILE_TYPE_WATER:
             case TILE_TYPE_SHORE:
+            case TILE_TYPE_FORREST:
             case TILE_TYPE_HOME:
             case TILE_TYPE_LIVESTOCK:
             case TILE_TYPE_STORAGE:

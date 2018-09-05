@@ -1,8 +1,17 @@
 var board_w = 50;
 var board_h = 50;
+
 var n_lakes = 4;
 var lake_size_min = 50;
 var lake_size_max = 100;
+
+var n_rock_deposits = 8;
+var rock_size_min = 20;
+var rock_size_max = 50;
+
+var n_forrests = 2;
+var forrest_size_min = 100;
+var forrest_size_max = 100;
 
 var farmbits_start_n = 1;
 var money_start_n = 100;
@@ -42,12 +51,14 @@ var food_carryability = 0.8;
 var poop_carryability = 0.2;
 
 var land_walkability      = 1;
+var rock_walkability      = 0.8;
 var water_walkability     = 0.5;
 var shore_walkability     = 0.8;
-var home_walkability      = 0.4;
-var farm_walkability      = 0.4;
-var livestock_walkability = 0.2;
-var storage_walkability   = 0.1;
+var forrest_walkability   = 0.7;
+var home_walkability      = 0.9;
+var farm_walkability      = 0.9;
+var livestock_walkability = 0.8;
+var storage_walkability   = 0.9;
 var road_walkability      = 4;
 
 var plant_fulfillment     = 0.1;
