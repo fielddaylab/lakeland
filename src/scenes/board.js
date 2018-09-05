@@ -34,6 +34,7 @@ var TILE_STATE_COUNT              = ENUM; ENUM++;
 
 ENUM = 0;
 var ITEM_TYPE_NULL  = ENUM; ENUM++;
+var ITEM_TYPE_WATER = ENUM; ENUM++;
 var ITEM_TYPE_FOOD  = ENUM; ENUM++;
 var ITEM_TYPE_POOP  = ENUM; ENUM++;
 var ITEM_TYPE_COUNT = ENUM; ENUM++;
@@ -244,6 +245,21 @@ var fullness_job_for_b = function(b)
     }
   }
 
+  if(job_type == JOB_TYPE_PLANT)
+  { //get water (we "know" it exists)
+    job_d = max_dist;
+    for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_WATER].length; i++)
+    {
+      t = gg.b.tile_groups[TILE_TYPE_WATER][i];
+      d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+      if(d < job_d)
+      {
+        job_d = d;
+        job_object = t;
+      }
+    }
+  }
+
   if(job_type != JOB_TYPE_NULL)
   {
     b.go_idle();
@@ -259,7 +275,7 @@ var fullness_job_for_b = function(b)
         break;
       case JOB_TYPE_PLANT:
         b.job_subject.lock = 1;
-        b.job_state = JOB_STATE_SEEK;
+        b.job_state = JOB_STATE_GET;
         break;
       case JOB_TYPE_FERTILIZE:
         if(b.job_object.thing == THING_TYPE_ITEM) b.job_object.lock = 1;
@@ -575,6 +591,21 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
+  if(job_type == JOB_TYPE_PLANT)
+  { //get water (we "know" it exists)
+    job_d = max_dist;
+    for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_WATER].length; i++)
+    {
+      t = gg.b.tile_groups[TILE_TYPE_WATER][i];
+      d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+      if(d < job_d)
+      {
+        job_d = d;
+        job_object = t;
+      }
+    }
+  }
+
   if(job_type != JOB_TYPE_NULL)
   {
     b.go_idle();
@@ -602,8 +633,11 @@ var fulfillment_job_for_b = function(b)
         if(b.job_object.type == ITEM_TYPE_FOOD) b.job_subject.state = TILE_STATE_STORAGE_FOOD;
         if(b.job_object.type == ITEM_TYPE_POOP) b.job_subject.state = TILE_STATE_STORAGE_POOP;
         break;
-      case JOB_TYPE_HARVEST:
       case JOB_TYPE_PLANT:
+        b.job_state = JOB_STATE_GET;
+        b.job_subject.lock = 1;
+        break;
+      case JOB_TYPE_HARVEST:
         b.job_state = JOB_STATE_SEEK;
         b.job_subject.lock = 1;
         break;
@@ -741,11 +775,30 @@ var b_for_job = function(job_type, job_subject, job_object)
       }
       if(best)
       {
+        if(job_type == JOB_TYPE_PLANT && !job_object)
+        {
+          //get water (we "know" it exists)
+          var job_d = max_dist;
+          for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_WATER].length; i++)
+          {
+            t = gg.b.tile_groups[TILE_TYPE_WATER][i];
+            var d = distsqr(t.tx,t.ty,job_subject.tx,job_subject.ty);
+            if(d < job_d)
+            {
+              job_d = d;
+              job_object = t;
+            }
+          }
+        }
+
         best.job_type = job_type;
         best.job_subject = job_subject;
         best.job_object = job_object;
         best.job_subject.lock = 1;
-        best.job_state = JOB_STATE_SEEK;
+        if(job_type == JOB_TYPE_PLANT)
+          best.job_state = JOB_STATE_GET;
+        else if(job_type == JOB_TYPE_HARVEST)
+          best.job_state = JOB_STATE_SEEK;
         best.job_state_t = 0;
         return 1;
       }
@@ -1878,8 +1931,9 @@ var item = function()
   {
     switch(self.type)
     {
-      case ITEM_TYPE_FOOD: drawImageBox(food_img,self,gg.ctx); break;
-      case ITEM_TYPE_POOP: drawImageBox(poop_img,self,gg.ctx); break;
+      case ITEM_TYPE_WATER: gg.ctx.fillStyle = blue; fillBox(self,gg.ctx); break;
+      case ITEM_TYPE_FOOD:  drawImageBox(food_img,self,gg.ctx); break;
+      case ITEM_TYPE_POOP:  drawImageBox(poop_img,self,gg.ctx); break;
     }
   }
 }
@@ -2183,9 +2237,49 @@ var farmbit = function()
       {
         switch(self.job_state)
         {
+          case JOB_STATE_GET:
+          {
+            var o = self.job_object;
+            var t = self.job_object.tile;
+
+            if(o.thing == THING_TYPE_ITEM)
+            {
+              if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
+                self.walk_toward_tile(t);
+              else
+              {
+                self.item = o;
+                self.job_state = JOB_STATE_SEEK;
+                self.job_state_t = 0;
+              }
+            }
+            else if(self.job_object.thing == THING_TYPE_TILE)
+            {
+              if(self.tile != t.tile)
+                self.walk_toward_tile(t);
+              else
+              {
+                //pop water
+                var it = new item();
+                it.type = ITEM_TYPE_WATER;
+                it.tile = t;
+                gg.b.tiles_tw(it.tile,it);
+                kick_item(it);
+                gg.items.push(it);
+                it.lock = 1;
+
+                self.job_object = it;
+                self.job_state = JOB_STATE_GET;
+                self.job_state_t = 0;
+              }
+            }
+          }
+            break;
           case JOB_STATE_SEEK:
           {
             var t = self.job_subject;
+            self.item.wvx += (self.wx-self.item.wx)*0.01;
+            self.item.wvy += (self.wy-self.item.wy)*0.01;
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
@@ -2195,6 +2289,10 @@ var farmbit = function()
           case JOB_STATE_ACT:
           {
             var t = self.job_subject;
+
+            break_item(self.item);
+            self.item = 0;
+
             t.state = TILE_STATE_FARM_PLANTED;
             t.state_t = 0;
             t.lock = 0;

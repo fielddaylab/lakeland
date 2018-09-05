@@ -30,7 +30,7 @@ var shop = function()
   var h = 40;
   x += 10;
   y += 10;
-  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost)   return; gg.money -= farmbit_cost;   var c = gg.hand.add(CARD_TYPE_BIT);       gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
+  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) return; gg.money -= farmbit_cost;   var c = gg.hand.add(CARD_TYPE_BIT);       gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
   self.home_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      var c = gg.hand.add(CARD_TYPE_HOME);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
   self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      var c = gg.hand.add(CARD_TYPE_FARM);      gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; c.dragging = 1; }); y += h+10;
@@ -61,7 +61,7 @@ var shop = function()
     gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = gray;
 
-    if(gg.money < farmbit_cost)   fillBox(self.bit_btn,gg.ctx);
+    if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) fillBox(self.bit_btn,gg.ctx);
     if(gg.money < home_cost)      fillBox(self.home_btn,gg.ctx);
     if(gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
     if(gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
@@ -72,6 +72,7 @@ var shop = function()
     gg.ctx.fillText("$"+gg.money,10,30);
 
     strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",       self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30);
+    gg.ctx.fillText(gg.farmbits.length+"/"+gg.b.tile_groups[TILE_TYPE_HOME].length, self.bit_btn.x, self.bit_btn.y+self.bit_btn.h);
     strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",      self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30);
     strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",      self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
     strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock", self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
