@@ -316,8 +316,10 @@ var inspector = function()
     {
       case TILE_TYPE_NULL:      str += "null";      break;
       case TILE_TYPE_LAND:      str += "land";      break;
+      case TILE_TYPE_ROCK:      str += "rock";      break;
       case TILE_TYPE_WATER:     str += "water";     break;
       case TILE_TYPE_SHORE:     str += "shore";     break;
+      case TILE_TYPE_FORREST:   str += "forrest";   break;
       case TILE_TYPE_HOME:      str += "home";      break;
       case TILE_TYPE_FARM:      str += "farm";      break;
       case TILE_TYPE_LIVESTOCK: str += "livestock"; break;
@@ -348,8 +350,10 @@ var inspector = function()
     {
       case TILE_TYPE_NULL:
       case TILE_TYPE_LAND:
+      case TILE_TYPE_ROCK:
       case TILE_TYPE_WATER:
       case TILE_TYPE_SHORE:
+      case TILE_TYPE_FORREST:
         break;
       case TILE_TYPE_FARM:
       {
