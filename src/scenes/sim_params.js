@@ -48,6 +48,7 @@ var livestock_poop_t = 1000;
 var livestock_feed_threshhold = 0.2;
 var livestock_food_val = 1;
 var livestock_fullness_depletion_rate = 0.999;
+var storage_max = 10;
 var storage_food_max = 10;
 var storage_poop_max = 10;
 

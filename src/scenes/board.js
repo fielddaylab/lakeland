@@ -177,6 +177,96 @@ var closest_unlocked_nutrientdeficient_tile_from_list = function(goal, threshhol
   }
   return closest;
 }
+var closest_unlocked_valdeficient_tile_from_list = function(goal, threshhold, list)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || t.val >= threshhold) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_state_tile_from_list = function(goal, state, list)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || t.state != state) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_available_state_tile_from_list = function(goal, state, list)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || t.state != state || t.val-t.withdraw_lock <= 0) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_free_state_tile_from_list = function(goal, state, list)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || t.state != state || t.val+t.deposit_lock >= storage_max) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_object = function(goal)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < gg.items.length; i++)
+  {
+    var it = gg.items[i];
+    if(it.lock) continue;
+    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = it;
+    }
+  }
+  return closest;
+}
 var closest_unlocked_object_of_type = function(goal, type)
 {
   var closest_d = max_dist;
@@ -294,7 +384,7 @@ var fullness_job_for_b = function(b)
   }
 
   //harvest
-  var t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
+  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
     b.go_idle();
@@ -323,7 +413,7 @@ var joy_job_for_b = function(b)
   if(t)
   {
     b.go_idle();
-    b.job_object = t;
+    b.job_subject = t;
     b.job_type = JOB_TYPE_PLAY;
     b.job_state = JOB_STATE_SEEK;
     return 1;
@@ -449,7 +539,7 @@ var fulfillment_job_for_b = function(b)
 
 
   //store
-  it = closest_unlocked_object(t);
+  it = closest_unlocked_object(b.tile);
   if(it)
   { //found item
     var search_type;
@@ -474,7 +564,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //kick
-  it = closest_unlocked_object(t);
+  it = closest_unlocked_object(b.tile);
   if(it)
   { //found item
     b.go_idle();
@@ -740,7 +830,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject)
       {
         var search_type;
-        switch(it.type)
+        switch(job_object.type)
         {
           case ITEM_TYPE_WATER: break;
           case ITEM_TYPE_FOOD: search_type = TILE_STATE_STORAGE_FOOD; break;
@@ -1786,7 +1876,7 @@ var farmbit = function()
   self.w = 0;
   self.h = 0;
 
-  self.walk_speed = 1; //MUST BE < tile_w
+  self.walk_speed = 1; //MUST BE < tile_w/max_walk_modifier
   self.move_dir_x = 0.;
   self.move_dir_y = 0.;
 
