@@ -286,6 +286,41 @@ var closest_unlocked_object_of_type = function(goal, type)
   return closest;
 }
 
+var closest_free_farmbit_with_desire = function(goal, fullness, energy, joy, fulfillment)
+{
+  var best;
+  var b_rank = -1;
+  var b_d = max_dist;
+  var rank = -1;
+  var d;
+  for(var i = 0; i < gg.farmbits.length; i++)
+  {
+    b = gg.farmbits[i];
+    if(b.job_type != JOB_TYPE_IDLE) continue;
+
+         if(fullness    && b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 8;
+    else if(energy      && b.energy_state      == FARMBIT_STATE_DESPERATE) rank = 7;
+    else if(joy         && b.joy_state         == FARMBIT_STATE_DESPERATE) rank = 6;
+    else if(fulfillment && b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 5;
+    else if(fullness    && b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 4;
+    else if(energy      && b.energy_state      == FARMBIT_STATE_MOTIVATED) rank = 3;
+    else if(joy         && b.joy_state         == FARMBIT_STATE_MOTIVATED) rank = 2;
+    else if(fulfillment && b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
+    else                                                                   rank = -1;
+
+         if(rank > b_rank) { b_d = max_dist; d = distsqr(goal.tx,goal.ty,b.tile.tx,b.tile.ty); }
+    else if(rank < b_rank) {                 d = max_dist;                                     }
+    else                   {                 d = distsqr(goal.tx,goal.ty,b.tile.tx,b.tile.ty); }
+
+    if(d < b_d)
+    {
+      b_rank = rank;
+      b_d = d;
+      best = b;
+    }
+  }
+}
+
 var fullness_job_for_b = function(b)
 {
   var t;
@@ -612,33 +647,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       closest low fullness farmbit
       */
 
-      var best;
-      var b_rank = -1;
-      var b_d = max_dist;
-      var rank = -1;
-      var d;
-      it = job_object;
-      t = it.tile;
-      for(var i = 0; i < gg.farmbits.length; i++)
-      {
-        b = gg.farmbits[i];
-        if(b.job_type != JOB_TYPE_IDLE) continue;
-
-             if(b.fullness_state == FARMBIT_STATE_DESPERATE) rank = 2;
-        else if(b.fullness_state == FARMBIT_STATE_MOTIVATED) rank = 1;
-        else                                                 rank = -1;
-
-             if(rank > b_rank) { b_d = max_dist; d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
-        else if(rank < b_rank) {                 d = max_dist;                                }
-        else                   {                 d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
-
-        if(d < b_d)
-        {
-          b_rank = rank;
-          b_d = d;
-          best = b;
-        }
-      }
+      var best = closest_free_farmbit_with_desire(it.tile, 1, 0, 0, 0);
       if(best)
       {
         best.job_type = JOB_TYPE_EAT;
@@ -664,34 +673,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       closest low fulfillment bit
       */
 
-      var best;
-      var b_rank = -1;
-      var b_d = max_dist;
-      var rank = -1;
-      var d;
-      t = job_subject;
-      for(var i = 0; i < gg.farmbits.length; i++)
-      {
-        b = gg.farmbits[i];
-        if(b.job_type != JOB_TYPE_IDLE) continue;
-
-             if(b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 4;
-        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 3;
-        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 2;
-        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
-        else                                                    rank = -1;
-
-             if(rank > b_rank) { b_d = max_dist; d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
-        else if(rank < b_rank) {                 d = max_dist;                               }
-        else                   {                 d = distsqr(t.tx,t.ty,b.tile.tx,b.tile.ty); }
-
-        if(d < b_d)
-        {
-          b_rank = rank;
-          b_d = d;
-          best = b;
-        }
-      }
+      var best = closest_free_farmbit_with_desire(job_subject, 1, 0, 0, 1);
       if(best)
       {
         if(job_type == JOB_TYPE_PLANT && !job_object)
@@ -727,32 +709,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_FOOD]);
       if(!job_object) return 0;
 
-      var best;
-      var b_rank = -1;
-      var b_d = max_dist;
-      var rank = -1;
-      var d;
-      for(var i = 0; i < gg.farmbits.length; i++)
-      {
-        b = gg.farmbits[i];
-        if(b.job_type != JOB_TYPE_IDLE) continue;
-
-             if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 2;
-        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
-        else                                                    rank = -1;
-
-             if(rank > b_rank) { b_d = max_dist; d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
-        else if(rank < b_rank) {                 d = max_dist;                                                           }
-        else                   {                 d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
-
-        if(d < b_d)
-        {
-          b_rank = rank;
-          b_d = d;
-          best = b;
-        }
-      }
-
+      var best = closest_free_farmbit_with_desire(job_object.tile, 0, 0, 0, 1);
       if(best)
       {
         best.go_idle();
@@ -778,34 +735,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_POOP]);
       if(!job_object) return 0;
 
-      var best;
-      var b_rank = -1;
-      var b_d = max_dist;
-      var rank = -1;
-      var d;
-      for(var i = 0; i < gg.farmbits.length; i++)
-      {
-        b = gg.farmbits[i];
-        if(b.job_type != JOB_TYPE_IDLE) continue;
-
-             if(b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 4;
-        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 3;
-        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 2;
-        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
-        else                                                    rank = -1;
-
-             if(rank > b_rank) { b_d = max_dist; d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
-        else if(rank < b_rank) {                 d = max_dist;                                                           }
-        else                   {                 d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
-
-        if(d < b_d)
-        {
-          b_rank = rank;
-          b_d = d;
-          best = b;
-        }
-      }
-
+      var best = closest_free_farmbit_with_desire(job_object.tile, 1, 0, 0, 1);
       if(best)
       {
         best.go_idle();
@@ -840,33 +770,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       }
       if(!job_subject) return 0;
 
-      var best;
-      var b_rank = -1;
-      var b_d = max_dist;
-      var rank = -1;
-      var d;
-      for(var i = 0; i < gg.farmbits.length; i++)
-      {
-        b = gg.farmbits[i];
-        if(b.job_type != JOB_TYPE_IDLE) continue;
-
-             if(b.fullness_state    == FARMBIT_STATE_DESPERATE) rank = 4;
-        else if(b.fulfillment_state == FARMBIT_STATE_DESPERATE) rank = 3;
-        else if(b.fullness_state    == FARMBIT_STATE_MOTIVATED) rank = 2;
-        else if(b.fulfillment_state == FARMBIT_STATE_MOTIVATED) rank = 1;
-        else                                                    rank = -1;
-
-             if(rank > b_rank) { b_d = max_dist; d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
-        else if(rank < b_rank) {                 d = max_dist;                                                           }
-        else                   {                 d = distsqr(job_object.tile.tx,job_object.tile.ty,b.tile.tx,b.tile.ty); }
-
-        if(d < b_d)
-        {
-          b_rank = rank;
-          b_d = d;
-          best = b;
-        }
-      }
+      var best = closest_free_farmbit_with_desire(job_object.tile, 1, 0, 0, 1);
       if(best)
       {
         best.go_idle();
