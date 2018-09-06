@@ -1,0 +1,13 @@
+- abandon job
+- fertilization shouldn't lock down farm
+- destroy property (/goals)
+- death
+- seek clean water
+- repulsed by fouled water
+- water cleaner (slow!)
+- sell poop/food (bring to corner, wait for 10s off screen, sold)
+- decomposer
+- "find_closest_tile_in_list"
+- orient "find best" to include properties other than distance
+- progression
+

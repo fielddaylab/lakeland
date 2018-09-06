@@ -17,6 +17,10 @@ var farmbits_start_n = 1;
 var money_start_n = 100;
 
 //in order of priority
+var fullness_dire         = 0.01; //death
+var energy_dire           = 0.01; //sleep on spot
+var joy_dire              = 0.01; //refuse any other work
+var fulfillment_dire      = 0.01; //n/a
 var fullness_motivated    = 0.2;
 var energy_motivated      = 0.2;
 var joy_motivated         = 0.2;

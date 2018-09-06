@@ -36,7 +36,8 @@ var shop = function()
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      var c = gg.hand.add(CARD_TYPE_ROAD);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
-  self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money;                                                                                                                                }); y += h+10;
+  self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money; }); y += h+10;
+  self.abandon_btn   = new ButtonBox(x,y,w,h,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); y += h+10;
 
   self.filter = function(filter)
   {
@@ -49,6 +50,7 @@ var shop = function()
     if(check) check = !filter.filter(self.storage_btn);
     if(check) check = !filter.filter(self.road_btn);
     if(check) check = !filter.filter(self.money_btn);
+    if(check) check = !filter.filter(self.abandon_btn);
     return !check;
   }
 
@@ -80,6 +82,7 @@ var shop = function()
     strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
     strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_card,   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
     strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
+    strokeBox(self.abandon_btn,gg.ctx);   gg.ctx.fillText("abandon",                self.abandon_btn.x,   self.abandon_btn.y+20);
   }
 }
 
