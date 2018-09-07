@@ -1933,16 +1933,26 @@ var farmbit = function()
 
   self.abandon_job = function()
   {
+    var job_type = self.job_type;
+    var job_subject = self.job_subject;
+    var job_object = self.job_object;
+    var item = self.item;
+
     self.release_locks();
     if(self.item) { kick_item(self.item); self.item = 0; }
-    switch(self.job_type)
+    self.go_idle();
+    self.job_type = JOB_TYPE_WAIT;
+
+    switch(job_type)
     {
       case JOB_TYPE_PLANT:
       case JOB_TYPE_HARVEST:
+      case JOB_TYPE_FEED:
       case JOB_TYPE_FERTILIZE:
       case JOB_TYPE_STORE:
+        b_for_job(job_type, job_subject, job_object); break;
+        break;
     }
-    self.go_idle();
   }
 
   self.tick = function()
