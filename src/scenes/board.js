@@ -2225,7 +2225,10 @@ var farmbit = function()
             if(self.home && self.tile != self.home)
               self.walk_toward_tile(self.home);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2253,7 +2256,10 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2321,7 +2327,10 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2353,7 +2362,10 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2442,7 +2454,10 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2518,7 +2533,10 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2554,6 +2572,7 @@ var farmbit = function()
             {
               self.item = self.job_object;
               self.job_state = JOB_STATE_SEEK;
+              self.job_state_t = 0;
             }
           }
             break;
@@ -2565,7 +2584,10 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
@@ -2602,6 +2624,7 @@ var farmbit = function()
             {
               self.item = self.job_object;
               self.job_state = JOB_STATE_SEEK;
+              self.job_state_t = 0;
             }
           }
             break;
@@ -2613,23 +2636,30 @@ var farmbit = function()
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
+            {
               self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
           }
             break;
           case JOB_STATE_ACT:
           {
-            self.release_locks();
-            var t = self.job_subject;
+            if(self.job_state_t > export_t)
+            {
+              self.release_locks();
+              var t = self.job_subject;
 
-            gg.money += worth_for_item(self.item.type);
+              gg.money += worth_for_item(self.item.type);
 
-            break_item(self.item);
-            self.item = 0;
+              break_item(self.item);
+              self.item = 0;
 
-            self.fulfillment += store_fulfillment;
-            self.calibrate_stats();
-            self.go_idle();
-            self.job_type = JOB_TYPE_WAIT;
+              self.fulfillment += store_fulfillment;
+              self.calibrate_stats();
+
+              self.go_idle();
+              job_for_b(self);
+            }
           }
             break;
         }

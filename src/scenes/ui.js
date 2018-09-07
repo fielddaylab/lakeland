@@ -454,6 +454,7 @@ var inspector = function()
       case JOB_TYPE_FERTILIZE: str += "fertilize"; break;
       case JOB_TYPE_STORE:     str += "store";     break;
       case JOB_TYPE_KICK:      str += "kick";      break;
+      case JOB_TYPE_EXPORT:    str += "export";    break;
       case JOB_TYPE_COUNT:     str += "count";     break;
     }
     gg.ctx.fillText(str+" ("+b.tile.tx+","+b.tile.ty+")",x,y);

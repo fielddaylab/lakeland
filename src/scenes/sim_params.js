@@ -36,6 +36,7 @@ var joy_depletion_rate         = 0.999;
 var fulfillment_depletion_rate = 0.999;
 
 var wait_t = 100;
+var export_t = 2000;
 
 var nutrition_flow_rate = 0.001;
 var poop_nutrition_leak = 0.0001;
