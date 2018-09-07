@@ -141,6 +141,16 @@ var buildability_check = function(building,over)
   }
 }
 
+var storage_for_item = function(item_type)
+{
+  switch(item_type)
+  {
+    case ITEM_TYPE_FOOD: return TILE_STATE_STORAGE_FOOD;
+    case ITEM_TYPE_POOP: return TILE_STATE_STORAGE_POOP;
+    default: return TILE_STATE_STORAGE_UNASSIGNED;
+  }
+}
+
 var closest_unlocked_tile_from_list = function(goal, list)
 {
   var closest_d = max_dist;
@@ -419,7 +429,7 @@ var fullness_job_for_b = function(b)
   }
 
   //harvest
-  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
+  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_GROWN, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
     b.go_idle();
@@ -561,7 +571,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //harvest
-  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
+  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_GROWN, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
     b.go_idle();
@@ -577,14 +587,9 @@ var fulfillment_job_for_b = function(b)
   it = closest_unlocked_object(b.tile);
   if(it)
   { //found item
-    var search_type;
-    switch(it.type)
-    {
-      case ITEM_TYPE_WATER: break;
-      case ITEM_TYPE_FOOD: search_type = TILE_STATE_STORAGE_FOOD; break;
-      case ITEM_TYPE_POOP: search_type = TILE_STATE_STORAGE_POOP; break;
-    }
+    var search_type = storage_for_item(it.type);
     t = closest_unlocked_free_state_tile_from_list(it.tile, search_type, gg.b.tile_groups[TILE_TYPE_STORAGE]);
+    if(!t) t = closest_unlocked_free_state_tile_from_list(it.tile, TILE_STATE_STORAGE_UNASSIGNED, gg.b.tile_groups[TILE_TYPE_STORAGE]);
     if(t)
     {
       b.go_idle();
@@ -592,6 +597,7 @@ var fulfillment_job_for_b = function(b)
       b.job_object = it;
       b.lock_deposit(b.job_subject);
       b.lock_object(b.job_object);
+      b.job_subject.state = search_type;
       b.job_type = JOB_TYPE_STORE;
       b.job_state = JOB_STATE_GET;
       return 1;
@@ -647,7 +653,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       closest low fullness farmbit
       */
 
-      var best = closest_free_farmbit_with_desire(it.tile, 1, 0, 0, 0);
+      var best = closest_free_farmbit_with_desire(job_object.tile, 1, 0, 0, 0);
       if(best)
       {
         best.job_type = JOB_TYPE_EAT;
@@ -759,14 +765,9 @@ var b_for_job = function(job_type, job_subject, job_object)
 
       if(!job_subject)
       {
-        var search_type;
-        switch(job_object.type)
-        {
-          case ITEM_TYPE_WATER: break;
-          case ITEM_TYPE_FOOD: search_type = TILE_STATE_STORAGE_FOOD; break;
-          case ITEM_TYPE_POOP: search_type = TILE_STATE_STORAGE_POOP; break;
-        }
+        var search_type = storage_for_item(job_object.type);
         job_subject = closest_unlocked_free_state_tile_from_list(job_object, search_type, gg.b.tile_groups[TILE_TYPE_STORAGE]);
+        if(!job_subject) job_subject = closest_unlocked_free_state_tile_from_list(job_object, TILE_STATE_STORAGE_UNASSIGNED, gg.b.tile_groups[TILE_TYPE_STORAGE]);
       }
       if(!job_subject) return 0;
 
@@ -780,8 +781,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_state = JOB_STATE_GET;
         best.lock_object(best.job_object);
         best.lock_deposit(best.job_subject);
-        if(best.job_object.type == ITEM_TYPE_FOOD) best.job_subject.state = TILE_STATE_STORAGE_FOOD;
-        if(best.job_object.type == ITEM_TYPE_POOP) best.job_subject.state = TILE_STATE_STORAGE_POOP;
+        best.job_subject.state = storage_for_item(b.job_object.type);
         return 1;
       }
     }
@@ -2445,11 +2445,11 @@ var farmbit = function()
             self.release_locks();
             var t = self.job_subject;
 
-            break_item(self.item);
-            self.item = 0;
-
             //deposit lock already released
             t.val++;
+
+            break_item(self.item);
+            self.item = 0;
 
             self.fulfillment += store_fulfillment;
             self.fulfillment_state = FARMBIT_STATE_CONTENT;
