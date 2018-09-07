@@ -1989,6 +1989,13 @@ var farmbit = function()
     else                                              self.fulfillment_state = FARMBIT_STATE_DESPERATE;
   }
 
+  self.die = function()
+  {
+    self.abandon_job();
+    for(var i = 0; i < gg.farmbits.length; i++)
+      if(gg.farmbits[i] == self) gg.farmbits.splice(i,1);
+  }
+
   self.go_idle = function()
   {
     self.job_type = JOB_TYPE_IDLE;
@@ -2092,6 +2099,7 @@ var farmbit = function()
     {
       case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; dirty = 1; } break;
       case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; dirty = 1; } break;
+      case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; self.die(); return; } break;
       default: break;
     }
     switch(self.energy_state)
