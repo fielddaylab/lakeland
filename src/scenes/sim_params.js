@@ -35,7 +35,7 @@ var energy_depletion_rate      = 0.999;
 var joy_depletion_rate         = 0.999;
 var fulfillment_depletion_rate = 0.999;
 
-var wait_t = 1000;
+var wait_t = 100;
 
 var nutrition_flow_rate = 0.001;
 var poop_nutrition_leak = 0.0001;
@@ -65,6 +65,7 @@ var farm_walkability      = 0.9;
 var livestock_walkability = 0.8;
 var storage_walkability   = 0.9;
 var road_walkability      = 4;
+var export_walkability    = 1;
 
 var plant_fulfillment     = 0.1;
 var harvest_fulfillment   = 0.1;
@@ -85,6 +86,9 @@ var demolish_cost = 10;
 var free_money = 1000;
 
 var harvest_profit = 10;
+
+var item_worth_food = 100;
+var item_worth_poop = 50;
 
 var roads_per_card = 10;
 var min_card_drag_t = 50;

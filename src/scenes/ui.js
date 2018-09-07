@@ -352,6 +352,7 @@ var inspector = function()
       case TILE_TYPE_LIVESTOCK: str += "livestock"; break;
       case TILE_TYPE_STORAGE:   str += "storage";   break;
       case TILE_TYPE_ROAD:      str += "road";      break;
+      case TILE_TYPE_EXPORT:    str += "export";    break;
       case TILE_TYPE_COUNT:     str += "count";     break;
     }
     gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
@@ -401,6 +402,7 @@ var inspector = function()
       }
         break;
       case TILE_TYPE_ROAD:
+      case TILE_TYPE_EXPORT:
       case TILE_TYPE_COUNT:
         break;
     }
