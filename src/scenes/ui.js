@@ -7,6 +7,7 @@ var CARD_TYPE_FARM      = ENUM; ENUM++;
 var CARD_TYPE_LIVESTOCK = ENUM; ENUM++;
 var CARD_TYPE_STORAGE   = ENUM; ENUM++;
 var CARD_TYPE_ROAD      = ENUM; ENUM++;
+var CARD_TYPE_DEMOLISH  = ENUM; ENUM++;
 var CARD_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
@@ -36,6 +37,7 @@ var shop = function()
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      var c = gg.hand.add(CARD_TYPE_ROAD);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.demolish_btn  = new ButtonBox(x,y,w,h,function(){ if(gg.money < demolish_cost)  return; gg.money -= demolish_cost;  var c = gg.hand.add(CARD_TYPE_DEMOLISH);  gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money; }); y += h+10;
   self.abandon_btn   = new ButtonBox(x,y,w,h,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); y += h+10;
 
@@ -49,6 +51,7 @@ var shop = function()
     if(check) check = !filter.filter(self.livestock_btn);
     if(check) check = !filter.filter(self.storage_btn);
     if(check) check = !filter.filter(self.road_btn);
+    if(check) check = !filter.filter(self.demolish_btn);
     if(check) check = !filter.filter(self.money_btn);
     if(check) check = !filter.filter(self.abandon_btn);
     return !check;
@@ -70,6 +73,7 @@ var shop = function()
     if(gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
     if(gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
     if(gg.money < road_cost)      fillBox(self.road_btn,gg.ctx);
+    if(gg.money < demolish_cost)  fillBox(self.demolish_btn,gg.ctx);
 
     gg.ctx.fillStyle = black;
     gg.ctx.fillText("$"+gg.money,10,30);
@@ -81,6 +85,7 @@ var shop = function()
     strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
     strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
     strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_card,   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
+    strokeBox(self.demolish_btn,gg.ctx);  gg.ctx.fillText("demolish",               self.demolish_btn.x,  self.demolish_btn.y+20);  gg.ctx.fillText("$"+demolish_cost,  self.demolish_btn.x,  self.demolish_btn.y+30);
     strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
     strokeBox(self.abandon_btn,gg.ctx);   gg.ctx.fillText("abandon",                self.abandon_btn.x,   self.abandon_btn.y+20);
   }
@@ -171,6 +176,7 @@ var card = function()
           case CARD_TYPE_LIVESTOCK: playable = buildability_check(TILE_TYPE_LIVESTOCK, gg.b.hover_t.type); break;
           case CARD_TYPE_STORAGE:   playable = buildability_check(TILE_TYPE_STORAGE,   gg.b.hover_t.type); break;
           case CARD_TYPE_ROAD:      playable =(buildability_check(TILE_TYPE_ROAD,      gg.b.hover_t.type) || gg.b.hover_t.type == TILE_TYPE_ROAD); break;
+          case CARD_TYPE_DEMOLISH:  playable = demolishability_check(gg.b.hover_t.type); break;
         }
       }
       if(playable) gg.ctx.strokeStyle = green;
@@ -185,6 +191,7 @@ var card = function()
       case CARD_TYPE_LIVESTOCK: gg.ctx.fillText("Livestock", self.x+10,self.y+20); break;
       case CARD_TYPE_STORAGE:   gg.ctx.fillText("Storage",   self.x+10,self.y+20); break;
       case CARD_TYPE_ROAD:      gg.ctx.fillText("Road",      self.x+10,self.y+20); break;
+      case CARD_TYPE_DEMOLISH:  gg.ctx.fillText("Demolish",  self.x+10,self.y+20); break;
     }
     /*
     gg.ctx.strokeStyle = green;

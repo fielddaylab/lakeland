@@ -141,6 +141,21 @@ var buildability_check = function(building,over)
   }
 }
 
+var demolishability_check = function(over)
+{
+  switch(over)
+  {
+    case TILE_TYPE_HOME:
+    case TILE_TYPE_FARM:
+    case TILE_TYPE_LIVESTOCK:
+    case TILE_TYPE_STORAGE:
+    case TILE_TYPE_ROAD:
+      return 1;
+      break;
+  }
+  return 0;
+}
+
 var storage_for_item = function(item_type)
 {
   switch(item_type)
@@ -823,6 +838,7 @@ var tile = function()
   self.tx = 0;
   self.ty = 0;
   self.i = 0;
+  self.og_type = TILE_TYPE_LAND;
   self.type = TILE_TYPE_LAND;
   self.state = TILE_STATE_NULL;
   self.state_t = 0;
@@ -1159,6 +1175,10 @@ var board = function()
       }
     }
 
+    //assign og
+    for(var i = 0; i < TILE_TYPE_COUNT; i++)
+      self.tiles[i].og_type = self.tiles[i].type;
+
     //group tiles
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
       self.tile_groups[i] = [];
@@ -1379,6 +1399,50 @@ var board = function()
     self.dirty_directions();
   }
 
+  self.abandon_tile = function(t)
+  {
+    for(var i = 0; i < gg.farmbits.length; i++)
+    {
+      var f = gg.farmbits[i];
+      if(
+        f.job_subject     == t ||
+        f.job_object      == t ||
+        f.locked_subject  == t ||
+        f.locked_object   == t ||
+        f.locked_withdraw == t ||
+        f.locked_deposit  == t)
+      {
+        f.abandon_job(0);
+      }
+    }
+    if(t.type == TILE_TYPE_HOME)
+    {
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        var f = gg.farmbits[i];
+        if(f.home == t) f.home = 0;
+      }
+    }
+    if(t.type == TILE_TYPE_STORAGE && t.val > 0)
+    {
+      var item_type;
+      switch(t.state)
+      {
+        case TILE_STATE_STORAGE_FOOD: item_type = ITEM_TYPE_FOOD; break;
+        case TILE_STATE_STORAGE_POOP: item_type = ITEM_TYPE_POOP; break;
+      }
+      for(var i = 0; i < t.val; i++)
+      {
+        var it = new item();
+        it.type = item_type;
+        it.tile = t;
+        gg.b.tiles_tw(it.tile,it);
+        kick_item(it);
+        gg.items.push(it);
+      }
+    }
+  }
+
   self.flow = function(from, to) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
   {
     var d = clamp(-1,1,from.nutrition-to.nutrition);
@@ -1547,6 +1611,7 @@ var board = function()
         gg.farmbits.push(b);
         job_for_b(b);
         gg.hand.destroy(c);
+        b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
         return;
       }
 
@@ -1591,6 +1656,14 @@ var board = function()
       {
         gg.hand.destroy(c);
         self.spewing_road = roads_per_card;
+        return;
+      }
+
+      if(c.type == CARD_TYPE_DEMOLISH && demolishability_check(self.hover_t.type))
+      {
+        self.abandon_tile(self.hover_t);
+        self.alterTile(self.hover_t,self.hover_t.og_type);
+        gg.hand.destroy(c);
         return;
       }
     }
@@ -1931,7 +2004,7 @@ var farmbit = function()
     if(self.locked_deposit)  self.unlock_deposit();
   }
 
-  self.abandon_job = function()
+  self.abandon_job = function(reassign)
   {
     var job_type = self.job_type;
     var job_subject = self.job_subject;
@@ -1943,6 +2016,7 @@ var farmbit = function()
     self.go_idle();
     self.job_type = JOB_TYPE_WAIT;
 
+    if(!reassign) return;
     switch(job_type)
     {
       case JOB_TYPE_PLANT:

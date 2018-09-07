@@ -110,7 +110,7 @@ var GamePlayScene = function(game, stage)
     gg.inspector.draw();
 
     var x = 10;
-    var y = 450;
+    var y = 520;
     h = 25;
     gg.ctx.fillText("d- speed time",    x,y); y += h;
     gg.ctx.fillText("p- pause",         x,y); y += h;
