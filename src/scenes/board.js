@@ -393,37 +393,16 @@ var fullness_job_for_b = function(b)
     return 1;
   }
 
-  //fertilize
-  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
+  //harvest
+  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_GROWN, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_object_of_type(t,ITEM_TYPE_POOP);
-    if(it)
-    { //found item
-      b.go_idle();
-      b.job_subject = t;
-      b.job_object = it;
-      b.lock_subject(b.job_subject);
-      b.lock_object(b.job_object);
-      b.job_type = JOB_TYPE_FERTILIZE;
-      b.job_state = JOB_STATE_GET;
-      return 1;
-    }
-    else
-    {
-      tp = closest_unlocked_available_state_tile_from_list(t, TILE_STATE_STORAGE_POOP, gg.b.tile_groups[TILE_TYPE_STORAGE]);
-      if(tp)
-      { //found storage
-        b.go_idle();
-        b.job_subject = t;
-        b.job_object = tp;
-        b.lock_subject(b.job_subject);
-        b.lock_withdraw(b.job_object);
-        b.job_type = JOB_TYPE_FERTILIZE;
-        b.job_state = JOB_STATE_GET;
-        return 1;
-      }
-    }
+    b.go_idle();
+    b.job_subject = t;
+    b.lock_subject(b.job_subject);
+    b.job_type = JOB_TYPE_HARVEST;
+    b.job_state = JOB_STATE_SEEK;
+    return 1;
   }
 
   //plant
@@ -459,16 +438,37 @@ var fullness_job_for_b = function(b)
     }
   }
 
-  //harvest
-  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_GROWN, gg.b.tile_groups[TILE_TYPE_FARM]);
+  //fertilize
+  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    b.go_idle();
-    b.job_subject = t;
-    b.lock_subject(b.job_subject);
-    b.job_type = JOB_TYPE_HARVEST;
-    b.job_state = JOB_STATE_SEEK;
-    return 1;
+    it = closest_unlocked_object_of_type(t,ITEM_TYPE_POOP);
+    if(it)
+    { //found item
+      b.go_idle();
+      b.job_subject = t;
+      b.job_object = it;
+      b.lock_subject(b.job_subject);
+      b.lock_object(b.job_object);
+      b.job_type = JOB_TYPE_FERTILIZE;
+      b.job_state = JOB_STATE_GET;
+      return 1;
+    }
+    else
+    {
+      tp = closest_unlocked_available_state_tile_from_list(t, TILE_STATE_STORAGE_POOP, gg.b.tile_groups[TILE_TYPE_STORAGE]);
+      if(tp)
+      { //found storage
+        b.go_idle();
+        b.job_subject = t;
+        b.job_object = tp;
+        b.lock_subject(b.job_subject);
+        b.lock_withdraw(b.job_object);
+        b.job_type = JOB_TYPE_FERTILIZE;
+        b.job_state = JOB_STATE_GET;
+        return 1;
+      }
+    }
   }
 
   return 0;
@@ -2089,10 +2089,15 @@ var farmbit = function()
       self.frame_t = 0;
     }
 
-    self.fullness    *= fullness_depletion_rate;
-    self.energy      *= energy_depletion_rate;
-    self.joy         *= joy_depletion_rate;
-    self.fulfillment *= fulfillment_depletion_rate;
+    if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
+      ; //don't lose motivation! otherwise, every bit will come back dead
+    else
+    {
+      self.fullness    *= fullness_depletion_rate;
+      self.energy      *= energy_depletion_rate;
+      self.joy         *= joy_depletion_rate;
+      self.fulfillment *= fulfillment_depletion_rate;
+    }
 
     var dirty = false;
     switch(self.fullness_state)
@@ -2722,28 +2727,28 @@ var farmbit = function()
 
   self.draw = function()
   {
-    if(self.job_subject)
+    if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
+      return;
+    if(debug_jobs)
     {
-      if(self.job_subject.thing == THING_TYPE_TILE)
+      if(self.job_subject)
       {
-        gg.b.tiles_tw(self.job_subject,self.job_subject);
-        screenSpacePt(gg.cam, gg.canv, self.job_subject);
-      }
-      if(debug_jobs)
-      {
+        if(self.job_subject.thing == THING_TYPE_TILE)
+        {
+          gg.b.tiles_tw(self.job_subject,self.job_subject);
+          screenSpacePt(gg.cam, gg.canv, self.job_subject);
+        }
         gg.ctx.strokeStyle = green;
         drawLine(self.x+self.w/2,self.y+self.h/2,self.job_subject.x,self.job_subject.y,gg.ctx);
       }
-    }
-    if(self.job_object)
-    {
-      if(self.job_object.thing == THING_TYPE_TILE)
+
+      if(self.job_object)
       {
-        gg.b.tiles_tw(self.job_object,self.job_object);
-        screenSpacePt(gg.cam, gg.canv, self.job_object);
-      }
-      if(debug_jobs)
-      {
+        if(self.job_object.thing == THING_TYPE_TILE)
+        {
+          gg.b.tiles_tw(self.job_object,self.job_object);
+          screenSpacePt(gg.cam, gg.canv, self.job_object);
+        }
         gg.ctx.strokeStyle = green;
         drawLine(self.x+self.w/2,self.y+self.h/2,self.job_object.x,self.job_object.y,gg.ctx);
       }

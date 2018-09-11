@@ -86,7 +86,7 @@ var road_cost = 1000;
 var demolish_cost = 10;
 var free_money = 1000;
 
-var harvest_profit = 10;
+var harvest_profit = 50;
 
 var item_worth_food = 100;
 var item_worth_poop = 50;
