@@ -329,7 +329,7 @@ var closest_unlocked_object_of_type = function(goal, type)
 
 var closest_free_farmbit_with_desire = function(goal, fullness, energy, joy, fulfillment)
 {
-  var best;
+  var best = 0;
   var b_rank = -1;
   var b_d = max_dist;
   var rank = -1;
@@ -360,6 +360,8 @@ var closest_free_farmbit_with_desire = function(goal, fullness, energy, joy, ful
       best = b;
     }
   }
+
+  return best;
 }
 
 var fullness_job_for_b = function(b)
@@ -378,6 +380,7 @@ var fullness_job_for_b = function(b)
     b.lock_object(b.job_object);
     b.job_type = JOB_TYPE_EAT;
     b.job_state = JOB_STATE_GET;
+    gg.ticker.nq(b.name+" is going to get some food.");
     return 1;
   }
 
@@ -390,6 +393,7 @@ var fullness_job_for_b = function(b)
     b.lock_withdraw(b.job_object);
     b.job_type = JOB_TYPE_EAT;
     b.job_state = JOB_STATE_GET;
+    gg.ticker.nq(b.name+" is going to get some food from storage.");
     return 1;
   }
 
@@ -402,6 +406,7 @@ var fullness_job_for_b = function(b)
     b.lock_subject(b.job_subject);
     b.job_type = JOB_TYPE_HARVEST;
     b.job_state = JOB_STATE_SEEK;
+    gg.ticker.nq(b.name+" is going to harvest a farm.");
     return 1;
   }
 
@@ -419,13 +424,14 @@ var fullness_job_for_b = function(b)
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_PLANT;
       b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to plant a farm.");
       return 1;
     }
     else
     {
       tp = closest_unlocked_tile_from_list(t, gg.b.tile_groups[TILE_TYPE_WATER]);
       if(tp)
-      { //found storage
+      { //found lake
         b.go_idle();
         b.job_subject = t;
         b.job_object = tp;
@@ -433,6 +439,7 @@ var fullness_job_for_b = function(b)
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_PLANT;
         b.job_state = JOB_STATE_GET;
+        gg.ticker.nq(b.name+" is going to plant a farm with lake water.");
         return 1;
       }
     }
@@ -452,6 +459,7 @@ var fullness_job_for_b = function(b)
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_FERTILIZE;
       b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to fertilize a farm.");
       return 1;
     }
     else
@@ -466,6 +474,7 @@ var fullness_job_for_b = function(b)
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_FERTILIZE;
         b.job_state = JOB_STATE_GET;
+        gg.ticker.nq(b.name+" is going to fertilize a farm.");
         return 1;
       }
     }
@@ -479,6 +488,7 @@ var energy_job_for_b = function(b)
   b.go_idle();
   b.job_type = JOB_TYPE_SLEEP;
   b.job_state = JOB_STATE_SEEK;
+  gg.ticker.nq(b.name+" is going to take a nap.");
   return 1;
 }
 
@@ -492,6 +502,7 @@ var joy_job_for_b = function(b)
     b.job_subject = t;
     b.job_type = JOB_TYPE_PLAY;
     b.job_state = JOB_STATE_SEEK;
+    gg.ticker.nq(b.name+" is going to play in the lake.");
     return 1;
   }
 
@@ -516,6 +527,7 @@ var fulfillment_job_for_b = function(b)
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_FEED;
       b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to feed some livestock.");
       return 1;
     }
     else
@@ -530,6 +542,7 @@ var fulfillment_job_for_b = function(b)
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_FEED;
         b.job_state = JOB_STATE_GET;
+        gg.ticker.nq(b.name+" is going to feed some livestock.");
         return 1;
       }
     }
@@ -549,6 +562,7 @@ var fulfillment_job_for_b = function(b)
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_FERTILIZE;
       b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to fertilize a farm.");
       return 1;
     }
     else
@@ -563,6 +577,7 @@ var fulfillment_job_for_b = function(b)
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_FERTILIZE;
         b.job_state = JOB_STATE_GET;
+        gg.ticker.nq(b.name+" is going to fertilize a farm.");
         return 1;
       }
     }
@@ -582,13 +597,14 @@ var fulfillment_job_for_b = function(b)
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_PLANT;
       b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to plant a farm.");
       return 1;
     }
     else
     {
       tp = closest_unlocked_tile_from_list(t, gg.b.tile_groups[TILE_TYPE_WATER]);
       if(tp)
-      { //found storage
+      { //found lake
         b.go_idle();
         b.job_subject = t;
         b.job_object = tp;
@@ -596,6 +612,7 @@ var fulfillment_job_for_b = function(b)
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_PLANT;
         b.job_state = JOB_STATE_GET;
+        gg.ticker.nq(b.name+" is going to plant a farm.");
         return 1;
       }
     }
@@ -610,6 +627,7 @@ var fulfillment_job_for_b = function(b)
     b.lock_subject(b.job_subject);
     b.job_type = JOB_TYPE_HARVEST;
     b.job_state = JOB_STATE_SEEK;
+    gg.ticker.nq(b.name+" is going to harvest a farm.");
     return 1;
   }
 
@@ -631,13 +649,15 @@ var fulfillment_job_for_b = function(b)
       b.job_subject.state = search_type;
       b.job_type = JOB_TYPE_STORE;
       b.job_state = JOB_STATE_GET;
+      if(it.type == ITEM_TYPE_FOOD) gg.ticker.nq(b.name+" is going to store some food for later.");
+      if(it.type == ITEM_TYPE_POOP) gg.ticker.nq(b.name+" is going to store some poop for later.");
       return 1;
     }
   }
 
   //export
   it = closest_unlocked_object(b.tile);
-  if(it)
+  if(it && !gg.b.tiles[0].lock)
   { //found item
     b.go_idle();
     b.job_object = it;
@@ -645,6 +665,8 @@ var fulfillment_job_for_b = function(b)
     b.job_subject = gg.b.tiles[0];
     b.job_type = JOB_TYPE_EXPORT;
     b.job_state = JOB_STATE_GET;
+    if(it.type == ITEM_TYPE_FOOD) gg.ticker.nq(b.name+" is going to export some food- safe travels!");
+    if(it.type == ITEM_TYPE_POOP) gg.ticker.nq(b.name+" is going to export some poop- safe travels!");
     return 1;
   }
 
@@ -657,6 +679,8 @@ var fulfillment_job_for_b = function(b)
     b.lock_object(b.job_object);
     b.job_type = JOB_TYPE_KICK;
     b.job_state = JOB_STATE_GET;
+    if(it.type == ITEM_TYPE_FOOD) gg.ticker.nq(b.name+" is going to kick around some food.");
+    if(it.type == ITEM_TYPE_POOP) gg.ticker.nq(b.name+" is going to kick around some poop.");
     return 1;
   }
 
@@ -706,6 +730,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.lock_object(best.job_object);
         best.job_state = JOB_STATE_GET;
         best.job_state_t = 0;
+        gg.ticker.nq(best.name+" is going to eat some food.");
         return 1;
       }
     }
@@ -740,9 +765,13 @@ var b_for_job = function(job_type, job_subject, job_object)
         {
           best.job_state = JOB_STATE_GET;
           if(best.job_object.thing == THING_TYPE_ITEM) best.lock_object(best.job_object);
+          gg.ticker.nq(best.name+" is going to plant a farm.");
         }
         else if(job_type == JOB_TYPE_HARVEST)
+        {
           best.job_state = JOB_STATE_SEEK;
+          gg.ticker.nq(best.name+" is going to harvest a farm.");
+        }
         best.job_state_t = 0;
         return 1;
       }
@@ -770,6 +799,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         if(best.job_object.thing == THING_TYPE_TILE) best.lock_withdraw(best.job_object);
         best.lock_subject(best.job_subject);
         best.job_state = JOB_STATE_GET;
+        gg.ticker.nq(best.name+" is going to feed some livestock.");
         return 1;
       }
     }
@@ -796,6 +826,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         if(best.job_object.thing == THING_TYPE_TILE) best.lock_withdraw(best.job_object);
         best.lock_subject(best.job_subject);
         best.job_state = JOB_STATE_GET;
+        gg.ticker.nq(best.name+" is going to fertilize a farm.");
         return 1;
       }
     }
@@ -825,7 +856,9 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_state = JOB_STATE_GET;
         best.lock_object(best.job_object);
         best.lock_deposit(best.job_subject);
-        best.job_subject.state = storage_for_item(b.job_object.type);
+        best.job_subject.state = storage_for_item(best.job_object.type);
+        if(job_object.type == ITEM_TYPE_FOOD) gg.ticker.nq(best.name+" is going to store some food for later.");
+        if(job_object.type == ITEM_TYPE_POOP) gg.ticker.nq(best.name+" is going to store some poop for later.");
         return 1;
       }
     }
@@ -1205,6 +1238,7 @@ var board = function()
     }
 
     self.tiles[0].type = TILE_TYPE_EXPORT;
+    self.tiles[0].lock = 1;
 
     //assign og
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
@@ -1882,6 +1916,11 @@ var item = function()
   }
 }
 
+var farmbit_names = [
+"peter",
+"paul",
+"mary",
+];
 var farmbit = function()
 {
   var self = this;
@@ -1901,6 +1940,7 @@ var farmbit = function()
   self.move_dir_x = 0.;
   self.move_dir_y = 0.;
 
+  self.name = farmbit_names[randIntBelow(farmbit_names.length)];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
   self.job_subject = 0;
@@ -1994,6 +2034,7 @@ var farmbit = function()
     self.abandon_job();
     for(var i = 0; i < gg.farmbits.length; i++)
       if(gg.farmbits[i] == self) gg.farmbits.splice(i,1);
+    gg.ticker.nq(self.name+" DIED!");
   }
 
   self.go_idle = function()
@@ -2078,6 +2119,7 @@ var farmbit = function()
         b_for_job(job_type, job_subject, job_object); break;
         break;
     }
+    gg.ticker.nq(self.name+" abandonded their job!");
   }
 
   self.tick = function()
@@ -2102,27 +2144,27 @@ var farmbit = function()
     var dirty = false;
     switch(self.fullness_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; dirty = 1; } break;
+      case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is hungry.");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY hungry!"); dirty = 1; } break;
       case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; self.die(); return; } break;
       default: break;
     }
     switch(self.energy_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.energy < energy_content)   { self.energy_state = FARMBIT_STATE_MOTIVATED; dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.energy < energy_motivated) { self.energy_state = FARMBIT_STATE_DESPERATE; dirty = 1; } break;
+      case FARMBIT_STATE_CONTENT:   if(self.energy < energy_content)   { self.energy_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is sleepy.");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.energy < energy_motivated) { self.energy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY sleepy!"); dirty = 1; } break;
       default: break;
     }
     switch(self.joy_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; dirty = 1; } break;
+      case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is depressed.");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY depressed!"); dirty = 1; } break;
       default: break;
     }
     switch(self.fulfillment_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.fulfillment < fulfillment_content)   { self.fulfillment_state = FARMBIT_STATE_MOTIVATED; dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.fulfillment < fulfillment_motivated) { self.fulfillment_state = FARMBIT_STATE_DESPERATE; dirty = 1; } break;
+      case FARMBIT_STATE_CONTENT:   if(self.fulfillment < fulfillment_content)   { self.fulfillment_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is bored.");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.fulfillment < fulfillment_motivated) { self.fulfillment_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY bored!"); dirty = 1; } break;
       default: break;
     }
     if(dirty && self.job_type == JOB_TYPE_IDLE) job_for_b(self);
@@ -2224,6 +2266,7 @@ var farmbit = function()
             self.fullness = 1;
             self.fullness_state = FARMBIT_STATE_CONTENT;
             self.go_idle();
+            gg.ticker.nq(self.name+" ate some food.");
             job_for_b(self);
             break;
         }
@@ -2252,6 +2295,7 @@ var farmbit = function()
               self.energy = 1;
               self.energy_state = FARMBIT_STATE_CONTENT;
               self.go_idle();
+              gg.ticker.nq(self.name+" took a nap.");
               job_for_b(self);
             }
           }
@@ -2283,6 +2327,7 @@ var farmbit = function()
               self.joy = 1;
               self.joy_state = FARMBIT_STATE_CONTENT;
               self.go_idle();
+              gg.ticker.nq(self.name+" played in the lake.");
               job_for_b(self);
             }
           }
@@ -2359,6 +2404,7 @@ var farmbit = function()
             self.fulfillment += harvest_fulfillment;
             self.calibrate_stats();
             self.go_idle();
+            gg.ticker.nq(self.name+" planted a farm.");
             job_for_b(self);
           }
             break;
@@ -2391,6 +2437,7 @@ var farmbit = function()
             gg.money += harvest_profit;
             self.fulfillment += harvest_fulfillment;
             self.calibrate_stats();
+            gg.ticker.nq(self.name+" harvested a farm.");
             self.go_idle();
 
             //gen food
@@ -2485,6 +2532,7 @@ var farmbit = function()
 
             self.fulfillment += feed_fulfillment;
             self.calibrate_stats();
+            gg.ticker.nq(self.name+" fed some livestock");
             self.go_idle();
             job_for_b(self);
           }
@@ -2564,6 +2612,7 @@ var farmbit = function()
 
             self.fulfillment += fertilize_fulfillment;
             self.calibrate_stats();
+            gg.ticker.nq(self.name+" fertilized a farm.");
             self.go_idle();
             job_for_b(self);
           }
@@ -2616,6 +2665,7 @@ var farmbit = function()
 
             self.fulfillment += store_fulfillment;
             self.calibrate_stats();
+            gg.ticker.nq(self.name+" stored some stuff.");
             self.go_idle();
             job_for_b(self);
           }
@@ -2670,6 +2720,7 @@ var farmbit = function()
               self.fulfillment += store_fulfillment;
               self.calibrate_stats();
 
+              gg.ticker.nq(self.name+" exported some stuff.");
               self.go_idle();
               job_for_b(self);
             }
@@ -2706,6 +2757,7 @@ var farmbit = function()
             self.fulfillment += kick_fulfillment;
             self.calibrate_stats();
 
+            gg.ticker.nq(self.name+" kicked something.");
             self.go_idle();
             switch(it.type)
             {

@@ -34,6 +34,7 @@ var GamePlayScene = function(game, stage)
         case "p": RESUME_SIM = !RESUME_SIM; break;
         case "n": gg.b.nutrition_view = !gg.b.nutrition_view; break;
         case "r": gg.b.raining = !gg.b.raining; break;
+        case "x": gg.b.tiles[0].lock = !gg.b.tiles[0].lock; break;
         case "a": debug_pathfinding = !debug_pathfinding; break;
         case "j": debug_jobs = !debug_jobs; break;
       }
@@ -57,6 +58,7 @@ var GamePlayScene = function(game, stage)
     gg.shop = new shop();
     gg.hand = new hand();
     gg.inspector = new inspector();
+    gg.ticker = new ticker();
   };
 
   self.tick = function()
@@ -95,6 +97,7 @@ var GamePlayScene = function(game, stage)
       }
       gg.shop.tick();
       gg.hand.tick();
+      gg.ticker.tick();
     }
   };
 
@@ -108,14 +111,16 @@ var GamePlayScene = function(game, stage)
     gg.shop.draw();
     gg.hand.draw();
     gg.inspector.draw();
+    gg.ticker.draw();
 
     var x = 10;
     var y = 520;
-    h = 25;
+    h = 20;
     gg.ctx.fillText("d- speed time",    x,y); y += h;
     gg.ctx.fillText("p- pause",         x,y); y += h;
     gg.ctx.fillText("n- nutrition view",x,y); y += h;
     gg.ctx.fillText("r- rain",          x,y); y += h;
+    gg.ctx.fillText("x- toggle export", x,y); y += h;
     gg.ctx.fillText("a- debug pathing", x,y); y += h;
     gg.ctx.fillText("j- debug jobs",    x,y); y += h;
   };
