@@ -2141,6 +2141,8 @@ var farmbit = function()
       self.fulfillment *= fulfillment_depletion_rate;
     }
 
+    if(self.tile && self.tile.type == TILE_TYPE_WATER) self.joy = min(1,self.joy+swim_joy);
+
     var dirty = false;
     switch(self.fullness_state)
     {
@@ -2321,7 +2323,7 @@ var farmbit = function()
             break;
           case JOB_STATE_ACT:
           {
-            self.joy += 0.02;
+            self.joy += swim_joy;
             if(self.joy > 1)
             {
               self.joy = 1;

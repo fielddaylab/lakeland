@@ -74,6 +74,7 @@ var fertilize_fulfillment = 0.1;
 var feed_fulfillment      = 0.1;
 var store_fulfillment     = 0.1;
 var kick_fulfillment      = 0.1;
+var swim_joy = 0.02; //per frame
 
 var max_dist = 9999999;
 
