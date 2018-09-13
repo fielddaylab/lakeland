@@ -2358,6 +2358,18 @@ var farmbit = function()
             break;
           case JOB_STATE_ACT:
           {
+            if(self.tile.nutrition > water_fouled_threshhold)
+            {
+              var t = closest_unlocked_nutrientdeficient_tile_from_list(self.tile, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+              if(t)
+              {
+                self.job_subject = t;
+                self.job_sate = JOB_STATE_SEEK;
+                self.job_state_t = 0;
+              }
+              else
+                self.abandon_job();
+            }
             self.joy += swim_joy;
             if(self.joy > 1)
             {
