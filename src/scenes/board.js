@@ -2364,7 +2364,7 @@ var farmbit = function()
               if(t)
               {
                 self.job_subject = t;
-                self.job_sate = JOB_STATE_SEEK;
+                self.job_state = JOB_STATE_SEEK;
                 self.job_state_t = 0;
               }
               else
