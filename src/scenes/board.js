@@ -200,6 +200,24 @@ var closest_unlocked_tile_from_list = function(goal, list)
   }
   return closest;
 }
+var closest_unlocked_nutrientsufficient_tile_from_list = function(goal, threshhold, list)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || t.nutrition < threshhold) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
 var closest_unlocked_nutrientdeficient_tile_from_list = function(goal, threshhold, list)
 {
   var closest_d = max_dist;
@@ -429,7 +447,7 @@ var fullness_job_for_b = function(b)
     }
     else
     {
-      tp = closest_unlocked_tile_from_list(t, gg.b.tile_groups[TILE_TYPE_WATER]);
+      tp = closest_unlocked_nutrientdeficient_tile_from_list(t, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
       if(tp)
       { //found lake
         b.go_idle();
@@ -495,7 +513,7 @@ var energy_job_for_b = function(b)
 var joy_job_for_b = function(b)
 {
   var t;
-  t = closest_unlocked_tile_from_list(b.tile, gg.b.tile_groups[TILE_TYPE_WATER]);
+  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
   if(t)
   {
     b.go_idle();
@@ -602,7 +620,7 @@ var fulfillment_job_for_b = function(b)
     }
     else
     {
-      tp = closest_unlocked_tile_from_list(t, gg.b.tile_groups[TILE_TYPE_WATER]);
+      tp = closest_unlocked_nutrientdeficient_tile_from_list(t, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
       if(tp)
       { //found lake
         b.go_idle();
@@ -752,9 +770,10 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(best)
       {
         if(job_type == JOB_TYPE_PLANT && !job_object)
-        { //get water (we "know" it exists)
+        { //get water
           job_object = closest_unlocked_object_of_type(job_subject,ITEM_TYPE_WATER);
-          if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_WATER]);
+          if(!job_object) job_object = closest_unlocked_nutrientdeficient_tile_from_list(job_subject, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+          if(!job_object) return 0;
         }
 
         best.job_type = job_type;
@@ -1532,8 +1551,18 @@ var board = function()
       from.nutrition -= d;
       to.nutrition   += d;
     }
+    else if(
+      (d > 0 && from.type == TILE_TYPE_WATER) ||
+      (d < 0 && to.type   == TILE_TYPE_WATER)
+    )
+    { //src is water
+      d *= d*d;
+      d *= nutrition_flow_rate*nutrition_flow_rate;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
     else
-    { //destination is anything else
+    { //anything else
       d *= d*d;
       d *= nutrition_flow_rate;
       from.nutrition -= d;
@@ -2141,7 +2170,13 @@ var farmbit = function()
       self.fulfillment *= fulfillment_depletion_rate;
     }
 
-    if(self.tile && self.tile.type == TILE_TYPE_WATER) self.joy = min(1,self.joy+swim_joy);
+    if(self.tile && self.tile.type == TILE_TYPE_WATER)
+    {
+      if(self.tile.nutrition < water_fouled_threshhold)
+        self.joy = min(1,self.joy+swim_joy);
+      else
+        self.joy = max(0,self.joy-swim_joy);
+    }
 
     var dirty = false;
     switch(self.fullness_state)

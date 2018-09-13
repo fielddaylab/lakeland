@@ -45,6 +45,7 @@ var farm_nutrition_uptake_max = 0.0002; //+v
 var farm_nutrition_uptake_min = 0.00001; //+v //difference created out of thin air!
 var farm_nutrition_req = 0.1;
 var farm_nutrition_fertilize_threshhold = 1;//0.2;
+var water_fouled_threshhold = 0.5;
 var livestock_poop_t = 1000;
 var livestock_feed_threshhold = 0.2;
 var livestock_food_val = 1;

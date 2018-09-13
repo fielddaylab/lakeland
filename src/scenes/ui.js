@@ -17,6 +17,10 @@ var INSPECTOR_CONTENT_ITEM    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
+ENUM = 0;
+var TUTORIAL_STATE_NULL  = ENUM; ENUM++;
+var TUTORIAL_STATE_COUNT = ENUM; ENUM++;
+
 var shop = function()
 {
   var self = this;
@@ -590,5 +594,32 @@ var ticker = function()
     }
     gg.ctx.fillStyle = black;
   }
+}
+
+var tutorial = function()
+{
+  var self = this;
+  self.x = 0;
+  self.y = 0;
+  self.w = gg.canv.width;
+  self.h = gg.canv.height;
+
+  self.state = TUTORIAL_STATE_NULL;
+  self.state_t++;
+
+  self.tick = function()
+  {
+    self.state_t++;
+    switch(self.state)
+    {
+
+    }
+  }
+
+  self.draw = function()
+  {
+
+  }
+
 }
 
