@@ -18,6 +18,7 @@ var TILE_TYPE_HOME      = ENUM; ENUM++;
 var TILE_TYPE_FARM      = ENUM; ENUM++;
 var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
 var TILE_TYPE_STORAGE   = ENUM; ENUM++;
+var TILE_TYPE_PROCESSOR = ENUM; ENUM++;
 var TILE_TYPE_ROAD      = ENUM; ENUM++;
 var TILE_TYPE_EXPORT    = ENUM; ENUM++;
 var TILE_TYPE_COUNT     = ENUM; ENUM++;
@@ -33,14 +34,16 @@ var TILE_STATE_LIVESTOCK_IDLE     = ENUM; ENUM++;
 var TILE_STATE_STORAGE_UNASSIGNED = ENUM; ENUM++;
 var TILE_STATE_STORAGE_FOOD       = ENUM; ENUM++;
 var TILE_STATE_STORAGE_POOP       = ENUM; ENUM++;
+var TILE_STATE_STORAGE_VALUABLE   = ENUM; ENUM++;
 var TILE_STATE_COUNT              = ENUM; ENUM++;
 
 ENUM = 0;
-var ITEM_TYPE_NULL  = ENUM; ENUM++;
-var ITEM_TYPE_WATER = ENUM; ENUM++;
-var ITEM_TYPE_FOOD  = ENUM; ENUM++;
-var ITEM_TYPE_POOP  = ENUM; ENUM++;
-var ITEM_TYPE_COUNT = ENUM; ENUM++;
+var ITEM_TYPE_NULL     = ENUM; ENUM++;
+var ITEM_TYPE_WATER    = ENUM; ENUM++;
+var ITEM_TYPE_FOOD     = ENUM; ENUM++;
+var ITEM_TYPE_POOP     = ENUM; ENUM++;
+var ITEM_TYPE_VALUABLE = ENUM; ENUM++;
+var ITEM_TYPE_COUNT    = ENUM; ENUM++;
 
 ENUM = 0;
 var ITEM_STATE_NULL  = ENUM; ENUM++;
@@ -58,6 +61,7 @@ var JOB_TYPE_HARVEST   = ENUM; ENUM++;
 var JOB_TYPE_FEED      = ENUM; ENUM++;
 var JOB_TYPE_FERTILIZE = ENUM; ENUM++;
 var JOB_TYPE_STORE     = ENUM; ENUM++;
+var JOB_TYPE_PROCESS   = ENUM; ENUM++;
 var JOB_TYPE_KICK      = ENUM; ENUM++;
 var JOB_TYPE_EXPORT    = ENUM; ENUM++;
 var JOB_TYPE_COUNT     = ENUM; ENUM++;
@@ -110,6 +114,7 @@ var walkability_check = function(type)
     case TILE_TYPE_FARM:      return farm_walkability;      break;
     case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
     case TILE_TYPE_STORAGE:   return storage_walkability;   break;
+    case TILE_TYPE_PROCESSOR: return processor_walkability; break;
     case TILE_TYPE_ROAD:      return road_walkability;      break;
     case TILE_TYPE_EXPORT:    return export_walkability;    break;
   }
@@ -131,6 +136,7 @@ var buildability_check = function(building,over)
     case TILE_TYPE_FARM:
     case TILE_TYPE_LIVESTOCK:
     case TILE_TYPE_STORAGE:
+    case TILE_TYPE_PROCESSOR:
       return over == TILE_TYPE_LAND;
       break;
     case TILE_TYPE_ROAD:
@@ -163,6 +169,7 @@ var demolishability_check = function(over)
     case TILE_TYPE_FARM:
     case TILE_TYPE_LIVESTOCK:
     case TILE_TYPE_STORAGE:
+    case TILE_TYPE_PROCESSOR:
     case TILE_TYPE_ROAD:
       return 1;
       break;
@@ -174,8 +181,9 @@ var storage_for_item = function(item_type)
 {
   switch(item_type)
   {
-    case ITEM_TYPE_FOOD: return TILE_STATE_STORAGE_FOOD;
-    case ITEM_TYPE_POOP: return TILE_STATE_STORAGE_POOP;
+    case ITEM_TYPE_FOOD:     return TILE_STATE_STORAGE_FOOD;
+    case ITEM_TYPE_POOP:     return TILE_STATE_STORAGE_POOP;
+    case ITEM_TYPE_VALUABLE: return TILE_STATE_STORAGE_VALUABLE;
     default: return TILE_STATE_STORAGE_UNASSIGNED;
   }
 }
@@ -184,8 +192,9 @@ var worth_for_item = function(item_type)
 {
   switch(item_type)
   {
-    case ITEM_TYPE_FOOD: return item_worth_food;
-    case ITEM_TYPE_POOP: return item_worth_poop;
+    case ITEM_TYPE_FOOD:     return item_worth_food;
+    case ITEM_TYPE_POOP:     return item_worth_poop;
+    case ITEM_TYPE_VALUABLE: return item_worth_valuable;
     default: return 0;
   }
 }
@@ -707,6 +716,23 @@ var fulfillment_job_for_b = function(b)
     return 1;
   }
 
+  //process
+  it = closest_unlocked_object_of_type(b.tile,ITEM_TYPE_POOP);
+  if(it)
+  { //found item
+    t = closest_unlocked_tile_from_list(it.tile, gg.b.tile_groups[TILE_TYPE_PROCESSOR]);
+    if(t)
+    {
+      b.go_idle();
+      b.job_subject = t;
+      b.job_object = it;
+      b.lock_object(b.job_object);
+      b.job_type = JOB_TYPE_PROCESS;
+      b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to process some poop.");
+      return 1;
+    }
+  }
 
   //store
   it = closest_unlocked_object(b.tile);
@@ -725,8 +751,9 @@ var fulfillment_job_for_b = function(b)
       b.job_subject.state = search_type;
       b.job_type = JOB_TYPE_STORE;
       b.job_state = JOB_STATE_GET;
-      if(it.type == ITEM_TYPE_FOOD) gg.ticker.nq(b.name+" is going to store some food for later.");
-      if(it.type == ITEM_TYPE_POOP) gg.ticker.nq(b.name+" is going to store some poop for later.");
+      if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to store some food for later.");
+      if(it.type == ITEM_TYPE_POOP)     gg.ticker.nq(b.name+" is going to store some poop for later.");
+      if(it.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(b.name+" is going to store some valuables for later.");
       return 1;
     }
   }
@@ -741,8 +768,9 @@ var fulfillment_job_for_b = function(b)
     b.job_subject = gg.b.tiles[0];
     b.job_type = JOB_TYPE_EXPORT;
     b.job_state = JOB_STATE_GET;
-    if(it.type == ITEM_TYPE_FOOD) gg.ticker.nq(b.name+" is going to export some food- safe travels!");
-    if(it.type == ITEM_TYPE_POOP) gg.ticker.nq(b.name+" is going to export some poop- safe travels!");
+    if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to export some food- safe travels!");
+    if(it.type == ITEM_TYPE_POOP)     gg.ticker.nq(b.name+" is going to export some poop- safe travels!");
+    if(it.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(b.name+" is going to export some valuables- safe travels!");
     return 1;
   }
 
@@ -755,8 +783,9 @@ var fulfillment_job_for_b = function(b)
     b.lock_object(b.job_object);
     b.job_type = JOB_TYPE_KICK;
     b.job_state = JOB_STATE_GET;
-    if(it.type == ITEM_TYPE_FOOD) gg.ticker.nq(b.name+" is going to kick around some food.");
-    if(it.type == ITEM_TYPE_POOP) gg.ticker.nq(b.name+" is going to kick around some poop.");
+    if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to kick around some food.");
+    if(it.type == ITEM_TYPE_POOP)     gg.ticker.nq(b.name+" is going to kick around some poop.");
+    if(it.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(b.name+" is going to kick around some valuables.");
     return 1;
   }
 
@@ -934,8 +963,33 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.lock_object(best.job_object);
         best.lock_deposit(best.job_subject);
         best.job_subject.state = storage_for_item(best.job_object.type);
-        if(job_object.type == ITEM_TYPE_FOOD) gg.ticker.nq(best.name+" is going to store some food for later.");
-        if(job_object.type == ITEM_TYPE_POOP) gg.ticker.nq(best.name+" is going to store some poop for later.");
+        if(job_object.type == ITEM_TYPE_FOOD)     gg.ticker.nq(best.name+" is going to store some food for later.");
+        if(job_object.type == ITEM_TYPE_POOP)     gg.ticker.nq(best.name+" is going to store some poop for later.");
+        if(job_object.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(best.name+" is going to store some valuables for later.");
+        return 1;
+      }
+    }
+      break;
+    case JOB_TYPE_PROCESS:
+    {
+      /*
+      //priorities:
+      closest low fulfillment bit
+      */
+
+      if(!job_subject) job_subject = closest_unlocked_tile_from_list(job_object, gg.b.tile_groups[TILE_TYPE_PROCESSOR]);
+      if(!job_subject) return 0;
+
+      var best = closest_free_farmbit_with_desire(job_object.tile, 1, 0, 0, 1);
+      if(best)
+      {
+        best.go_idle();
+        best.job_type = job_type;
+        best.job_subject = job_subject;
+        best.job_object = job_object;
+        best.job_state = JOB_STATE_GET;
+        best.lock_object(best.job_object);
+        gg.ticker.nq(best.name+" is going to process some poop.");
         return 1;
       }
     }
@@ -945,9 +999,16 @@ var b_for_job = function(job_type, job_subject, job_object)
       console.log("FINISH");//figure out
     }
       break;
+    case JOB_TYPE_EXPORT:
+    {
+      console.log("FINISH");//figure out
+    }
+      break;
     default:
       break;
   }
+
+  return 0;
 }
 
 var break_item = function(it)
@@ -1480,6 +1541,17 @@ var board = function()
       self.tile_colors[type][i] = purple;
     }
 
+    type = TILE_TYPE_PROCESSOR;
+    self.tile_colors[type] = [];
+    for(var i = 0; i <= 255; i++)
+    {
+      p = i/255;
+      r = 255;
+      g = 255;
+      b = 255;
+      self.tile_colors[type][i] = orange;
+    }
+
     type = TILE_TYPE_ROAD;
     self.tile_colors[type] = [];
     for(var i = 0; i <= 255; i++)
@@ -1544,6 +1616,8 @@ var board = function()
       case TILE_TYPE_STORAGE:
         t.state = TILE_STATE_STORAGE_UNASSIGNED;
         break;
+      case TILE_TYPE_PROCESSOR:
+        break;
       case TILE_TYPE_ROAD:
         break;
       case TILE_TYPE_EXPORT:
@@ -1582,8 +1656,9 @@ var board = function()
       var item_type;
       switch(t.state)
       {
-        case TILE_STATE_STORAGE_FOOD: item_type = ITEM_TYPE_FOOD; break;
-        case TILE_STATE_STORAGE_POOP: item_type = ITEM_TYPE_POOP; break;
+        case TILE_STATE_STORAGE_FOOD:     item_type = ITEM_TYPE_FOOD; break;
+        case TILE_STATE_STORAGE_POOP:     item_type = ITEM_TYPE_POOP; break;
+        case TILE_STATE_STORAGE_VALUABLE: item_type = ITEM_TYPE_VALUABLE; break;
       }
       for(var i = 0; i < t.val; i++)
       {
@@ -1746,7 +1821,12 @@ var board = function()
             kick_item(it);
             gg.items.push(it);
 
-            if(!b_for_job(JOB_TYPE_FERTILIZE, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
+            if(
+              !b_for_job(JOB_TYPE_FERTILIZE, 0, it) &&
+              !b_for_job(JOB_TYPE_PROCESS, 0, it) &&
+              !b_for_job(JOB_TYPE_STORE, 0, it)
+              )
+              ; //do nothing- all atempts present in if
           }
         }
           break;
@@ -1808,6 +1888,13 @@ var board = function()
         return;
       }
 
+      if(c.type == CARD_TYPE_PROCESSOR && buildability_check(TILE_TYPE_PROCESSOR,self.hover_t.type))
+      {
+        self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
+        gg.hand.destroy(c);
+        return;
+      }
+
       if(c.type == CARD_TYPE_ROAD && buildability_check(TILE_TYPE_ROAD,self.hover_t.type))
       {
         self.alterTile(self.hover_t,TILE_TYPE_ROAD);
@@ -1865,6 +1952,7 @@ var board = function()
             case TILE_TYPE_SHORE:
             case TILE_TYPE_LIVESTOCK:
             case TILE_TYPE_STORAGE:
+            case TILE_TYPE_PROCESSOR:
             case TILE_TYPE_ROAD:
             case TILE_TYPE_EXPORT:
               gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
@@ -1996,9 +2084,10 @@ var item = function()
   {
     switch(self.type)
     {
-      case ITEM_TYPE_WATER: drawImageBox(water_img,self,gg.ctx); break;
-      case ITEM_TYPE_FOOD:  drawImageBox(food_img,self,gg.ctx); break;
-      case ITEM_TYPE_POOP:  drawImageBox(poop_img,self,gg.ctx); break;
+      case ITEM_TYPE_WATER:    drawImageBox(water_img,self,gg.ctx); break;
+      case ITEM_TYPE_FOOD:     drawImageBox(food_img,self,gg.ctx); break;
+      case ITEM_TYPE_POOP:     drawImageBox(poop_img,self,gg.ctx); break;
+      case ITEM_TYPE_VALUABLE: drawImageBox(valuable_img,self,gg.ctx); break;
     }
   }
 }
@@ -2061,8 +2150,10 @@ var farmbit = function()
     {
       switch(self.item.type)
       {
-        case ITEM_TYPE_FOOD: mod *= food_carryability; break;
-        case ITEM_TYPE_POOP: mod *= poop_carryability; break;
+        case ITEM_TYPE_WATER:    mod *= water_carryability; break;
+        case ITEM_TYPE_FOOD:     mod *= food_carryability; break;
+        case ITEM_TYPE_POOP:     mod *= poop_carryability; break;
+        case ITEM_TYPE_VALUABLE: mod *= valuable_carryability; break;
       }
     }
     if(self.tile) mod *= walkability_check(self.tile.type);
@@ -2203,6 +2294,7 @@ var farmbit = function()
       case JOB_TYPE_FEED:
       case JOB_TYPE_FERTILIZE:
       case JOB_TYPE_STORE:
+      case JOB_TYPE_PROCESS:
         b_for_job(job_type, job_subject, job_object); break;
         break;
     }
@@ -2775,6 +2867,88 @@ var farmbit = function()
             gg.ticker.nq(self.name+" stored some stuff.");
             self.go_idle();
             job_for_b(self);
+          }
+            break;
+        }
+      }
+        break;
+      case JOB_TYPE_PROCESS:
+      {
+        switch(self.job_state)
+        {
+          case JOB_STATE_GET:
+          {
+            var it = self.job_object;
+            var t = it.tile;
+            if(self.tile != t || abs(it.wvz) > 0.01 || it.wz > 0.01)
+              self.walk_toward_item(it);
+            else
+            {
+              self.item = self.job_object;
+              self.job_state = JOB_STATE_SEEK;
+              self.job_state_t = 0;
+            }
+          }
+            break;
+          case JOB_STATE_SEEK:
+          {
+            var t = self.job_subject;
+            self.item.wvx += (self.wx-self.item.wx)*0.01;
+            self.item.wvy += (self.wy-self.item.wy)*0.01;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+            {
+              self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            self.release_locks();
+            var t = self.job_subject;
+
+            break_item(self.item);
+            self.item = 0;
+
+            self.fulfillment += process_fulfillment;
+            self.calibrate_stats();
+            gg.ticker.nq(self.name+" processed some poop.");
+            self.go_idle();
+
+            var it;
+
+            //gen valuables
+            it = new item();
+            it.type = ITEM_TYPE_VALUABLE;
+            it.tile = t;
+            gg.b.tiles_tw(it.tile,it);
+            kick_item(it);
+            gg.items.push(it);
+
+            if(
+              !b_for_job(JOB_TYPE_EXPORT, 0, it) &&
+              !b_for_job(JOB_TYPE_STORE, 0, it)
+            )
+              ; //do nothing
+
+            //gen poop
+            it = new item();
+            it.type = ITEM_TYPE_POOP;
+            it.tile = t;
+            gg.b.tiles_tw(it.tile,it);
+            kick_item(it);
+            gg.items.push(it);
+
+            if(
+              !b_for_job(JOB_TYPE_FERTILIZE, 0, it) &&
+              !b_for_job(JOB_TYPE_STORE, 0, it)
+            )
+              ; //do nothing
+
+
+            if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
           }
             break;
         }

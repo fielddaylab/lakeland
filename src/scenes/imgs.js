@@ -225,6 +225,20 @@ var poop_img;
   ctx.fillRect(6,1,1,3); //stink right
 }
 
+var valuable_img;
+{
+  var ctx;
+  var s = 10;
+  valuable_img = GenIcon(s,s);
+  ctx = valuable_img.context;
+  ctx.fillStyle = green;
+  ctx.fillRect(2,8,6,2); //bottom
+  ctx.fillRect(3,6,4,2); //middle
+  ctx.fillRect(4,4,2,2); //top
+  ctx.fillRect(2,2,1,3); //stink left
+  ctx.fillRect(6,1,1,3); //stink right
+}
+
 var water_img;
 {
   var ctx;

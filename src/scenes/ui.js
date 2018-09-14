@@ -6,6 +6,7 @@ var CARD_TYPE_HOME      = ENUM; ENUM++;
 var CARD_TYPE_FARM      = ENUM; ENUM++;
 var CARD_TYPE_LIVESTOCK = ENUM; ENUM++;
 var CARD_TYPE_STORAGE   = ENUM; ENUM++;
+var CARD_TYPE_PROCESSOR = ENUM; ENUM++;
 var CARD_TYPE_ROAD      = ENUM; ENUM++;
 var CARD_TYPE_DEMOLISH  = ENUM; ENUM++;
 var CARD_TYPE_COUNT     = ENUM; ENUM++;
@@ -40,6 +41,7 @@ var shop = function()
   self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      var c = gg.hand.add(CARD_TYPE_FARM);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; var c = gg.hand.add(CARD_TYPE_LIVESTOCK); gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.storage_btn   = new ButtonBox(x,y,w,h,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   var c = gg.hand.add(CARD_TYPE_STORAGE);   gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
+  self.processor_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < processor_cost) return; gg.money -= processor_cost; var c = gg.hand.add(CARD_TYPE_PROCESSOR); gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.road_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      var c = gg.hand.add(CARD_TYPE_ROAD);      gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.demolish_btn  = new ButtonBox(x,y,w,h,function(){ if(gg.money < demolish_cost)  return; gg.money -= demolish_cost;  var c = gg.hand.add(CARD_TYPE_DEMOLISH);  gg.hand.selected_card = c; gg.hand.selected_card_drag_t = min_card_drag_t; c.dragging = 1; }); y += h+10;
   self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money; }); y += h+10;
@@ -54,6 +56,7 @@ var shop = function()
     if(check) check = !filter.filter(self.farm_btn);
     if(check) check = !filter.filter(self.livestock_btn);
     if(check) check = !filter.filter(self.storage_btn);
+    if(check) check = !filter.filter(self.processor_btn);
     if(check) check = !filter.filter(self.road_btn);
     if(check) check = !filter.filter(self.demolish_btn);
     if(check) check = !filter.filter(self.money_btn);
@@ -76,6 +79,7 @@ var shop = function()
     if(gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
     if(gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
     if(gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
+    if(gg.money < processor_cost) fillBox(self.processor_btn,gg.ctx);
     if(gg.money < road_cost)      fillBox(self.road_btn,gg.ctx);
     if(gg.money < demolish_cost)  fillBox(self.demolish_btn,gg.ctx);
 
@@ -88,6 +92,7 @@ var shop = function()
     strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",                   self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
     strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
     strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
+    strokeBox(self.processor_btn,gg.ctx); gg.ctx.fillText("processor",              self.processor_btn.x, self.processor_btn.y+20); gg.ctx.fillText("$"+processor_cost, self.processor_btn.x, self.processor_btn.y+30);
     strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_card,   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
     strokeBox(self.demolish_btn,gg.ctx);  gg.ctx.fillText("demolish",               self.demolish_btn.x,  self.demolish_btn.y+20);  gg.ctx.fillText("$"+demolish_cost,  self.demolish_btn.x,  self.demolish_btn.y+30);
     strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
@@ -179,6 +184,7 @@ var card = function()
           case CARD_TYPE_FARM:      playable = buildability_check(TILE_TYPE_FARM,      gg.b.hover_t.type); break;
           case CARD_TYPE_LIVESTOCK: playable = buildability_check(TILE_TYPE_LIVESTOCK, gg.b.hover_t.type); break;
           case CARD_TYPE_STORAGE:   playable = buildability_check(TILE_TYPE_STORAGE,   gg.b.hover_t.type); break;
+          case CARD_TYPE_PROCESSOR: playable = buildability_check(TILE_TYPE_PROCESSOR, gg.b.hover_t.type); break;
           case CARD_TYPE_ROAD:      playable =(buildability_check(TILE_TYPE_ROAD,      gg.b.hover_t.type) || gg.b.hover_t.type == TILE_TYPE_ROAD); break;
           case CARD_TYPE_DEMOLISH:  playable = demolishability_check(gg.b.hover_t.type); break;
         }
@@ -194,6 +200,7 @@ var card = function()
       case CARD_TYPE_FARM:      gg.ctx.fillText("Farm",      self.x+10,self.y+20); break;
       case CARD_TYPE_LIVESTOCK: gg.ctx.fillText("Livestock", self.x+10,self.y+20); break;
       case CARD_TYPE_STORAGE:   gg.ctx.fillText("Storage",   self.x+10,self.y+20); break;
+      case CARD_TYPE_PROCESSOR: gg.ctx.fillText("Processor", self.x+10,self.y+20); break;
       case CARD_TYPE_ROAD:      gg.ctx.fillText("Road",      self.x+10,self.y+20); break;
       case CARD_TYPE_DEMOLISH:  gg.ctx.fillText("Demolish",  self.x+10,self.y+20); break;
     }
@@ -355,6 +362,7 @@ var inspector = function()
       case TILE_TYPE_FARM:      str += "farm";      break;
       case TILE_TYPE_LIVESTOCK: str += "livestock"; break;
       case TILE_TYPE_STORAGE:   str += "storage";   break;
+      case TILE_TYPE_PROCESSOR: str += "processor"; break;
       case TILE_TYPE_ROAD:      str += "road";      break;
       case TILE_TYPE_EXPORT:    str += "export";    break;
       case TILE_TYPE_COUNT:     str += "count";     break;
@@ -374,6 +382,7 @@ var inspector = function()
       case TILE_STATE_STORAGE_UNASSIGNED: str += "unassigned"; break;
       case TILE_STATE_STORAGE_FOOD:       str += "food";       break;
       case TILE_STATE_STORAGE_POOP:       str += "poop";       break;
+      case TILE_STATE_STORAGE_VALUABLE:   str += "valuable";   break;
       case TILE_STATE_COUNT:              str += "null";       break;
     }
     gg.ctx.fillText(str,x,y);
@@ -405,6 +414,7 @@ var inspector = function()
         y += vspace;
       }
         break;
+      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_ROAD:
       case TILE_TYPE_EXPORT:
       case TILE_TYPE_COUNT:
@@ -427,10 +437,12 @@ var inspector = function()
     str = "Type: ";
     switch(it.type)
     {
-      case ITEM_TYPE_NULL:  str += "null";  break;
-      case ITEM_TYPE_FOOD:  str += "food";  break;
-      case ITEM_TYPE_POOP:  str += "poop";  break;
-      case ITEM_TYPE_COUNT: str += "count"; break;
+      case ITEM_TYPE_NULL:     str += "null";     break;
+      case ITEM_TYPE_WATER:    str += "water";    break;
+      case ITEM_TYPE_FOOD:     str += "food";     break;
+      case ITEM_TYPE_POOP:     str += "poop";     break;
+      case ITEM_TYPE_VALUABLE: str += "valuable"; break;
+      case ITEM_TYPE_COUNT:    str += "count";    break;
     }
     gg.ctx.fillText(str+" ("+it.tile.tx+","+it.tile.ty+")",x,y);
     y += vspace;
@@ -457,6 +469,7 @@ var inspector = function()
       case JOB_TYPE_HARVEST:   str += "harvest";   break;
       case JOB_TYPE_FERTILIZE: str += "fertilize"; break;
       case JOB_TYPE_STORE:     str += "store";     break;
+      case JOB_TYPE_PROCESS:   str += "process";   break;
       case JOB_TYPE_KICK:      str += "kick";      break;
       case JOB_TYPE_EXPORT:    str += "export";    break;
       case JOB_TYPE_COUNT:     str += "count";     break;

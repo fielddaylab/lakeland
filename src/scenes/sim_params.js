@@ -51,11 +51,11 @@ var livestock_feed_threshhold = 0.2;
 var livestock_food_val = 1;
 var livestock_fullness_depletion_rate = 0.999;
 var storage_max = 10;
-var storage_food_max = 10;
-var storage_poop_max = 10;
 
+var water_carryability = 0.2;
 var food_carryability = 0.8;
 var poop_carryability = 0.2;
+var valuable_carryability = 0.2;
 
 var land_walkability      = 1;
 var rock_walkability      = 0.7;
@@ -66,6 +66,7 @@ var home_walkability      = 0.9;
 var farm_walkability      = 0.9;
 var livestock_walkability = 0.8;
 var storage_walkability   = 0.9;
+var processor_walkability = 0.9;
 var road_walkability      = 4;
 var export_walkability    = 1;
 
@@ -74,6 +75,7 @@ var harvest_fulfillment   = 0.1;
 var fertilize_fulfillment = 0.1;
 var feed_fulfillment      = 0.1;
 var store_fulfillment     = 0.1;
+var process_fulfillment   = 0.1;
 var kick_fulfillment      = 0.1;
 var swim_joy = 0.02; //per frame
 
@@ -84,6 +86,7 @@ var home_cost = 100;
 var farm_cost = 100;
 var livestock_cost = 200;
 var storage_cost = 10;
+var processor_cost = 10;
 var road_cost = 1000;
 var demolish_cost = 10;
 var free_money = 1000;
@@ -92,6 +95,7 @@ var harvest_profit = 50;
 
 var item_worth_food = 100;
 var item_worth_poop = 50;
+var item_worth_valuable = 5000;
 
 var roads_per_card = 10;
 var min_card_drag_t = 50;
