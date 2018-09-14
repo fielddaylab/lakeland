@@ -46,8 +46,11 @@ var ITEM_TYPE_VALUABLE = ENUM; ENUM++;
 var ITEM_TYPE_COUNT    = ENUM; ENUM++;
 
 ENUM = 0;
-var ITEM_STATE_NULL  = ENUM; ENUM++;
-var ITEM_STATE_COUNT = ENUM; ENUM++;
+var ITEM_STATE_NULL        = ENUM; ENUM++;
+var ITEM_STATE_POOP_RAW    = ENUM; ENUM++;
+var ITEM_STATE_POOP_LIGHT  = ENUM; ENUM++;
+var ITEM_STATE_POOP_POTENT = ENUM; ENUM++;
+var ITEM_STATE_COUNT       = ENUM; ENUM++;
 
 ENUM = 0;
 var JOB_TYPE_NULL      = ENUM; ENUM++;
@@ -101,7 +104,7 @@ var DIRECTION_U     = ENUM; ENUM++;
 var DIRECTION_UR    = ENUM; ENUM++;
 var DIRECTION_COUNT = ENUM; ENUM++;
 
-var walkability_check = function(type)
+var walkability_check = function(type,state)
 {
   switch(type)
   {
@@ -1664,6 +1667,8 @@ var board = function()
       {
         var it = new item();
         it.type = item_type;
+        if(item_type == ITEM_TYPE_POOP)
+          it.state = ITEM_STATE_POOP_RAW;
         it.tile = t;
         gg.b.tiles_tw(it.tile,it);
         kick_item(it);
@@ -1816,6 +1821,7 @@ var board = function()
             //gen poop
             var it = new item();
             it.type = ITEM_TYPE_POOP;
+            it.state = ITEM_STATE_POOP_RAW;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
@@ -2152,7 +2158,16 @@ var farmbit = function()
       {
         case ITEM_TYPE_WATER:    mod *= water_carryability; break;
         case ITEM_TYPE_FOOD:     mod *= food_carryability; break;
-        case ITEM_TYPE_POOP:     mod *= poop_carryability; break;
+        case ITEM_TYPE_POOP:
+        {
+          switch(self.item.state)
+          {
+            case ITEM_STATE_POOP_RAW:    mod *= poop_raw_carryability;    break;
+            case ITEM_STATE_POOP_LIGHT:  mod *= poop_light_carryability;  break;
+            case ITEM_STATE_POOP_POTENT: mod *= poop_potent_carryability; break;
+          }
+        }
+          break;
         case ITEM_TYPE_VALUABLE: mod *= valuable_carryability; break;
       }
     }
@@ -2772,6 +2787,7 @@ var farmbit = function()
                 //pop item out of storage
                 var it = new item();
                 it.type = ITEM_TYPE_POOP;
+                it.state = ITEM_STATE_POOP_RAW;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);
@@ -2936,6 +2952,7 @@ var farmbit = function()
             //gen poop
             it = new item();
             it.type = ITEM_TYPE_POOP;
+            it.state = ITEM_STATE_POOP_LIGHT;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);

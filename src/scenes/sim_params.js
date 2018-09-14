@@ -54,7 +54,9 @@ var storage_max = 10;
 
 var water_carryability = 0.2;
 var food_carryability = 0.8;
-var poop_carryability = 0.2;
+var poop_raw_carryability = 0.2;
+var poop_light_carryability = 0.6;
+var poop_potent_carryability = 0.2;
 var valuable_carryability = 0.2;
 
 var land_walkability      = 1;
