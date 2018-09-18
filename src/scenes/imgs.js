@@ -225,6 +225,20 @@ var poop_img;
   ctx.fillRect(6,1,1,3); //stink right
 }
 
+var poop_light_img;
+{
+  var ctx;
+  var s = 10;
+  poop_light_img = GenIcon(s,s);
+  ctx = poop_light_img.context;
+  ctx.fillStyle = light_brown;
+  ctx.fillRect(1,1,2,2); //bottom
+  ctx.fillRect(2,7,2,2); //stink left
+  ctx.fillRect(3,2,2,2); //middle
+  ctx.fillRect(5,6,2,2); //top
+  ctx.fillRect(7,4,2,2); //stink right
+}
+
 var valuable_img;
 {
   var ctx;

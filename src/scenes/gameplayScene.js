@@ -113,7 +113,7 @@ var GamePlayScene = function(game, stage)
     gg.inspector.draw();
     gg.ticker.draw();
 
-    var x = 10;
+    var x = gg.canv.width-100;
     var y = 520;
     h = 20;
     gg.ctx.fillText("d- speed time",    x,y); y += h;

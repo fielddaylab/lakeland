@@ -214,6 +214,7 @@ var need_met_for_above_job = function(need, job_type)
         case JOB_TYPE_PLANT:
         case JOB_TYPE_HARVEST:
         case JOB_TYPE_FEED:
+        case JOB_TYPE_PROCESS:
         case JOB_TYPE_FERTILIZE:
         case JOB_TYPE_STORE:
         case JOB_TYPE_KICK:
@@ -378,7 +379,7 @@ var closest_unlocked_free_state_tile_from_list = function(goal, state, list)
   }
   return closest;
 }
-var closest_unlocked_object = function(goal)
+var closest_unlocked_item = function(goal)
 {
   var closest_d = max_dist;
   var d;
@@ -396,7 +397,7 @@ var closest_unlocked_object = function(goal)
   }
   return closest;
 }
-var closest_unlocked_object_of_type = function(goal, type)
+var closest_unlocked_item_of_type = function(goal, type)
 {
   var closest_d = max_dist;
   var d;
@@ -405,6 +406,24 @@ var closest_unlocked_object_of_type = function(goal, type)
   {
     var it = gg.items[i];
     if(it.type != type || it.lock) continue;
+    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = it;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_state_item_of_type = function(goal, type, state)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < gg.items.length; i++)
+  {
+    var it = gg.items[i];
+    if(it.type != type || it.state != state || it.lock) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -460,7 +479,7 @@ var fullness_job_for_b = function(b)
   var itp;
 
   //eat item
-  it = closest_unlocked_object_of_type(b.tile,ITEM_TYPE_FOOD);
+  it = closest_unlocked_item_of_type(b.tile,ITEM_TYPE_FOOD);
   if(it)
   {
     b.go_idle();
@@ -502,7 +521,7 @@ var fullness_job_for_b = function(b)
   t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_object_of_type(b.tile,ITEM_TYPE_WATER);
+    it = closest_unlocked_item_of_type(b.tile,ITEM_TYPE_WATER);
     if(it)
     { //found item
       b.go_idle();
@@ -537,13 +556,12 @@ var fullness_job_for_b = function(b)
   t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_object_of_type(t,ITEM_TYPE_POOP);
+    it = closest_unlocked_item_of_type(t,ITEM_TYPE_POOP);
     if(it)
     { //found item
       b.go_idle();
       b.job_subject = t;
       b.job_object = it;
-      b.lock_subject(b.job_subject);
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_FERTILIZE;
       b.job_state = JOB_STATE_GET;
@@ -558,7 +576,6 @@ var fullness_job_for_b = function(b)
         b.go_idle();
         b.job_subject = t;
         b.job_object = tp;
-        b.lock_subject(b.job_subject);
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_FERTILIZE;
         b.job_state = JOB_STATE_GET;
@@ -605,13 +622,12 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_valdeficient_tile_from_list(b.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
   if(t)
   {
-    it = closest_unlocked_object_of_type(t,ITEM_TYPE_FOOD);
+    it = closest_unlocked_item_of_type(t,ITEM_TYPE_FOOD);
     if(it)
     { //found item
       b.go_idle();
       b.job_subject = t;
       b.job_object = it;
-      b.lock_subject(b.job_subject);
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_FEED;
       b.job_state = JOB_STATE_GET;
@@ -626,7 +642,6 @@ var fulfillment_job_for_b = function(b)
         b.go_idle();
         b.job_subject = t;
         b.job_object = tp;
-        b.lock_subject(b.job_subject);
         b.lock_withdraw(b.job_object);
         b.job_type = JOB_TYPE_FEED;
         b.job_state = JOB_STATE_GET;
@@ -636,46 +651,24 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
-  //fertilize
-  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
+  //harvest
+  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_GROWN, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_object_of_type(t,ITEM_TYPE_POOP);
-    if(it)
-    { //found item
-      b.go_idle();
-      b.job_subject = t;
-      b.job_object = it;
-      b.lock_subject(b.job_subject);
-      b.lock_object(b.job_object);
-      b.job_type = JOB_TYPE_FERTILIZE;
-      b.job_state = JOB_STATE_GET;
-      gg.ticker.nq(b.name+" is going to fertilize a farm.");
-      return 1;
-    }
-    else
-    {
-      tp = closest_unlocked_available_state_tile_from_list(t, TILE_STATE_STORAGE_POOP, gg.b.tile_groups[TILE_TYPE_STORAGE]);
-      if(tp)
-      { //found storage
-        b.go_idle();
-        b.job_subject = t;
-        b.job_object = tp;
-        b.lock_subject(b.job_subject);
-        b.lock_withdraw(b.job_object);
-        b.job_type = JOB_TYPE_FERTILIZE;
-        b.job_state = JOB_STATE_GET;
-        gg.ticker.nq(b.name+" is going to fertilize a farm.");
-        return 1;
-      }
-    }
+    b.go_idle();
+    b.job_subject = t;
+    b.lock_subject(b.job_subject);
+    b.job_type = JOB_TYPE_HARVEST;
+    b.job_state = JOB_STATE_SEEK;
+    gg.ticker.nq(b.name+" is going to harvest a farm.");
+    return 1;
   }
 
   //plant
   t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_object_of_type(b.tile,ITEM_TYPE_WATER);
+    it = closest_unlocked_item_of_type(b.tile,ITEM_TYPE_WATER);
     if(it)
     { //found item
       b.go_idle();
@@ -706,21 +699,8 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
-  //harvest
-  t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_GROWN, gg.b.tile_groups[TILE_TYPE_FARM]);
-  if(t)
-  {
-    b.go_idle();
-    b.job_subject = t;
-    b.lock_subject(b.job_subject);
-    b.job_type = JOB_TYPE_HARVEST;
-    b.job_state = JOB_STATE_SEEK;
-    gg.ticker.nq(b.name+" is going to harvest a farm.");
-    return 1;
-  }
-
   //process
-  it = closest_unlocked_object_of_type(b.tile,ITEM_TYPE_POOP);
+  it = closest_unlocked_state_item_of_type(b.tile,ITEM_TYPE_POOP,ITEM_STATE_POOP_RAW);
   if(it)
   { //found item
     t = closest_unlocked_tile_from_list(it.tile, gg.b.tile_groups[TILE_TYPE_PROCESSOR]);
@@ -737,8 +717,41 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
+  //fertilize
+  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
+  if(t)
+  {
+    it = closest_unlocked_item_of_type(t,ITEM_TYPE_POOP);
+    if(it)
+    { //found item
+      b.go_idle();
+      b.job_subject = t;
+      b.job_object = it;
+      b.lock_object(b.job_object);
+      b.job_type = JOB_TYPE_FERTILIZE;
+      b.job_state = JOB_STATE_GET;
+      gg.ticker.nq(b.name+" is going to fertilize a farm.");
+      return 1;
+    }
+    else
+    {
+      tp = closest_unlocked_available_state_tile_from_list(t, TILE_STATE_STORAGE_POOP, gg.b.tile_groups[TILE_TYPE_STORAGE]);
+      if(tp)
+      { //found storage
+        b.go_idle();
+        b.job_subject = t;
+        b.job_object = tp;
+        b.lock_withdraw(b.job_object);
+        b.job_type = JOB_TYPE_FERTILIZE;
+        b.job_state = JOB_STATE_GET;
+        gg.ticker.nq(b.name+" is going to fertilize a farm.");
+        return 1;
+      }
+    }
+  }
+
   //store
-  it = closest_unlocked_object(b.tile);
+  it = closest_unlocked_item(b.tile);
   if(it)
   { //found item
     var search_type = storage_for_item(it.type);
@@ -762,7 +775,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //export
-  it = closest_unlocked_object(b.tile);
+  it = closest_unlocked_item(b.tile);
   if(it && !gg.b.tiles[0].lock)
   { //found item
     b.go_idle();
@@ -778,7 +791,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //kick
-  it = closest_unlocked_object(b.tile);
+  it = closest_unlocked_item(b.tile);
   if(it)
   { //found item
     b.go_idle();
@@ -861,7 +874,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       {
         if(job_type == JOB_TYPE_PLANT && !job_object)
         { //get water
-          job_object = closest_unlocked_object_of_type(job_subject,ITEM_TYPE_WATER);
+          job_object = closest_unlocked_item_of_type(job_subject,ITEM_TYPE_WATER);
           if(!job_object) job_object = closest_unlocked_nutrientdeficient_tile_from_list(job_subject, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
           if(!job_object) return 0;
         }
@@ -888,12 +901,12 @@ var b_for_job = function(job_type, job_subject, job_object)
       break;
     case JOB_TYPE_FEED:
     {
-      if(!job_subject && !job_object) return; //not going to waste time "looking to find some bit and some farm and some fertilizer and get 'em goin"
+      if(!job_subject && !job_object) return; //not going to waste time "looking to find some bit and some livestock and some food and get 'em goin"
 
       if(!job_subject) job_subject = closest_unlocked_valdeficient_tile_from_list(job_object.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
       if(!job_subject) return 0;
 
-      if(!job_object) job_object = closest_unlocked_object_of_type(job_subject,ITEM_TYPE_FOOD);
+      if(!job_object) job_object = closest_unlocked_item_of_type(job_subject,ITEM_TYPE_FOOD);
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_FOOD]);
       if(!job_object) return 0;
 
@@ -906,7 +919,6 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_object = job_object;
         if(best.job_object.thing == THING_TYPE_ITEM) best.lock_object(best.job_object);
         if(best.job_object.thing == THING_TYPE_TILE) best.lock_withdraw(best.job_object);
-        best.lock_subject(best.job_subject);
         best.job_state = JOB_STATE_GET;
         gg.ticker.nq(best.name+" is going to feed some livestock.");
         return 1;
@@ -920,7 +932,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
       if(!job_subject) return 0;
 
-      if(!job_object) job_object = closest_unlocked_object_of_type(job_subject,ITEM_TYPE_POOP);
+      if(!job_object) job_object = closest_unlocked_item_of_type(job_subject,ITEM_TYPE_POOP);
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_POOP]);
       if(!job_object) return 0;
 
@@ -933,7 +945,6 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_object = job_object;
         if(best.job_object.thing == THING_TYPE_ITEM) best.lock_object(best.job_object);
         if(best.job_object.thing == THING_TYPE_TILE) best.lock_withdraw(best.job_object);
-        best.lock_subject(best.job_subject);
         best.job_state = JOB_STATE_GET;
         gg.ticker.nq(best.name+" is going to fertilize a farm.");
         return 1;
@@ -2092,7 +2103,10 @@ var item = function()
     {
       case ITEM_TYPE_WATER:    drawImageBox(water_img,self,gg.ctx); break;
       case ITEM_TYPE_FOOD:     drawImageBox(food_img,self,gg.ctx); break;
-      case ITEM_TYPE_POOP:     drawImageBox(poop_img,self,gg.ctx); break;
+      case ITEM_TYPE_POOP:
+             if(self.state == ITEM_STATE_POOP_RAW)   drawImageBox(poop_img,      self,gg.ctx);
+        else if(self.state == ITEM_STATE_POOP_LIGHT) drawImageBox(poop_light_img,self,gg.ctx);
+        break;
       case ITEM_TYPE_VALUABLE: drawImageBox(valuable_img,self,gg.ctx); break;
     }
   }
