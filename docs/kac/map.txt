@@ -6,9 +6,11 @@ lake: natural
 - spoiledby phosphorus
 
 person: natural
+# progression1
+# progression2
 - exchange home
 - need happiness
-- need food
+- need sweetfood
 - need water
 
 labor: resource
@@ -27,39 +29,82 @@ water: resource
 
 happiness: resource
 - exchange dairy
+- exchange beef
 
-food: resource
-- hold farm
+sweetfood: resource
+- hold sweetfarm
+
+feedfood: resource
+- hold feedfarm
 
 dairy: resource
-- hold ranch
+- hold dairyplant
+
+dairyplant: construction
+- exchange wood
+- exchange road
+- exchange labor
+- need rawdairy
+
+rawdairy: resource
+- hold dairyranch
+
+beef: resource
+- hold beefranch
+
+manure: resource
+- hold dairyranch
+- hold beefranch
+
+fertilizerplant: construction
+- exchange wood
+- exchange road
+- exchange labor
+- need manure
 
 fertilizer: resource
-- hold ranch
+- hold fertilizerplant
 
 phosphorus: resource
 - exchange fertilizer
+- spoiledby skimmer
 
 money: resource
-- exchange food
+- exchange sweetfood
+- exchange feedfood
+- exchange fertilizer
 
 home: construction
 - exchange wood
-- exchange roads
+- exchange road
 - exchange labor
 
-farm: construction
+sweetfarm: construction
 - exchange wood
 - exchange labor
 - need fertilizer
 - need labor
 - need water
 
-ranch: construction
+feedfarm: construction
+- exchange wood
+- exchange labor
+- need fertilizer
+- need labor
+- need water
+
+dairyranch: construction
 - exchange wood
 - exchange labor
 - need labor
-- need food
+- need feedfood
+- need water
+
+beefranch: construction
+- exchange wood
+- exchange labor
+- need labor
+- need feedfood
 - need water
 
 road: construction
@@ -72,7 +117,6 @@ skimmer: construction
 - exchange wood
 - exchange labor
 - hold lake
-- need phosphorus
 
 processor: construction
 - exchange money
@@ -80,4 +124,10 @@ processor: construction
 - exchange wood
 - exchange labor
 - need fertilizer
+
+tank: construction
+- exchange money
+- exchange wood
+- exchange labor
+- exchange manure
 

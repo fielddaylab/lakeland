@@ -8,11 +8,22 @@ var node = function()
   var self = this;
   self.name = "";
   self.type = "";
-  self.exchanges = [];
-  self.needs = [];
-  self.holds = [];
-  self.spoiledbys = [];
+  self.tags = [];
+  self.edges_in = [];
+  self.edges_out = [];
 
+  self.exchange_in = [];
+  self.need_in = [];
+  self.hold_in = [];
+  self.spoiledby_in = [];
+
+  self.exchange_out = [];
+  self.need_out = [];
+  self.hold_out = [];
+  self.spoiledby_out = [];
+
+
+  self.degree = 0;
   self.x = 0;
   self.y = 0;
   self.w = 20;
@@ -24,6 +35,8 @@ var mousedown = function(evt)
   var n;
   var x = evt.offsetX;
   var y = evt.offsetY;
+  var d;
+  var oldnode = gg.selected_node;
   gg.dragging_node = 0;
   gg.selected_node = 0;
   for(var i = 0; i < gg.nodes.length; i++)
@@ -33,6 +46,53 @@ var mousedown = function(evt)
       gg.dragging_node = n;
   }
   gg.selected_node = gg.dragging_node;
+
+  if(!gg.selected_node)
+  {
+    for(var i = 0; i < gg.nodes.length; i++)
+      gg.nodes[i].degree = 0;
+
+    //check for tags
+    for(var i = 0; i < gg.nodes.length; i++)
+    {
+      n = gg.nodes[i];
+      if(x > n.x && x < n.x+n.w && y > n.y+n.h && y < n.y+n.h*(n.tags.length+1))
+      {
+        var t = (Math.floor((y-n.y)/n.h))-1;
+        console.log(t);
+        for(var j = 0; j < gg.nodes.length; j++)
+        {
+          an = gg.nodes[j];
+          an.degree = 100;
+          for(var k = 0; k < an.tags.length; k++)
+            if(an.tags[k] == t) an.degree = 1;
+        }
+        gg.selected_node = n;
+      }
+    }
+  }
+  else //calculate new degrees
+  {
+    for(var i = 0; i < gg.nodes.length; i++)
+      gg.nodes[i].degree = 0;
+    gg.selected_node.degree = 1;
+    var visit = [gg.selected_node];
+    while(visit.length)
+    {
+      n = visit[0];
+      visit.splice(0,1);
+      for(var i = 0; i < n.edges_in.length; i++)
+      {
+        an = n.edges_in[i];
+        if(!an.degree) { an.degree = n.degree+1; visit.push(an); }
+      }
+      for(var i = 0; i < n.edges_out.length; i++)
+      {
+        an = n.edges_out[i];
+        if(!an.degree) { an.degree = n.degree+1; visit.push(an); }
+      }
+    }
+  }
 }
 
 var mousemove = function(evt)
@@ -51,6 +111,7 @@ var mouseup = function(evt)
 
 var gg = {};
 gg.nodes = [];
+gg.tags = [];
 var begin = function()
 {
   gg.canvas = document.createElement("canvas");
@@ -73,10 +134,20 @@ var begin = function()
       l = lines[i];
       if(l[0] && l[0] != "-")
       {
-        n = new node();
-        n.name = l.substring(0,l.indexOf(":"));
-        n.type = l.substring(l.indexOf(" ")+1);
-        gg.nodes.push(n);
+        if(l[0] == "#")
+        {
+          var j = 0;
+          while(j < gg.tags.length && gg.tags[j] != l.substring(l.indexOf(" ")+1)) j++;
+          gg.tags[j] = l.substring(l.indexOf(" ")+1);
+          n.tags.push(j);
+        }
+        else
+        {
+          n = new node();
+          n.name = l.substring(0,l.indexOf(":"));
+          n.type = l.substring(l.indexOf(" ")+1);
+          gg.nodes.push(n);
+        }
       }
     }
 
@@ -86,13 +157,13 @@ var begin = function()
     for(var i = 0; i < lines.length; i++)
     {
       l = lines[i];
-      if(l[0] && l[0] != "-")
+      if(l[0] && l[0] != "-" &&  l[0] != "#")
       {
         n = gg.nodes[n_i];
         n_i++;
         i++;
         l = lines[i];
-        while(l != "")
+        while(l != "" && l[0] == "-")
         {
           t = l.split(" ");
           an = 0;
@@ -102,12 +173,16 @@ var begin = function()
           {
             switch(t[1])
             {
-              case "exchange": n.exchanges.push(an); break;
-              case "need": n.needs.push(an); break;
-              case "hold": n.holds.push(an); break;
-              case "spoiledby": n.spoiledbys.push(an); break;
+              case "exchange":  n.exchange_in.push(an);  an.exchange_out.push(n);  an.edges_out.push(n); break;
+              case "need":      n.need_in.push(an);      an.need_out.push(n);      an.edges_out.push(n); break;
+              case "hold":      n.hold_in.push(an);      an.hold_out.push(n);      an.edges_out.push(n); break;
+              case "spoiledby": n.spoiledby_in.push(an); an.spoiledby_out.push(n); an.edges_out.push(n); break;
+              default: console.log("relationship type "+t[1]+" not found (referenced by "+n.name+")"); break;
             }
+            n.edges_in.push(an);
           }
+          else
+            console.log("relationship "+t[2]+" not found (referenced by "+n.name+")");
           i++;
           l = lines[i];
         }
@@ -207,9 +282,9 @@ var tick = function()
     }
 
     //toward cener
-    m = 0.01;
     if(1)
     {
+    m = 0.01;
     if(n != gg.dragging_node)
     {
       n.x += (((gg.canvas.width -n.w)/2)-n.x)*m;
@@ -217,90 +292,24 @@ var tick = function()
     }
     }
 
+    //weight
+    if(0)
+    {
+    m = 0.5;
+    if(n != gg.dragging_node)
+    {
+      n.y += n.degree*m;
+    }
+    }
+
     //toward connections
-    bm = 1;
     if(1)
     {
-    //toward exchanges
+    bm = 1;
     m = bm*1;
-    for(var j = 0; j < n.exchanges.length; j++)
+    for(var j = 0; j < n.edges_in.length; j++)
     {
-      an = n.exchanges[j];
-
-      dx = n.x-an.x;
-      dy = n.y-an.y;
-      ds = dx*dx+dy*dy;
-      d = Math.sqrt(ds)
-
-      dx = (dx/d)*m;
-      dy = (dy/d)*m;
-      if(n != gg.dragging_node)
-      {
-        n.x  -= dx;
-        n.y  -= dy;
-      }
-
-      if(an != gg.dragging_node)
-      {
-        an.x += dx;
-        an.y += dy;
-      }
-    }
-    //toward needs
-    m = bm*1;
-    for(var j = 0; j < n.needs.length; j++)
-    {
-      an = n.needs[j];
-
-      dx = n.x-an.x;
-      dy = n.y-an.y;
-      ds = dx*dx+dy*dy;
-      d = Math.sqrt(ds)
-
-      dx = (dx/d)*m;
-      dy = (dy/d)*m;
-      if(n != gg.dragging_node)
-      {
-        n.x  -= dx;
-        n.y  -= dy;
-      }
-
-      if(an != gg.dragging_node)
-      {
-        an.x += dx;
-        an.y += dy;
-      }
-    }
-    //toward holds
-    m = bm*1;
-    for(var j = 0; j < n.holds.length; j++)
-    {
-      an = n.holds[j];
-
-      dx = n.x-an.x;
-      dy = n.y-an.y;
-      ds = dx*dx+dy*dy;
-      d = Math.sqrt(ds)
-
-      dx = (dx/d)*m;
-      dy = (dy/d)*m;
-      if(n != gg.dragging_node)
-      {
-        n.x  -= dx;
-        n.y  -= dy;
-      }
-
-      if(an != gg.dragging_node)
-      {
-        an.x += dx;
-        an.y += dy;
-      }
-    }
-    //toward spoiledbys
-    m = bm*1;
-    for(var j = 0; j < n.spoiledbys.length; j++)
-    {
-      an = n.spoiledbys[j];
+      an = n.edges_in[j];
 
       dx = n.x-an.x;
       dy = n.y-an.y;
@@ -352,10 +361,10 @@ var tick = function()
     gg.ctx.globalAlpha = default_alpha;
 
     gg.ctx.fillStyle = "#FFFF00";
-    for(var j = 0; j < n.exchanges.length; j++)
+    for(var j = 0; j < n.exchange_in.length; j++)
     {
-      an = n.exchanges[j];
-      if(n == gg.selected_node || an == gg.selected_node)
+      an = n.exchange_in[j];
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -369,15 +378,15 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n == gg.selected_node || an == gg.selected_node)
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = default_alpha;
     }
 
     gg.ctx.fillStyle = "#00FFFF";
-    for(var j = 0; j < n.needs.length; j++)
+    for(var j = 0; j < n.need_in.length; j++)
     {
-      an = n.needs[j];
-      if(n == gg.selected_node || an == gg.selected_node)
+      an = n.need_in[j];
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -391,15 +400,15 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n == gg.selected_node || an == gg.selected_node)
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = default_alpha;
     }
 
     gg.ctx.fillStyle = "#FF00FF";
-    for(var j = 0; j < n.holds.length; j++)
+    for(var j = 0; j < n.hold_in.length; j++)
     {
-      an = n.holds[j];
-      if(n == gg.selected_node || an == gg.selected_node)
+      an = n.hold_in[j];
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -413,15 +422,15 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n == gg.selected_node || an == gg.selected_node)
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = default_alpha;
     }
 
     gg.ctx.fillStyle = "#000000";
-    for(var j = 0; j < n.spoiledbys.length; j++)
+    for(var j = 0; j < n.spoiledby_in.length; j++)
     {
-      an = n.spoiledbys[j];
-      if(n == gg.selected_node || an == gg.selected_node)
+      an = n.spoiledby_in[j];
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -435,7 +444,7 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n == gg.selected_node || an == gg.selected_node)
+      if(n.degree <= 1 || an.degree <= 1)
         gg.ctx.globalAlpha = default_alpha;
     }
 
@@ -445,15 +454,16 @@ var tick = function()
   for(var i = 0; i < gg.nodes.length; i++)
   {
     n = gg.nodes[i];
-    if(n == gg.selected_node) gg.ctx.globalAlpha = 1;
+    if(n.degree <= 2) gg.ctx.globalAlpha = 1;
     switch(n.type)
     {
       case "natural":      gg.ctx.fillStyle = "#FF0000"; break;
       case "resource":     gg.ctx.fillStyle = "#00FF00"; break;
       case "construction": gg.ctx.fillStyle = "#0000FF"; break;
+      default: console.log("type "+n.type+" not found (referenced by "+n.name+")"); break;
     }
     gg.ctx.fillRect(n.x,n.y,n.w,n.h);
-    if(n == gg.selected_node) gg.ctx.globalAlpha = default_alpha;
+    if(n.degree <= 2) gg.ctx.globalAlpha = default_alpha;
   }
 
   //labels
@@ -464,6 +474,9 @@ var tick = function()
   {
     n = gg.nodes[i];
     gg.ctx.fillText(n.name,n.x+n.w/2,n.y+n.h/2)
+    if(n.degree) gg.ctx.fillText(n.degree,n.x+n.w/2,n.y+n.h)
+    for(var j = 0; j < n.tags.length; j++)
+      gg.ctx.fillText(gg.tags[n.tags[j]],n.x+n.w/2,n.y+n.h*(j+2))
   }
 
 }
