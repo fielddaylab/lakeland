@@ -1,0 +1,477 @@
+<html>
+<head>
+</head>
+<script>
+
+var node = function()
+{
+  var self = this;
+  self.name = "";
+  self.type = "";
+  self.exchanges = [];
+  self.needs = [];
+  self.holds = [];
+  self.spoiledbys = [];
+
+  self.x = 0;
+  self.y = 0;
+  self.w = 20;
+  self.h = 20;
+}
+
+var mousedown = function(evt)
+{
+  var n;
+  var x = evt.offsetX;
+  var y = evt.offsetY;
+  gg.dragging_node = 0;
+  gg.selected_node = 0;
+  for(var i = 0; i < gg.nodes.length; i++)
+  {
+    n = gg.nodes[i];
+    if(x > n.x && x < n.x+n.w && y > n.y && y < n.y+n.h)
+      gg.dragging_node = n;
+  }
+  gg.selected_node = gg.dragging_node;
+}
+
+var mousemove = function(evt)
+{
+  if(!gg.dragging_node) return;
+  var x = evt.offsetX;
+  var y = evt.offsetY;
+  gg.dragging_node.x = x-gg.dragging_node.w/2;
+  gg.dragging_node.y = y-gg.dragging_node.h/2;
+}
+
+var mouseup = function(evt)
+{
+  gg.dragging_node = 0;
+}
+
+var gg = {};
+gg.nodes = [];
+var begin = function()
+{
+  gg.canvas = document.createElement("canvas");
+  gg.canvas.width = window.innerWidth;
+  gg.canvas.height = window.innerHeight;
+  gg.ctx = gg.canvas.getContext("2d");
+  document.getElementById("canvas_container").appendChild(gg.canvas);
+  gg.canvas.addEventListener("mousedown",mousedown);
+  gg.canvas.addEventListener("mousemove",mousemove);
+  gg.canvas.addEventListener("mouseup",mouseup);
+
+  var xhr = new XMLHttpRequest
+  xhr.onload = function()
+  {
+    var lines = xhr.response.split("\n");
+    var l;
+    var n;
+    for(var i = 0; i < lines.length; i++)
+    {
+      l = lines[i];
+      if(l[0] && l[0] != "-")
+      {
+        n = new node();
+        n.name = l.substring(0,l.indexOf(":"));
+        n.type = l.substring(l.indexOf(" ")+1);
+        gg.nodes.push(n);
+      }
+    }
+
+    var n_i = 0;
+    var t;
+    var an;
+    for(var i = 0; i < lines.length; i++)
+    {
+      l = lines[i];
+      if(l[0] && l[0] != "-")
+      {
+        n = gg.nodes[n_i];
+        n_i++;
+        i++;
+        l = lines[i];
+        while(l != "")
+        {
+          t = l.split(" ");
+          an = 0;
+          for(var j = 0; j < gg.nodes.length; j++)
+            if(gg.nodes[j].name == t[2]) an = gg.nodes[j];
+          if(an)
+          {
+            switch(t[1])
+            {
+              case "exchange": n.exchanges.push(an); break;
+              case "need": n.needs.push(an); break;
+              case "hold": n.holds.push(an); break;
+              case "spoiledby": n.spoiledbys.push(an); break;
+            }
+          }
+          i++;
+          l = lines[i];
+        }
+      }
+    }
+
+    for(var i = 0; i < gg.nodes.length; i++)
+    {
+      n = gg.nodes[i];
+      n.x = Math.random()*(gg.canvas.width -n.w);
+      n.y = Math.random()*(gg.canvas.height-n.h);
+    }
+
+    console.log(gg.nodes);
+    tick();
+  }
+  xhr.open("GET", "map.txt");
+  xhr.send();
+}
+window.addEventListener("load",begin);
+
+var resize = function()
+{
+  if(gg.canvas)
+  {
+    gg.canvas.width = window.innerWidth;
+    gg.canvas.height = window.innerHeight;
+  }
+}
+window.addEventListener("resize",resize);
+
+var tick = function()
+{
+  requestAnimationFrame(tick);
+
+  var n;
+  var an;
+  var dx;
+  var dy;
+  var ds;
+  var d;
+  var bm;
+  var m;
+  for(var i = 0; i < gg.nodes.length; i++)
+  {
+    n = gg.nodes[i];
+
+    //random
+    if(0)
+    {
+    if(n != gg.dragging_node)
+    {
+      n.x += Math.random()-0.5;
+      n.y += Math.random()-0.5;
+    }
+    }
+
+    //away from each other
+    if(1)
+    {
+    m = 10000;
+    for(var j = i+1; j < gg.nodes.length; j++)
+    {
+      an = gg.nodes[j];
+
+      //away from conflict
+      if(n.x == an.x && n.y == an.y)
+      {
+        if(n != gg.dragging_node)
+        {
+          n.x += Math.random()-0.5;
+          n.y += Math.random()-0.5;
+        }
+      }
+
+      //away from each other
+      dx = n.x-an.x;
+      dy = n.y-an.y;
+      ds = dx*dx+dy*dy;
+      d = Math.sqrt(ds)
+
+      dx = ((dx/d)/ds)*m;
+      dy = ((dy/d)/ds)*m;
+
+      if(n != gg.dragging_node)
+      {
+        n.x  += dx;
+        n.y  += dy;
+      }
+
+      if(an != gg.dragging_node)
+      {
+        an.x -= dx;
+        an.y -= dy;
+      }
+    }
+    }
+
+    //toward cener
+    m = 0.01;
+    if(1)
+    {
+    if(n != gg.dragging_node)
+    {
+      n.x += (((gg.canvas.width -n.w)/2)-n.x)*m;
+      n.y += (((gg.canvas.height-n.h)/2)-n.y)*m;
+    }
+    }
+
+    //toward connections
+    bm = 1;
+    if(1)
+    {
+    //toward exchanges
+    m = bm*1;
+    for(var j = 0; j < n.exchanges.length; j++)
+    {
+      an = n.exchanges[j];
+
+      dx = n.x-an.x;
+      dy = n.y-an.y;
+      ds = dx*dx+dy*dy;
+      d = Math.sqrt(ds)
+
+      dx = (dx/d)*m;
+      dy = (dy/d)*m;
+      if(n != gg.dragging_node)
+      {
+        n.x  -= dx;
+        n.y  -= dy;
+      }
+
+      if(an != gg.dragging_node)
+      {
+        an.x += dx;
+        an.y += dy;
+      }
+    }
+    //toward needs
+    m = bm*1;
+    for(var j = 0; j < n.needs.length; j++)
+    {
+      an = n.needs[j];
+
+      dx = n.x-an.x;
+      dy = n.y-an.y;
+      ds = dx*dx+dy*dy;
+      d = Math.sqrt(ds)
+
+      dx = (dx/d)*m;
+      dy = (dy/d)*m;
+      if(n != gg.dragging_node)
+      {
+        n.x  -= dx;
+        n.y  -= dy;
+      }
+
+      if(an != gg.dragging_node)
+      {
+        an.x += dx;
+        an.y += dy;
+      }
+    }
+    //toward holds
+    m = bm*1;
+    for(var j = 0; j < n.holds.length; j++)
+    {
+      an = n.holds[j];
+
+      dx = n.x-an.x;
+      dy = n.y-an.y;
+      ds = dx*dx+dy*dy;
+      d = Math.sqrt(ds)
+
+      dx = (dx/d)*m;
+      dy = (dy/d)*m;
+      if(n != gg.dragging_node)
+      {
+        n.x  -= dx;
+        n.y  -= dy;
+      }
+
+      if(an != gg.dragging_node)
+      {
+        an.x += dx;
+        an.y += dy;
+      }
+    }
+    //toward spoiledbys
+    m = bm*1;
+    for(var j = 0; j < n.spoiledbys.length; j++)
+    {
+      an = n.spoiledbys[j];
+
+      dx = n.x-an.x;
+      dy = n.y-an.y;
+      ds = dx*dx+dy*dy;
+      d = Math.sqrt(ds)
+
+      dx = (dx/d)*m;
+      dy = (dy/d)*m;
+      if(n != gg.dragging_node)
+      {
+        n.x  -= dx;
+        n.y  -= dy;
+      }
+
+      if(an != gg.dragging_node)
+      {
+        an.x += dx;
+        an.y += dy;
+      }
+    }
+    }
+
+    //away from edges
+    if(1)
+    {
+    if(n != gg.dragging_node)
+    {
+      if(n.x < 0) n.x = 0;
+      if(n.y < 0) n.y = 0;
+      if(n.x > gg.canvas.width -n.w) n.x = gg.canvas.width -n.w;
+      if(n.y > gg.canvas.height-n.h) n.y = gg.canvas.height-n.h;
+    }
+    }
+  }
+
+  //draw
+  gg.ctx.clearRect(0,0,gg.canvas.width,gg.canvas.height);
+  gg.ctx.textAlign = "center";
+
+  //edges
+  for(var i = 0; i < gg.nodes.length; i++)
+  {
+    n = gg.nodes[i];
+
+    gg.strokeStyle = "#000000";
+
+    var default_alpha = 1;
+    if(gg.selected_node) default_alpha = 0.1;
+    gg.ctx.globalAlpha = default_alpha;
+
+    gg.ctx.fillStyle = "#FFFF00";
+    for(var j = 0; j < n.exchanges.length; j++)
+    {
+      an = n.exchanges[j];
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = 1;
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x,an.y);
+      gg.ctx.lineTo(an.x+an.w,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x+an.w,an.y);
+      gg.ctx.lineTo(an.x,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = default_alpha;
+    }
+
+    gg.ctx.fillStyle = "#00FFFF";
+    for(var j = 0; j < n.needs.length; j++)
+    {
+      an = n.needs[j];
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = 1;
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x,an.y);
+      gg.ctx.lineTo(an.x+an.w,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x+an.w,an.y);
+      gg.ctx.lineTo(an.x,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = default_alpha;
+    }
+
+    gg.ctx.fillStyle = "#FF00FF";
+    for(var j = 0; j < n.holds.length; j++)
+    {
+      an = n.holds[j];
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = 1;
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x,an.y);
+      gg.ctx.lineTo(an.x+an.w,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x+an.w,an.y);
+      gg.ctx.lineTo(an.x,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = default_alpha;
+    }
+
+    gg.ctx.fillStyle = "#000000";
+    for(var j = 0; j < n.spoiledbys.length; j++)
+    {
+      an = n.spoiledbys[j];
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = 1;
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x,an.y);
+      gg.ctx.lineTo(an.x+an.w,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      gg.ctx.beginPath();
+      gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
+      gg.ctx.lineTo(an.x+an.w,an.y);
+      gg.ctx.lineTo(an.x,an.y+an.h);
+      gg.ctx.closePath();
+      gg.ctx.fill();
+      if(n == gg.selected_node || an == gg.selected_node)
+        gg.ctx.globalAlpha = default_alpha;
+    }
+
+  }
+
+  //nodes
+  for(var i = 0; i < gg.nodes.length; i++)
+  {
+    n = gg.nodes[i];
+    if(n == gg.selected_node) gg.ctx.globalAlpha = 1;
+    switch(n.type)
+    {
+      case "natural":      gg.ctx.fillStyle = "#FF0000"; break;
+      case "resource":     gg.ctx.fillStyle = "#00FF00"; break;
+      case "construction": gg.ctx.fillStyle = "#0000FF"; break;
+    }
+    gg.ctx.fillRect(n.x,n.y,n.w,n.h);
+    if(n == gg.selected_node) gg.ctx.globalAlpha = default_alpha;
+  }
+
+  //labels
+  gg.ctx.fillStyle = "#000000";
+  gg.ctx.font = "12px Helvetica";
+  gg.ctx.globalAlpha = 1;
+  for(var i = 0; i < gg.nodes.length; i++)
+  {
+    n = gg.nodes[i];
+    gg.ctx.fillText(n.name,n.x+n.w/2,n.y+n.h/2)
+  }
+
+}
+
+</script>
+<body>
+<div id="canvas_container">
+</div>
+</body>
+</html>
+

@@ -1,0 +1,83 @@
+tree: natural
+
+rock: natural
+
+lake: natural
+- spoiledby phosphorus
+
+person: natural
+- exchange home
+- need happiness
+- need food
+- need water
+
+labor: resource
+- hold person
+
+wood: resource
+- exchange tree
+- exchange labor
+
+stone: resource
+- exchange rock
+- exchange labor
+
+water: resource
+- hold lake
+
+happiness: resource
+- exchange dairy
+
+food: resource
+- hold farm
+
+dairy: resource
+- hold ranch
+
+fertilizer: resource
+- hold ranch
+
+phosphorus: resource
+- exchange fertilizer
+
+money: resource
+- exchange food
+
+home: construction
+- exchange wood
+- exchange roads
+- exchange labor
+
+farm: construction
+- exchange wood
+- exchange labor
+- need fertilizer
+- need labor
+- need water
+
+ranch: construction
+- exchange wood
+- exchange labor
+- need labor
+- need food
+- need water
+
+road: construction
+- exchange stone
+- exchange labor
+
+skimmer: construction
+- exchange money
+- exchange stone
+- exchange wood
+- exchange labor
+- hold lake
+- need phosphorus
+
+processor: construction
+- exchange money
+- exchange stone
+- exchange wood
+- exchange labor
+- need fertilizer
+

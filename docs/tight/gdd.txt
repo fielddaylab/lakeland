@@ -1,0 +1,50 @@
+3 major "moves":
+- buy farm
+- buy home
+- buy livestock (ranch?)
+
+mechanics:
+- farms grow food according to phosphorus levels
+- food growth takes up phosphorus
+- livestock are fed food and produce poop
+- poop can deposit phosphorus
+- rain (and other environmental factors) sink phosphorus into watersheds
+- sims cannot exist without a home
+- sims need food to survive
+- sims will not work if they can't play in water (require pollution free zone)
+
+possible sim actions:
+- eat
+- sleep
+- farm
+- feed livestock
+- fertilize farm
+- play in water
+- sell things
+- store/retrieve things (in/from storage)
+
+progression:
+- 16x16 tile grid
+- "place first home" free
+- $100 in bank
+- buy farm
+- sell excess food to buy new house
+- at each new house buy, grid increases by 2
+- farm runs out of nutrients
+- buy livestock
+- repeat grow community -> grow production cycle until unsustainable
+- growth tension / source of equilibrium:
+- - "selling" requires bringing excess to edge, which is moving further from center of population, which means excess just aggregates in middle
+- - can no longer rely on supply output from middle (though supply needs retain)
+
+experience:
+- you'll notice the irreversable soiling of used land/water
+- "growth" as only escape from soiling
+- growth simultaneously is increased burden
+- phosphorus unmaintainable
+- only in-game solution for maximization: build indefinitely increasing permanent poop storage (obviously unsustainable)
+- takeaway: what can be done to counter this aggregation of phosphorus? (NOT IN-GAME)
+- - new tech
+- - distribution networks
+- - regulations preventing centralization
+
