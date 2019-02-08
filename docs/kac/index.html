@@ -59,14 +59,14 @@ var mousedown = function(evt)
       if(x > n.x && x < n.x+n.w && y > n.y+n.h && y < n.y+n.h*(n.tags.length+1))
       {
         var t = (Math.floor((y-n.y)/n.h))-1;
-        console.log(t);
         for(var j = 0; j < gg.nodes.length; j++)
         {
           an = gg.nodes[j];
           an.degree = 100;
           for(var k = 0; k < an.tags.length; k++)
-            if(an.tags[k] == t) an.degree = 1;
+            if(an.tags[k] == t) an.degree = 2;
         }
+        n.degree = 1;
         gg.selected_node = n;
       }
     }
@@ -157,12 +157,17 @@ var begin = function()
     for(var i = 0; i < lines.length; i++)
     {
       l = lines[i];
-      if(l[0] && l[0] != "-" &&  l[0] != "#")
+      if(l[0])
       {
         n = gg.nodes[n_i];
         n_i++;
         i++;
         l = lines[i];
+        while(l != "" && l[0] == "#")
+        {
+          i++;
+          l = lines[i];
+        }
         while(l != "" && l[0] == "-")
         {
           t = l.split(" ");
@@ -364,7 +369,7 @@ var tick = function()
     for(var j = 0; j < n.exchange_in.length; j++)
     {
       an = n.exchange_in[j];
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -378,7 +383,7 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = default_alpha;
     }
 
@@ -386,7 +391,7 @@ var tick = function()
     for(var j = 0; j < n.need_in.length; j++)
     {
       an = n.need_in[j];
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -400,7 +405,7 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = default_alpha;
     }
 
@@ -408,7 +413,7 @@ var tick = function()
     for(var j = 0; j < n.hold_in.length; j++)
     {
       an = n.hold_in[j];
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -422,7 +427,7 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = default_alpha;
     }
 
@@ -430,7 +435,7 @@ var tick = function()
     for(var j = 0; j < n.spoiledby_in.length; j++)
     {
       an = n.spoiledby_in[j];
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = 1;
       gg.ctx.beginPath();
       gg.ctx.moveTo(n.x+n.w/2,n.y+n.h/2);
@@ -444,7 +449,7 @@ var tick = function()
       gg.ctx.lineTo(an.x,an.y+an.h);
       gg.ctx.closePath();
       gg.ctx.fill();
-      if(n.degree <= 1 || an.degree <= 1)
+      if((n.degree < 3 || an.degree < 3) && n.degree+an.degree < 5)
         gg.ctx.globalAlpha = default_alpha;
     }
 

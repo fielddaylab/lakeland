@@ -1,13 +1,16 @@
 tree: natural
+# progression1
 
 rock: natural
 
 lake: natural
+# progression1
 - spoiledby phosphorus
 
 person: natural
 # progression1
 # progression2
+# progression3
 - exchange home
 - need happiness
 - need sweetfood
@@ -17,6 +20,7 @@ labor: resource
 - hold person
 
 wood: resource
+# progression1
 - exchange tree
 - exchange labor
 
@@ -25,44 +29,53 @@ stone: resource
 - exchange labor
 
 water: resource
+# progression1
 - hold lake
 
 happiness: resource
+# progression3
 - exchange dairy
 - exchange beef
 
 sweetfood: resource
+# progression2
 - hold sweetfarm
 
 feedfood: resource
 - hold feedfarm
 
 dairy: resource
+# progression3
 - hold dairyplant
 
 dairyplant: construction
+# progression3
 - exchange wood
 - exchange road
 - exchange labor
 - need rawdairy
 
 rawdairy: resource
+# progression3
 - hold dairyranch
 
 beef: resource
 - hold beefranch
 
 manure: resource
+# progression3
 - hold dairyranch
 - hold beefranch
 
 fertilizerplant: construction
+# progression3
 - exchange wood
 - exchange road
 - exchange labor
 - need manure
 
 fertilizer: resource
+# progression3
 - hold fertilizerplant
 
 phosphorus: resource
@@ -75,11 +88,13 @@ money: resource
 - exchange fertilizer
 
 home: construction
+# progression1
 - exchange wood
 - exchange road
 - exchange labor
 
 sweetfarm: construction
+# progression2
 - exchange wood
 - exchange labor
 - need fertilizer
@@ -108,6 +123,7 @@ beefranch: construction
 - need water
 
 road: construction
+# progression1
 - exchange stone
 - exchange labor
 
