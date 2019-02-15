@@ -1034,7 +1034,7 @@ var break_item = function(it)
 var kick_item = function(it)
 {
   var theta = rand()*twopi;
-  var s = 2+rand()*3;
+  var s = gg.b.walk_speed+rand()*gg.b.walk_speed;
   it.wvx = cos(theta)*s;
   it.wvy = sin(theta)*s;
   it.wvz = s/2;
@@ -1103,6 +1103,9 @@ var board = function()
   self.raining = 0;
   self.nutrition_view = 0;
   self.spewing_road = 0;
+
+  self.walk_speed = min(self.ww/self.tw,self.wh/self.th)/road_walkability; //MUST BE < tile_w/max_walk_modifier
+  self.walk_speed = self.walk_speed/5; //as long as its < self.walk_speed, we're good
 
   self.wrapw = function(o)
   {
@@ -2132,8 +2135,6 @@ var farmbit = function()
   self.w = 0;
   self.h = 0;
 
-  self.walk_speed = min(gg.b.ww/gg.b.tw,gg.b.wh/gg.b.th)/road_walkability; //MUST BE < tile_w/max_walk_modifier
-  self.walk_speed = self.walk_speed/5; //as long as its < self.walk_speed, we're good
   self.move_dir_x = 0.;
   self.move_dir_y = 0.;
 
@@ -2208,8 +2209,8 @@ var farmbit = function()
       case DIRECTION_UR:   dx =  0.7; dy =  0.7; break;
     }
     var mod = self.walk_mod();
-    self.wx += dx*self.walk_speed*mod;
-    self.wy += dy*self.walk_speed*mod;
+    self.wx += dx*gg.b.walk_speed*mod;
+    self.wy += dy*gg.b.walk_speed*mod;
   }
 
   self.walk_toward_item = function(it)
@@ -2404,8 +2405,8 @@ var farmbit = function()
               self.job_state_t = 0;
             }
             var mod = self.walk_mod();
-            self.wx += self.move_dir_x*self.walk_speed*mod;
-            self.wy += self.move_dir_y*self.walk_speed*mod;
+            self.wx += self.move_dir_x*gg.b.walk_speed*mod;
+            self.wy += self.move_dir_y*gg.b.walk_speed*mod;
             gg.b.wrapw(self);
           }
             break;

@@ -1,5 +1,5 @@
-var board_w = 50;
-var board_h = 50;
+var board_w = 20;
+var board_h = 20;
 
 var n_lakes = 4;
 var lake_size_min = floor(50*board_w*board_h/2500);
