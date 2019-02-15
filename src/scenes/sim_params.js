@@ -2,16 +2,16 @@ var board_w = 50;
 var board_h = 50;
 
 var n_lakes = 4;
-var lake_size_min = 50;
-var lake_size_max = 100;
+var lake_size_min = floor(50*board_w*board_h/2500);
+var lake_size_max = floor(100*board_w*board_h/2500);
 
 var n_rock_deposits = 8;
-var rock_size_min = 20;
-var rock_size_max = 50;
+var rock_size_min = floor(20*board_w*board_h/2500);
+var rock_size_max = floor(50*board_w*board_h/2500);
 
 var n_forrests = 2;
-var forrest_size_min = 100;
-var forrest_size_max = 100;
+var forrest_size_min = floor(100*board_w*board_h/2500);
+var forrest_size_max = floor(100*board_w*board_h/2500);
 
 var farmbits_start_n = 1;
 var money_start_n = 100;
