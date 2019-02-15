@@ -47,20 +47,31 @@ var shop = function()
   self.money_btn     = new ButtonBox(x,y,w,h,function(){ gg.money += free_money; }); y += h+10;
   self.abandon_btn   = new ButtonBox(x,y,w,h,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); y += h+10;
 
+  self.bit_btn.active = 1;
+  self.home_btn.active = 1;
+  self.farm_btn.active = 1;
+  self.livestock_btn.active = 0;
+  self.storage_btn.active = 0;
+  self.processor_btn.active = 0;
+  self.road_btn.active = 0;
+  self.demolish_btn.active = 0;
+  self.money_btn.active = 1;
+  self.abandon_btn.active = 0;
+
   self.filter = function(filter)
   {
     if(gg.b.spewing_road) return;
     var check = true;
-    if(check) check = !filter.filter(self.bit_btn);
-    if(check) check = !filter.filter(self.home_btn);
-    if(check) check = !filter.filter(self.farm_btn);
-    if(check) check = !filter.filter(self.livestock_btn);
-    if(check) check = !filter.filter(self.storage_btn);
-    if(check) check = !filter.filter(self.processor_btn);
-    if(check) check = !filter.filter(self.road_btn);
-    if(check) check = !filter.filter(self.demolish_btn);
-    if(check) check = !filter.filter(self.money_btn);
-    if(check) check = !filter.filter(self.abandon_btn);
+    if(check && self.bit_btn.active)       check = !filter.filter(self.bit_btn);
+    if(check && self.home_btn.active)      check = !filter.filter(self.home_btn);
+    if(check && self.farm_btn.active)      check = !filter.filter(self.farm_btn);
+    if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
+    if(check && self.storage_btn.active)   check = !filter.filter(self.storage_btn);
+    if(check && self.processor_btn.active) check = !filter.filter(self.processor_btn);
+    if(check && self.road_btn.active)      check = !filter.filter(self.road_btn);
+    if(check && self.demolish_btn.active)  check = !filter.filter(self.demolish_btn);
+    if(check && self.money_btn.active)     check = !filter.filter(self.money_btn);
+    if(check && self.abandon_btn.active)   check = !filter.filter(self.abandon_btn);
     return !check;
   }
 
@@ -74,29 +85,29 @@ var shop = function()
     gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = gray;
 
-    if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) fillBox(self.bit_btn,gg.ctx);
-    if(gg.money < home_cost)      fillBox(self.home_btn,gg.ctx);
-    if(gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
-    if(gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
-    if(gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
-    if(gg.money < processor_cost) fillBox(self.processor_btn,gg.ctx);
-    if(gg.money < road_cost)      fillBox(self.road_btn,gg.ctx);
-    if(gg.money < demolish_cost)  fillBox(self.demolish_btn,gg.ctx);
+    if(self.bit_btn.active       && gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) fillBox(self.bit_btn,gg.ctx);
+    if(self.home_btn.active      && gg.money < home_cost)      fillBox(self.home_btn,gg.ctx);
+    if(self.farm_btn.active      && gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
+    if(self.livestock_btn.active && gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
+    if(self.storage_btn.active   && gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
+    if(self.processor_btn.active && gg.money < processor_cost) fillBox(self.processor_btn,gg.ctx);
+    if(self.road_btn.active      && gg.money < road_cost)      fillBox(self.road_btn,gg.ctx);
+    if(self.demolish_btn.active  && gg.money < demolish_cost)  fillBox(self.demolish_btn,gg.ctx);
 
     gg.ctx.fillStyle = black;
     gg.ctx.fillText("$"+gg.money,10,30);
 
-    strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",                    self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30);
+    if(self.bit_btn.active)       { strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",                    self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30); }
     gg.ctx.fillText(gg.farmbits.length+"/"+gg.b.tile_groups[TILE_TYPE_HOME].length, self.bit_btn.x,       self.bit_btn.y+self.bit_btn.h);
-    strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",                   self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30);
-    strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",                   self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30);
-    strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30);
-    strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30);
-    strokeBox(self.processor_btn,gg.ctx); gg.ctx.fillText("processor",              self.processor_btn.x, self.processor_btn.y+20); gg.ctx.fillText("$"+processor_cost, self.processor_btn.x, self.processor_btn.y+30);
-    strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_card,   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30);
-    strokeBox(self.demolish_btn,gg.ctx);  gg.ctx.fillText("demolish",               self.demolish_btn.x,  self.demolish_btn.y+20);  gg.ctx.fillText("$"+demolish_cost,  self.demolish_btn.x,  self.demolish_btn.y+30);
-    strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30);
-    strokeBox(self.abandon_btn,gg.ctx);   gg.ctx.fillText("abandon",                self.abandon_btn.x,   self.abandon_btn.y+20);
+    if(self.home_btn.active)      { strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",                   self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30); }
+    if(self.farm_btn.active)      { strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",                   self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30); }
+    if(self.livestock_btn.active) { strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30); }
+    if(self.storage_btn.active)   { strokeBox(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30); }
+    if(self.processor_btn.active) { strokeBox(self.processor_btn,gg.ctx); gg.ctx.fillText("processor",              self.processor_btn.x, self.processor_btn.y+20); gg.ctx.fillText("$"+processor_cost, self.processor_btn.x, self.processor_btn.y+30); }
+    if(self.road_btn.active)      { strokeBox(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_card,   self.road_btn.x,      self.road_btn.y+20);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30); }
+    if(self.demolish_btn.active)  { strokeBox(self.demolish_btn,gg.ctx);  gg.ctx.fillText("demolish",               self.demolish_btn.x,  self.demolish_btn.y+20);  gg.ctx.fillText("$"+demolish_cost,  self.demolish_btn.x,  self.demolish_btn.y+30); }
+    if(self.money_btn.active)     { strokeBox(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30); }
+    if(self.abandon_btn.active)   { strokeBox(self.abandon_btn,gg.ctx);   gg.ctx.fillText("abandon",                self.abandon_btn.x,   self.abandon_btn.y+20); }
   }
 }
 
