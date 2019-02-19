@@ -442,6 +442,7 @@ var closest_free_farmbit_with_desire = function(goal, fullness, energy, joy, ful
   var b_d = max_dist;
   var rank = -1;
   var d;
+  var b;
   for(var i = 0; i < gg.farmbits.length; i++)
   {
     b = gg.farmbits[i];
@@ -618,6 +619,8 @@ var joy_job_for_b = function(b)
 var fulfillment_job_for_b = function(b)
 {
   var t;
+  var it;
+  var tp;
 
   //feed
   t = closest_unlocked_valdeficient_tile_from_list(b.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
@@ -1070,14 +1073,11 @@ var board = function()
 
   self.tw = board_w;
   self.th = board_h;
+  self.null_tile = new tile();
   self.tiles = [];
   self.tile_groups = [];
   self.tiles_i = function(tx,ty)
   {
-    if(tx <  0)       tx += self.tw;
-    if(ty <  0)       ty += self.th;
-    if(tx >= self.tw) tx -= self.tw;
-    if(ty >= self.th) ty -= self.th;
     return self.tw*ty+tx;
   }
   self.tiles_t = function(tx,ty)
@@ -1085,11 +1085,25 @@ var board = function()
     var i = self.tiles_i(tx,ty);
     return self.tiles[i];
   }
+  self.safe_tiles_t = function(tx,ty)
+  {
+    if(tx <  0)       return self.null_tile;
+    if(ty <  0)       return self.null_tile;
+    if(tx >= self.tw) return self.null_tile;
+    if(ty >= self.th) return self.null_tile;
+    return self.tiles_t(tx,ty);
+  }
   self.tiles_wt = function(wx,wy)
   {
     var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
     var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
     return self.tiles_t(tx,ty);
+  }
+  self.safe_tiles_wt = function(wx,wy)
+  {
+    var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
+    var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
+    return self.safe_tiles_t(tx,ty);
   }
   self.tiles_tw = function(t,w)
   {
@@ -1108,12 +1122,12 @@ var board = function()
   self.walk_speed = min(self.ww/self.tw,self.wh/self.th)/road_walkability; //MUST BE < tile_w/max_walk_modifier
   self.walk_speed = self.walk_speed/5; //as long as its < self.walk_speed, we're good
 
-  self.wrapw = function(o)
+  self.stopw = function(o)
   {
-    if(o.wx < self.wx-self.ww/2) o.wx = self.wx+self.ww/2;
-    if(o.wx > self.wx+self.ww/2) o.wx = self.wx-self.ww/2;
-    if(o.wy < self.wy-self.wh/2) o.wy = self.wy+self.wh/2;
-    if(o.wy > self.wy+self.wh/2) o.wy = self.wy-self.wh/2;
+    if(o.wx < self.wx-self.ww/2) o.wx = self.wx-self.ww/2;
+    if(o.wx > self.wx+self.ww/2) o.wx = self.wx+self.ww/2;
+    if(o.wy < self.wy-self.wh/2) o.wy = self.wy-self.wh/2;
+    if(o.wy > self.wy+self.wh/2) o.wy = self.wy+self.wh/2;
   }
 
   self.x = 0;
@@ -1156,8 +1170,6 @@ var board = function()
 
     flow_v[cindex] = 1;
     flow_d[cindex] = 0;
-    cd.x = 0;
-    cd.y = 0;
 
     check.push(cindex);
 
@@ -1282,10 +1294,10 @@ var board = function()
       {
         var t = fill[i];
         var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
       }
       return fill;
     }
@@ -1299,10 +1311,10 @@ var board = function()
       {
         var t = fill[i];
         var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != type) atomic_push(n,border);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != type) atomic_push(n,border);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != type) atomic_push(n,border);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != type) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
       }
       return border;
     }
@@ -1318,10 +1330,10 @@ var board = function()
         border.splice(b_i,1);
 
         var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
-        n = self.tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
-        n = self.tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
-        n = self.tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
       }
       return border;
     }
@@ -1826,10 +1838,10 @@ var board = function()
         }
           break;
       }
-      var right = self.tiles_t(t.tx+1,t.ty  );
-      var top   = self.tiles_t(t.tx  ,t.ty+1);
-      self.flow(t,right);
-      self.flow(t,top);
+      var right = self.safe_tiles_t(t.tx+1,t.ty  );
+      var top   = self.safe_tiles_t(t.tx  ,t.ty+1);
+      if(right.type != TILE_TYPE_NULL) self.flow(t,right);
+      if(top.type != TILE_TYPE_NULL) self.flow(t,top);
       if(self.raining) self.rainflow(t);
     }
 
@@ -2061,7 +2073,7 @@ var item = function()
     self.wx += self.wvx;
     self.wy += self.wvy;
     self.wz += self.wvz;
-    gg.b.wrapw(self);
+    gg.b.stopw(self);
     if(self.wz < 0) { self.wz = 0; self.wvz *= -1; }
     self.wvx *= 0.95;
     self.wvy *= 0.95
@@ -2382,7 +2394,7 @@ var farmbit = function()
             var mod = self.walk_mod();
             self.wx += self.move_dir_x*gg.b.walk_speed*mod;
             self.wy += self.move_dir_y*gg.b.walk_speed*mod;
-            gg.b.wrapw(self);
+            gg.b.stopw(self);
           }
             break;
           case JOB_STATE_ACT:
