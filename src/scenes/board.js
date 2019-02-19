@@ -1,3 +1,4 @@
+'use strict';
 var ENUM;
 
 ENUM = 0;
@@ -1276,14 +1277,15 @@ var board = function()
 
     var slow_flood_fill = function(fill)
     {
+      if(fill.length) type = fill[0].type;
       for(var i = 0; i < fill.length; i++)
       {
         var t = fill[i];
         var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type == t.type) atomic_push(n,fill);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type == t.type) atomic_push(n,fill);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type == t.type) atomic_push(n,fill);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type == t.type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
       }
       return fill;
     }
@@ -1291,14 +1293,35 @@ var board = function()
     var slow_flood_border = function(fill)
     {
       var border = [];
+      var type;
+      if(fill.length) type = fill[0].type;
       for(var i = 0; i < fill.length; i++)
       {
         var t = fill[i];
         var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != t.type) atomic_push(n,border);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != t.type) atomic_push(n,border);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != t.type) atomic_push(n,border);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != t.type) atomic_push(n,border);
+        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != type) atomic_push(n,border);
+        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != type) atomic_push(n,border);
+        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != type) atomic_push(n,border);
+        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != type) atomic_push(n,border);
+      }
+      return border;
+    }
+
+    var grow_fill = function(t,type,amt,constraint,invert_constraint)
+    {
+      var border = slow_flood_border(slow_flood_fill([t]));
+      for(var j = 0; j < amt; j++)
+      {
+        var b_i = randIntBelow(border.length);
+        var t = border[b_i];
+        t.type = type;
+        border.splice(b_i,1);
+
+        var n;
+        n = self.tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
+        n = self.tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
+        n = self.tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
+        n = self.tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint)) atomic_push(n,border);
       }
       return border;
     }
@@ -1311,23 +1334,7 @@ var board = function()
       var t = self.tiles_t(src_tx,src_ty);
       t.type = TILE_TYPE_ROCK;
       var rock_size = rock_size_min+randIntBelow(rock_size_max-rock_size_min);
-      var rock_tiles = slow_flood_fill([t]);
-      var rock_border = slow_flood_border(rock_tiles);
-
-      for(var j = 0; j < rock_size; j++)
-      {
-        var b_i = randIntBelow(rock_border.length);
-        var t = rock_border[b_i];
-        t.type = TILE_TYPE_ROCK;
-        rock_tiles.push(t);
-        rock_border.splice(b_i,1);
-
-        var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != t.type) atomic_push(n,rock_border);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != t.type) atomic_push(n,rock_border);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != t.type) atomic_push(n,rock_border);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != t.type) atomic_push(n,rock_border);
-      }
+      grow_fill(t,TILE_TYPE_ROCK,rock_size,TILE_TYPE_ROCK,1);
     }
 
     //fill lakes
@@ -1338,23 +1345,7 @@ var board = function()
       var t = self.tiles_t(src_tx,src_ty);
       t.type = TILE_TYPE_WATER;
       var lake_size = lake_size_min+randIntBelow(lake_size_max-lake_size_min);
-      var lake_tiles = slow_flood_fill([t]);
-      var lake_border = slow_flood_border(lake_tiles);
-
-      for(var j = 0; j < lake_size; j++)
-      {
-        var b_i = randIntBelow(lake_border.length);
-        var t = lake_border[b_i];
-        t.type = TILE_TYPE_WATER;
-        lake_tiles.push(t);
-        lake_border.splice(b_i,1);
-
-        var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type != t.type) atomic_push(n,lake_border);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type != t.type) atomic_push(n,lake_border);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type != t.type) atomic_push(n,lake_border);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type != t.type) atomic_push(n,lake_border);
-      }
+      var lake_border = grow_fill(t,TILE_TYPE_WATER,lake_size,TILE_TYPE_WATER,1);
       for(var j = 0; j < lake_border.length; j++)
         lake_border[j].type = TILE_TYPE_SHORE;
     }
@@ -1373,23 +1364,7 @@ var board = function()
       }
       t.type = TILE_TYPE_FORREST;
       var forrest_size = forrest_size_min+randIntBelow(forrest_size_max-forrest_size_min);
-      var forrest_tiles = slow_flood_fill([t]);
-      var forrest_border = slow_flood_border(forrest_tiles);
-
-      for(var j = 0; forrest_border.length && j < forrest_size; j++)
-      {
-        var b_i = randIntBelow(forrest_border.length);
-        var t = forrest_border[b_i];
-        t.type = TILE_TYPE_FORREST;
-        forrest_tiles.push(t);
-        forrest_border.splice(b_i,1);
-
-        var n;
-        n = self.tiles_t(t.tx-1,t.ty  ); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
-        n = self.tiles_t(t.tx+1,t.ty  ); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
-        n = self.tiles_t(t.tx  ,t.ty-1); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
-        n = self.tiles_t(t.tx  ,t.ty+1); if(n.type == TILE_TYPE_LAND) atomic_push(n,forrest_border);
-      }
+      var lake_border = grow_fill(t,TILE_TYPE_FORREST,lake_size,TILE_TYPE_LAND,0);
     }
 
     self.tiles[0].type = TILE_TYPE_EXPORT;
