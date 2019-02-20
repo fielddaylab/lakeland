@@ -1757,29 +1757,108 @@ var board = function()
   self.click = function(evt)
   {
     if(self.spewing_road) return;
-    var clicked;
-    for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
-    if(clicked)
+    if(gg.shop.selected_buy)
     {
-      gg.inspector.detailed = clicked;
-      gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
+      if(self.hover_t)
+      {
+        if(gg.shop.selected_buy == BUY_TYPE_BIT)
+        {
+          var b = new farmbit();
+          b.tile = self.hover_t;
+          gg.b.tiles_tw(self.hover_t,b);
+          gg.farmbits.push(b);
+          job_for_b(b);
+          b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_HOME && buildability_check(TILE_TYPE_HOME,self.hover_t.type))
+        {
+          self.alterTile(self.hover_t,TILE_TYPE_HOME);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_FARM && buildability_check(TILE_TYPE_FARM,self.hover_t.type))
+        {
+          self.alterTile(self.hover_t,TILE_TYPE_FARM);
+          b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_LIVESTOCK && buildability_check(TILE_TYPE_LIVESTOCK,self.hover_t.type))
+        {
+          self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_STORAGE && buildability_check(TILE_TYPE_STORAGE,self.hover_t.type))
+        {
+          self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_PROCESSOR && buildability_check(TILE_TYPE_PROCESSOR,self.hover_t.type))
+        {
+          self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_ROAD && buildability_check(TILE_TYPE_ROAD,self.hover_t.type))
+        {
+          self.alterTile(self.hover_t,TILE_TYPE_ROAD);
+          self.spewing_road = roads_per_buy-1;
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_ROAD && self.hover_t.type == TILE_TYPE_ROAD)
+        {
+          self.spewing_road = roads_per_buy;
+          gg.shop.selected_buy = 0;
+          return;
+        }
+
+        if(gg.shop.selected_buy == BUY_TYPE_DEMOLISH && demolishability_check(self.hover_t.type))
+        {
+          self.abandon_tile(self.hover_t);
+          self.alterTile(self.hover_t,self.hover_t.og_type);
+          gg.shop.selected_buy = 0;
+          return;
+        }
+      }
     }
-    if(!clicked)
+    else
     {
-      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
+      var clicked;
+      for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
         gg.inspector.detailed = clicked;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
+        gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
       }
-      else
+      if(!clicked)
       {
-        gg.inspector.detailed = self.hover_t;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
-        if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
+        for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
+        if(clicked)
+        {
+          gg.inspector.detailed = clicked;
+          gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
+        }
+        else
+        {
+          gg.inspector.detailed = self.hover_t;
+          gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+          if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
+        }
       }
+      if(!self.hover_t) return;
     }
-    if(!self.hover_t) return;
   }
 
   self.tick = function()
@@ -1843,87 +1922,6 @@ var board = function()
       if(right.type != TILE_TYPE_NULL) self.flow(t,right);
       if(top.type != TILE_TYPE_NULL) self.flow(t,top);
       if(self.raining) self.rainflow(t);
-    }
-
-    if(gg.hand.released_card)
-    {
-      var c = gg.hand.released_card;
-      gg.hand.released_card = 0;
-      var evt = gg.hand.released_evt;
-      gg.hand.released_evt = 0;
-
-      if(!self.hover_t) return;
-
-      if(c.type == CARD_TYPE_BIT)
-      {
-        var b = new farmbit();
-        b.tile = self.hover_t;
-        gg.b.tiles_tw(self.hover_t,b);
-        gg.farmbits.push(b);
-        job_for_b(b);
-        gg.hand.destroy(c);
-        b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
-        return;
-      }
-
-      if(c.type == CARD_TYPE_HOME && buildability_check(TILE_TYPE_HOME,self.hover_t.type))
-      {
-        self.alterTile(self.hover_t,TILE_TYPE_HOME);
-        gg.hand.destroy(c);
-        return;
-      }
-
-      if(c.type == CARD_TYPE_FARM && buildability_check(TILE_TYPE_FARM,self.hover_t.type))
-      {
-        self.alterTile(self.hover_t,TILE_TYPE_FARM);
-        b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
-        gg.hand.destroy(c);
-        return;
-      }
-
-      if(c.type == CARD_TYPE_LIVESTOCK && buildability_check(TILE_TYPE_LIVESTOCK,self.hover_t.type))
-      {
-        self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
-        gg.hand.destroy(c);
-        return;
-      }
-
-      if(c.type == CARD_TYPE_STORAGE && buildability_check(TILE_TYPE_STORAGE,self.hover_t.type))
-      {
-        self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
-        gg.hand.destroy(c);
-        return;
-      }
-
-      if(c.type == CARD_TYPE_PROCESSOR && buildability_check(TILE_TYPE_PROCESSOR,self.hover_t.type))
-      {
-        self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
-        gg.hand.destroy(c);
-        return;
-      }
-
-      if(c.type == CARD_TYPE_ROAD && buildability_check(TILE_TYPE_ROAD,self.hover_t.type))
-      {
-        self.alterTile(self.hover_t,TILE_TYPE_ROAD);
-        gg.hand.destroy(c);
-        self.spewing_road = roads_per_card-1;
-        return;
-      }
-
-      if(c.type == CARD_TYPE_ROAD && self.hover_t.type == TILE_TYPE_ROAD)
-      {
-        gg.hand.destroy(c);
-        self.spewing_road = roads_per_card;
-        return;
-      }
-
-      if(c.type == CARD_TYPE_DEMOLISH && demolishability_check(self.hover_t.type))
-      {
-        self.abandon_tile(self.hover_t);
-        self.alterTile(self.hover_t,self.hover_t.og_type);
-        gg.hand.destroy(c);
-        return;
-      }
     }
   }
 

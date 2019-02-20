@@ -56,7 +56,6 @@ var GamePlayScene = function(game, stage)
     }
     gg.jobs = [];
     gg.shop = new shop();
-    gg.hand = new hand();
     gg.inspector = new inspector();
     gg.ticker = new ticker();
   };
@@ -64,10 +63,8 @@ var GamePlayScene = function(game, stage)
   self.tick = function()
   {
     hoverer.filter(gg.b);
-    gg.hand.filter_hover(hoverer);
 
     var check = true;
-    if(check) check = !gg.hand.filter_drag(dragger);
     if(check) check = !clicker.filter(gg.b);
     if(check) check = !gg.shop.filter(clicker);
 
@@ -96,7 +93,6 @@ var GamePlayScene = function(game, stage)
         screenSpace(gg.cam, gg.canv, f);
       }
       gg.shop.tick();
-      gg.hand.tick();
       gg.ticker.tick();
     }
   };
@@ -109,7 +105,6 @@ var GamePlayScene = function(game, stage)
     for(var i = 0; i < gg.items.length; i++)
       gg.items[i].draw();
     gg.shop.draw();
-    gg.hand.draw();
     gg.inspector.draw();
     gg.ticker.draw();
 

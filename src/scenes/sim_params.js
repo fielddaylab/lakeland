@@ -99,8 +99,7 @@ var item_worth_food = 100;
 var item_worth_poop = 50;
 var item_worth_valuable = 5000;
 
-var roads_per_card = 10;
-var min_card_drag_t = 50;
+var roads_per_buy = 10;
 
 var debug_pathfinding = 0;
 var debug_jobs = 0;
