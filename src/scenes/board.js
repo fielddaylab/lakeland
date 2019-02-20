@@ -1073,6 +1073,10 @@ var board = function()
 
   self.tw = board_w;
   self.th = board_h;
+  self.bounds_tx = floor(board_w*3/8);
+  self.bounds_ty = floor(board_h*3/8);
+  self.bounds_tw = floor(board_w/4);
+  self.bounds_th = floor(board_h/4);
   self.null_tile = new tile();
   self.tiles = [];
   self.tile_groups = [];
@@ -1084,6 +1088,14 @@ var board = function()
   {
     var i = self.tiles_i(tx,ty);
     return self.tiles[i];
+  }
+  self.bounded_tiles_t = function(tx,ty)
+  {
+    if(tx <  self.bounds_tx)                return self.null_tile;
+    if(ty <  self.bounds_ty)                return self.null_tile;
+    if(tx >= self.bounds_tx+self.bounds_tw) return self.null_tile;
+    if(ty >= self.bounds_ty+self.bounds_th) return self.null_tile;
+    return self.tiles_t(tx,ty);
   }
   self.safe_tiles_t = function(tx,ty)
   {
@@ -1098,6 +1110,12 @@ var board = function()
     var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
     var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
     return self.tiles_t(tx,ty);
+  }
+  self.bounded_tiles_wt = function(wx,wy)
+  {
+    var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
+    var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
+    return self.bounded_tiles_t(tx,ty);
   }
   self.safe_tiles_wt = function(wx,wy)
   {
@@ -1115,19 +1133,21 @@ var board = function()
   self.wy = 0;
   self.ww = 660;
   self.wh = 660;
+  self.tww = self.ww/self.tw;
+  self.twh = self.wh/self.th;
   self.raining = 0;
   self.nutrition_view = 0;
   self.spewing_road = 0;
 
-  self.walk_speed = min(self.ww/self.tw,self.wh/self.th)/road_walkability; //MUST BE < tile_w/max_walk_modifier
+  self.walk_speed = min(self.tww,self.twh)/road_walkability; //MUST BE < tile_w/max_walk_modifier
   self.walk_speed = self.walk_speed/5; //as long as its < self.walk_speed, we're good
 
-  self.stopw = function(o)
+  self.boundw = function(o)
   {
-    if(o.wx < self.wx-self.ww/2) o.wx = self.wx-self.ww/2;
-    if(o.wx > self.wx+self.ww/2) o.wx = self.wx+self.ww/2;
-    if(o.wy < self.wy-self.wh/2) o.wy = self.wy-self.wh/2;
-    if(o.wy > self.wy+self.wh/2) o.wy = self.wy+self.wh/2;
+    if(o.wx < self.wx-self.ww/2+self.tww* self.bounds_tx)                 o.wx = self.wx-self.ww/2+self.tww* self.bounds_tx;
+    if(o.wx > self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw)) o.wx = self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw);
+    if(o.wy < self.wy-self.wh/2+self.twh* self.bounds_ty)                 o.wy = self.wy-self.wh/2+self.twh* self.bounds_ty;
+    if(o.wy > self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th)) o.wy = self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th);
   }
 
   self.x = 0;
@@ -2129,7 +2149,7 @@ var item = function()
     self.wx += self.wvx;
     self.wy += self.wvy;
     self.wz += self.wvz;
-    gg.b.stopw(self);
+    gg.b.boundw(self);
     if(self.wz < 0) { self.wz = 0; self.wvz *= -1; }
     self.wvx *= 0.95;
     self.wvy *= 0.95
@@ -2470,7 +2490,6 @@ var farmbit = function()
             var mod = self.walk_mod();
             self.wx += self.move_dir_x*gg.b.walk_speed*mod;
             self.wy += self.move_dir_y*gg.b.walk_speed*mod;
-            gg.b.stopw(self);
           }
             break;
           case JOB_STATE_ACT:
@@ -3151,6 +3170,7 @@ var farmbit = function()
         return;
     }
 
+    gg.b.boundw(self);
     self.tile = gg.b.tiles_wt(self.wx,self.wy);
   }
 
