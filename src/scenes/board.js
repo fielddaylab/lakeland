@@ -1214,6 +1214,7 @@ var board = function()
         if(ct.tx > 0         && flow_d[i-1        ] < lowest_d) { t.directions[i] = DIRECTION_L; lowest_d = flow_d[i-1        ]; } //left
         if(ct.tx < self.tw-1 && flow_d[i+1        ] < lowest_d) { t.directions[i] = DIRECTION_R; lowest_d = flow_d[i+1        ]; } //right
     }
+    t.directions[t.i] = DIRECTION_NULL;
     t.directions_dirty = 0;
   }
   self.dirty_directions = function()
@@ -2068,7 +2069,7 @@ var board = function()
           var dy;
           switch(d.directions[i])
           {
-            case DIRECTION_NULL: dx =  0;   dy =  0;   break;
+            case DIRECTION_NULL: dx =  0;   dy =  0;   continue; break;
             case DIRECTION_R:    dx =  1;   dy =  0;   break;
             case DIRECTION_DR:   dx =  0.7; dy = -0.7; break;
             case DIRECTION_D:    dx =  0;   dy = -1;   break;
@@ -2240,7 +2241,7 @@ var farmbit = function()
     var dy;
     switch(t.directions[self.tile.i])
     {
-      case DIRECTION_NULL: dx =  0;   dy =  0;   break;
+      case DIRECTION_NULL: dx =  0;   dy =  0;   return 0; break;
       case DIRECTION_R:    dx =  1;   dy =  0;   break;
       case DIRECTION_DR:   dx =  0.7; dy = -0.7; break;
       case DIRECTION_D:    dx =  0;   dy = -1;   break;
@@ -2253,12 +2254,32 @@ var farmbit = function()
     var mod = self.walk_mod();
     self.wx += dx*gg.b.walk_speed*mod;
     self.wy += dy*gg.b.walk_speed*mod;
+    return 1;
   }
 
   self.walk_toward_item = function(it)
   {
     var t = it.tile;
-    self.walk_toward_tile(t);
+    if(!self.walk_toward_tile(t))
+    {
+      var dx = it.wx-self.wx;
+      var dy = it.wy-self.wy;
+      var d = sqrt(dx*dx+dy*dy);
+      var mod = self.walk_mod();
+      var speed = gg.b.walk_speed*mod;
+      if(speed < d)
+      {
+        dx = dx/d;
+        dy = dy/d;
+        self.wx += dx*speed;
+        self.wy += dy*speed;
+      }
+      else
+      {
+        self.wx += dx;
+        self.wy += dy;
+      }
+    }
   }
 
   self.calibrate_stats = function()
@@ -2487,7 +2508,7 @@ var farmbit = function()
             if(o.thing == THING_TYPE_ITEM)
             {
               if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
-                self.walk_toward_tile(t);
+                self.walk_toward_item(o);
               else
               {
                 self.item = o;
@@ -2619,7 +2640,7 @@ var farmbit = function()
             if(o.thing == THING_TYPE_ITEM)
             {
               if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
-                self.walk_toward_tile(t);
+                self.walk_toward_item(o);
               else
               {
                 self.item = o;
@@ -2744,7 +2765,7 @@ var farmbit = function()
             if(o.thing == THING_TYPE_ITEM)
             {
               if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
-                self.walk_toward_tile(t);
+                self.walk_toward_item(o);
               else
               {
                 self.item = o;
@@ -2824,7 +2845,7 @@ var farmbit = function()
             if(o.thing == THING_TYPE_ITEM)
             {
               if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
-                self.walk_toward_tile(t);
+                self.walk_toward_item(o);
               else
               {
                 self.item = o;
