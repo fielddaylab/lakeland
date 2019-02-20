@@ -2116,6 +2116,15 @@ var board = function()
         gg.ctx.fillRect(self.x+x-1,self.y+y-1,2,2);
       }
     }
+
+    {
+      gg.ctx.strokeStyle = red;
+      var x = self.x+(self.bounds_tx/self.tw)*self.w;
+      var y = self.y+(self.bounds_ty/self.th)*self.h;
+      var w = (self.bounds_tw/self.tw)*self.w;
+      var h = (self.bounds_th/self.th)*self.h;
+      gg.ctx.strokeRect(x,y,w,h);
+    }
   }
 }
 
