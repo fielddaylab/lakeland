@@ -262,7 +262,7 @@ var closest_unlocked_tile_from_list = function(goal, list)
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || !self.tile_in_bounds(t)) continue;
+    if(t.lock || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -280,7 +280,7 @@ var closest_unlocked_nutrientsufficient_tile_from_list = function(goal, threshho
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.nutrition < threshhold || !self.tile_in_bounds(t)) continue;
+    if(t.lock || t.nutrition < threshhold || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -298,7 +298,7 @@ var closest_unlocked_nutrientdeficient_tile_from_list = function(goal, threshhol
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.nutrition >= threshhold || !self.tile_in_bounds(t)) continue;
+    if(t.lock || t.nutrition >= threshhold || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -316,7 +316,7 @@ var closest_unlocked_valdeficient_tile_from_list = function(goal, threshhold, li
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.val >= threshhold || !self.tile_in_bounds(t)) continue;
+    if(t.lock || t.val >= threshhold || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -334,7 +334,7 @@ var closest_unlocked_state_tile_from_list = function(goal, state, list)
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.state != state || !self.tile_in_bounds(t)) continue;
+    if(t.lock || t.state != state || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -352,7 +352,7 @@ var closest_unlocked_available_state_tile_from_list = function(goal, state, list
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.state != state || t.val-t.withdraw_lock <= 0 || !self.tile_in_bounds(t)) continue;
+    if(t.lock || t.state != state || t.val-t.withdraw_lock <= 0 || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -370,7 +370,7 @@ var closest_unlocked_free_state_tile_from_list = function(goal, state, list)
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.state != state || t.val+t.deposit_lock >= storage_max || !self.tile_in_bounds(t)) continue;
+    if(t.lock || t.state != state || t.val+t.deposit_lock >= storage_max || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -388,7 +388,7 @@ var closest_unlocked_item = function(goal)
   for(var i = 0; i < gg.items.length; i++)
   {
     var it = gg.items[i];
-    if(it.lock || !self.tile_in_bounds(it.tile)) continue;
+    if(it.lock || !gg.b.tile_in_bounds(it.tile)) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -406,7 +406,7 @@ var closest_unlocked_item_of_type = function(goal, type)
   for(var i = 0; i < gg.items.length; i++)
   {
     var it = gg.items[i];
-    if(it.type != type || it.lock || !self.tile_in_bounds(it.tile)) continue;
+    if(it.type != type || it.lock || !gg.b.tile_in_bounds(it.tile)) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -424,7 +424,7 @@ var closest_unlocked_state_item_of_type = function(goal, type, state)
   for(var i = 0; i < gg.items.length; i++)
   {
     var it = gg.items[i];
-    if(it.type != type || it.state != state || it.lock || !self.tile_in_bounds(it.tile)) continue;
+    if(it.type != type || it.state != state || it.lock || !gg.b.tile_in_bounds(it.tile)) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -1139,10 +1139,10 @@ var board = function()
   self.tile_in_bounds = function(t)
   {
     if(
-      t.tx <  0 ||
-      t.ty <  0 ||
-      t.tx >= self.tw ||
-      t.ty >= self.th ||
+      t.tx <  self.bounds_tx ||
+      t.ty <  self.bounds_ty ||
+      t.tx >= self.bounds_tx+self.bounds_tw ||
+      t.ty >= self.bounds_ty+self.bounds_th ||
       0)
       return 0;
     return 1;
@@ -1157,10 +1157,10 @@ var board = function()
 
   self.boundw = function(o)
   {
-    if(o.wx < self.wx-self.ww/2+self.tww* self.bounds_tx)                 o.wx = self.wx-self.ww/2+self.tww* self.bounds_tx;
-    if(o.wx > self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw)) o.wx = self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw);
-    if(o.wy < self.wy-self.wh/2+self.twh* self.bounds_ty)                 o.wy = self.wy-self.wh/2+self.twh* self.bounds_ty;
-    if(o.wy > self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th)) o.wy = self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th);
+    if(o.wx < self.wx-self.ww/2+self.tww* self.bounds_tx)                 o.wx = self.wx-self.ww/2+self.tww* self.bounds_tx+0.1;
+    if(o.wx > self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw)) o.wx = self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw)-0.1;
+    if(o.wy < self.wy-self.wh/2+self.twh* self.bounds_ty)                 o.wy = self.wy-self.wh/2+self.twh* self.bounds_ty+0.1;
+    if(o.wy > self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th)) o.wy = self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th)-0.1;
   }
 
   self.x = 0;
