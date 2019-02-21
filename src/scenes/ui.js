@@ -425,18 +425,22 @@ var tutorial = function()
   self.w = gg.canv.width;
   self.h = gg.canv.height;
 
+  self.takeover = 0;
   self.state = 0;
-  self.state_t++;
+  self.state_t = 0;
 
-  self.state_ticks = [
-    function(){
-    }
-  ];
+  self.next_state = function()
+  {
+    self.takeover = 0;
+    self.state++;
+    self.state_t = 0;
+    self.state_transitions[self.state]();
+  }
 
-  self.state_draws = [
-    function(){
-    }
-  ];
+  self.click = function(evt)
+  {
+    self.state_clicks[self.state](evt);
+  }
 
   self.tick = function()
   {
@@ -449,5 +453,30 @@ var tutorial = function()
     self.state_draws[self.state]();
   }
 
+  self.state_transitions = [
+    noop,
+    function(){ self.takeover = 1; },
+    noop,
+  ];
+
+  self.state_ticks = [
+    function(){ if(self.state_t == 1000) self.next_state(); },
+    noop,
+    noop,
+  ];
+
+  self.state_draws = [
+    noop,
+    function(){ gg.ctx.globalAlpha = 0.5; gg.ctx.fillStyle = white; gg.ctx.fillRect(self.x,self.y,self.w,self.h); gg.ctx.globalAlpha = 1; },
+    noop,
+  ];
+
+  self.state_clicks = [
+    noop,
+    self.next_state,
+    noop,
+  ];
+
+  self.state_transitions[self.state]();
 }
 

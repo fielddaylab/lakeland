@@ -66,8 +66,12 @@ var GamePlayScene = function(game, stage)
     hoverer.filter(gg.b);
 
     var check = true;
-    if(check) check = !gg.shop.filter(clicker);
-    if(check) check = !clicker.filter(gg.b);
+    if(!gg.tutorial.takeover)
+    {
+      if(check) check = !gg.shop.filter(clicker);
+      if(check) check = !clicker.filter(gg.b);
+    }
+    clicker.filter(gg.tutorial);
 
     keyer.filter(keycatch);
 
@@ -78,45 +82,51 @@ var GamePlayScene = function(game, stage)
 
     if(RESUME_SIM)
     {
-      gg.cam.ww = gg.canv.width;
-      gg.cam.wh = gg.canv.height;
-
-      var ww = gg.b.ww*(gg.b.bounds_tw+1)/gg.b.tw;
-      var wh = gg.b.wh*(gg.b.bounds_th+1)/gg.b.th;
-
-      var fake_bw = wh*gg.cam.ww/gg.cam.wh;
-      var fake_bh = wh;
-
-      if(gg.cam.ww > fake_bw)
+      //really only necessary if bounds are dirty but whatever
       {
-        gg.cam.wh *= fake_bw/gg.cam.ww;
-        gg.cam.ww *= fake_bw/gg.cam.ww;
-      }
-      if(gg.cam.wh > fake_bh)
-      {
-        gg.cam.ww *= fake_bh/gg.cam.wh;
-        gg.cam.wh *= fake_bh/gg.cam.wh;
-      }
-      gg.cam.wx = gg.b.wx-gg.b.ww/2+(gg.b.bounds_tx+gg.b.bounds_tw/2)*gg.b.tww;
-      gg.cam.wy = gg.b.wy-gg.b.wh/2+(gg.b.bounds_ty+gg.b.bounds_tw/2)*gg.b.twh;
+        gg.cam.ww = gg.canv.width;
+        gg.cam.wh = gg.canv.height;
 
-      gg.b.tick();
-      screenSpace(gg.cam, gg.canv, gg.b);
-      for(var i = 0; i < gg.items.length; i++)
-      {
-        var o = gg.items[i];
-        o.tick();
-        screenSpace(gg.cam, gg.canv, o);
-        o.y -= o.wz;
+        var ww = gg.b.ww*(gg.b.bounds_tw+1)/gg.b.tw;
+        var wh = gg.b.wh*(gg.b.bounds_th+1)/gg.b.th;
+
+        var fake_bw = wh*gg.cam.ww/gg.cam.wh;
+        var fake_bh = wh;
+
+        if(gg.cam.ww > fake_bw)
+        {
+          gg.cam.wh *= fake_bw/gg.cam.ww;
+          gg.cam.ww *= fake_bw/gg.cam.ww;
+        }
+        if(gg.cam.wh > fake_bh)
+        {
+          gg.cam.ww *= fake_bh/gg.cam.wh;
+          gg.cam.wh *= fake_bh/gg.cam.wh;
+        }
+        gg.cam.wx = gg.b.wx-gg.b.ww/2+(gg.b.bounds_tx+gg.b.bounds_tw/2)*gg.b.tww;
+        gg.cam.wy = gg.b.wy-gg.b.wh/2+(gg.b.bounds_ty+gg.b.bounds_tw/2)*gg.b.twh;
       }
-      for(var i = 0; i < gg.farmbits.length; i++)
+
+      if(!gg.tutorial.takeover)
       {
-        var f = gg.farmbits[i];
-        f.tick();
-        screenSpace(gg.cam, gg.canv, f);
+        gg.b.tick();
+        screenSpace(gg.cam, gg.canv, gg.b);
+        for(var i = 0; i < gg.items.length; i++)
+        {
+          var o = gg.items[i];
+          o.tick();
+          screenSpace(gg.cam, gg.canv, o);
+          o.y -= o.wz;
+        }
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
+          f.tick();
+          screenSpace(gg.cam, gg.canv, f);
+        }
+        gg.shop.tick();
+        gg.ticker.tick();
       }
-      gg.shop.tick();
-      gg.ticker.tick();
       gg.tutorial.tick();
     }
   };
