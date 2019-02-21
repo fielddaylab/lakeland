@@ -1073,10 +1073,17 @@ var board = function()
 
   self.tw = board_w;
   self.th = board_h;
-  self.bounds_tx = floor(board_w*3/8);
-  self.bounds_ty = floor(board_h*3/8);
-  self.bounds_tw = floor(board_w/4);
-  self.bounds_th = floor(board_h/4);
+  self.bounds_tx = floor(self.tw*3/8);
+  self.bounds_ty = floor(self.th*3/8);
+  self.bounds_tw = floor(self.tw*1/4);
+  self.bounds_th = floor(self.th*1/4);
+  self.wx = 0;
+  self.wy = 0;
+  self.ww = 660;
+  self.wh = 660;
+  self.tww = self.ww/self.tw;
+  self.twh = self.wh/self.th;
+
   self.null_tile = new tile();
   self.tiles = [];
   self.tile_groups = [];
@@ -1129,12 +1136,6 @@ var board = function()
     w.wy = self.wy-self.wh/2+((t.ty+0.5)*self.wh/self.th);
   }
 
-  self.wx = 0;
-  self.wy = 0;
-  self.ww = 660;
-  self.wh = 660;
-  self.tww = self.ww/self.tw;
-  self.twh = self.wh/self.th;
   self.raining = 0;
   self.nutrition_view = 0;
   self.spewing_road = 0;
@@ -1702,6 +1703,13 @@ var board = function()
 
   self.placement_valid = function(tile,buy)
   {
+    if(
+      tile.tx < self.bounds_tx ||
+      tile.tx > self.bounds_tx+self.bounds_tw ||
+      tile.ty < self.bounds_ty ||
+      tile.ty > self.bounds_ty+self.bounds_th ||
+      0)
+      return 0;
     switch(buy)
     {
       case BUY_TYPE_BIT:

@@ -65,8 +65,8 @@ var GamePlayScene = function(game, stage)
     hoverer.filter(gg.b);
 
     var check = true;
-    if(check) check = !clicker.filter(gg.b);
     if(check) check = !gg.shop.filter(clicker);
+    if(check) check = !clicker.filter(gg.b);
 
     keyer.filter(keycatch);
 
@@ -77,6 +77,28 @@ var GamePlayScene = function(game, stage)
 
     if(RESUME_SIM)
     {
+      gg.cam.ww = gg.canv.width;
+      gg.cam.wh = gg.canv.height;
+
+      var ww = gg.b.ww*gg.b.bounds_tw/gg.b.tw;
+      var wh = gg.b.wh*gg.b.bounds_th/gg.b.th;
+
+      var fake_bw = wh*gg.cam.ww/gg.cam.wh;
+      var fake_bh = wh;
+
+      if(gg.cam.ww > fake_bw)
+      {
+        gg.cam.wh *= fake_bw/gg.cam.ww;
+        gg.cam.ww *= fake_bw/gg.cam.ww;
+      }
+      if(gg.cam.wh > fake_bh)
+      {
+        gg.cam.ww *= fake_bh/gg.cam.wh;
+        gg.cam.wh *= fake_bh/gg.cam.wh;
+      }
+      gg.cam.wx = gg.b.wx-gg.b.ww/2+(gg.b.bounds_tx+gg.b.bounds_tw/2)*gg.b.tww;
+      gg.cam.wy = gg.b.wy-gg.b.wh/2+(gg.b.bounds_ty+gg.b.bounds_tw/2)*gg.b.twh;
+
       gg.b.tick();
       screenSpace(gg.cam, gg.canv, gg.b);
       for(var i = 0; i < gg.items.length; i++)
