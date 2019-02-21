@@ -106,14 +106,14 @@ var shop = function()
 
     if(!self.selected_buy)
     {
-      if(self.bit_btn.active       && gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) fillBox(self.bit_btn,gg.ctx);
-      if(self.home_btn.active      && gg.money < home_cost)      fillBox(self.home_btn,gg.ctx);
-      if(self.farm_btn.active      && gg.money < farm_cost)      fillBox(self.farm_btn,gg.ctx);
-      if(self.livestock_btn.active && gg.money < livestock_cost) fillBox(self.livestock_btn,gg.ctx);
-      if(self.storage_btn.active   && gg.money < storage_cost)   fillBox(self.storage_btn,gg.ctx);
-      if(self.processor_btn.active && gg.money < processor_cost) fillBox(self.processor_btn,gg.ctx);
-      if(self.road_btn.active      && gg.money < road_cost)      fillBox(self.road_btn,gg.ctx);
-      if(self.demolish_btn.active  && gg.money < demolish_cost)  fillBox(self.demolish_btn,gg.ctx);
+      if(self.bit_btn.active)       { if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBox(self.bit_btn,gg.ctx); }
+      if(self.home_btn.active)      { if(gg.money < home_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;      fillBox(self.home_btn,gg.ctx); }
+      if(self.farm_btn.active)      { if(gg.money < farm_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;      fillBox(self.farm_btn,gg.ctx); }
+      if(self.livestock_btn.active) { if(gg.money < livestock_cost) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBox(self.livestock_btn,gg.ctx); }
+      if(self.storage_btn.active)   { if(gg.money < storage_cost)   gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;   fillBox(self.storage_btn,gg.ctx); }
+      if(self.processor_btn.active) { if(gg.money < processor_cost) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBox(self.processor_btn,gg.ctx); }
+      if(self.road_btn.active)      { if(gg.money < road_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;      fillBox(self.road_btn,gg.ctx); }
+      if(self.demolish_btn.active)  { if(gg.money < demolish_cost)  gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;  fillBox(self.demolish_btn,gg.ctx); }
     }
 
     gg.ctx.fillStyle = black;
