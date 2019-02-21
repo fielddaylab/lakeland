@@ -2089,7 +2089,7 @@ var board = function()
           var dy;
           switch(d.directions[i])
           {
-            case DIRECTION_NULL: dx =  0;   dy =  0;   continue; break;
+            case DIRECTION_NULL: dx =  0;   dy =  0;   break;
             case DIRECTION_R:    dx =  1;   dy =  0;   break;
             case DIRECTION_DR:   dx =  0.7; dy = -0.7; break;
             case DIRECTION_D:    dx =  0;   dy = -1;   break;
@@ -2119,10 +2119,10 @@ var board = function()
 
     {
       gg.ctx.strokeStyle = red;
-      var x = self.x+(self.bounds_tx/self.tw)*self.w;
-      var y = self.y+(self.bounds_ty/self.th)*self.h;
       var w = (self.bounds_tw/self.tw)*self.w;
       var h = (self.bounds_th/self.th)*self.h;
+      var x = self.x+(self.bounds_tx/self.tw)*self.w;
+      var y = self.y+self.h-(self.bounds_ty/self.th)*self.h-h;
       gg.ctx.strokeRect(x,y,w,h);
     }
   }
