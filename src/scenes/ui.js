@@ -36,7 +36,7 @@ var shop = function()
   var h = 40;
   x += 10;
   y += 10;
-  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) return; gg.money -= farmbit_cost; self.selected_buy = c; }); y += h+10;
+  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) return; gg.money -= farmbit_cost; self.selected_buy = BUY_TYPE_BIT; }); y += h+10;
   self.home_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      }); y += h+10;
   self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      self.selected_buy = BUY_TYPE_FARM;      }); y += h+10;
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; self.selected_buy = BUY_TYPE_LIVESTOCK; }); y += h+10;
