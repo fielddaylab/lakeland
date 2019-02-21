@@ -429,6 +429,24 @@ var tutorial = function()
   self.state = 0;
   self.state_t = 0;
 
+  //queries
+  self.time_passed = function(t) { return self.state_t >= t; }
+  self.bits_hungry = function(n) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].fullness_state < FARMBIT_STATE_MOTIVATED) n--; return n <= 0; }
+  self.tiles_exist = function(type,n) { return gg.board.tile_groups[type] >= n; }
+
+  //transitions
+  self.dotakeover = function(){self.takeover = 1;}
+
+  //draws
+  self.textat = function(text,x,y){
+  gg.ctx.globalAlpha = 0.5;
+  gg.ctx.fillStyle = white;
+  gg.ctx.fillRect(self.x,self.y,self.w,self.h);
+  gg.ctx.globalAlpha = 1;
+  gg.ctx.fillStyle = black;
+  gg.ctx.fillText(text,x,y);
+  }
+
   self.next_state = function()
   {
     self.takeover = 0;
@@ -455,19 +473,19 @@ var tutorial = function()
 
   self.state_transitions = [
     noop,
-    function(){ self.takeover = 1; },
+    self.dotakeover,
     noop,
   ];
 
   self.state_ticks = [
-    function(){ if(self.state_t == 1000) self.next_state(); },
+    function(){ if(self.time_passed(100)) self.next_state(); },
     noop,
     noop,
   ];
 
   self.state_draws = [
     noop,
-    function(){ gg.ctx.globalAlpha = 0.5; gg.ctx.fillStyle = white; gg.ctx.fillRect(self.x,self.y,self.w,self.h); gg.ctx.globalAlpha = 1; },
+    function(){self.textat("hello",200,200);},
     noop,
   ];
 
