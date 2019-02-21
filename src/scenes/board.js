@@ -2004,18 +2004,25 @@ var board = function()
 
   self.draw = function()
   {
+    var t;
     var w = self.w/self.tw;
     var h = self.h/self.th;
+    var fw = floor(w);
+    var fh = floor(h);
     var i = 0;
+    var x;
+    var y;
     if(self.nutrition_view)
     { //nutrition view
       for(var ty = 0; ty < self.th; ty++)
       {
+        y = floor(self.y+self.h-(ty+1)*h);
         for(var tx = 0; tx < self.tw; tx++)
         {
-          var t = self.tiles[i];
+          x = floor(self.x+tx*w);
+          t = self.tiles[i];
           gg.ctx.fillStyle = self.tile_color(TILE_TYPE_NULL, t.nutrition);
-          gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+          gg.ctx.fillRect(x,y,fw,fh);
           i++;
         }
       }
@@ -2024,8 +2031,10 @@ var board = function()
     { //normal view
       for(var ty = 0; ty < self.th; ty++)
       {
+        y = floor(self.y+self.h-(ty+1)*h);
         for(var tx = 0; tx < self.tw; tx++)
         {
+          x = floor(self.x+tx*w);
           var t = self.tiles[i];
           switch(t.type)
           {
@@ -2038,16 +2047,16 @@ var board = function()
             case TILE_TYPE_ROAD:
             case TILE_TYPE_EXPORT:
               gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
-              gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              gg.ctx.fillRect(x,y,fw,fh);
               break;
             case TILE_TYPE_ROCK:
-              gg.ctx.drawImage(rock_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              gg.ctx.drawImage(rock_img,x,y,fw,fh);
               break;
             case TILE_TYPE_FORREST:
-              gg.ctx.drawImage(forrest_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              gg.ctx.drawImage(forrest_img,x,y,fw,fh);
               break;
             case TILE_TYPE_HOME:
-              gg.ctx.drawImage(home_img,self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              gg.ctx.drawImage(home_img,x,y,fw,fh);
               break;
             case TILE_TYPE_FARM:
             {
@@ -2057,7 +2066,7 @@ var board = function()
                 case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
                 case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
               }
-              gg.ctx.fillRect(self.x+tx*w,self.y+self.h-(ty+1)*h,w,h);
+              gg.ctx.fillRect(x,y,fw,fh);
             }
               break;
           }

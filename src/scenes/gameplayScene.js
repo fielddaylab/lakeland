@@ -80,8 +80,8 @@ var GamePlayScene = function(game, stage)
       gg.cam.ww = gg.canv.width;
       gg.cam.wh = gg.canv.height;
 
-      var ww = gg.b.ww*gg.b.bounds_tw/gg.b.tw;
-      var wh = gg.b.wh*gg.b.bounds_th/gg.b.th;
+      var ww = gg.b.ww*(gg.b.bounds_tw+1)/gg.b.tw;
+      var wh = gg.b.wh*(gg.b.bounds_th+1)/gg.b.th;
 
       var fake_bw = wh*gg.cam.ww/gg.cam.wh;
       var fake_bh = wh;
