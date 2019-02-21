@@ -18,10 +18,6 @@ var INSPECTOR_CONTENT_ITEM    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
-ENUM = 0;
-var TUTORIAL_STATE_NULL  = ENUM; ENUM++;
-var TUTORIAL_STATE_COUNT = ENUM; ENUM++;
-
 var shop = function()
 {
   var self = this;
@@ -429,21 +425,28 @@ var tutorial = function()
   self.w = gg.canv.width;
   self.h = gg.canv.height;
 
-  self.state = TUTORIAL_STATE_NULL;
+  self.state = 0;
   self.state_t++;
+
+  self.state_ticks = [
+    function(){
+    }
+  ];
+
+  self.state_draws = [
+    function(){
+    }
+  ];
 
   self.tick = function()
   {
     self.state_t++;
-    switch(self.state)
-    {
-
-    }
+    self.state_ticks[self.state]();
   }
 
   self.draw = function()
   {
-
+    self.state_draws[self.state]();
   }
 
 }

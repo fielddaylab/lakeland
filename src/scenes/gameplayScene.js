@@ -58,6 +58,7 @@ var GamePlayScene = function(game, stage)
     gg.shop = new shop();
     gg.inspector = new inspector();
     gg.ticker = new ticker();
+    gg.tutorial = new tutorial();
   };
 
   self.tick = function()
@@ -116,6 +117,7 @@ var GamePlayScene = function(game, stage)
       }
       gg.shop.tick();
       gg.ticker.tick();
+      gg.tutorial.tick();
     }
   };
 
@@ -140,6 +142,8 @@ var GamePlayScene = function(game, stage)
     gg.ctx.fillText("x- toggle export", x,y); y += h;
     gg.ctx.fillText("a- debug pathing", x,y); y += h;
     gg.ctx.fillText("j- debug jobs",    x,y); y += h;
+
+    gg.tutorial.draw();
   };
 
   self.cleanup = function()
