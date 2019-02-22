@@ -1836,6 +1836,16 @@ var board = function()
           {
             case BUY_TYPE_BIT:
             {
+              if(self.bounds_tx > 0)
+              {
+                if(self.bounds_tx+self.bounds_tw%2) self.bounds_tx--;
+                self.bounds_tw++;
+              }
+              if(self.bounds_ty > 0)
+              {
+                if(self.bounds_ty+self.bounds_th%2) self.bounds_ty--;
+                self.bounds_th++;
+              }
               var b = new farmbit();
               b.tile = self.hover_t;
               gg.b.tiles_tw(self.hover_t,b);
