@@ -21,7 +21,6 @@ var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
 var TILE_TYPE_STORAGE   = ENUM; ENUM++;
 var TILE_TYPE_PROCESSOR = ENUM; ENUM++;
 var TILE_TYPE_ROAD      = ENUM; ENUM++;
-var TILE_TYPE_EXPORT    = ENUM; ENUM++;
 var TILE_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
@@ -120,7 +119,6 @@ var walkability_check = function(type,state)
     case TILE_TYPE_STORAGE:   return storage_walkability;   break;
     case TILE_TYPE_PROCESSOR: return processor_walkability; break;
     case TILE_TYPE_ROAD:      return road_walkability;      break;
-    case TILE_TYPE_EXPORT:    return export_walkability;    break;
   }
   return 1;
 }
@@ -158,9 +156,6 @@ var buildability_check = function(building,over)
           break;
       }
     }
-      break;
-    case TILE_TYPE_EXPORT:
-      return 0;
       break;
   }
 }
@@ -785,7 +780,7 @@ var fulfillment_job_for_b = function(b)
     b.go_idle();
     b.job_object = it;
     b.lock_object(b.job_object);
-    b.job_subject = gg.b.tiles[0];
+    b.job_subject = gg.b.tiles[0]; //HACK- update to "find closest edge tile"
     b.job_type = JOB_TYPE_EXPORT;
     b.job_state = JOB_STATE_GET;
     if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to export some food- safe travels!");
@@ -1414,9 +1409,6 @@ var board = function()
       var lake_border = grow_fill(t,TILE_TYPE_FORREST,lake_size,TILE_TYPE_LAND,0);
     }
 
-    self.tiles[0].type = TILE_TYPE_EXPORT;
-    self.tiles[0].lock = 1;
-
     //assign og
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
       self.tiles[i].og_type = self.tiles[i].type;
@@ -1602,17 +1594,6 @@ var board = function()
       self.tile_colors[type][i] = gray;
     }
 
-    type = TILE_TYPE_EXPORT;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 255;
-      b = 255;
-      self.tile_colors[type][i] = cyan;
-    }
-
     self.hovering = 0;
   }
   self.init();
@@ -1658,8 +1639,6 @@ var board = function()
       case TILE_TYPE_PROCESSOR:
         break;
       case TILE_TYPE_ROAD:
-        break;
-      case TILE_TYPE_EXPORT:
         break;
     }
     self.tile_groups[type].push(t);
@@ -2067,7 +2046,6 @@ var board = function()
             case TILE_TYPE_STORAGE:
             case TILE_TYPE_PROCESSOR:
             case TILE_TYPE_ROAD:
-            case TILE_TYPE_EXPORT:
               gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
               gg.ctx.fillRect(x,y,fw,fh);
               break;
