@@ -780,7 +780,7 @@ var fulfillment_job_for_b = function(b)
 
   //export
   it = closest_unlocked_item(b.tile);
-  if(it && !gg.b.tiles[0].lock)
+  if(it && !gg.b.tiles[0].lock && it.sale)
   { //found item
     b.go_idle();
     b.job_object = it;
@@ -2189,6 +2189,7 @@ var item = function()
   self.tile;
   self.type = ITEM_TYPE_NULL;
   self.state = ITEM_STATE_NULL;
+  self.sale = 0;
   self.lock = 0;
 
   self.tick = function()
@@ -2371,7 +2372,7 @@ var farmbit = function()
 
   self.die = function()
   {
-    self.abandon_job();
+    self.abandon_job(1);
     for(var i = 0; i < gg.farmbits.length; i++)
       if(gg.farmbits[i] == self) gg.farmbits.splice(i,1);
     gg.ticker.nq(self.name+" DIED!");
@@ -2494,26 +2495,26 @@ var farmbit = function()
     switch(self.fullness_state)
     {
       case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is hungry.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY hungry!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULLNESS, self.job_type)) { self.abandon_job(1); self.go_idle(); } } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY hungry!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULLNESS, self.job_type)) { self.abandon_job(1); } } break;
       case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; self.die(); return; } break;
       default: break;
     }
     switch(self.energy_state)
     {
       case FARMBIT_STATE_CONTENT:   if(self.energy < energy_content)   { self.energy_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is sleepy.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.energy < energy_motivated) { self.energy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY sleepy!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_ENERGY, self.job_type)) { self.abandon_job(1); self.go_idle(); } } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.energy < energy_motivated) { self.energy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY sleepy!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_ENERGY, self.job_type)) { self.abandon_job(1); } } break;
       default: break;
     }
     switch(self.joy_state)
     {
       case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is depressed.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY depressed!"); dirty = 1;  if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_JOY, self.job_type)) { self.abandon_job(1); self.go_idle(); } } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY depressed!"); dirty = 1;  if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_JOY, self.job_type)) { self.abandon_job(1); } } break;
       default: break;
     }
     switch(self.fulfillment_state)
     {
       case FARMBIT_STATE_CONTENT:   if(self.fulfillment < fulfillment_content)   { self.fulfillment_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is bored.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.fulfillment < fulfillment_motivated) { self.fulfillment_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY bored!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULFILLMENT, self.job_type)) { self.abandon_job(1); self.go_idle(); } } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.fulfillment < fulfillment_motivated) { self.fulfillment_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY bored!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULFILLMENT, self.job_type)) { self.abandon_job(1);} } break;
       default: break;
     }
     if(dirty && self.job_type == JOB_TYPE_IDLE) job_for_b(self);
@@ -2679,7 +2680,7 @@ var farmbit = function()
                 self.job_state_t = 0;
               }
               else
-                self.abandon_job();
+                self.abandon_job(0);
             }
             self.joy += swim_joy;
             if(self.joy > 1)
@@ -3090,7 +3091,7 @@ var farmbit = function()
             gg.items.push(it);
 
             if(
-              !b_for_job(JOB_TYPE_EXPORT, 0, it) &&
+              !(it.sale && b_for_job(JOB_TYPE_EXPORT, 0, it)) &&
               !b_for_job(JOB_TYPE_STORE, 0, it)
             )
               ; //do nothing
@@ -3125,6 +3126,7 @@ var farmbit = function()
           {
             var it = self.job_object;
             var t = it.tile;
+            if(!it.sale) { self.abandon_job(0); break; }
             if(self.tile != t || abs(it.wvz) > 0.01 || it.wz > 0.01)
               self.walk_toward_item(it);
             else
@@ -3138,6 +3140,7 @@ var farmbit = function()
           case JOB_STATE_SEEK:
           {
             var t = self.job_subject;
+            if(!self.item.sale) { self.abandon_job(0); break; }
             self.item.wvx += (self.wx-self.item.wx)*0.01;
             self.item.wvy += (self.wy-self.item.wy)*0.01;
             if(self.tile != t)
