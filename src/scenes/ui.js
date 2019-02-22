@@ -452,49 +452,52 @@ var tutorial = function()
     self.takeover = 0;
     self.state++;
     self.state_t = 0;
-    self.state_transitions[self.state]();
+    self.state_funcs[self.state*4+0]();
   }
 
   self.click = function(evt)
   {
-    self.state_clicks[self.state](evt);
+    self.state_funcs[self.state*4+3](evt);
   }
 
   self.tick = function()
   {
     self.state_t++;
-    self.state_ticks[self.state]();
+    if(self.state_funcs[self.state*4+1]()) self.next_state();
   }
 
   self.draw = function()
   {
-    self.state_draws[self.state]();
+    self.state_funcs[self.state*4+2]();
   }
 
-  self.state_transitions = [
-    noop,
-    self.dotakeover,
-    noop,
-  ];
+  self.state_funcs = [ //transition,tick,draw,click
+    noop, //transition
+    function(){ return self.time_passed(100); }, //tick
+    noop, //draw
+    noop, //click
+    //
+    self.dotakeover, //transition
+    ffunc, //tick
+    function(){self.textat("hello",200,200);}, //draw
+    self.next_state, //click
+    //
+    noop, //transition
+    function(){ return self.bits_hungry(1); }, //tick
+    noop, //draw
+    noop, //click
+    //
+    self.dotakeover, //transition
+    ffunc, //tick
+    function(){self.textat("you've got a hungry boy",200,200);}, //draw
+    self.next_state, //click
+    //
+    noop, //transition
+    ffunc, //tick
+    noop, //draw
+    noop, //click
+  ]
 
-  self.state_ticks = [
-    function(){ if(self.time_passed(100)) self.next_state(); },
-    noop,
-    noop,
-  ];
-
-  self.state_draws = [
-    noop,
-    function(){self.textat("hello",200,200);},
-    noop,
-  ];
-
-  self.state_clicks = [
-    noop,
-    self.next_state,
-    noop,
-  ];
-
-  self.state_transitions[self.state]();
+  self.state_funcs[self.state*4+0]();
 }
 
