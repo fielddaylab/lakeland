@@ -429,6 +429,78 @@ var closest_unlocked_state_item_of_type = function(goal, type, state)
   }
   return closest;
 }
+var closest_unlocked_sale_item = function(goal)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < gg.items.length; i++)
+  {
+    var it = gg.items[i];
+    if(it.lock || !it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = it;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_nosale_item = function(goal)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < gg.items.length; i++)
+  {
+    var it = gg.items[i];
+    if(it.lock || it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = it;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_nosale_item_of_type = function(goal, type)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < gg.items.length; i++)
+  {
+    var it = gg.items[i];
+    if(it.type != type || it.lock || it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = it;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_nosale_state_item_of_type = function(goal, type, state)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < gg.items.length; i++)
+  {
+    var it = gg.items[i];
+    if(it.type != type || it.state != state || it.lock || it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = it;
+    }
+  }
+  return closest;
+}
 
 var closest_free_farmbit_with_desire = function(goal, fullness, energy, joy, fulfillment)
 {
@@ -468,6 +540,13 @@ var closest_free_farmbit_with_desire = function(goal, fullness, energy, joy, ful
   return best;
 }
 
+var farmbit_with_item = function(o)
+{
+  for(var i = 0; i < gg.farmbits.length; i++)
+    if(gg.farmbits[i].item == o) return gg.farmbits[i];
+  return 0;
+}
+
 var fullness_job_for_b = function(b)
 {
   var t;
@@ -476,7 +555,7 @@ var fullness_job_for_b = function(b)
   var itp;
 
   //eat item
-  it = closest_unlocked_item_of_type(b.tile,ITEM_TYPE_FOOD);
+  it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_FOOD);
   if(it)
   {
     b.go_idle();
@@ -518,7 +597,7 @@ var fullness_job_for_b = function(b)
   t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_item_of_type(b.tile,ITEM_TYPE_WATER);
+    it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_WATER);
     if(it)
     { //found item
       b.go_idle();
@@ -553,7 +632,7 @@ var fullness_job_for_b = function(b)
   t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_item_of_type(t,ITEM_TYPE_POOP);
+    it = closest_unlocked_nosale_item_of_type(t,ITEM_TYPE_POOP);
     if(it)
     { //found item
       b.go_idle();
@@ -621,7 +700,7 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_valdeficient_tile_from_list(b.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
   if(t)
   {
-    it = closest_unlocked_item_of_type(t,ITEM_TYPE_FOOD);
+    it = closest_unlocked_nosale_item_of_type(t,ITEM_TYPE_FOOD);
     if(it)
     { //found item
       b.go_idle();
@@ -667,7 +746,7 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_item_of_type(b.tile,ITEM_TYPE_WATER);
+    it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_WATER);
     if(it)
     { //found item
       b.go_idle();
@@ -699,7 +778,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //process
-  it = closest_unlocked_state_item_of_type(b.tile,ITEM_TYPE_POOP,ITEM_STATE_POOP_RAW);
+  it = closest_unlocked_nosale_state_item_of_type(b.tile,ITEM_TYPE_POOP,ITEM_STATE_POOP_RAW);
   if(it)
   { //found item
     t = closest_unlocked_tile_from_list(it.tile, gg.b.tile_groups[TILE_TYPE_PROCESSOR]);
@@ -720,7 +799,7 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_item_of_type(t,ITEM_TYPE_POOP);
+    it = closest_unlocked_nosale_item_of_type(t,ITEM_TYPE_POOP);
     if(it)
     { //found item
       b.go_idle();
@@ -750,7 +829,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //store
-  it = closest_unlocked_item(b.tile);
+  it = closest_unlocked_nosale_item(b.tile);
   if(it)
   { //found item
     var search_type = storage_for_item(it.type);
@@ -774,7 +853,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //export
-  it = closest_unlocked_item(b.tile);
+  it = closest_unlocked_sale_item(b.tile);
   if(it && !gg.b.tiles[0].lock && it.sale)
   { //found item
     b.go_idle();
@@ -873,7 +952,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       {
         if(job_type == JOB_TYPE_PLANT && !job_object)
         { //get water
-          job_object = closest_unlocked_item_of_type(job_subject,ITEM_TYPE_WATER);
+          job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_WATER);
           if(!job_object) job_object = closest_unlocked_nutrientdeficient_tile_from_list(job_subject, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
           if(!job_object) return 0;
         }
@@ -905,7 +984,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject) job_subject = closest_unlocked_valdeficient_tile_from_list(job_object.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
       if(!job_subject) return 0;
 
-      if(!job_object) job_object = closest_unlocked_item_of_type(job_subject,ITEM_TYPE_FOOD);
+      if(!job_object) job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_FOOD);
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_FOOD]);
       if(!job_object) return 0;
 
@@ -931,7 +1010,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
       if(!job_subject) return 0;
 
-      if(!job_object) job_object = closest_unlocked_item_of_type(job_subject,ITEM_TYPE_POOP);
+      if(!job_object) job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_POOP);
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_POOP]);
       if(!job_object) return 0;
 
@@ -1805,6 +1884,7 @@ var board = function()
   self.click = function(evt)
   {
     if(self.spewing_road) return;
+
     if(gg.shop.selected_buy)
     {
       if(self.hover_t)
@@ -1914,28 +1994,39 @@ var board = function()
     else
     {
       var clicked;
+
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
+      if(clicked)
+      {
+        if(gg.inspector.detailed == clicked)
+        {
+          clicked.sale = !clicked.sale;
+          if(clicked.lock)
+          {
+            var f = farmbit_with_item(clicked);
+            if(f)
+            {
+                   if(f.job_type == JOB_TYPE_EXPORT && !clicked.sale) f.abandon_job(0);
+              else if(f.job_type != JOB_TYPE_EXPORT &&  clicked.sale) f.abandon_job(0);
+            }
+          }
+        }
+        gg.inspector.detailed = clicked;
+        gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
+        return;
+      }
+
       for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
         gg.inspector.detailed = clicked;
         gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
+        return;
       }
-      if(!clicked)
-      {
-        for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
-        if(clicked)
-        {
-          gg.inspector.detailed = clicked;
-          gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
-        }
-        else
-        {
-          gg.inspector.detailed = self.hover_t;
-          gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
-          if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
-        }
-      }
-      if(!self.hover_t) return;
+
+      gg.inspector.detailed = self.hover_t;
+      gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+      if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
     }
   }
 
@@ -2201,6 +2292,11 @@ var item = function()
         else if(self.state == ITEM_STATE_POOP_LIGHT) drawImageBox(poop_light_img,self,gg.ctx);
         break;
       case ITEM_TYPE_VALUABLE: drawImageBox(valuable_img,self,gg.ctx); break;
+    }
+    if(self.sale)
+    {
+      gg.ctx.strokeStyle = green;
+      strokeBox(self,gg.ctx);
     }
   }
 }
