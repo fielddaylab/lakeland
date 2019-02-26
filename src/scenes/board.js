@@ -249,6 +249,25 @@ var need_met_for_above_job = function(need, job_type)
   return 0;
 }
 
+var closest_edge_tile = function(goal)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  var list = gg.b.tiles;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(!gg.b.tile_on_fudge_bounds(t)) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
 var closest_unlocked_tile_from_list = function(goal, list)
 {
   var closest_d = max_dist;
@@ -859,7 +878,7 @@ var fulfillment_job_for_b = function(b)
     b.go_idle();
     b.job_object = it;
     b.lock_object(b.job_object);
-    b.job_subject = gg.b.tiles[0]; //HACK- update to "find closest edge tile"
+    b.job_subject = closest_edge_tile(b.tile);
     b.job_type = JOB_TYPE_EXPORT;
     b.job_state = JOB_STATE_GET;
     if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to export some food- safe travels!");
@@ -1188,21 +1207,15 @@ var board = function()
   }
   self.tiles_wt = function(wx,wy)
   {
-    var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
-    var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
+    var tx = clamp(0,self.tw-1,floor(mapVal(self.wx-self.ww/2, self.wx+self.ww/2-1, 0, self.tw, wx)));
+    var ty = clamp(0,self.tw-1,floor(mapVal(self.wy-self.wh/2, self.wy+self.wh/2-1, 0, self.th, wy)));
     return self.tiles_t(tx,ty);
   }
   self.bounded_tiles_wt = function(wx,wy)
   {
-    var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
-    var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
+    var tx = clamp(0,self.tw-1,floor(mapVal(self.wx-self.ww/2, self.wx+self.ww/2-1, 0, self.tw, wx)));
+    var ty = clamp(0,self.th-1,floor(mapVal(self.wy-self.wh/2, self.wy+self.wh/2-1, 0, self.th, wy)));
     return self.bounded_tiles_t(tx,ty);
-  }
-  self.safe_tiles_wt = function(wx,wy)
-  {
-    var tx = floor(clampMapVal(self.wx-self.ww/2, self.wx+self.ww/2+1, 0, self.tw, wx));
-    var ty = floor(clampMapVal(self.wy-self.wh/2, self.wy+self.wh/2+1, 0, self.th, wy));
-    return self.safe_tiles_t(tx,ty);
   }
   self.tiles_tw = function(t,w)
   {
@@ -1213,13 +1226,24 @@ var board = function()
   self.tile_in_bounds = function(t)
   {
     if(
-      t.tx <  self.bounds_tx ||
-      t.ty <  self.bounds_ty ||
-      t.tx >= self.bounds_tx+self.bounds_tw ||
-      t.ty >= self.bounds_ty+self.bounds_th ||
+      t.tx < self.bounds_tx ||
+      t.ty < self.bounds_ty ||
+      t.tx > self.bounds_tx+self.bounds_tw ||
+      t.ty > self.bounds_ty+self.bounds_th ||
       0)
       return 0;
     return 1;
+  }
+  self.tile_on_fudge_bounds = function(t) //will technically get tic-tac-toe board pattern, but when paired with "closest", will return on-bounds
+  {
+    if(
+      t.tx == self.bounds_tx ||
+      t.ty == self.bounds_ty ||
+      t.tx == self.bounds_tx+self.bounds_tw-1 ||
+      t.ty == self.bounds_ty+self.bounds_th-1 ||
+      0)
+      return 1;
+    return 0;
   }
 
   self.raining = 0;
@@ -1231,9 +1255,9 @@ var board = function()
 
   self.boundw = function(o)
   {
-    if(o.wx < self.wx-self.ww/2+self.tww* self.bounds_tx)                 o.wx = self.wx-self.ww/2+self.tww* self.bounds_tx+0.1;
+    if(o.wx < self.wx-self.ww/2+self.tww* self.bounds_tx)                 o.wx = self.wx-self.ww/2+self.tww* self.bounds_tx                +0.1;
     if(o.wx > self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw)) o.wx = self.wx-self.ww/2+self.tww*(self.bounds_tx+self.bounds_tw)-0.1;
-    if(o.wy < self.wy-self.wh/2+self.twh* self.bounds_ty)                 o.wy = self.wy-self.wh/2+self.twh* self.bounds_ty+0.1;
+    if(o.wy < self.wy-self.wh/2+self.twh* self.bounds_ty)                 o.wy = self.wy-self.wh/2+self.twh* self.bounds_ty                +0.1;
     if(o.wy > self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th)) o.wy = self.wy-self.wh/2+self.twh*(self.bounds_ty+self.bounds_th)-0.1;
   }
 
