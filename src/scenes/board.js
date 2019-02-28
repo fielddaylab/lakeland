@@ -1266,6 +1266,8 @@ var board = function()
   self.w = 0;
   self.h = 0;
 
+  self.visit_t = 0;
+
   self.hovering;
   self.hover_t;
   self.hover_t_placable;
@@ -1362,154 +1364,167 @@ var board = function()
 
   self.init = function()
   {
-    for(var ty = 0; ty < self.th; ty++)
-      for(var tx = 0; tx < self.tw; tx++)
-      {
-        var i = self.tiles_i(tx,ty);
-        var t = new tile();
-        t.tx = tx;
-        t.ty = ty;
-        t.i = i;
-        t.nutrition = rand();
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        self.tiles[i] = t;
-      }
-
-    var to;
-    var from;
-    var dx;
-    var dy;
-    var d;
-    for(var i = 0; i < self.tiles.length; i++)
+    var valid = false;
+    while(!valid)
     {
-      to = self.tiles[i];
-      for(var j = 0; j < self.tiles.length; j++)
-      {
-        from = self.tiles[j];
-        to.directions[j] = DIRECTION_NULL;
-        dx = to.tx-from.tx;
-        dy = to.ty-from.ty;
-        d = sqrt(dx*dx+dy*dy);
-        if(d == 0) to.directions[j] = DIRECTION_NULL;
-        else
+      for(var ty = 0; ty < self.th; ty++)
+        for(var tx = 0; tx < self.tw; tx++)
         {
-          var t = atan2(dy/d,dx/d)
-          if(t < 0) t+=twopi;
-               if(t < twopi/16*1 ) to.directions[j] = DIRECTION_R;
-          else if(t < twopi/16*3 ) to.directions[j] = DIRECTION_UR;
-          else if(t < twopi/16*5 ) to.directions[j] = DIRECTION_U;
-          else if(t < twopi/16*7 ) to.directions[j] = DIRECTION_UL;
-          else if(t < twopi/16*9 ) to.directions[j] = DIRECTION_L;
-          else if(t < twopi/16*11) to.directions[j] = DIRECTION_DL;
-          else if(t < twopi/16*13) to.directions[j] = DIRECTION_D;
-          else if(t < twopi/16*15) to.directions[j] = DIRECTION_DR;
-          else if(t < twopi/16*17) to.directions[j] = DIRECTION_R;
+          var i = self.tiles_i(tx,ty);
+          var t = new tile();
+          t.tx = tx;
+          t.ty = ty;
+          t.i = i;
+          t.nutrition = rand();
+          t.nutrition *= t.nutrition;
+          t.nutrition *= t.nutrition;
+          t.nutrition *= t.nutrition;
+          t.nutrition *= t.nutrition;
+          t.nutrition *= t.nutrition;
+          t.nutrition *= t.nutrition;
+          self.tiles[i] = t;
+        }
+
+      var to;
+      var from;
+      var dx;
+      var dy;
+      var d;
+      for(var i = 0; i < self.tiles.length; i++)
+      {
+        to = self.tiles[i];
+        for(var j = 0; j < self.tiles.length; j++)
+        {
+          from = self.tiles[j];
+          to.directions[j] = DIRECTION_NULL;
+          dx = to.tx-from.tx;
+          dy = to.ty-from.ty;
+          d = sqrt(dx*dx+dy*dy);
+          if(d == 0) to.directions[j] = DIRECTION_NULL;
+          else
+          {
+            var t = atan2(dy/d,dx/d)
+            if(t < 0) t+=twopi;
+                 if(t < twopi/16*1 ) to.directions[j] = DIRECTION_R;
+            else if(t < twopi/16*3 ) to.directions[j] = DIRECTION_UR;
+            else if(t < twopi/16*5 ) to.directions[j] = DIRECTION_U;
+            else if(t < twopi/16*7 ) to.directions[j] = DIRECTION_UL;
+            else if(t < twopi/16*9 ) to.directions[j] = DIRECTION_L;
+            else if(t < twopi/16*11) to.directions[j] = DIRECTION_DL;
+            else if(t < twopi/16*13) to.directions[j] = DIRECTION_D;
+            else if(t < twopi/16*15) to.directions[j] = DIRECTION_DR;
+            else if(t < twopi/16*17) to.directions[j] = DIRECTION_R;
+          }
         }
       }
-    }
 
-    var atomic_push = function(n,ar)
-    {
-      var found = false;
-      for(var j = 0; j < ar.length; j++) if(ar[j] == n) found = true;
-      if(!found) ar.push(n);
-    }
-
-    var slow_flood_fill = function(fill)
-    {
-      if(fill.length) type = fill[0].type;
-      for(var i = 0; i < fill.length; i++)
+      var atomic_push = function(n,ar)
       {
-        var t = fill[i];
-        var n;
-        n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
-        n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
-        n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
-        n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
+        var found = false;
+        for(var j = 0; j < ar.length; j++) if(ar[j] == n) found = true;
+        if(!found) ar.push(n);
       }
-      return fill;
-    }
 
-    var slow_flood_border = function(fill)
-    {
-      var border = [];
-      var type;
-      if(fill.length) type = fill[0].type;
-      for(var i = 0; i < fill.length; i++)
+      var slow_flood_fill = function(fill)
       {
-        var t = fill[i];
-        var n;
-        n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-        n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-        n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-        n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        if(fill.length) type = fill[0].type;
+        for(var i = 0; i < fill.length; i++)
+        {
+          var t = fill[i];
+          var n;
+          n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+          n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+          n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
+          n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
+        }
+        return fill;
       }
-      return border;
-    }
 
-    var grow_fill = function(t,type,amt,constraint,invert_constraint)
-    {
-      var border = slow_flood_border(slow_flood_fill([t]));
-      for(var j = 0; j < amt; j++)
+      var slow_flood_border = function(fill)
       {
-        var b_i = randIntBelow(border.length);
-        var t = border[b_i];
-        t.type = type;
-        border.splice(b_i,1);
-
-        var n;
-        n = self.safe_tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-        n = self.safe_tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-        n = self.safe_tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-        n = self.safe_tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        var border = [];
+        var type;
+        if(fill.length) type = fill[0].type;
+        for(var i = 0; i < fill.length; i++)
+        {
+          var t = fill[i];
+          var n;
+          n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+          n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+          n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+          n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        }
+        return border;
       }
-      return border;
-    }
 
-    //fill rocks
-    for(var i = 0; i < n_rock_deposits; i++)
-    {
-      var src_tx = randIntBelow(self.tw);
-      var src_ty = randIntBelow(self.th);
-      var t = self.tiles_t(src_tx,src_ty);
-      t.type = TILE_TYPE_ROCK;
-      var rock_size = rock_size_min+randIntBelow(rock_size_max-rock_size_min);
-      grow_fill(t,TILE_TYPE_ROCK,rock_size,TILE_TYPE_ROCK,1);
-    }
-
-    //fill lakes
-    for(var i = 0; i < n_lakes; i++)
-    {
-      var src_tx = randIntBelow(self.tw);
-      var src_ty = randIntBelow(self.th);
-      var t = self.tiles_t(src_tx,src_ty);
-      t.type = TILE_TYPE_WATER;
-      var lake_size = lake_size_min+randIntBelow(lake_size_max-lake_size_min);
-      var lake_border = grow_fill(t,TILE_TYPE_WATER,lake_size,TILE_TYPE_WATER,1);
-      for(var j = 0; j < lake_border.length; j++)
-        lake_border[j].type = TILE_TYPE_SHORE;
-    }
-
-    //fill forrests
-    for(var i = 0; i < n_forrests; i++)
-    {
-      var src_tx = randIntBelow(self.tw);
-      var src_ty = randIntBelow(self.th);
-      var t = self.tiles_t(src_tx,src_ty);
-      while(t.type != TILE_TYPE_LAND)
+      var grow_fill = function(t,type,amt,constraint,invert_constraint)
       {
-        src_tx = randIntBelow(self.tw);
-        src_ty = randIntBelow(self.th);
-        t = self.tiles_t(src_tx,src_ty);
+        var border = slow_flood_border(slow_flood_fill([t]));
+        for(var j = 0; j < amt; j++)
+        {
+          var b_i = randIntBelow(border.length);
+          var t = border[b_i];
+          t.type = type;
+          border.splice(b_i,1);
+
+          var n;
+          n = self.safe_tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+          n = self.safe_tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+          n = self.safe_tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+          n = self.safe_tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        }
+        return border;
       }
-      t.type = TILE_TYPE_FORREST;
-      var forrest_size = forrest_size_min+randIntBelow(forrest_size_max-forrest_size_min);
-      var lake_border = grow_fill(t,TILE_TYPE_FORREST,lake_size,TILE_TYPE_LAND,0);
+
+      //fill rocks
+      for(var i = 0; i < n_rock_deposits; i++)
+      {
+        var src_tx = randIntBelow(self.tw);
+        var src_ty = randIntBelow(self.th);
+        var t = self.tiles_t(src_tx,src_ty);
+        t.type = TILE_TYPE_ROCK;
+        var rock_size = rock_size_min+randIntBelow(rock_size_max-rock_size_min);
+        grow_fill(t,TILE_TYPE_ROCK,rock_size,TILE_TYPE_ROCK,1);
+      }
+
+      //fill lakes
+      for(var i = 0; i < n_lakes; i++)
+      {
+        var src_tx = randIntBelow(self.tw);
+        var src_ty = randIntBelow(self.th);
+        var t = self.tiles_t(src_tx,src_ty);
+        t.type = TILE_TYPE_WATER;
+        var lake_size = lake_size_min+randIntBelow(lake_size_max-lake_size_min);
+        var lake_border = grow_fill(t,TILE_TYPE_WATER,lake_size,TILE_TYPE_WATER,1);
+        for(var j = 0; j < lake_border.length; j++)
+          lake_border[j].type = TILE_TYPE_SHORE;
+      }
+
+      //fill forrests
+      for(var i = 0; i < n_forrests; i++)
+      {
+        var src_tx = randIntBelow(self.tw);
+        var src_ty = randIntBelow(self.th);
+        var t = self.tiles_t(src_tx,src_ty);
+        while(t.type != TILE_TYPE_LAND)
+        {
+          src_tx = randIntBelow(self.tw);
+          src_ty = randIntBelow(self.th);
+          t = self.tiles_t(src_tx,src_ty);
+        }
+        t.type = TILE_TYPE_FORREST;
+        var forrest_size = forrest_size_min+randIntBelow(forrest_size_max-forrest_size_min);
+        var lake_border = grow_fill(t,TILE_TYPE_FORREST,lake_size,TILE_TYPE_LAND,0);
+      }
+
+      for(var x = self.bounds_tx; x < self.bounds_tx+self.bounds_tw; x++)
+      {
+        for(var y = self.bounds_ty; y < self.bounds_ty+self.bounds_th; y++)
+        {
+          var t = self.tiles_t(x,y);
+          if(t.type == TILE_TYPE_WATER) valid = 1;
+        }
+      }
     }
 
     //assign og
@@ -1806,8 +1821,6 @@ var board = function()
       return 0;
     switch(buy)
     {
-      case BUY_TYPE_BIT:
-        return 1;
       case BUY_TYPE_HOME:
         return buildability_check(TILE_TYPE_HOME,tile.type);
       case BUY_TYPE_FARM:
@@ -1917,29 +1930,6 @@ var board = function()
         {
           switch(gg.shop.selected_buy)
           {
-            case BUY_TYPE_BIT:
-            {
-              if(self.bounds_tx > 0)
-              {
-                if(self.bounds_tx+self.bounds_tw%2) self.bounds_tx--;
-                self.bounds_tw++;
-              }
-              if(self.bounds_ty > 0)
-              {
-                if(self.bounds_ty+self.bounds_th%2) self.bounds_ty--;
-                self.bounds_th++;
-              }
-              var b = new farmbit();
-              b.tile = self.hover_t;
-              gg.b.tiles_tw(self.hover_t,b);
-              gg.farmbits.push(b);
-              job_for_b(b);
-              b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
-              gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
-              return;
-            }
-            break;
 
             case BUY_TYPE_HOME:
             {
@@ -2056,6 +2046,37 @@ var board = function()
 
   self.tick = function()
   {
+    self.visit_t++;
+    var n = 1000;
+    if(self.visit_t > n)
+    {
+      self.visit_t -= n;
+
+      if(gg.farmbits.length < gg.b.tile_groups[TILE_TYPE_HOME].length)
+      {
+        if(self.bounds_tx > 0)
+        {
+          if(self.bounds_tx+self.bounds_tw%2) self.bounds_tx--;
+          self.bounds_tw++;
+        }
+        if(self.bounds_ty > 0)
+        {
+          if(self.bounds_ty+self.bounds_th%2) self.bounds_ty--;
+          self.bounds_th++;
+        }
+        var t = self.tiles_t(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th));
+        var b = new farmbit();
+        gg.ticker.nq(b.name+" decided to move in!");
+        b.tile = t;
+        gg.b.tiles_tw(t,b);
+        gg.farmbits.push(b);
+        job_for_b(b);
+        b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
+      }
+      else
+        gg.ticker.nq("There are no houses available!");
+    }
+
     var n = self.tw*self.th;
     for(var i = 0; i < n; i++)
     {

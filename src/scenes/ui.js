@@ -1,7 +1,6 @@
 var ENUM;
 ENUM = 0;
 var BUY_TYPE_NULL      = ENUM; ENUM++;
-var BUY_TYPE_BIT       = ENUM; ENUM++;
 var BUY_TYPE_HOME      = ENUM; ENUM++;
 var BUY_TYPE_FARM      = ENUM; ENUM++;
 var BUY_TYPE_LIVESTOCK = ENUM; ENUM++;
@@ -32,7 +31,6 @@ var shop = function()
   var h = 40;
   x += 10;
   y += 10;
-  self.bit_btn       = new ButtonBox(x,y,w,h,function(){ if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) return; gg.money -= farmbit_cost; self.selected_buy = BUY_TYPE_BIT; }); y += h+10;
   self.home_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      }); y += h+10;
   self.farm_btn      = new ButtonBox(x,y,w,h,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      self.selected_buy = BUY_TYPE_FARM;      }); y += h+10;
   self.livestock_btn = new ButtonBox(x,y,w,h,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; self.selected_buy = BUY_TYPE_LIVESTOCK; }); y += h+10;
@@ -45,7 +43,6 @@ var shop = function()
   self.refund_btn   = new ButtonBox(x,y,w,h,function(){
     switch(self.selected_buy)
     {
-      case BUY_TYPE_BIT:       gg.money += farmbit_cost; break;
       case BUY_TYPE_HOME:      gg.money += home_cost; break;
       case BUY_TYPE_FARM:      gg.money += farm_cost; break;
       case BUY_TYPE_LIVESTOCK: gg.money += livestock_cost; break;
@@ -60,7 +57,6 @@ var shop = function()
 
   self.selected_buy = 0;
 
-  self.bit_btn.active = 1;
   self.home_btn.active = 1;
   self.farm_btn.active = 1;
   self.livestock_btn.active = 0;
@@ -78,7 +74,6 @@ var shop = function()
     var check = true;
     if(!self.selected_buy)
     {
-      if(check && self.bit_btn.active)       check = !filter.filter(self.bit_btn);
       if(check && self.home_btn.active)      check = !filter.filter(self.home_btn);
       if(check && self.farm_btn.active)      check = !filter.filter(self.farm_btn);
       if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
@@ -106,7 +101,6 @@ var shop = function()
 
     if(!self.selected_buy)
     {
-      if(self.bit_btn.active)       { if(gg.money < farmbit_cost || gg.farmbits.length >= gg.b.tile_groups[TILE_TYPE_HOME].length) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBox(self.bit_btn,gg.ctx); }
       if(self.home_btn.active)      { if(gg.money < home_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;      fillBox(self.home_btn,gg.ctx); }
       if(self.farm_btn.active)      { if(gg.money < farm_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white;      fillBox(self.farm_btn,gg.ctx); }
       if(self.livestock_btn.active) { if(gg.money < livestock_cost) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBox(self.livestock_btn,gg.ctx); }
@@ -121,8 +115,6 @@ var shop = function()
 
     if(!self.selected_buy)
     {
-      if(self.bit_btn.active)       { strokeBox(self.bit_btn,gg.ctx);       gg.ctx.fillText("bit",                    self.bit_btn.x,       self.bit_btn.y+20);       gg.ctx.fillText("$"+farmbit_cost,   self.bit_btn.x,       self.bit_btn.y+30); }
-      gg.ctx.fillText(gg.farmbits.length+"/"+gg.b.tile_groups[TILE_TYPE_HOME].length, self.bit_btn.x,       self.bit_btn.y+self.bit_btn.h);
       if(self.home_btn.active)      { strokeBox(self.home_btn,gg.ctx);      gg.ctx.fillText("home",                   self.home_btn.x,      self.home_btn.y+20);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30); }
       if(self.farm_btn.active)      { strokeBox(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",                   self.farm_btn.x,      self.farm_btn.y+20);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30); }
       if(self.livestock_btn.active) { strokeBox(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30); }
