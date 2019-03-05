@@ -59,6 +59,7 @@ var GamePlayScene = function(game, stage)
     gg.inspector = new inspector();
     gg.ticker = new ticker();
     gg.tutorial = new tutorial();
+    gg.b.zoom_bounds(gg.cam);
   };
 
   self.tick = function()
@@ -82,31 +83,6 @@ var GamePlayScene = function(game, stage)
 
     if(RESUME_SIM)
     {
-      //really only necessary if bounds are dirty but whatever
-      {
-        gg.cam.ww = gg.canv.width;
-        gg.cam.wh = gg.canv.height;
-
-        var ww = gg.b.ww*(gg.b.bounds_tw+1)/gg.b.tw;
-        var wh = gg.b.wh*(gg.b.bounds_th+1)/gg.b.th;
-
-        var fake_bw = wh*gg.cam.ww/gg.cam.wh;
-        var fake_bh = wh;
-
-        if(gg.cam.ww > fake_bw)
-        {
-          gg.cam.wh *= fake_bw/gg.cam.ww;
-          gg.cam.ww *= fake_bw/gg.cam.ww;
-        }
-        if(gg.cam.wh > fake_bh)
-        {
-          gg.cam.ww *= fake_bh/gg.cam.wh;
-          gg.cam.wh *= fake_bh/gg.cam.wh;
-        }
-        gg.cam.wx = gg.b.wx-gg.b.ww/2+(gg.b.bounds_tx+gg.b.bounds_tw/2)*gg.b.tww;
-        gg.cam.wy = gg.b.wy-gg.b.wh/2+(gg.b.bounds_ty+gg.b.bounds_tw/2)*gg.b.twh;
-      }
-
       if(!gg.tutorial.takeover)
       {
         gg.b.tick();
