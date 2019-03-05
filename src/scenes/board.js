@@ -1170,6 +1170,8 @@ var board = function()
   self.bounds_ty = floor(self.th*3/8);
   self.bounds_tw = floor(self.tw*1/4);
   self.bounds_th = floor(self.th*1/4);
+  //self.bounds_tw = 1;
+  //self.bounds_th = 1;
   self.bounds_n = 1;
   self.wx = 0;
   self.wy = 0;
@@ -1208,14 +1210,14 @@ var board = function()
   }
   self.tiles_wt = function(wx,wy)
   {
-    var tx = clamp(0,self.tw-1,floor(mapVal(self.wx-self.ww/2, self.wx+self.ww/2-1, 0, self.tw, wx)));
-    var ty = clamp(0,self.tw-1,floor(mapVal(self.wy-self.wh/2, self.wy+self.wh/2-1, 0, self.th, wy)));
+    var tx = clamp(0,self.tw-1,floor(mapVal(self.wx-self.ww/2, self.wx+self.ww/2, 0, self.tw, wx)));
+    var ty = clamp(0,self.th-1,floor(mapVal(self.wy-self.wh/2, self.wy+self.wh/2, 0, self.th, wy)));
     return self.tiles_t(tx,ty);
   }
   self.bounded_tiles_wt = function(wx,wy)
   {
-    var tx = clamp(0,self.tw-1,floor(mapVal(self.wx-self.ww/2, self.wx+self.ww/2-1, 0, self.tw, wx)));
-    var ty = clamp(0,self.th-1,floor(mapVal(self.wy-self.wh/2, self.wy+self.wh/2-1, 0, self.th, wy)));
+    var tx = clamp(0,self.tw-1,floor(mapVal(self.wx-self.ww/2, self.wx+self.ww/2, 0, self.tw, wx)));
+    var ty = clamp(0,self.th-1,floor(mapVal(self.wy-self.wh/2, self.wy+self.wh/2, 0, self.th, wy)));
     return self.bounded_tiles_t(tx,ty);
   }
   self.tiles_tw = function(t,w)
@@ -1853,9 +1855,9 @@ var board = function()
   {
     if(
       tile.tx < self.bounds_tx ||
-      tile.tx > self.bounds_tx+self.bounds_tw ||
+      tile.tx >= self.bounds_tx+self.bounds_tw ||
       tile.ty < self.bounds_ty ||
-      tile.ty > self.bounds_ty+self.bounds_th ||
+      tile.ty >= self.bounds_ty+self.bounds_th ||
       0)
       return 0;
     switch(buy)
@@ -2093,7 +2095,7 @@ var board = function()
 
       if(gg.farmbits.length < gg.b.tile_groups[TILE_TYPE_HOME].length)
       {
-        if(gg.farmbits.length == gg.bounds_n) { self.inc_bounds(); self.zoom_bounds(); gg.bounds_n++; }
+        if(gg.farmbits.length == self.bounds_n) { self.inc_bounds(); self.zoom_bounds(gg.cam); self.bounds_n++; }
         var t = self.tiles_t(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th));
         var b = new farmbit();
         gg.ticker.nq(b.name+" decided to move in!");
@@ -2183,38 +2185,38 @@ var board = function()
     var ny;
     if(self.nutrition_view)
     { //nutrition view
-      ny = round(self.y+self.h-(0+1)*h);
+      ny = round(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
         y = ny;
         ny = round(self.y+self.h-(ty+1)*h);
-        th = ny-y;
+        th = y-ny;
         nx = round(self.x+(0*w));
         for(var tx = 0; tx < self.tw; tx++)
         {
           x = nx;
-          nx = round(self.x+(tx*w));
+          nx = round(self.x+((tx+1)*w));
           tw = nx-x;
           t = self.tiles[i];
           gg.ctx.fillStyle = self.tile_color(TILE_TYPE_NULL, t.nutrition);
-          gg.ctx.fillRect(x,y,tw,th);
+          gg.ctx.fillRect(x,ny,tw,th);
           i++;
         }
       }
     }
     else
     { //normal view
-      ny = round(self.y+self.h-(0+1)*h);
+      ny = round(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
         y = ny;
         ny = round(self.y+self.h-(ty+1)*h);
-        th = ny-y;
+        th = y-ny;
         nx = round(self.x+(0*w));
         for(var tx = 0; tx < self.tw; tx++)
         {
           x = nx;
-          nx = round(self.x+(tx*w));
+          nx = round(self.x+((tx+1)*w));
           tw = nx-x;
           var t = self.tiles[i];
           switch(t.type)
@@ -2227,16 +2229,16 @@ var board = function()
             case TILE_TYPE_PROCESSOR:
             case TILE_TYPE_ROAD:
               gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
-              gg.ctx.fillRect(x,y,tw,th);
+              gg.ctx.fillRect(x,ny,tw,th);
               break;
             case TILE_TYPE_ROCK:
-              gg.ctx.drawImage(rock_img,x,y,tw,th);
+              gg.ctx.drawImage(rock_img,x,ny,tw,th);
               break;
             case TILE_TYPE_FORREST:
-              gg.ctx.drawImage(forrest_img,x,y,tw,th);
+              gg.ctx.drawImage(forrest_img,x,ny,tw,th);
               break;
             case TILE_TYPE_HOME:
-              gg.ctx.drawImage(home_img,x,y,tw,th);
+              gg.ctx.drawImage(home_img,x,ny,tw,th);
               break;
             case TILE_TYPE_FARM:
             {
@@ -2246,10 +2248,13 @@ var board = function()
                 case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
                 case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
               }
-              gg.ctx.fillRect(x,y,tw,th);
+              gg.ctx.fillRect(x,ny,tw,th);
             }
               break;
           }
+          gg.ctx.fillStyle = black;
+          if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
+          if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
           i++;
         }
       }
@@ -2318,7 +2323,7 @@ var board = function()
       gg.ctx.strokeStyle = red;
       var w = (self.bounds_tw/self.tw)*self.w;
       var h = (self.bounds_th/self.th)*self.h;
-      var x = self.x+(self.bounds_tx/self.tw)*self.w;
+      var x = self.x+       (self.bounds_tx/self.tw)*self.w;
       var y = self.y+self.h-(self.bounds_ty/self.th)*self.h-h;
       gg.ctx.strokeRect(x,y,w,h);
     }
