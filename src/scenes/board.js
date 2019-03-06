@@ -1231,8 +1231,8 @@ var board = function()
     if(
       t.tx < self.bounds_tx ||
       t.ty < self.bounds_ty ||
-      t.tx > self.bounds_tx+self.bounds_tw ||
-      t.ty > self.bounds_ty+self.bounds_th ||
+      t.tx >= self.bounds_tx+self.bounds_tw ||
+      t.ty >= self.bounds_ty+self.bounds_th ||
       0)
       return 0;
     return 1;
@@ -2253,8 +2253,8 @@ var board = function()
               break;
           }
           gg.ctx.fillStyle = black;
-          if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
-          if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
+          //if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
+          //if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
           i++;
         }
       }
