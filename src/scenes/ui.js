@@ -58,7 +58,7 @@ var shop = function()
   self.selected_buy = 0;
 
   self.home_btn.active = 1;
-  self.farm_btn.active = 1;
+  self.farm_btn.active = 0;
   self.livestock_btn.active = 0;
   self.storage_btn.active = 0;
   self.processor_btn.active = 0;
@@ -421,18 +421,23 @@ var tutorial = function()
 
   //queries
   self.time_passed = function(t) { return self.state_t >= t; }
+  self.bits_exist = function(n) { return gg.farmbits.length >= n; }
   self.bits_hungry = function(n) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].fullness_state < FARMBIT_STATE_MOTIVATED) n--; return n <= 0; }
-  self.tiles_exist = function(type,n) { return gg.board.tile_groups[type] >= n; }
+  self.tiles_exist = function(type,n) { return gg.b.tile_groups[type].length >= n; }
+  self.purchased = function(type) { return gg.shop.selected_buy == type; }
 
   //transitions
   self.dotakeover = function(){self.takeover = 1;}
 
   //draws
-  self.textat = function(text,x,y){
+  self.wash = function()
+  {
   gg.ctx.globalAlpha = 0.5;
   gg.ctx.fillStyle = white;
   gg.ctx.fillRect(self.x,self.y,self.w,self.h);
   gg.ctx.globalAlpha = 1;
+  }
+  self.textat = function(text,x,y){
   gg.ctx.fillStyle = black;
   gg.ctx.fillText(text,x,y);
   }
@@ -466,22 +471,52 @@ var tutorial = function()
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     noop, //click
-    //
+
     self.dotakeover, //transition
     ffunc, //tick
-    function(){self.textat("hello",200,200);}, //draw
+    function(){self.wash();self.textat("Buy your first house.",200,200);}, //draw
     self.next_state, //click
-    //
+
+    noop, //transition
+    function(){ return self.purchased(BUY_TYPE_HOME); }, //tick
+    function(){ self.textat("<- Click here to buy",200,200); }, //draw
+    noop, //click
+
+    noop, //transition
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ self.textat("Place it somewhere on the map",200,200); }, //draw
+    noop, //click
+
+    noop, //transition
+    function(){ return self.bits_exist(1); }, //tick
+    function(){ self.wash();self.textat("Someone should move in soon",200,200); }, //draw
+    self.next_state, //click
+
+    noop, //transition
+    function(){ return self.bits_exist(1); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.shop.farm_btn.active = 1; }, //transition
+    function(){ return self.purchased(BUY_TYPE_FARM); }, //tick
+    function(){ self.textat("<- Click here to buy a farm",200,200); }, //draw
+    noop, //click
+
+    noop, //transition
+    function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
+    function(){ self.textat("Place it somewhere on the map",200,200); }, //draw
+    noop, //click
+
     noop, //transition
     function(){ return self.bits_hungry(1); }, //tick
     noop, //draw
     noop, //click
-    //
+
     self.dotakeover, //transition
     ffunc, //tick
     function(){self.textat("you've got a hungry boy",200,200);}, //draw
     self.next_state, //click
-    //
+
     noop, //transition
     ffunc, //tick
     noop, //draw

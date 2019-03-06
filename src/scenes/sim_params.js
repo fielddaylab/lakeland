@@ -13,8 +13,8 @@ var n_forrests = 2;
 var forrest_size_min = floor(100*board_w*board_h/2500);
 var forrest_size_max = floor(100*board_w*board_h/2500);
 
-var farmbits_start_n = 1;
-var money_start_n = 100;
+var farmbits_start_n = 0;
+var money_start_n = 200;
 
 //in order of priority
 var fullness_desperate    = 0.01; //death
