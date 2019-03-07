@@ -55,6 +55,7 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].wy = gg.b.wy+rand0()*gg.b.ww/2;
     }
     gg.jobs = [];
+    gg.playhead = new playhead();
     gg.shop = new shop();
     gg.inspector = new inspector();
     gg.ticker = new ticker();
@@ -69,6 +70,7 @@ var GamePlayScene = function(game, stage)
     var check = true;
     if(!gg.tutorial.takeover)
     {
+      if(check) check = !gg.playhead.filter(clicker);
       if(check) check = !gg.shop.filter(clicker);
       if(check) check = !clicker.filter(gg.b);
     }
@@ -100,6 +102,7 @@ var GamePlayScene = function(game, stage)
           f.tick();
           screenSpace(gg.cam, gg.canv, f);
         }
+        gg.playhead.tick();
         gg.shop.tick();
         gg.ticker.tick();
       }
@@ -114,6 +117,7 @@ var GamePlayScene = function(game, stage)
       gg.farmbits[i].draw();
     for(var i = 0; i < gg.items.length; i++)
       gg.items[i].draw();
+    gg.playhead.draw();
     gg.shop.draw();
     gg.inspector.draw();
     gg.ticker.draw();

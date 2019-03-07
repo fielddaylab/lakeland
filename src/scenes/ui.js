@@ -17,6 +17,52 @@ var INSPECTOR_CONTENT_ITEM    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
+var playhead = function()
+{
+  var self = this;
+  self.x = 100;
+  self.y = 0;
+  self.w = 100;
+  self.h = 200;
+
+  var x = self.x;
+  var y = self.y+30;
+  var w = 40;
+  var h = 40;
+  x += 10;
+  y += 10;
+  self.play_btn  = new ButtonBox(x,y,w,h,function(){ RESUME_SIM = !RESUME_SIM; }); y += h+10;
+  self.speed_btn = new ButtonBox(x,y,w,h,function(){ DOUBLETIME = !DOUBLETIME; }); y += h+10;
+
+  self.play_btn.active = 1;
+  self.speed_btn.active = 1;
+
+  self.filter = function(filter)
+  {
+    if(gg.b.spewing_road) return;
+    if(gg.shop.selected_buy) return;
+    var check = true;
+    if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
+    if(check && self.speed_btn.active) check = !filter.filter(self.speed_btn);
+    return !check;
+  }
+
+  self.tick = function()
+  {
+
+  }
+
+  self.draw = function()
+  {
+    gg.ctx.strokeStyle = black;
+    gg.ctx.fillStyle = black;
+    gg.ctx.textAlign = "left";
+
+    if(self.play_btn.active)  { strokeBox(self.play_btn,gg.ctx);  gg.ctx.fillText("play", self.play_btn.x, self.play_btn.y+20);  }
+    if(self.speed_btn.active) { strokeBox(self.speed_btn,gg.ctx); gg.ctx.fillText("speed",self.speed_btn.x,self.speed_btn.y+20); }
+  }
+}
+
 var shop = function()
 {
   var self = this;
