@@ -1158,6 +1158,11 @@ var tile = function()
   self.withdraw_lock = 0;
   self.deposit_lock = 0;
   self.lock = 0;
+  //only calc'd/updated on 'screen_tile'
+  self.x = 0;
+  self.y = 0;
+  self.w = 0;
+  self.h = 0;
 }
 
 var board = function()
@@ -1224,6 +1229,15 @@ var board = function()
   {
     w.wx = self.wx-self.ww/2+((t.tx+0.5)*self.ww/self.tw);
     w.wy = self.wy-self.wh/2+((t.ty+0.5)*self.wh/self.th);
+  }
+
+  self.screen_tile = function(t)
+  {
+    t.w = self.w/self.tw;
+    t.h = self.h/self.th;
+    t.y = round(self.y+self.h-(t.ty+1)*t.h);
+    t.x = round(self.x+(t.tx*t.w));
+    return t;
   }
 
   self.tile_in_bounds = function(t)

@@ -98,6 +98,7 @@ var shop = function()
   {
     gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = gray;
+    gg.ctx.textAlign = "left";
 
     if(!self.selected_buy)
     {
@@ -432,14 +433,52 @@ var tutorial = function()
   //draws
   self.wash = function()
   {
-  gg.ctx.globalAlpha = 0.5;
-  gg.ctx.fillStyle = white;
-  gg.ctx.fillRect(self.x,self.y,self.w,self.h);
-  gg.ctx.globalAlpha = 1;
+    gg.ctx.globalAlpha = 0.5;
+    gg.ctx.fillStyle = white;
+    gg.ctx.fillRect(self.x,self.y,self.w,self.h);
+    gg.ctx.globalAlpha = 1;
   }
-  self.textat = function(text,x,y){
-  gg.ctx.fillStyle = black;
-  gg.ctx.fillText(text,x,y);
+  self.textat = function(text,x,y)
+  {
+    var w = gg.ctx.measureText(text).width;
+    var h = 12;
+    var p = h*0.5;
+    w += p*2;
+    h += p*2;
+    gg.ctx.fillStyle = white;
+    gg.ctx.strokeStyle = black;
+    if(gg.ctx.textAlign == "center") fillRRect(x-w/2,y-h+p,w,h,h*0.25,gg.ctx);
+    else fillRRect(x-p,y-h+p,w,h,h*0.25,gg.ctx);
+    gg.ctx.stroke();
+    gg.ctx.fillStyle = black;
+    gg.ctx.fillText(text,x,y);
+  }
+  self.onscreentextat = function(text,x,y)
+  {
+    var w = gg.ctx.measureText(text).width;
+    var h = 12;
+    var p = h*0.5;
+    w += p*2;
+    h += p*2;
+    gg.ctx.fillStyle = white;
+    gg.ctx.strokeStyle = black;
+    if(y-h+p < 0) y = h-p;
+    if(y+p > gg.canv.height) y = gg.canv.height-p;
+    if(gg.ctx.textAlign == "center")
+    {
+      if(x-w/2 < 0) x = w/2;
+      if(x+w/2 > gg.canv.width) x = gg.canv.width-w/2;
+      fillRRect(x-w/2,y-h+p,w,h,h*0.25,gg.ctx);
+    }
+    else
+    {
+      if(x-p < 0) x = p;
+      if(x-p+w > gg.canv.width) x = gg.canv.width-w+p;
+      fillRRect(x-p,y-h+p,w,h,h*0.25,gg.ctx);
+    }
+    gg.ctx.stroke();
+    gg.ctx.fillStyle = black;
+    gg.ctx.fillText(text,x,y);
   }
 
   self.next_state = function()
@@ -448,6 +487,11 @@ var tutorial = function()
     self.state++;
     self.state_t = 0;
     self.state_funcs[self.state*4+0]();
+  }
+
+  self.delay_next_state = function()
+  {
+    if(self.state_t > 30) self.next_state();
   }
 
   self.click = function(evt)
@@ -474,38 +518,58 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){self.wash();self.textat("Buy your first house.",200,200);}, //draw
-    self.next_state, //click
+    function(){self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy your first house.",gg.stage.width/2,gg.stage.height/2);}, //draw
+    self.delay_next_state, //click
 
     noop, //transition
     function(){ return self.purchased(BUY_TYPE_HOME); }, //tick
-    function(){ self.textat("<- Click here to buy",200,200); }, //draw
+    function(){ gg.ctx.textAlign = "left"; self.textat("<- Click here to buy",gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
     noop, //click
 
     noop, //transition
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
-    function(){ self.textat("Place it somewhere on the map",200,200); }, //draw
+    function(){ gg.ctx.textAlign = "center"; self.textat("Place it somewhere on the map",gg.canv.width/2,gg.canv.height/2); }, //draw
     noop, //click
 
     noop, //transition
     function(){ return self.bits_exist(1); }, //tick
-    function(){ self.wash();self.textat("Someone should move in soon",200,200); }, //draw
-    self.next_state, //click
+    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",t.x+t.w/2,t.y-t.h); }, //draw
+    self.delay_next_state, //click
 
     noop, //transition
     function(){ return self.bits_exist(1); }, //tick
+    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = ""; if(self.state_t%10 > 6) dots = ".."; else if(self.state_t%10 > 3) dots = "."; self.textat("Waiting."+dots,t.x+t.w/2,t.y-t.h); }, //draw
+    noop, //click
+
+    self.dotakeover, //transition
+    ffunc, //tick
+    function(){self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h);}, //draw
+    self.delay_next_state, //click
+
+    self.dotakeover, //transition
+    ffunc, //tick
+    function(){self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",f.x+f.w/2,f.y-f.h);}, //draw
+    self.next_state, //click
+
+    noop, //transition
+    function(){ return self.time_passed(100); }, //tick
     noop, //draw
     noop, //click
 
     function(){ gg.shop.farm_btn.active = 1; }, //transition
     function(){ return self.purchased(BUY_TYPE_FARM); }, //tick
-    function(){ self.textat("<- Click here to buy a farm",200,200); }, //draw
+    function(){ gg.ctx.textAlign = "left"; self.textat("<- Click here to buy a farm.",gg.shop.farm_btn.x+gg.shop.farm_btn.w+20,gg.shop.farm_btn.y+gg.shop.farm_btn.h/2); }, //draw
     noop, //click
 
     noop, //transition
     function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
     function(){ self.textat("Place it somewhere on the map",200,200); }, //draw
     noop, //click
+
+    noop, //transition
+    noop, //tick
+    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will automatically manage the farm.",t.x+t.w/2,t.y-t.h); }, //draw
+    self.delay_next_state, //click
 
     noop, //transition
     function(){ return self.bits_hungry(1); }, //tick
@@ -515,7 +579,7 @@ var tutorial = function()
     self.dotakeover, //transition
     ffunc, //tick
     function(){self.textat("you've got a hungry boy",200,200);}, //draw
-    self.next_state, //click
+    self.delay_next_state, //click
 
     noop, //transition
     ffunc, //tick
