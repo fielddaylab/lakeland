@@ -466,6 +466,11 @@ var tutorial = function()
   self.state = 0;
   self.state_t = 0;
 
+  self.working_thread = -1;
+  self.thread_state_funcs = [];
+  self.thread_states = [];
+  self.thread_state_ts = [];
+
   //queries
   self.time_passed = function(t) { return self.state_t >= t; }
   self.bits_exist = function(n) { return gg.farmbits.length >= n; }
@@ -478,6 +483,12 @@ var tutorial = function()
 
   //transitions
   self.dotakeover = function(){self.takeover = 1;}
+  self.newthread = function(funcs)
+  {
+    self.thread_state_funcs.push(funcs);
+    self.thread_states.push(0);
+    self.thread_state_ts.push(0);
+  }
 
   //draws
   self.wash = function()
@@ -550,8 +561,49 @@ var tutorial = function()
 
   self.tick = function()
   {
-    self.state_t++;
-    if(self.state_funcs[self.state*4+1]()) self.next_state();
+    //thread
+    if(self.working_thread > -1)
+    {
+      var i = self.working_thread;
+      self.thread_state_ts[i]++;
+      if(self.thread_state_funcs[self.thread_states[i]*4+1](self.thread_state_ts[i])) //tick
+      {
+        self.thread_states[i]++;
+        if(self.thread_states[i]*4 > self.thread_state_funcs[i].length)
+        {
+          self.thread_state_funcs.splice(i,1);
+          self.thread_states.splice(i,1);
+          self.thread_state_ts.splice(i,1);
+          self.working_thread = -1;
+        }
+        else
+        {
+          self.thread_state_ts[i] = 0;
+          self.thread_state_funcs[self.thread_states[i]*4+0](self.thread_state_ts[i]); //transition
+        }
+      }
+    }
+
+    //main
+    else
+    {
+      self.state_t++;
+      if(self.state_funcs[self.state*4+1]()) self.next_state();
+
+      //thread roots
+      for(var i = 0; self.working_thread == -1 && i < self.thread_state_funcs.length/4; i++)
+      {
+        self.thread_state_ts[i]++;
+        if(self.thread_state_funcs[i][0*4+1](self.thread_state_ts[i])) //tick
+        {
+          self.working_thread = i;
+          self.thread_states[i]++;
+          self.thread_state_ts[i] = 0;
+          self.thread_state_funcs[self.thread_states[i]*4+0](self.thread_state_ts[i]); //transition
+        }
+      }
+
+    }
   }
 
   self.draw = function()
@@ -763,7 +815,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_POOP,1); gg.ctx.textAlign = "center"; self.onscreentextat("(your townmembers will do this automatically)");}, //draw
+    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_POOP,1); gg.ctx.textAlign = "center"; self.onscreentextat("(your townmembers will do this automatically)",i.x+i.w/2,i.y-i.h);}, //draw
     self.next_state, //click
 
     self.dotakeover, //transition
