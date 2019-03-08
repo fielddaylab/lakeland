@@ -30,7 +30,7 @@ var energy_content        = 0.4;
 var joy_content           = 0.4;
 var fulfillment_content   = 0.4;
 
-var fullness_depletion_rate    = 0.9995;
+var fullness_depletion_rate    = 0.9999;
 var energy_depletion_rate      = 0.999;
 var joy_depletion_rate         = 0.999;
 var fulfillment_depletion_rate = 0.999;
@@ -46,7 +46,7 @@ var farm_nutrition_uptake_min = 0.00001; //+v //difference created out of thin a
 var farm_nutrition_req = 0.1;
 var farm_nutrition_fertilize_threshhold = 1;//0.2;
 var water_fouled_threshhold = 0.5;
-var livestock_poop_t = 1000;
+var livestock_poop_t = 3000;
 var livestock_feed_threshhold = 0.2;
 var livestock_food_val = 1;
 var livestock_fullness_depletion_rate = 0.999;
