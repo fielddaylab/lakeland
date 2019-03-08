@@ -14,7 +14,7 @@ var forrest_size_min = floor(100*board_w*board_h/2500);
 var forrest_size_max = floor(100*board_w*board_h/2500);
 
 var farmbits_start_n = 0;
-var money_start_n = 200;
+var money_start_n = 300;
 
 //in order of priority
 var fullness_desperate    = 0.01; //death
@@ -84,7 +84,7 @@ var swim_joy = 0.02; //per frame
 var max_dist = 9999999;
 
 var farmbit_cost = 500;
-var home_cost = 100;
+var home_cost = 200;
 var farm_cost = 100;
 var livestock_cost = 200;
 var storage_cost = 10;
@@ -93,10 +93,10 @@ var road_cost = 1000;
 var demolish_cost = 10;
 var free_money = 1000;
 
-var harvest_profit = 50;
+var harvest_profit = 0;
 
-var item_worth_food = 100;
-var item_worth_poop = 50;
+var item_worth_food = 50;
+var item_worth_poop = 10;
 var item_worth_valuable = 5000;
 
 var roads_per_buy = 10;

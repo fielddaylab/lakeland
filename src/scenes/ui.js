@@ -470,6 +470,7 @@ var tutorial = function()
   self.time_passed = function(t) { return self.state_t >= t; }
   self.bits_exist = function(n) { return gg.farmbits.length >= n; }
   self.bits_hungry = function(n) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].fullness_state < FARMBIT_STATE_MOTIVATED) n--; return n <= 0; }
+  self.bits_job = function(type,state) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].job_type == type && gg.farmbits[i].job_state == state) return 1; return 0; }
   self.tiles_exist = function(type,n) { return gg.b.tile_groups[type].length >= n; }
   self.items_exist = function(type,n) { for(var i = 0; i < gg.items.length; i++) if(gg.items[i].type == type) { n--; if(n <= 0) return 1; } return n <= 0; }
   self.sale_items_exist = function(type,n) { for(var i = 0; i < gg.items.length; i++) if(gg.items[i].type == type && gg.items[i].sale) { n--; if(n <= 0) return 1; } return n <= 0; }
@@ -612,7 +613,7 @@ var tutorial = function()
 
     function(){ gg.shop.farm_btn.active = 1; }, //transition
     function(){ return self.purchased(BUY_TYPE_FARM); }, //tick
-    function(){ gg.ctx.textAlign = "left"; self.textat("<- Click here to buy a farm.",gg.shop.farm_btn.x+gg.shop.farm_btn.w+20,gg.shop.farm_btn.y+gg.shop.farm_btn.h/2); }, //draw
+    function(){ var b = gg.shop.farm_btn; gg.ctx.textAlign = "left"; self.textat("<- Click here to buy a farm.",b.x+b.w+20,b.y+b.h/2); }, //draw
     noop, //click
 
     self.dotakeover, //transition
@@ -672,7 +673,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
-    function(){ self.wash(); var i = gg.items[0]; /*should be food*/ gg.ctx.textAlign = "center"; self.onscreentextat("Double click an object to mark it as \"for sale\".",i.x+i.w/2,i.y-i.h);}, //draw
+    function(){ var i = gg.items[0]; /*should be food*/ gg.ctx.textAlign = "center"; self.onscreentextat("Double click an object to mark it as \"for sale\".",i.x+i.w/2,i.y-i.h);}, //draw
     noop, //click
 
     self.dotakeover, //transition
@@ -683,6 +684,66 @@ var tutorial = function()
     noop, //transition
     function(){ return RESUME_SIM; }, //tick
     function(){ var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("click to resume the game.",b.x+b.w/2,b.y+b.h*2);}, //draw
+    self.next_state, //click
+
+    noop, //transition
+    function(){ return self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
+    noop, //draw
+    noop, //click
+
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the extra food",f.x+f.w/2,f.y-f.h); }, //draw
+    self.delay_next_state, //click
+
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",f.x+f.w/2,f.y-f.h); }, //draw
+    self.next_state, //click
+
+    noop, //transition
+    function(){ return !self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
+    noop, //draw
+    noop, //click
+
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("You just made $50!",gg.shop.x+gg.shop.w/2,gg.shop.y+30); }, //draw
+    self.delay_next_state, //click
+
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("Save up for an additional farm.",gg.shop.x+gg.shop.w/2,gg.shop.y+30); }, //draw
+    self.next_state, //click
+
+    noop, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    noop, //transition
+    function() { return DOUBLETIME; }, //tick
+    function() { self.wash(); var b = gg.playhead.speed_btn; gg.ctx.textAlign = "center"; self.textat("Click here if you want to speed up time",b.x+b.w/2,b.y+b.h*2);}, //draw
+    self.delay_next_state, //click
+
+    noop, //transition
+    function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, //tick
+    noop, //draw
+    noop, //click
+
+    noop, //transition
+    noop, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Great Work!",gg.canv.width/2,gg.canv.height/2); }, //draw
+    self.delay_next_state, //click
+
+    noop, //transition
+    noop, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Your farms might be using up the nutrition in the soil.",gg.canv.width/2,gg.canv.height/2); }, //draw
+    self.delay_next_state, //click
+
+    function(){ gg.shop.livestock_btn.active = 1; }, //transition
+    noop, //tick
+    function(){ var b = gg.shop.livestock_btn; gg.ctx.textAlign = "left"; self.textat("<- Next, save up for some livestock. They might be able to help with that!",b.x+b.w+20,b.y+b.h/2); }, //draw
     self.next_state, //click
 
     noop, //transition
