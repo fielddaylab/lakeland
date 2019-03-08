@@ -1290,8 +1290,10 @@ var board = function()
     cam.ww = gg.canv.width;
     cam.wh = gg.canv.height;
 
-    var ww = self.ww*(self.bounds_tw+1)/self.tw;
-    var wh = self.wh*(self.bounds_th+1)/self.th;
+    var tw = self.bounds_tw+4; if(self.bounds_tw+4 > self.tw) tw = self.tw;
+    var th = self.bounds_th+4; if(self.bounds_th+4 > self.th) th = self.th;
+    var ww = self.ww*tw/self.tw;
+    var wh = self.wh*th/self.th;
 
     var fake_bw = wh*cam.ww/cam.wh;
     var fake_bh = wh;

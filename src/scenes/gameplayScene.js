@@ -106,8 +106,8 @@ var GamePlayScene = function(game, stage)
         gg.shop.tick();
         gg.ticker.tick();
       }
-      gg.tutorial.tick();
     }
+    gg.tutorial.tick();
   };
 
   self.draw = function()
