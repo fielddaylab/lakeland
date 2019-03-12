@@ -693,6 +693,16 @@ var tutorial = function()
     function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will automatically manage the farm.",t.x+t.w/2,t.y-t.h); }, //draw
     self.delay_next_state, //click
 
+    self.dotakeover, //transition
+    function(){ return gg.b.nutrition_view; }, //tick
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Press 'n' to toggle Nutrition View",gg.canv.width/2,gg.canv.height/2); }, //draw
+    noop, //click
+
+    self.dotakeover, //transition
+    function(){ return !gg.b.nutrition_view; }, //tick
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("(Press 'n' at any time to toggle Nutrition View)",gg.canv.width/2,gg.canv.height/2); }, //draw
+    noop, //click
+
     noop, //transition
     function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, //tick
     noop, //draw
@@ -725,7 +735,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
-    function(){ self.sale_items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Double click an object to mark it as \"for sale\".",i.x+i.w/2,i.y-i.h);}, //draw
+    function(){ var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Double click an object to mark it as \"for sale\".",i.x+i.w/2,i.y-i.h);}, //draw
     noop, //click
 
     self.dotakeover, //transition
