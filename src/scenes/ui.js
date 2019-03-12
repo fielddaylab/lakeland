@@ -471,6 +471,8 @@ var tutorial = function()
   self.thread_states = [];
   self.thread_state_ts = [];
 
+  self.quest = 0;
+
   //queries
   self.time_passed = function(t) { return self.state_t >= t; }
   self.bits_exist = function(n) { return gg.farmbits.length >= n; }
@@ -482,7 +484,9 @@ var tutorial = function()
   self.purchased = function(type) { return gg.shop.selected_buy == type; }
 
   //transitions
+  self.setquest = function(q){self.quest = "QUEST: "+q;}
   self.dotakeover = function(){self.takeover = 1;}
+  self.dokqtakeover = function(){self.quest = 0;self.dotakeover();}
   self.newthread = function(funcs)
   {
     self.thread_state_funcs.push(funcs);
@@ -512,6 +516,11 @@ var tutorial = function()
     gg.ctx.stroke();
     gg.ctx.fillStyle = black;
     gg.ctx.fillText(text,x,y);
+  }
+  self.ctc = function()
+  {
+    gg.ctx.textAlign = "center";
+    self.textat("(click anywhere to continue)",gg.canv.width/2,gg.canv.height*3/4);
   }
   self.onscreentextat = function(text,x,y)
   {
@@ -609,6 +618,10 @@ var tutorial = function()
   self.draw = function()
   {
     self.state_funcs[self.state*4+2]();
+    if(self.quest)
+    {
+      gg.ctx.textAlign = "left"; self.textat(self.quest,0,gg.canv.height-12);
+    }
   }
 
   self.state_funcs = [ //transition,tick,draw,click
@@ -620,7 +633,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy your first house.",gg.stage.width/2,gg.stage.height/2);}, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy your first house.",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
@@ -635,7 +648,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return self.bits_exist(1); }, //tick
-    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",t.x+t.w/2,t.y-t.h); }, //draw
+    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
@@ -645,12 +658,12 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h);}, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",f.x+f.w/2,f.y-f.h);}, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -660,7 +673,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" will eventually need some food...",f.x+f.w/2,f.y-f.h);}, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" will eventually need some food...",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     function(){ gg.shop.farm_btn.active = 1; }, //transition
@@ -670,7 +683,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center";self.textat("Before you place it on the map...",gg.canv.width/2,gg.canv.height/2); }, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "center";self.textat("Before you place it on the map...",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
     self.dotakeover, //transition
@@ -680,7 +693,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that tile.",gg.canv.width/2,gg.canv.height/2); }, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that tile.",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -690,7 +703,7 @@ var tutorial = function()
 
     noop, //transition
     noop, //tick
-    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will automatically manage the farm.",t.x+t.w/2,t.y-t.h); }, //draw
+    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will automatically manage the farm.",t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
@@ -703,7 +716,7 @@ var tutorial = function()
     function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("(Press 'n' at any time to toggle Nutrition View)",gg.canv.width/2,gg.canv.height/2); }, //draw
     noop, //click
 
-    noop, //transition
+    function(){ self.setquest("Wait on your farm..."); }, //transition
     function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, //tick
     noop, //draw
     noop, //click
@@ -713,24 +726,24 @@ var tutorial = function()
     noop, //draw
     noop, //click
 
-    self.dotakeover, //transition
+    self.dokqtakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Your farm has produced some food!",i.x+i.w/2,i.y-i.h);}, //draw
+    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Your farm has produced some food!",i.x+i.w/2,i.y-i.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Let's sell some.",i.x+i.w/2,i.y-i.h);}, //draw
+    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Let's sell some.",i.x+i.w/2,i.y-i.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     function(){self.dotakeover(); gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0;}, //transition
     ffunc, //tick
-    function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("the game is now paused-",b.x+b.w/2,b.y+b.h*2);}, //draw
+    function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("the game is now paused-",b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop,
     ffunc, //tick
-    function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("you can toggle game playback with this button",b.x+b.w/2,b.y+b.h*2);}, //draw
+    function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("you can toggle game playback with this button",b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -740,13 +753,13 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will eventually export this for sale!",f.x+f.w/2,f.y-f.h); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will eventually export this for sale!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
     function(){ return RESUME_SIM; }, //tick
-    function(){ var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("click to resume the game.",b.x+b.w/2,b.y+b.h*2);}, //draw
-    self.next_state, //click
+    function(){ var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("click to resume the game.",b.x+b.w/2,b.y+b.h*2); }, //draw
+    noop, //click
 
     noop, //transition
     function(){ return self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
@@ -755,12 +768,12 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the extra food",f.x+f.w/2,f.y-f.h); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the extra food",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",f.x+f.w/2,f.y-f.h); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -770,22 +783,22 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("You just made $50!",gg.shop.x+gg.shop.w/2,gg.shop.y+30); }, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("You just made $50!",gg.shop.x+gg.shop.w/2,gg.shop.y+30); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("Save up for an additional farm.",gg.shop.x+gg.shop.w/2,gg.shop.y+30); }, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("Save up for an additional farm.",gg.shop.x+gg.shop.w/2,gg.shop.y+30); self.ctc(); }, //draw
     self.next_state, //click
 
-    noop, //transition
+    function(){ self.setquest("save up for an additional farm");}, //transition
     function(){ return self.time_passed(1000); }, //tick
     noop, //draw
     noop, //click
 
     noop, //transition
     function() { return DOUBLETIME; }, //tick
-    function() { self.wash(); var b = gg.playhead.speed_btn; gg.ctx.textAlign = "center"; self.textat("Click here if you want to speed up time",b.x+b.w/2,b.y+b.h*2);}, //draw
+    function() { self.wash(); var b = gg.playhead.speed_btn; gg.ctx.textAlign = "center"; self.textat("Click here if you want to speed up time",b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
@@ -795,17 +808,17 @@ var tutorial = function()
 
     noop, //transition
     noop, //tick
-    function(){ gg.ctx.textAlign = "center"; self.textat("Great Work!",gg.canv.width/2,gg.canv.height/2); }, //draw
+    function(){ gg.ctx.textAlign = "center"; self.textat("Great Work!",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
     noop, //tick
-    function(){ gg.ctx.textAlign = "center"; self.textat("Your farms might be using up the nutrition in the soil.",gg.canv.width/2,gg.canv.height/2); }, //draw
+    function(){ gg.ctx.textAlign = "center"; self.textat("Your farms might be using up the nutrition in the soil.",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     function(){ gg.shop.livestock_btn.active = 1; }, //transition
     noop, //tick
-    function(){ var b = gg.shop.livestock_btn; gg.ctx.textAlign = "left"; self.textat("<- Next, save up for some livestock. They might be able to help with that!",b.x+b.w+20,b.y+b.h/2); }, //draw
+    function(){ var b = gg.shop.livestock_btn; gg.ctx.textAlign = "left"; self.textat("<- Next, save up for some livestock. They might be able to help with that!",b.x+b.w+20,b.y+b.h/2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -820,17 +833,17 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_POOP,1); gg.ctx.textAlign = "center"; self.onscreentextat("You can use waste from livestock to reintroduce nutrition to the ground.",i.x+i.w/2,i.y-i.h);}, //draw
+    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_POOP,1); gg.ctx.textAlign = "center"; self.onscreentextat("You can use waste from livestock to reintroduce nutrition to the ground.",i.x+i.w/2,i.y-i.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_POOP,1); gg.ctx.textAlign = "center"; self.onscreentextat("(your townmembers will do this automatically)",i.x+i.w/2,i.y-i.h);}, //draw
+    function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_POOP,1); gg.ctx.textAlign = "center"; self.onscreentextat("(your townmembers will do this automatically)",i.x+i.w/2,i.y-i.h); self.ctc(); }, //draw
     self.next_state, //click
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy more houses to grow your town!",gg.canv.width/2,gg.canv.height/2); }, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy more houses to grow your town!",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
@@ -840,7 +853,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){self.textat("you've got a hungry boy",gg.canv.width/2,gg.canv.height/2);}, //draw
+    function(){self.textat("you've got a hungry boy",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
