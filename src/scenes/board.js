@@ -47,6 +47,7 @@ var ITEM_TYPE_COUNT    = ENUM; ENUM++;
 
 ENUM = 0;
 var ITEM_STATE_NULL        = ENUM; ENUM++;
+var ITEM_STATE_OFF_GRID    = ENUM; ENUM++;
 var ITEM_STATE_POOP_RAW    = ENUM; ENUM++;
 var ITEM_STATE_POOP_LIGHT  = ENUM; ENUM++;
 var ITEM_STATE_POOP_POTENT = ENUM; ENUM++;
@@ -563,6 +564,8 @@ var farmbit_with_item = function(o)
 {
   for(var i = 0; i < gg.farmbits.length; i++)
     if(gg.farmbits[i].item == o) return gg.farmbits[i];
+  for(var i = 0; i < gg.farmbits.length; i++)
+    if(gg.farmbits[i].job_object == o) return gg.farmbits[i];
   return 0;
 }
 
@@ -2060,7 +2063,7 @@ var board = function()
     {
       var clicked;
 
-      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(it.state != ITEM_STATE_OFF_GRID && ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
       if(clicked)
       {
         if(gg.inspector.detailed == clicked)
@@ -2367,6 +2370,7 @@ var item = function()
 
   self.tick = function()
   {
+    if(self.state == ITEM_STATE_OFF_GRID) return;
     self.wvz -= 0.1;
     self.wx += self.wvx;
     self.wy += self.wvy;
@@ -2387,6 +2391,7 @@ var item = function()
 
   self.draw = function()
   {
+    if(self.state == ITEM_STATE_OFF_GRID) return;
     switch(self.type)
     {
       case ITEM_TYPE_WATER:    drawImageBox(water_img,self,gg.ctx); break;
@@ -3304,7 +3309,6 @@ var farmbit = function()
           {
             var it = self.job_object;
             var t = it.tile;
-            if(!it.sale) { self.abandon_job(0); break; }
             if(self.tile != t || abs(it.wvz) > 0.01 || it.wz > 0.01)
               self.walk_toward_item(it);
             else
@@ -3318,7 +3322,6 @@ var farmbit = function()
           case JOB_STATE_SEEK:
           {
             var t = self.job_subject;
-            if(!self.item.sale) { self.abandon_job(0); break; }
             self.item.wvx += (self.wx-self.item.wx)*0.01;
             self.item.wvy += (self.wy-self.item.wy)*0.01;
             if(self.tile != t)
@@ -3327,6 +3330,7 @@ var farmbit = function()
             {
               self.job_state = JOB_STATE_ACT;
               self.job_state_t = 0;
+              self.item.state = ITEM_STATE_OFF_GRID;
             }
           }
             break;
