@@ -47,7 +47,6 @@ var ITEM_TYPE_COUNT    = ENUM; ENUM++;
 
 ENUM = 0;
 var ITEM_STATE_NULL        = ENUM; ENUM++;
-var ITEM_STATE_OFF_GRID    = ENUM; ENUM++;
 var ITEM_STATE_POOP_RAW    = ENUM; ENUM++;
 var ITEM_STATE_POOP_LIGHT  = ENUM; ENUM++;
 var ITEM_STATE_POOP_POTENT = ENUM; ENUM++;
@@ -1939,7 +1938,7 @@ var board = function()
       self.hover_t_placable = self.placement_valid(self.hover_t,gg.shop.selected_buy);
 
     var hovered;
-    for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) hovered = b; }
+    for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBox(b,evt.doX,evt.doY)) hovered = b; }
     if(hovered)
     {
       gg.inspector.quick = hovered;
@@ -1947,7 +1946,7 @@ var board = function()
     }
     if(!hovered)
     {
-      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(ptWithinBox(it,evt.doX,evt.doY)) hovered = it; }
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBox(it,evt.doX,evt.doY)) hovered = it; }
       if(hovered)
       {
         gg.inspector.quick = hovered;
@@ -2063,7 +2062,7 @@ var board = function()
     {
       var clicked;
 
-      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(it.state != ITEM_STATE_OFF_GRID && ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
       if(clicked)
       {
         if(gg.inspector.detailed == clicked)
@@ -2084,7 +2083,7 @@ var board = function()
         return;
       }
 
-      for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
+      for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
         gg.inspector.detailed = clicked;
@@ -2368,9 +2367,11 @@ var item = function()
   self.sale = 0;
   self.lock = 0;
 
+  self.offscreen = 0;
+
   self.tick = function()
   {
-    if(self.state == ITEM_STATE_OFF_GRID) return;
+    if(self.offscreen) return;
     self.wvz -= 0.1;
     self.wx += self.wvx;
     self.wy += self.wvy;
@@ -2391,7 +2392,7 @@ var item = function()
 
   self.draw = function()
   {
-    if(self.state == ITEM_STATE_OFF_GRID) return;
+    if(self.offscreen) return;
     switch(self.type)
     {
       case ITEM_TYPE_WATER:    drawImageBox(water_img,self,gg.ctx); break;
@@ -2563,6 +2564,7 @@ var farmbit = function()
 
   self.go_idle = function()
   {
+    self.offscreen = 0;
     self.job_type = JOB_TYPE_IDLE;
     self.job_subject = 0;
     self.job_object = 0;
@@ -2656,7 +2658,7 @@ var farmbit = function()
       self.frame_t = 0;
     }
 
-    if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
+    if(self.offscreen)
       ; //don't lose motivation! otherwise, every bit will come back dead
     else
     {
@@ -3330,7 +3332,8 @@ var farmbit = function()
             {
               self.job_state = JOB_STATE_ACT;
               self.job_state_t = 0;
-              self.item.state = ITEM_STATE_OFF_GRID;
+              self.offscreen = 1;
+              self.item.offscreen = 1;
             }
           }
             break;
@@ -3409,8 +3412,7 @@ var farmbit = function()
 
   self.draw = function()
   {
-    if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
-      return;
+    if(self.offscreen) return;
     if(debug_jobs)
     {
       if(self.job_subject)

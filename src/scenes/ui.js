@@ -485,8 +485,9 @@ var tutorial = function()
 
   //transitions
   self.setquest = function(q){self.quest = "QUEST: "+q;}
+  self.kq = function() { self.quest = 0; }
   self.dotakeover = function(){self.takeover = 1;}
-  self.dokqtakeover = function(){self.quest = 0;self.dotakeover();}
+  self.dokqtakeover = function(){self.kq();self.dotakeover();}
   self.newthread = function(funcs)
   {
     self.thread_state_funcs.push(funcs);
@@ -801,7 +802,7 @@ var tutorial = function()
     noop, //draw
     noop, //click
 
-    noop, //transition
+    self.kq, //transition
     noop, //tick
     function(){ gg.ctx.textAlign = "center"; self.textat("Great Work!",gg.canv.width/2,gg.canv.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
@@ -816,7 +817,7 @@ var tutorial = function()
     function(){ var b = gg.shop.livestock_btn; gg.ctx.textAlign = "left"; self.textat("<- Next, save up for some livestock. They might be able to help with that!",b.x+b.w+20,b.y+b.h/2); self.ctc(); }, //draw
     self.next_state, //click
 
-    noop, //transition
+    function(){ self.setquest("save up for some livestock");}, //transition
     function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, //tick
     noop, //draw
     noop, //click
