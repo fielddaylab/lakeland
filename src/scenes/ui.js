@@ -707,11 +707,6 @@ var tutorial = function()
     self.delay_next_state, //click
 
     self.dotakeover, //transition
-    function(){ return gg.b.nutrition_view; }, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Press 'n' to toggle Nutrition View",gg.canv.width/2,gg.canv.height/2); }, //draw
-    noop, //click
-
-    self.dotakeover, //transition
     function(){ return !gg.b.nutrition_view; }, //tick
     function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("(Press 'n' at any time to toggle Nutrition View)",gg.canv.width/2,gg.canv.height/2); }, //draw
     noop, //click
