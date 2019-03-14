@@ -503,6 +503,28 @@ var tutorial = function()
     gg.ctx.fillRect(self.x,self.y,self.w,self.h);
     gg.ctx.globalAlpha = 1;
   }
+  self.hilight = function(o)
+  {
+    switch(o.thing)
+    {
+      case 0:
+        console.log(o);
+        break;
+      case THING_TYPE_TILE:
+        var w = gg.b.w/gg.b.tw;
+        var h = gg.b.h/gg.b.th;
+        var ny = round(gg.b.y+gg.b.h-((o.ty+1)*h));
+        var  x = round(gg.b.x+       ((o.tx  )*w));
+        gg.b.draw_tile(o,x,ny,w,h);
+        break;
+      case THING_TYPE_ITEM:
+        o.draw();
+        break;
+      case THING_TYPE_FARMBIT:
+        o.draw();
+        break;
+    }
+  }
   self.textat = function(text,x,y)
   {
     var w = gg.ctx.measureText(text).width;
@@ -649,7 +671,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return self.bits_exist(1); }, //tick
-    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
+    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); self.hilight(t); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
@@ -659,12 +681,12 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -674,7 +696,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" will eventually need some food...",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" will eventually need some food...",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     function(){ gg.shop.farm_btn.active = 1; }, //transition
@@ -749,7 +771,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will eventually export this for sale!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat(f.name+" will eventually export this for sale!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     noop, //transition
@@ -764,12 +786,12 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the extra food",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the extra food",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
