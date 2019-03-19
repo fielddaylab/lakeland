@@ -1,30 +1,12 @@
-var gg = {};
-RESUME_SIM = 1;
-var GamePlayScene = function(game, stage)
+var GamePlayScene = function()
 {
   var self = this;
 
-  self.resize = function(s)
-  {
-    stage = s;
-    gg.stage = stage;
-    gg.canv = gg.stage.canv;
-    gg.canvas = gg.canv.canvas;
-    gg.ctx = gg.canv.context;
-
-    gg.cam = {wx:0,wy:0,ww:gg.canv.width,wh:gg.canv.height}
-    gg.ui_cam = {wx:gg.canv.width/2,wy:gg.canv.height/2,ww:gg.canv.width,wh:gg.canv.height}
-    if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
-    if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
-    if(dragger) dragger.detach(); dragger = new Dragger({source:gg.canvas});
-    if(keyer)   keyer.detach();   keyer   = new Keyer({source:gg.canvas});
-  }
-  //self.resize(stage); //executed in 'ready'
-
-  var clicker;
   var hoverer;
+  var clicker;
   var dragger;
   var keyer;
+
   var keycatch = {
     key:function(evt)
     {
@@ -41,9 +23,32 @@ var GamePlayScene = function(game, stage)
     }
   }
 
+  self.resize = function()
+  {
+    if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
+    if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
+    if(dragger) dragger.detach(); dragger = new Dragger({source:gg.canvas});
+    if(keyer)   keyer.detach();   keyer   = new Keyer({source:gg.canvas});
+
+    if(self.readied)
+    {
+      gg.b.resize();
+      gg.playhead.resize();
+      gg.shop.resize();
+      gg.inspector.resize();
+      gg.ticker.resize();
+      gg.tutorial.resize();
+      gg.b.zoom_bounds(gg.cam);
+    }
+  }
+
+  self.readied = 0;
   self.ready = function()
   {
-    self.resize(stage);
+    self.resize();
+
+    gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
+
     gg.b = new board();
     gg.money = money_start_n;
     gg.items = [];
@@ -61,10 +66,16 @@ var GamePlayScene = function(game, stage)
     gg.ticker = new ticker();
     gg.tutorial = new tutorial();
     gg.b.zoom_bounds(gg.cam);
+    self.readied = 1;
   };
 
-  self.tick = function()
+  var t_mod_twelve_pi = 0;
+  self.tick = function(times)
   {
+    t_mod_twelve_pi += 0.01*times;
+    if(t_mod_twelve_pi > twelvepi) t_mod_twelve_pi -= twelvepi;
+    if(DOUBLETIME) times = 4;
+
     hoverer.filter(gg.b);
 
     var check = true;
@@ -85,26 +96,30 @@ var GamePlayScene = function(game, stage)
 
     if(RESUME_SIM)
     {
-      if(!gg.tutorial.takeover)
+      while(times)
       {
-        gg.b.tick();
-        screenSpace(gg.cam, gg.canv, gg.b);
-        for(var i = 0; i < gg.items.length; i++)
+        if(!gg.tutorial.takeover)
         {
-          var o = gg.items[i];
-          o.tick();
-          screenSpace(gg.cam, gg.canv, o);
-          o.y -= o.wz;
+          gg.b.tick();
+          screenSpace(gg.cam, gg.canvas, gg.b);
+          for(var i = 0; i < gg.items.length; i++)
+          {
+            var o = gg.items[i];
+            o.tick();
+            screenSpace(gg.cam, gg.canvas, o);
+            o.y -= o.wz;
+          }
+          for(var i = 0; i < gg.farmbits.length; i++)
+          {
+            var f = gg.farmbits[i];
+            f.tick();
+            screenSpace(gg.cam, gg.canvas, f);
+          }
+          gg.playhead.tick();
+          gg.shop.tick();
+          gg.ticker.tick();
         }
-        for(var i = 0; i < gg.farmbits.length; i++)
-        {
-          var f = gg.farmbits[i];
-          f.tick();
-          screenSpace(gg.cam, gg.canv, f);
-        }
-        gg.playhead.tick();
-        gg.shop.tick();
-        gg.ticker.tick();
+        times--;
       }
     }
     gg.tutorial.tick();
@@ -112,6 +127,12 @@ var GamePlayScene = function(game, stage)
 
   self.draw = function()
   {
+    gg.ctx.fillStyle = white;
+    gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+
+    var fs = 12*gg.stage.s_mod;
+    gg.ctx.font = fs+"px Helvetica";
+
     gg.b.draw();
     for(var i = 0; i < gg.farmbits.length; i++)
       gg.farmbits[i].draw();
@@ -122,7 +143,7 @@ var GamePlayScene = function(game, stage)
     gg.inspector.draw();
     gg.ticker.draw();
 
-    var x = gg.canv.width-100;
+    var x = gg.canvas.width-100;
     var y = 520;
     h = 20;
     gg.ctx.fillText("d- speed time",    x,y); y += h;
@@ -138,6 +159,10 @@ var GamePlayScene = function(game, stage)
 
   self.cleanup = function()
   {
+    if(hoverer) hoverer.detach(); hoverer = null;
+    if(clicker) clicker.detach(); clicker = null;
+    if(dragger) dragger.detach(); dragger = null;
+    if(keyer)   keyer.detach();   keyer   = null;
   };
 
 };

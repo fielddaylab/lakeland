@@ -1171,6 +1171,12 @@ var board = function()
 {
   var self = this;
 
+  self.resize = function()
+  {
+
+  }
+  self.resize();
+
   self.tw = board_w;
   self.th = board_h;
   self.bounds_tx = floor(self.tw*3/8);
@@ -1289,8 +1295,8 @@ var board = function()
   }
   self.zoom_bounds = function(cam)
   {
-    cam.ww = gg.canv.width;
-    cam.wh = gg.canv.height;
+    cam.ww = gg.canvas.width;
+    cam.wh = gg.canvas.height;
 
     var tw = self.bounds_tw+4; if(self.bounds_tw+4 > self.tw) tw = self.tw;
     var th = self.bounds_th+4; if(self.bounds_th+4 > self.th) th = self.th;
@@ -1931,14 +1937,14 @@ var board = function()
 
   self.hover = function(evt)
   {
-    worldSpaceDoEvt(gg.cam, gg.canv, evt);
+    worldSpaceDoEvt(gg.cam, gg.canvas, evt);
     var old_hover_t = self.hover_t;
     self.hover_t = self.tiles_wt(evt.wx,evt.wy);
     if(self.hover_t != old_hover_t && gg.shop.selected_buy)
       self.hover_t_placable = self.placement_valid(self.hover_t,gg.shop.selected_buy);
 
     var hovered;
-    for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBox(b,evt.doX,evt.doY)) hovered = b; }
+    for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBB(b,evt.doX,evt.doY)) hovered = b; }
     if(hovered)
     {
       gg.inspector.quick = hovered;
@@ -1946,7 +1952,7 @@ var board = function()
     }
     if(!hovered)
     {
-      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBox(it,evt.doX,evt.doY)) hovered = it; }
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBB(it,evt.doX,evt.doY)) hovered = it; }
       if(hovered)
       {
         gg.inspector.quick = hovered;
@@ -2062,7 +2068,7 @@ var board = function()
     {
       var clicked;
 
-      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBox(it,evt.doX,evt.doY)) clicked = it; }
+      for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBB(it,evt.doX,evt.doY)) clicked = it; }
       if(clicked)
       {
         if(gg.inspector.detailed == clicked)
@@ -2083,7 +2089,7 @@ var board = function()
         return;
       }
 
-      for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBox(b,evt.doX,evt.doY)) clicked = b; }
+      for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBB(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
         gg.inspector.detailed = clicked;
@@ -2400,18 +2406,18 @@ var item = function()
     if(self.offscreen) return;
     switch(self.type)
     {
-      case ITEM_TYPE_WATER:    drawImageBox(water_img,self,gg.ctx); break;
-      case ITEM_TYPE_FOOD:     drawImageBox(food_img,self,gg.ctx); break;
+      case ITEM_TYPE_WATER:drawImageBB(water_img,self,gg.ctx); break;
+      case ITEM_TYPE_FOOD: drawImageBB(food_img,self,gg.ctx); break;
       case ITEM_TYPE_POOP:
-             if(self.state == ITEM_STATE_POOP_RAW)   drawImageBox(poop_img,      self,gg.ctx);
-        else if(self.state == ITEM_STATE_POOP_LIGHT) drawImageBox(poop_light_img,self,gg.ctx);
+             if(self.state == ITEM_STATE_POOP_RAW)   drawImageBB(poop_img,      self,gg.ctx);
+        else if(self.state == ITEM_STATE_POOP_LIGHT) drawImageBB(poop_light_img,self,gg.ctx);
         break;
-      case ITEM_TYPE_VALUABLE: drawImageBox(valuable_img,self,gg.ctx); break;
+      case ITEM_TYPE_VALUABLE: drawImageBB(valuable_img,self,gg.ctx); break;
     }
     if(self.sale)
     {
       gg.ctx.strokeStyle = green;
-      strokeBox(self,gg.ctx);
+      strokeBB(self,gg.ctx);
     }
   }
 }
@@ -3425,7 +3431,7 @@ var farmbit = function()
         if(self.job_subject.thing == THING_TYPE_TILE)
         {
           gg.b.tiles_tw(self.job_subject,self.job_subject);
-          screenSpacePt(gg.cam, gg.canv, self.job_subject);
+          screenSpacePt(gg.cam, gg.canvas, self.job_subject);
         }
         gg.ctx.strokeStyle = green;
         drawLine(self.x+self.w/2,self.y+self.h/2,self.job_subject.x,self.job_subject.y,gg.ctx);
@@ -3436,7 +3442,7 @@ var farmbit = function()
         if(self.job_object.thing == THING_TYPE_TILE)
         {
           gg.b.tiles_tw(self.job_object,self.job_object);
-          screenSpacePt(gg.cam, gg.canv, self.job_object);
+          screenSpacePt(gg.cam, gg.canvas, self.job_object);
         }
         gg.ctx.strokeStyle = green;
         drawLine(self.x+self.w/2,self.y+self.h/2,self.job_object.x,self.job_object.y,gg.ctx);

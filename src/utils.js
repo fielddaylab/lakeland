@@ -1,17 +1,99 @@
-/*
-*
-* DISCLAIMER: Javascript is terrible, and these utils are NOT intended for use in the general case
-* for JS and all of its terribleness. These functions operate only on the most naively constructed of
-* objects. If you're trying to do something fancy and these don't work for you, please take the
-* rest of the day off to question your life choices. I wish you the best of luck.
-*
-*/
+//maps attributes found in defaults from init onto obj, falling back to defaults value if not present in init
+var doMapInitDefaults = function(obj, init, defaults)
+{
+  var attribs = Object.keys(defaults);
+  for(var i = 0; i < attribs.length; i++)
+  {
+    var k = attribs[i];
+    obj[k] = init.hasOwnProperty(k) ? init[k] : defaults[k];
+  }
+}
+
+//sets doX and doY as x/y offset into the object listening for the event
+function doSetPosOnEvent(evt)
+{
+  if(evt.offsetX != undefined)
+  {
+    evt.doX = evt.offsetX*gg.stage.dpr;
+    evt.doY = evt.offsetY*gg.stage.dpr;
+  }
+  else if(evt.touches != undefined && evt.touches[0] != undefined)
+  {
+    //unfortunately, seems necessary...
+    var t = evt.touches[0].target;
+
+    var bb = t.getBoundingClientRect();
+    var body = document.body;
+    var docEl = document.documentElement;
+
+    var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+    var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+
+    var clientTop = docEl.clientTop || body.clientTop || 0;
+    var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+
+    var top  = bb.top +  scrollTop - clientTop;
+    var left = bb.left + scrollLeft - clientLeft;
+
+    evt.doX = (evt.touches[0].pageX-left)*gg.stage.dpr;
+    evt.doY = (evt.touches[0].pageY-top)*gg.stage.dpr;
+
+  }
+  else if(evt.layerX != undefined && evt.originalTarget != undefined)
+  {
+    evt.doX = (evt.layerX-evt.originalTarget.offsetLeft)*gg.stage.dpr;
+    evt.doY = (evt.layerY-evt.originalTarget.offsetTop)*gg.stage.dpr;
+  }
+  else //give up because javascript is terrible
+  {
+    evt.doX = 0;
+    evt.doY = 0;
+  }
+}
+
+function doEvtWithinBB(evt, bb)
+{
+  return (evt.doX >= bb.x && evt.doX <= bb.x+bb.w && evt.doY >= bb.y && evt.doY <= bb.y+bb.h);
+}
+function doEvtWithin(evt, x,y,w,h)
+{
+  return (evt.doX >= x && evt.doX <= x+w && evt.doY >= y && evt.doY <= y+h);
+}
+
 function jsonFromURL()
 {
   var query = location.search.substr(1);
   var result = {};
   query.split("&").forEach(function(part){ var item = part.split("="); result[item[0]] = decodeURIComponent(item[1]); });
   return result;
+}
+
+function clone(o)
+{
+  if(typeof o === 'object') return cloneInto(o,{});
+  return o;
+}
+
+function cloneInto(src,dst)
+{
+  var attribs = Object.keys(src);
+  for(var i = 0; i < attribs.length; i++)
+  {
+    var k = attribs[i];
+    dst[k] = src[k];
+  }
+  return dst;
+}
+
+function deepCloneInto(src,dst) //NOT IMPLEMENTED! REALLY JUST EXISTS AS CONTRAST TO CLONEINTO TO DESCRIBE LIMITATIONS
+{
+  var attribs = Object.keys(src);
+  for(var i = 0; i < attribs.length; i++)
+  {
+    var k = attribs[i];
+    dst[k] = src[k];
+  }
+  return dst;
 }
 
 //colors
@@ -25,12 +107,18 @@ var magenta = "#FF00FF";
 var yellow  = "#FFFF00";
 
 var brown   = "#6D4227";
-var light_brown = "#8D5237";
 var purple  = "#7856CB";
 var orange  = "#EE682C";
 var gray    = "#888888";
 var dark_gray  = "#444444";
 var light_gray = "#CCCCCC";
+
+var dark_red    = "#880000";
+var light_red   = "#FFAAAA";
+var dark_green  = "#008800";
+var light_green = "#AAFFAA";
+var dark_blue   = "#000088";
+var light_blue  = "#AAAAFF";
 
 function nthIndex(needle, n, hay)
 {
@@ -94,12 +182,29 @@ function dist(ax,ay,bx,by)
   var y = by-ay;
   return Math.sqrt(x*x+y*y);
 }
-function randIntBelow(n) { return Math.floor(Math.random()*n); }
+function randIntBelow(n) { return Math.floor(rand()*n); }
+function randIntBelowBias0(n) { return Math.floor(bias0(rand())*n); }
+function randIntBelowBias1(n) { return Math.floor(bias1(rand())*n); }
 function randBool() { return randIntBelow(2); }
-function rand0() { return (Math.random()*2)-1; }
-var randR = function(s,e) { return lerp(s,e,Math.random()); }
-//because the Math namespace is probably unnecessary for our purposes
+function rand0() { return (rand()*2)-1; }
+var randR = function(s,e) { return lerp(s,e,rand()); }
+var bias0 = function(v) { return v*v; };
+var bias1 = function(v) { v = 1-v; return 1-(v*v); };
+var SeededRand = function(s)
+{
+  var self = this;
+  self.seed = s;
+  self.next = function()
+  {
+  var x = Math.sin(self.seed++) * 10000;
+  return x - Math.floor(x);
+  }
+}
+var srand = new SeededRand(0);
+//var rand = srand.next;
 var rand = Math.random;
+function rand0() { return (rand()*2)-1; }
+var randR = function(s,e) { return lerp(s,e,rand()); }
 var round = Math.round;
 var floor = Math.floor;
 var ceil = Math.ceil;
@@ -109,6 +214,7 @@ var max = Math.max;
 var maxd = function(d,v) { if(v < 0) return -max(d,-v); else return max(d,v); }
 var mind = function(d,v) { if(v < 0) return -min(d,-v); else return min(d,v); }
 var pow = Math.pow;
+var sqr = function(v) { return v*v; }
 var sqrt = Math.sqrt;
 var sin = Math.sin;
 var asin = Math.asin;
@@ -124,6 +230,35 @@ var twopi = 2*pi;
 var halfpi = pi/2;
 var quarterpi = pi/4;
 var twelvepi = 12*pi;
+
+function noop(){}
+function ffunc(){return false;}
+function tfunc(){return true;}
+
+
+var bounceup_data = [];
+{
+  var n = 100;
+  var p = 0;
+  var vel = 0;
+  var pull = 0.3;
+  var damp = 0.8;
+  for(var i = 0; i < n; i++)
+  {
+    p += vel;
+    vel += (1-p)*pull;
+    vel *= damp;
+    bounceup_data[i] = p;
+  }
+  bounceup_data[n] = bounceup_data[n-1];
+}
+var bounceup = function(t)
+{
+  t *= bounceup_data.length-2; //knowing that final data is duplicate
+  var root = floor(t);
+  var d = t-root;
+  return lerp(bounceup_data[root],bounceup_data[root+1],d);
+}
 
 var fdisp = function(f,n) //formats float for display (from 8.124512 to 8.12)
 {
@@ -152,22 +287,25 @@ var ptWithin = function(x,y,w,h,ptx,pty) { return (ptx >= x && ptx <= x+w && pty
 var ptNear = function(x,y,r,ptx,pty) { var dx = ptx-x; var dy = pty-y; return (dx*dx+dy*dy) < r*r; }
 var rectCollide = function(ax,ay,aw,ah,bx,by,bw,bh) { return ax < bx+bw && bx < ax+aw && ay < by+bh && by < ay+ah; }
 
-var ptWithinBox = function(box,ptx,pty)
+var setBB = function(bb, x,y,w,h)
 {
-  return (ptx >= box.x && ptx <= box.x+box.w && pty >= box.y && pty <= box.y+box.h);
+  bb.x = x;
+  bb.y = y;
+  bb.w = w;
+  bb.h = h;
 }
-var boxWithinBox = function(boxa, boxb)
+
+var ptWithinBB = function(bb,ptx,pty)
 {
-  console.log("not done!");
-  return false;
+  return (ptx >= bb.x && ptx <= bb.x+bb.w && pty >= bb.y && pty <= bb.y+bb.h);
 }
 var worldPtWithin = function(wx, wy, ww, wh, ptx, pty)
 {
   return (ptx >= wx-(ww/2) && ptx <= wx+(ww/2) && pty >= wy-(wh/2) && pty <= wy+(wh/2));
 }
-var worldPtWithinBox = function(box, ptx, pty)
+var worldPtWithinBB = function(bb, ptx, pty)
 {
-  return (ptx >= box.wx-(box.ww/2) && ptx <= box.wx+(box.ww/2) && pty >= box.wy-(box.wh/2) && pty <= box.wy+(box.wh/2));
+  return (ptx >= bb.wx-(bb.ww/2) && ptx <= bb.wx+(bb.ww/2) && pty >= bb.wy-(bb.wh/2) && pty <= bb.wy+(bb.wh/2));
 }
 
 //conversions
@@ -189,50 +327,53 @@ var decToHex = function(dec, dig)
   return r;
 }
 
-var RGB2HSL = function(rgb, hsl)
+//rgb: {[0,1],[0,1],[0,1]}
+//hsv: {[0,360],[0,1],[0,1]}
+var RGB2HSV = function(rgb, hsv)
 {
   var cmax = Math.max(rgb.r,rgb.g,rgb.b);
   var cmin = Math.min(rgb.r,rgb.g,rgb.b);
   var d = cmax-cmin;
-  hsl.l = (cmax+cmin)/2;
-  if(hsl.l < 0.5) hsl.s = (cmax-cmin)/(cmax+cmin);
-  else            hsl.s = (cmax-cmin)/(2-cmax-cmin);
+  hsv.v = (cmax+cmin)/2;
+  if(hsv.v < 0.5) hsv.s = (cmax-cmin)/(cmax+cmin);
+  else            hsv.s = (cmax-cmin)/(2-cmax-cmin);
 
-  if(cmax == rgb.r) hsl.h = (rgb.g-rgb.b)/(cmax-cmin);
-  if(cmax == rgb.g) hsl.h = 2 + (rgb.b-rgb.r)/(cmax-cmin);
-  if(cmax == rgb.b) hsl.h = 4 + (rgb.r-rgb.g)/(cmax-cmin);
+  if(cmax == rgb.r) hsv.h = (rgb.g-rgb.b)/(cmax-cmin);
+  if(cmax == rgb.g) hsv.h = 2 + (rgb.b-rgb.r)/(cmax-cmin);
+  if(cmax == rgb.b) hsv.h = 4 + (rgb.r-rgb.g)/(cmax-cmin);
+  if(isNaN(hsv.h)) hsv.h = 0;
 
-  hsl.h *= 60;
+  hsv.h *= 60;
 
-  if(hsl.h < 0) hsl.h += 360;
+  if(hsv.h < 0) hsv.h += 360;
 }
 
-var HSL2RGBHelperConvertTMPValToFinal = function(tmp_1, tmp_2, val)
+var HSV2RGBHelperConvertTMPValToFinal = function(tmp_1, tmp_2, val)
 {
   if(val*6 < 1) return tmp_2 + (tmp_1-tmp_2)*6*val;
   else if(val*2 < 1) return tmp_1;
   else if(val*3 < 2) return tmp_2 + (tmp_1-tmp_2)*(0.666-val)*6;
   else return tmp_2;
 }
-var HSL2RGB = function(hsl, rgb)
+var HSV2RGB = function(hsv, rgb)
 {
   var tmp_1;
   var tmp_2;
   var tmp_3;
 
-  if(hsl.l < 0.5) tmp_1 = hsl.l * (1+hsl.s);
-  else            tmp_1 = hsl.l + hsl.s - (hsl.l*hsl.s);
+  if(hsv.v < 0.5) tmp_1 = hsv.v * (1+hsv.s);
+  else            tmp_1 = hsv.v + hsv.s - (hsv.v*hsv.s);
 
-  tmp_2 = (2*hsl.l)-tmp_1;
-  tmp_3 = hsl.h/360;
+  tmp_2 = (2*hsv.v)-tmp_1;
+  tmp_3 = hsv.h/360;
 
   rgb.r = tmp_3 + 0.333; while(rgb.r > 1) rgb.r -= 1; while(rgb.r < 0) rgb.r += 1;
   rgb.g = tmp_3;         while(rgb.g > 1) rgb.g -= 1; while(rgb.g < 0) rgb.g += 1;
   rgb.b = tmp_3 - 0.333; while(rgb.b > 1) rgb.b -= 1; while(rgb.b < 0) rgb.b += 1;
 
-  rgb.r = HSL2RGBHelperConvertTMPValToFinal(tmp_1, tmp_2, rgb.r);
-  rgb.g = HSL2RGBHelperConvertTMPValToFinal(tmp_1, tmp_2, rgb.g);
-  rgb.b = HSL2RGBHelperConvertTMPValToFinal(tmp_1, tmp_2, rgb.b);
+  rgb.r = HSV2RGBHelperConvertTMPValToFinal(tmp_1, tmp_2, rgb.r);
+  rgb.g = HSV2RGBHelperConvertTMPValToFinal(tmp_1, tmp_2, rgb.g);
+  rgb.b = HSV2RGBHelperConvertTMPValToFinal(tmp_1, tmp_2, rgb.b);
 }
 
 var RGB2Hex = function(rgb)
@@ -242,6 +383,36 @@ var RGB2Hex = function(rgb)
 var dec2Hex = function(n)
 {
   return n.toString(16);
+}
+
+var color_str_to_obj = function(str)
+{
+  var obj = {r:0,g:0,b:0,h:0,s:0,v:0,a:1};
+  if(str[0] == "#")
+  {
+    obj.r = parseInt(""+str[1]+str[2],16)/255;
+    obj.g = parseInt(""+str[3]+str[4],16)/255;
+    obj.b = parseInt(""+str[5]+str[6],16)/255;
+    obj.a = 1;
+    RGB2HSV(obj,obj);
+  }
+  else if(str[0] == "r")
+  {
+    var i = 5;
+    var j = str.indexOf(",",i);
+    obj.r = parseInt(str.substr(i,j-i))/255;
+    i = j+1;
+    j = str.indexOf(",",i);
+    obj.g = parseInt(str.substr(i,j-i))/255;
+    i = j+1;
+    j = str.indexOf(",",i);
+    obj.b = parseInt(str.substr(i,j-i))/255;
+    i = j+1;
+    j = str.indexOf(")",i);
+    obj.a = parseFloat(str.substr(i,j-i));
+    RGB2HSV(obj,obj);
+  }
+  return obj;
 }
 
 var cartToPolar = function(cart,polar)
@@ -255,67 +426,61 @@ var polarToCart = function(polar,cart)
   cart.y = Math.sin(polar.dir)*polar.len;
 }
 
-//short name- will be used often to place elements by percent, while guaranteeing integer results
-var p    = function(percent, of) { return Math.floor(percent * of); }
-var invp = function(      n, of) { return n/of; }
-var setBox = function(box, x,y,w,h)
-{
-  box.x = x;
-  box.y = y;
-  box.w = w;
-  box.h = h;
-}
-
 //camera
-var screenSpaceXpt = function(cam, canv, wx) { return (((( wx)-cam.wx)+(cam.ww/2))/cam.ww)*canv.width;  } //only operates on points!
-var screenSpaceYpt = function(cam, canv, wy) { return ((((-wy)+cam.wy)+(cam.wh/2))/cam.wh)*canv.height; } //only operates on points!
-var screenSpaceX = function(cam, canv, ww, wx) { return (((( wx-ww/2)-cam.wx)+(cam.ww/2))/cam.ww)*canv.width;  }
-var screenSpaceY = function(cam, canv, wh, wy) { return ((((-wy-wh/2)+cam.wy)+(cam.wh/2))/cam.wh)*canv.height; }
-var screenSpaceW = function(cam, canv, ww) { return (ww/cam.ww)*canv.width;  }
-var screenSpaceH = function(cam, canv, wh) { return (wh/cam.wh)*canv.height; }
-var screenSpacePt = function(cam, canv, pt) //only operates on points!
+var screenSpaceXpt = function(cam, canvas, wx) { return (((( wx)-cam.wx)+(cam.ww/2))/cam.ww)*canvas.width;  } //only operates on points!
+var screenSpaceYpt = function(cam, canvas, wy) { return ((((-wy)+cam.wy)+(cam.wh/2))/cam.wh)*canvas.height; } //only operates on points!
+var screenSpaceX = function(cam, canvas, ww, wx) { return (((( wx-ww/2)-cam.wx)+(cam.ww/2))/cam.ww)*canvas.width;  }
+var screenSpaceY = function(cam, canvas, wh, wy) { return ((((-wy-wh/2)+cam.wy)+(cam.wh/2))/cam.wh)*canvas.height; }
+var screenSpaceW = function(cam, canvas, ww) { return (ww/cam.ww)*canvas.width;  }
+var screenSpaceH = function(cam, canvas, wh) { return (wh/cam.wh)*canvas.height; }
+var screenSpacePt = function(cam, canvas, pt) //only operates on points!
 {
-  pt.x = (((( pt.wx)-cam.wx)+(cam.ww/2))/cam.ww)*canv.width;
-  pt.y = ((((-pt.wy)+cam.wy)+(cam.wh/2))/cam.wh)*canv.height;
+  pt.x = (((( pt.wx)-cam.wx)+(cam.ww/2))/cam.ww)*canvas.width;
+  pt.y = ((((-pt.wy)+cam.wy)+(cam.wh/2))/cam.wh)*canvas.height;
 }
-var screenSpace  = function(cam, canv, box)
+var screenSpaceCoords  = function(cam, canvas, bb) //same as screenSpace, but only updates coords
+{
+  bb.x = (((( bb.wx-bb.ww/2)-cam.wx)+(cam.ww/2))/cam.ww)*canvas.width;
+  bb.y = ((((-bb.wy-bb.wh/2)+cam.wy)+(cam.wh/2))/cam.wh)*canvas.height;
+}
+var screenSpace  = function(cam, canvas, bb)
 {
   //assumng xywh counterparts in world space (wx,wy,ww,wh,etc...)
-  //where wx,wy is *center* of box and cam
+  //where wx,wy is *center* of bb and cam
   //so cam.wx = 0; cam.ww = 1; would be a cam centered at the origin with visible range from -0.5 to 0.5
   //output xywh assume x,y is top left (ready to be 'blit' via canvas api)
-  box.w = (box.ww/cam.ww)*canv.width;
-  box.h = (box.wh/cam.wh)*canv.height;
-  box.x = (((( box.wx-box.ww/2)-cam.wx)+(cam.ww/2))/cam.ww)*canv.width;
-  box.y = ((((-box.wy-box.wh/2)+cam.wy)+(cam.wh/2))/cam.wh)*canv.height;
+  bb.w = (bb.ww/cam.ww)*canvas.width;
+  bb.h = (bb.wh/cam.wh)*canvas.height;
+  bb.x = (((( bb.wx-bb.ww/2)-cam.wx)+(cam.ww/2))/cam.ww)*canvas.width;
+  bb.y = ((((-bb.wy-bb.wh/2)+cam.wy)+(cam.wh/2))/cam.wh)*canvas.height;
 }
-var worldSpaceXpt = function(cam, canv, x) { return ((x/canv.width) -0.5)* cam.ww + cam.wx; }
-var worldSpaceYpt = function(cam, canv, y) { return ((y/canv.height)-0.5)*-cam.wh + cam.wy; }
-var worldSpaceX = function(cam, canv, ww, x) { return ((x/canv.width) -0.5)* cam.ww + cam.wx + ww/2; }
-var worldSpaceY = function(cam, canv, wh, y) { return ((y/canv.height)-0.5)*-cam.wh + cam.wy - wh/2; }
-var worldSpaceW = function(cam, canv, w) { return (w/canv.width)*cam.ww; }
-var worldSpaceH = function(cam, canv, h) { return (h/canv.height)*cam.wh; }
-var worldSpacePt = function(cam, canv, pt) //opposite of screenspace, pt
+var worldSpaceXpt = function(cam, canvas, x) { return ((x/canvas.width) -0.5)* cam.ww + cam.wx; }
+var worldSpaceYpt = function(cam, canvas, y) { return ((y/canvas.height)-0.5)*-cam.wh + cam.wy; }
+var worldSpaceX = function(cam, canvas, ww, x) { return ((x/canvas.width) -0.5)* cam.ww + cam.wx + ww/2; }
+var worldSpaceY = function(cam, canvas, wh, y) { return ((y/canvas.height)-0.5)*-cam.wh + cam.wy - wh/2; }
+var worldSpaceW = function(cam, canvas, w) { return (w/canvas.width)*cam.ww; }
+var worldSpaceH = function(cam, canvas, h) { return (h/canvas.height)*cam.wh; }
+var worldSpacePt = function(cam, canvas, pt) //opposite of screenspace, pt
 {
-  pt.wx = ((pt.x/canv.width) -0.5)* cam.ww + cam.wx;
-  pt.wy = ((pt.y/canv.height)-0.5)*-cam.wh + cam.wy;
+  pt.wx = ((pt.x/canvas.width) -0.5)* cam.ww + cam.wx;
+  pt.wy = ((pt.y/canvas.height)-0.5)*-cam.wh + cam.wy;
 }
-var worldSpaceDoEvt = function(cam, canv, evt) //opposite of screenspace, doEvt (same as pt, but accesses do[XY])
+var worldSpaceDoEvt = function(cam, canvas, evt) //opposite of screenspace, doEvt (same as pt, but accesses do[XY])
 {
-  evt.wx = ((evt.doX/canv.width) -0.5)* cam.ww + cam.wx;
-  evt.wy = ((evt.doY/canv.height)-0.5)*-cam.wh + cam.wy;
+  evt.wx = ((evt.doX/canvas.width) -0.5)* cam.ww + cam.wx;
+  evt.wy = ((evt.doY/canvas.height)-0.5)*-cam.wh + cam.wy;
 }
-var worldSpaceCoords = function(cam, canv, box) //opposite of screenspace, doesn't alter w/h (to preserve fp precision)
+var worldSpaceCoords = function(cam, canvas, bb) //opposite of screenspace, doesn't alter w/h (to preserve fp precision)
 {
-  box.wx = (((box.x/canv.width) -0.5)* cam.ww + cam.wx)+box.ww/2;
-  box.wy = (((box.y/canv.height)-0.5)*-cam.wh + cam.wy)-box.wh/2;
+  bb.wx = (((bb.x/canvas.width) -0.5)* cam.ww + cam.wx)+bb.ww/2;
+  bb.wy = (((bb.y/canvas.height)-0.5)*-cam.wh + cam.wy)-bb.wh/2;
 }
-var worldSpace = function(cam, canv, box) //opposite of screenspace
+var worldSpace = function(cam, canvas, bb) //opposite of screenspace
 {
-  box.ww = (box.w/canv.width)*cam.ww;
-  box.wh = (box.h/canv.height)*cam.wh;
-  box.wx = (((box.x/canv.width) -0.5)* cam.ww + cam.wx)+box.ww/2;
-  box.wy = (((box.y/canv.height)-0.5)*-cam.wh + cam.wy)-box.wh/2;
+  bb.ww = (bb.w/canvas.width)*cam.ww;
+  bb.wh = (bb.h/canvas.height)*cam.wh;
+  bb.wx = (((bb.x/canvas.width) -0.5)* cam.ww + cam.wx)+bb.ww/2;
+  bb.wy = (((bb.y/canvas.height)-0.5)*-cam.wh + cam.wy)-bb.wh/2;
 }
 
 function lensqr(x,y)
@@ -399,10 +564,6 @@ var GenIcon = function(w,h)
   icon.width = w || 10;
   icon.height = h || 10;
   icon.context = icon.getContext('2d');
-  icon.context.fillStyle = "#000000";
-  icon.context.strokeStyle = "#000000";
-  icon.context.textAlign = "center";
-  icon.context.imageSmoothingEnabled = false;
 
   return icon;
 }
@@ -422,37 +583,485 @@ var GenAudio = function(src)
   return aud;
 }
 
-var SeededRand = function(s)
+var AudWrangler = function()
 {
   var self = this;
-  self.seed = s;
-  self.next = function()
+
+  self.ctx;
+
+  self.aud_src = [];
+  self.aud_data = [];
+  self.aud_buffer = [];
+  self.auds_loaded = 0;
+
+  self.music_src = 0;
+  self.music_data = 0;
+  self.music_buffer = 0;
+  self.music_track = 0;
+  self.music_shouldbeplaying = 0;
+
+  self.held = 0;
+  self.initd = 0;
+
+  self.hold = function()
   {
-  var x = Math.sin(self.seed++) * 10000;
-  return x - Math.floor(x);
+    if(self.initd) return; //doesn't matter
+    if(self.held) return; //already done
+    self.held = 1;
+    self.unregisterevt();
   }
+  self.unhold = function()
+  {
+    if(self.initd) return; //doesn't matter
+    if(!self.held) return; //already done
+    self.held = 0;
+    self.registerevt();
+  }
+
+  var evtpkg = {capture:true,once:false,passive:false};
+  self.registerevt = function()
+  {
+         if(platform == PLATFORM_PC)     document.getElementById("stage_container").addEventListener('click',    self.init, evtpkg);
+    else if(platform == PLATFORM_MOBILE) document.getElementById("stage_container").addEventListener('touchend', self.init, evtpkg);
+  }
+
+  self.unregisterevt = function()
+  {
+         if(platform == PLATFORM_PC)     document.getElementById("stage_container").removeEventListener('click',    self.init, evtpkg);
+    else if(platform == PLATFORM_MOBILE) document.getElementById("stage_container").removeEventListener('touchend', self.init, evtpkg);
+  }
+
+  self.init = function() //must be called by click on ios!
+  {
+    if(!self.ctx)
+    {
+      if(window.AudioContext) self.ctx = new AudioContext();
+      else if(window.webkitAudioContext) self.ctx = new webkitAudioContext();
+    }
+    var all_ready = 1;
+    for(var i = 0; i < self.aud_src.length; i++)
+    {
+      if(self.aud_data[i] && !self.aud_buffer[i])
+      {
+        (function(i){self.ctx.decodeAudioData(self.aud_data[i], function(b){ self.aud_buffer[i] = b; },
+        function(e){ console.log("Error with decoding audio data" + e.err); });
+        })(i);
+        self.aud_data[i] = 0;
+      }
+      if(!self.aud_buffer[i]) all_ready = 0;
+    }
+    if(self.music_data && !self.music_buffer)
+    {
+      self.ctx.decodeAudioData(self.music_data, function(b){ self.music_buffer = b; if(self.music_shouldbeplaying) self.play_music(); },
+      function(e){ console.log("Error with decoding music data" + e.err); });
+      self.music_data = 0;
+      if(!self.music_buffer) all_ready = 0;
+    }
+    if(all_ready)
+    {
+      self.unregisterevt();
+      self.initd = 1;
+    }
+  }
+
+  self.register = function(src)
+  {
+    var i = self.aud_src.length;
+
+    self.aud_src[i] = src;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', src, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      xhr.onload = 0;
+      self.aud_data[i] = xhr.response;
+      if(self.ctx)
+      {
+        self.ctx.decodeAudioData(self.aud_data[i], function(b){ self.aud_buffer[i] = b; self.auds_loaded++; },
+        function(e){ console.log("Error with decoding audio data" + e.err); });
+        self.aud_data[i] = 0;
+      }
+    };
+    xhr.send();
+
+    return i;
+  }
+
+  self.play = function(i)
+  {
+    if(self.ctx && self.ctx.state === 'suspended') self.ctx.resume();
+    if(self.ctx && self.aud_buffer[i])
+    {
+      var track;
+      track = self.ctx.createBufferSource();
+      track.buffer = self.aud_buffer[i];
+      track.connect(self.ctx.destination);
+      track.start(0);
+    }
+  }
+
+  self.register_music = function(src)
+  {
+    self.music_src = src;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', src, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      xhr.onload = 0;
+      self.music_data = xhr.response;
+      if(self.ctx)
+      {
+        self.ctx.decodeAudioData(self.music_data, function(b){ self.music_buffer = b; if(self.music_shouldbeplaying) self.play_music(); },
+        function(e){ console.log("Error with decoding music data" + e.err); });
+        self.music_data = 0;
+      }
+    };
+    xhr.send();
+
+    return i;
+  }
+  self.play_music = function()
+  {
+    self.music_shouldbeplaying = 1;
+    if(self.ctx && self.ctx.state === 'suspended') self.ctx.resume();
+    if(self.ctx && self.music_buffer)
+    {
+      self.music_track = self.ctx.createBufferSource();
+      self.music_track.buffer = self.music_buffer;
+      self.music_track.connect(self.ctx.destination);
+      self.music_track.loop = true;
+      self.music_track.start(0);
+    }
+  }
+  self.stop_music = function()
+  {
+    self.music_shouldbeplaying = 0;
+    if(self.music_track) self.music_track.stop();
+    self.music_track = 0;
+  }
+
+  self.registerevt();
 }
 
-function noop(){}
-function ffunc(){return false;}
-function tfunc(){return true;}
+var ClipWrangler = function()
+{
+  var self = this;
+  self.ctx;
+  self.enabled = 1;
+
+  var flip_clips = [];
+  var flip_bb_x = 0;
+  var flip_bb_y = 0;
+  var flip_bb_w = 0;
+  var flip_bb_h = 0;
+  self.n_flip_clips = 0;
+
+  var flop_clips = [];
+  var flop_bb_x = 0;
+  var flop_bb_y = 0;
+  var flop_bb_w = 0;
+  var flop_bb_h = 0;
+  self.n_flop_clips = 0;
+
+  self.bb_x = 0;
+  self.bb_y = 0;
+  self.bb_w = 0;
+  self.bb_h = 0;
+
+  var flip_flop = 0;
+
+  for(var i = 0; i < 100; i++)
+  {
+    flip_clips[i+0] = 0;
+    flip_clips[i+1] = 0;
+    flip_clips[i+2] = 0;
+    flip_clips[i+3] = 0;
+  }
+  for(var i = 0; i < 100; i++)
+  {
+    flop_clips[i+0] = 0;
+    flop_clips[i+1] = 0;
+    flop_clips[i+2] = 0;
+    flop_clips[i+3] = 0;
+  }
+
+  var index;
+
+  self.hijack_clip_bb = function(offx,offy,maxx,maxy,clip,ctx)
+  {
+    //if(floor(offx) != offx || floor(offy) != offy)
+      //console.log(offx,offy);
+    ctx.save();
+    ctx.beginPath();
+    if(self.n_flip_clips+self.n_flop_clips)
+    {
+      var x = self.bb_x+offx;
+      var y = self.bb_y+offy;
+      var w = self.bb_w+1;
+      var h = self.bb_h+1;
+      if(x < 0) { w += x; x = 0; }
+      if(y < 0) { h += y; y = 0; }
+      if(x+w > maxx) w -= x+w-maxx;
+      if(y+h > maxy) h -= y+h-maxy;
+      ctx.rect(x,y,w,h);
+      if(clip) ctx.clip();
+    }
+  }
+  if(noclip) self.hijack_clip_bb = noop;
+
+  self.hijack_clip = function(offx,offy,maxx,maxy,clip,ctx)
+  {
+    //if(floor(offx) != offx || floor(offy) != offy)
+      //console.log(offx,offy);
+    ctx.save();
+    ctx.beginPath();
+    var x;
+    var y;
+    var w;
+    var h;
+    for(var i = 0; i < self.n_flip_clips; i++)
+    {
+      index = i*4;
+      x = flip_clips[index+0]+offx;
+      y = flip_clips[index+1]+offy;
+      w = flip_clips[index+2];
+      h = flip_clips[index+3];
+      if(x < 0) { w += x; x = 0; }
+      if(y < 0) { h += y; y = 0; }
+      if(x+w > maxx) w -= x+w-maxx;
+      if(y+h > maxy) h -= y+h-maxy;
+      ctx.rect(x,y,w,h);
+    }
+    for(var i = 0; i < self.n_flop_clips; i++)
+    {
+      index = i*4;
+      x = flop_clips[index+0]+offx;
+      y = flop_clips[index+1]+offy;
+      w = flop_clips[index+2];
+      h = flop_clips[index+3];
+      if(x < 0) { w += x; x = 0; }
+      if(y < 0) { h += y; y = 0; }
+      if(x+w > maxx) w -= x+w-maxx;
+      if(y+h > maxy) h -= y+h-maxy;
+      ctx.rect(x,y,w,h);
+    }
+    if(clip) ctx.clip();
+  }
+  if(noclip) self.hijack_clip = noop;
+
+  self.hijack_unclip = function(ctx)
+  {
+    ctx.restore();
+  }
+  if(noclip) self.hijack_unclip = noop;
+
+  self.clip_bb = function()
+  {
+    if(!self.enabled) return;
+    self.ctx.save();
+    self.ctx.beginPath();
+    if(self.n_flip_clips+self.n_flop_clips)
+    self.ctx.rect(self.bb_x, self.bb_y, self.bb_w, self.bb_h);
+    self.ctx.clip();
+  }
+  if(noclip) self.clip_bb = noop;
+
+  self.clip = function()
+  {
+    if(!self.enabled) return;
+    self.ctx.save();
+    self.ctx.beginPath();
+    for(var i = 0; i < self.n_flip_clips; i++)
+    {
+      index = i*4;
+      self.ctx.rect(flip_clips[index+0],flip_clips[index+1],flip_clips[index+2],flip_clips[index+3]);
+    }
+    for(var i = 0; i < self.n_flop_clips; i++)
+    {
+      index = i*4;
+      self.ctx.rect(flop_clips[index+0],flop_clips[index+1],flop_clips[index+2],flop_clips[index+3]);
+    }
+    self.ctx.clip();
+  }
+  if(noclip) self.clip = noop;
+
+  self.unclip = function()
+  {
+    if(!self.enabled) return;
+    self.hijack_unclip(self.ctx);
+  }
+  if(noclip) self.unclip = noop;
+
+  self.debug = function()
+  {
+    self.ctx.save();
+    if(flip_flop)
+    {
+      console.log(self.n_flip_clips);
+      self.ctx.lineWidth = 2;
+      self.ctx.strokeStyle = "#FF0000";
+      for(var i = 0; i < self.n_flop_clips; i++)
+      {
+        index = i*4;
+        self.ctx.strokeRect(flop_clips[index+0],flop_clips[index+1],flop_clips[index+2],flop_clips[index+3]);
+      }
+      self.ctx.lineWidth = 0.5;
+      self.ctx.strokeStyle = "#00FF00";
+      for(var i = 0; i < self.n_flip_clips; i++)
+      {
+        index = i*4;
+        self.ctx.strokeRect(flip_clips[index+0],flip_clips[index+1],flip_clips[index+2],flip_clips[index+3]);
+      }
+    }
+    else
+    {
+      console.log(self.n_flop_clips);
+      self.ctx.lineWidth = 2;
+      self.ctx.strokeStyle = "#FF0000";
+      for(var i = 0; i < self.n_flip_clips; i++)
+      {
+        index = i*4;
+        self.ctx.strokeRect(flip_clips[index+0],flip_clips[index+1],flip_clips[index+2],flip_clips[index+3]);
+      }
+      self.ctx.lineWidth = 0.5;
+      self.ctx.strokeStyle = "#00FF00";
+      for(var i = 0; i < self.n_flop_clips; i++)
+      {
+        index = i*4;
+        self.ctx.strokeRect(flop_clips[index+0],flop_clips[index+1],flop_clips[index+2],flop_clips[index+3]);
+      }
+    }
+    if(self.n_flip_clips+self.n_flop_clips)
+    self.ctx.strokeRect(self.bb_x,self.bb_y,self.bb_w,self.bb_h);
+    else
+    self.ctx.strokeRect(10,10,10,10);
+    self.ctx.restore();
+  }
+  if(noclip) self.debug = noop;
+
+  self.register = function(x,y,w,h)
+  {
+    //if(floor(x) != x || floor(y) != y || floor(w) != w || floor(h) != h)
+      //console.log(x,y,w,h);
+    if(flip_flop)
+    {
+      if(!self.n_flip_clips)
+      {
+        flip_bb_x = x;
+        flip_bb_y = y;
+        flip_bb_w = w;
+        flip_bb_h = h;
+      }
+      else
+      {
+        flip_bb_w += flip_bb_x;
+        flip_bb_h += flip_bb_y;
+        flip_bb_x = min(x,flip_bb_x);
+        flip_bb_y = min(y,flip_bb_y);
+        flip_bb_w = max(x+w,flip_bb_w)-flip_bb_x;
+        flip_bb_h = max(y+h,flip_bb_h)-flip_bb_y;
+      }
+
+      index = self.n_flip_clips*4;
+      flip_clips[index+0] = x;
+      flip_clips[index+1] = y;
+      flip_clips[index+2] = w;
+      flip_clips[index+3] = h;
+      self.n_flip_clips++;
+    }
+    else
+    {
+      if(!self.n_flop_clips)
+      {
+        flop_bb_x = x;
+        flop_bb_y = y;
+        flop_bb_w = w;
+        flop_bb_h = h;
+      }
+      else
+      {
+        flop_bb_w += flop_bb_x;
+        flop_bb_h += flop_bb_y;
+        flop_bb_x = min(x,flop_bb_x);
+        flop_bb_y = min(y,flop_bb_y);
+        flop_bb_w = max(x+w,flop_bb_w)-flop_bb_x;
+        flop_bb_h = max(y+h,flop_bb_h)-flop_bb_y;
+      }
+
+      index = self.n_flop_clips*4;
+      flop_clips[index+0] = x;
+      flop_clips[index+1] = y;
+      flop_clips[index+2] = w;
+      flop_clips[index+3] = h;
+      self.n_flop_clips++;
+    }
+  }
+  if(noclip) self.register = noop;
+
+  self.safe_register = function(x,y,w,h)
+  {
+    var nx = floor(x);
+    var ny = floor(y);
+    w = ceil(w+nx-x);
+    h = ceil(h+ny-y);
+    if(x < 0) { w += x; x = 0; }
+    if(y < 0) { h += y; y = 0; }
+    self.register(x,y,w,h);
+  }
+  if(noclip) self.safe_register = noop;
+
+  self.get_bb = function()
+  {
+    if(!self.n_flop_clips)
+    {
+      self.bb_x = flip_bb_x;
+      self.bb_y = flip_bb_y;
+      self.bb_w = flip_bb_w;
+      self.bb_h = flip_bb_h;
+    }
+    else if(!self.n_flip_clips)
+    {
+      self.bb_x = flop_bb_x;
+      self.bb_y = flop_bb_y;
+      self.bb_w = flop_bb_w;
+      self.bb_h = flop_bb_h;
+    }
+    else
+    {
+      self.bb_x = min(flip_bb_x,flop_bb_x);
+      self.bb_y = min(flip_bb_y,flop_bb_y);
+      self.bb_w = max(flip_bb_x+flip_bb_w,flop_bb_x+flop_bb_w)-self.bb_x;
+      self.bb_h = max(flip_bb_y+flip_bb_h,flop_bb_y+flop_bb_h)-self.bb_y;
+    }
+  }
+  if(noclip) self.get_bb = noop;
+
+  self.flip = function()
+  {
+    if(flip_flop)
+      self.n_flop_clips = 0;
+    else
+      self.n_flip_clips = 0;
+    flip_flop = !flip_flop;
+  }
+  if(noclip) self.flip = noop;
+
+}
 
 function drawArrow(sx,sy,ex,ey,w,ctx)
 {
   var dx = ex-sx;
   var dy = ey-sy;
   var dd = Math.sqrt(dx*dx+dy*dy);
-  var ox = -dy;
-  var oy = dx;
-  var od = Math.sqrt(ox*ox+oy*oy);
-  var ox = (ox/od)*w;
-  var oy = (oy/od)*w;
+  var ox = (-dy/dd)*w;
+  var oy = (dx/dd)*w;
   ctx.beginPath();
   ctx.moveTo(sx,sy);
   ctx.lineTo(ex,ey);
   ctx.moveTo(sx+(dx/dd*(dd-w))+ox,sy+(dy/dd*(dd-w))+oy);
   ctx.lineTo(ex,ey);
   ctx.lineTo(sx+(dx/dd*(dd-w))-ox,sy+(dy/dd*(dd-w))-oy);
+  ctx.closePath();
   ctx.stroke();
 }
 
@@ -518,6 +1127,24 @@ var drawOutlineText = function(txt,x,y,b,color,ctx)
   ctx.fillText(txt,x  ,y-b);
 }
 
+var drawFullOutlineText = function(txt,x,y,b,co,ci,r,ctx)
+{
+  if(r) { x = round(x); y = round(y); }
+  if(co)
+  {
+    ctx.fillStyle = co;
+    var n = 16;
+    for(var i = 0; i < n; i++)
+      ctx.fillText(txt,x-b*cos(i/n*twopi),y-b*sin(i/n*twopi));
+  }
+
+  if(ci)
+  {
+    ctx.fillStyle = ci;
+    ctx.fillText(txt,x,y);
+  }
+}
+
 var drawLine = function(ax,ay,bx,by,ctx)
 {
   ctx.beginPath();
@@ -566,6 +1193,28 @@ var drawGrid = function(center_x, center_y, unit_x, unit_y, w, h, ctx)
     t = invlerp(0,h);
   }
 }
+
+var textVCenterOff = function(txt,font,off,canvas)
+{
+  var w = canvas.width;
+  var h = canvas.height;
+  canvas.context.fillStyle = white;
+  canvas.context.fillRect(0,0,w,h);
+  canvas.context.font = font;
+  canvas.context.fillStyle = black;
+  canvas.context.textAlign = "center";
+  var y = floor(h*off);
+  canvas.context.fillText(txt,w/2,y);
+  var data = canvas.context.getImageData(0,0,w,h);
+  var early_y = h-1;
+  var late_y = 0;
+  data = data.data;
+  for(var i = 0;       i < w*h*4; i++) if(data[i] != 255) { early_y = floor(i/(4*w)); break; }
+  for(var i = w*h*4-1; i >= 0;    i--) if(data[i] != 255) { late_y  = floor(i/(4*w)); break; }
+  var h = late_y-early_y;
+  return y-(late_y-h/2);
+}
+
 
 //vector
 var addvec = function(a,b,r)
@@ -617,19 +1266,435 @@ var avevec = function(a,b,r)
   r.y = (a.y+b.y)/2.;
 }
 
-var spritesheet = function(img)
+var atlas = function()
 {
   var self = this;
 
-  self.img = img;
-  self.sprites = [];
+  //used to (naively!) keep track of where new sprites go
+  self.x = 0;
+  self.y = 0;
+  self.row_h = 0;
+  //dimensions of whole atlas
+  self.w = 0;
+  self.h = 0;
+  //target of current sprite
+  self.ex = 0;
+  self.ey = 0;
 
-  //push sprites
-  //self.sprites.push({x:2,y:160,w:w,h:h});
+  self.imgs = [];
+  self.pimgs = [];
+  self.context = 0;
+  self.n_sprites = 0;
+  self.sprite_meta = []; //n,x,y,w,h,inx,iny,inw,inh
+  self.sprite_meta_n = 9;
 
-  self.drawSprite = function(i,x,y,w,h)
+  self.debug = urlp.debug;
+  self.debug = 0;
+
+  self.init = function(w,h)
   {
-    ctx.drawImage(self.img,self.sprites[i].x,self.sprites[i].y,self.sprites[i].w,self.sprites[i].h,x,y,w,h);
+    self.w = w;
+    self.h = h;
+    self.nextAtlas();
+  }
+  self.img_onload = function()
+  {
+    for(var i = 0; i < self.pimgs.length; i++)
+    {
+      var pimg = self.pimgs[i];
+      if(pimg && pimg.naturalWidth != 0)
+      {
+        var img = self.imgs[i];
+        pimg.onload = 0;
+        //HACK TO APPEASE APPLE BUG
+        cpa_dealloc(img.width,img.height,"atlas"+i+" (load)");
+        img.width = 0; img.height = 0;
+        if(self.context == img.context) self.context = 0;
+        img = 0;
+        self.imgs[i] = pimg;
+        self.pimgs[i] = 0;
+      }
+    }
+  }
+  self.commit = function()
+  {
+    for(var i = 0; i < self.imgs.length; i++)
+    {
+      var img = self.imgs[i];
+      if(img.tagName == "CANVAS" && !self.pimgs[i])
+        self.commiti(i);
+    }
+  }
+  self.commiti = function(i)
+  {
+    self.pimgs[i] = new Image();
+    self.pimgs[i].onload = self.img_onload;
+    self.pimgs[i].src = self.imgs[i].toDataURL("image/png");
+  }
+  self.nextAtlas = function()
+  {
+    if(self.imgs.length) self.commiti(self.imgs.length-1);
+    var i = self.imgs.length;
+    self.imgs[i] = GenIcon(self.w,self.h);
+    cpa_alloc(self.w,self.h,"atlas"+i);
+    self.x = 0;
+    self.y = 0;
+    self.row_h = 0;
+    self.context = self.imgs[i].context;
+    self.context.fillStyle = "#00FF00";
+    if(self.debug) self.context.fillRect(0,0,self.w,self.h);
+  }
+
+  self.sprite_w = function(i)
+  {
+    return self.sprite_meta[self.sprite_meta_n*i+3];
+  }
+  self.sprite_h = function(i)
+  {
+    return self.sprite_meta[self.sprite_meta_n*i+4];
+  }
+
+  self.editSprite = function(i)
+  {
+    var index = self.sprite_meta_n*i;
+    self.ex += self.sprite_meta[index+1]-self.sprite_meta[index+5];
+    self.ey += self.sprite_meta[index+2]-self.sprite_meta[index+6];
+    self.context.save();
+    self.context.beginPath();
+    self.context.rect(self.sprite_meta[index+1],self.sprite_meta[index+2],self.sprite_meta[index+7],self.sprite_meta[index+8]);
+    self.context.clip();
+    //self.context.translate(self.sprite_meta[index+1]-self.sprite_meta[index+5],self.sprite_meta[index+2]-self.sprite_meta[index+6]);
+  }
+  self.commitSprite = function()
+  {
+    self.ex = 0;
+    self.ey = 0;
+    self.context.restore();
+    //self.context.resetTransform();
+  }
+  self.getWholeSprite = function(x,y,w,h)
+  {
+    var i = self.n_sprites;
+    self.n_sprites++;
+    var index = self.sprite_meta_n*i;
+    self.sprite_meta[index+0] = self.imgs.length-1;
+    self.sprite_meta[index+1] = x;
+    self.sprite_meta[index+2] = y;
+    self.sprite_meta[index+3] = w;
+    self.sprite_meta[index+4] = h;
+    self.sprite_meta[index+5] = 0;
+    self.sprite_meta[index+6] = 0;
+    self.sprite_meta[index+7] = w;
+    self.sprite_meta[index+8] = h;
+    self.context.clearRect(x,y,w,h);
+    if(self.debug) self.context.strokeRect(x,y,w,h);
+    self.editSprite(i);
+    return i;
+  }
+  self.getPartSprite = function(x,y,w,h,inx,iny,inw,inh)
+  {
+    var i = self.n_sprites;
+    self.n_sprites++;
+    var index = self.sprite_meta_n*i;
+    self.sprite_meta[index+0] = self.imgs.length-1;
+    self.sprite_meta[index+1] = x;
+    self.sprite_meta[index+2] = y;
+    self.sprite_meta[index+3] = w;
+    self.sprite_meta[index+4] = h;
+    self.sprite_meta[index+5] = inx;
+    self.sprite_meta[index+6] = iny;
+    self.sprite_meta[index+7] = inw;
+    self.sprite_meta[index+8] = inh;
+    self.context.clearRect(x,y,inw,inh);
+    if(self.debug) self.context.strokeRect(x,y,inw,inh);
+    self.editSprite(i);
+    return i;
+  }
+  self.collideWholeSprite = function(x,y,w,h)
+  {
+    var index = 0;
+    if(x+w > self.w) return 1;
+    for(var i = 0; i < self.n_sprites; i++)
+    {
+      index = self.sprite_meta_n*i;
+      if(self.sprite_meta[index+0] != self.imgs.length-1) continue;
+      var sx = self.sprite_meta[index+1];
+      var sy = self.sprite_meta[index+2];
+      var sw = self.sprite_meta[index+7];
+      var sh = self.sprite_meta[index+8];
+      if(sx < x+w && x < sx+sw && sy < y+h && y < sy+sh) return 1;
+    }
+    return 0;
+  }
+  self.nextRow = function()
+  {
+    self.x = 0;
+    self.y += self.row_h;
+    self.row_h = 0;
+  }
+  self.nextWholeSprite = function(w,h)
+  {
+    w = ceil(w);
+    h = ceil(h);
+    if(self.x+w > self.w) self.nextRow();
+    if(h > self.row_h) self.row_h = h;
+    if(self.y+h > self.h) self.nextAtlas();
+    var i = self.getWholeSprite(self.x,self.y,w,h);
+    self.x += w;
+    return i;
+  }
+  self.nextPartSprite = function(w,h,inx,iny,inw,inh)
+  {
+    w = ceil(w);
+    h = ceil(h);
+    inx = floor(inx);
+    iny = floor(iny);
+    inw = ceil(inw);
+    inh = ceil(inh);
+    if(self.x+inw > self.w) self.nextRow();
+    if(inh > self.row_h) self.row_h = inh;
+    if(self.y+inh > self.h) self.nextAtlas();
+    var i = self.getPartSprite(self.x,self.y,w,h,inx,iny,inw,inh);
+    self.x += inw;
+    return i;
+  }
+  self.fitWholeSprite = function(w,h)
+  {
+    w = ceil(w);
+    h = ceil(h);
+
+    var sx;
+    var sy;
+    var sw;
+    var sh;
+
+    var x;
+    var y;
+
+    var best_i = -1;
+    var best_y = 99999999;
+    var best_x = 99999999;
+    var best_mode = 0;
+
+    var index = 0;
+    for(var i = 0; i < self.n_sprites; i++)
+    {
+      index = self.sprite_meta_n*i;
+      if(self.sprite_meta[index+0] != self.imgs.length-1) continue;
+      sx = self.sprite_meta[index+1];
+      sy = self.sprite_meta[index+2];
+      sw = self.sprite_meta[index+7];
+      sh = self.sprite_meta[index+8];
+      x = sx+sw;
+      y = sy;
+      if((y < best_y || (y == best_y && x < best_x)) && !self.collideWholeSprite(x,y,w,h))
+      {
+        best_i = i;
+        best_y = y;
+        best_x = x;
+        best_mode = 0;
+      }
+      x = sx;
+      y = sy+sh;
+      if((y < best_y || (y == best_y && x < best_x)) && !self.collideWholeSprite(x,y,w,h))
+      {
+        best_i = i;
+        best_y = y;
+        best_x = x;
+        best_mode = 1;
+      }
+    }
+
+    if(best_i > -1)
+    {
+      index = self.sprite_meta_n*best_i;
+      sx = self.sprite_meta[index+1];
+      sy = self.sprite_meta[index+2];
+      sw = self.sprite_meta[index+7];
+      sh = self.sprite_meta[index+8];
+      switch(best_mode)
+      {
+        case 0:
+          x = sx+sw;
+          y = sy;
+          break;
+        case 1:
+          x = sx;
+          y = sy+sh;
+          break;
+      }
+
+      if(y+h > self.y+self.row_h)
+      {
+        if(x == 0) //new row
+        {
+          self.nextRow();
+          self.x = w;
+          self.row_h = h;
+        }
+        else //extend current row
+          self.row_h = y+h-self.y;
+      }
+      if(y+h > self.y && x+w > self.x) self.x = x+w;
+      if(y+h > self.h) { self.nextAtlas(); x = 0; y = 0; }
+      return self.getWholeSprite(x,y,w,h);
+    }
+
+    return self.nextWholeSprite(w,h);
+  }
+  self.fitPartSprite = function(w,h,inx,iny,inw,inh)
+  {
+    w = ceil(w);
+    h = ceil(h);
+    inx = floor(inx);
+    iny = floor(iny);
+    inw = ceil(inw);
+    inh = ceil(inh);
+
+    var sx;
+    var sy;
+    var sw;
+    var sh;
+
+    var x;
+    var y;
+
+    var best_i = -1;
+    var best_y = 99999999;
+    var best_mode = 0;
+
+    var index = 0;
+    for(var i = 0; i < self.n_sprites; i++)
+    {
+      index = self.sprite_meta_n*i;
+      if(self.sprite_meta[index+0] != self.imgs.length-1) continue;
+      sx = self.sprite_meta[index+1];
+      sy = self.sprite_meta[index+2];
+      sw = self.sprite_meta[index+7];
+      sh = self.sprite_meta[index+8];
+      x = sx+sw;
+      y = sy;
+      if(y < best_y && !self.collideWholeSprite(x,y,inw,inh))
+      {
+        best_i = i;
+        best_y = y;
+        best_mode = 0;
+      }
+      x = sx;
+      y = sy+sh;
+      if(y < best_y && !self.collideWholeSprite(x,y,inw,inh))
+      {
+        best_i = i;
+        best_y = y;
+        best_mode = 1;
+      }
+    }
+
+    if(best_i > -1)
+    {
+      index = self.sprite_meta_n*best_i;
+      sx = self.sprite_meta[index+1];
+      sy = self.sprite_meta[index+2];
+      sw = self.sprite_meta[index+7];
+      sh = self.sprite_meta[index+8];
+      switch(best_mode)
+      {
+        case 0:
+          x = sx+sw;
+          y = sy;
+          break;
+        case 1:
+          x = sx;
+          y = sy+sh;
+          break;
+      }
+
+      if(y+inh > self.y+self.row_h)
+      {
+        if(x == 0) //new row
+        {
+          self.nextRow();
+          self.x = inw;
+          self.row_h = inh;
+        }
+        else //extend current row
+          self.row_h = y+inh-self.y;
+      }
+      if(y+inh > self.y && x+inw > self.x) self.x = x+inw;
+      if(y+inh > self.h) { self.nextAtlas(); x = 0; y = 0; }
+      return self.getPartSprite(x,y,w,h,inx,iny,inw,inh);
+    }
+
+    return self.nextPartSprite(w,h,inx,iny,inw,inh);
+  }
+
+  self.drawWholeSprite = function(i,x,y,w,h,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],self.sprite_meta[index+3],self.sprite_meta[index+4],x,y,w,h);
+  }
+  self.drawPartSprite = function(i,x,y,w,h,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    var ws = self.sprite_meta[index+3]/w;
+    var hs = self.sprite_meta[index+4]/h;
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],self.sprite_meta[index+7],self.sprite_meta[index+8],x+self.sprite_meta[index+5]*ws,y+self.sprite_meta[index+6]*hs,self.sprite_meta[index+7]*ws,self.sprite_meta[index+8]*hs);
+  }
+
+  self.blitWholeSprite = function(i,x,y,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    var w = self.sprite_meta[index+3];
+    var h = self.sprite_meta[index+4];
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],w,h,x,y,w,h);
+  }
+  self.blitPartSprite = function(i,x,y,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    var inw = self.sprite_meta[index+7];
+    var inh = self.sprite_meta[index+8];
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],inw,inh,x+self.sprite_meta[index+5],y+self.sprite_meta[index+6],inw,inh);
+  }
+  self.blitWholeSpriteCentered = function(i,x,y,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    var w = self.sprite_meta[index+3];
+    var h = self.sprite_meta[index+4];
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],w,h,floor(x-w/2),floor(y-h/2),w,h);
+  }
+  self.blitWholeSpriteCenteredOnBoard = function(i,x,y,bw,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    var w = self.sprite_meta[index+3];
+    var h = self.sprite_meta[index+4];
+    x = floor(x-w/2);
+    y = floor(y-h/2);
+    if(x+w > bw) x -= (x+w)-bw;
+    if(x < 0) x = 0;
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],w,h,x,y,w,h);
+  }
+  self.blitPartSpriteCentered = function(i,x,y,ctx)
+  {
+    var index = self.sprite_meta_n*i;
+    var n = self.sprite_meta[index+0];
+    if(!n) n = 0;
+    var inw = self.sprite_meta[index+7];
+    var inh = self.sprite_meta[index+8];
+    var w = self.sprite_meta[index+3];
+    var h = self.sprite_meta[index+4];
+    ctx.drawImage(self.imgs[n],self.sprite_meta[index+1],self.sprite_meta[index+2],inw,inh,floor(x-w/2+self.sprite_meta[index+5]),floor(y-h/2+self.sprite_meta[index+6]),inw,inh);
   }
 }
 
@@ -693,7 +1758,7 @@ var bounce2 = function(targetx,targety,vx,vy,velx,vely,pull,drag)
   }
 }
 
-function drawCanvMaskedImage(image,x,y,w,h,canv,ctx)
+function drawCanvMaskedImage(image,x,y,w,h,canvas,ctx)
 {
   var srcx = 0;
   var srcy = 0;
@@ -716,16 +1781,16 @@ function drawCanvMaskedImage(image,x,y,w,h,canv,ctx)
     h += y;
     y = 0;
   }
-  if(x+w > canv.width)
+  if(x+w > canvas.width)
   {
-    p = (canv.width-x)/w;
-    w = canv.width-x;
+    p = (canvas.width-x)/w;
+    w = canvas.width-x;
     srcw *= p;
   }
-  if(y+h > canv.height)
+  if(y+h > canvas.height)
   {
-    p = (canv.height-y)/h;
-    h = canv.height-y;
+    p = (canvas.height-y)/h;
+    h = canvas.height-y;
     srch *= p;
   }
   ctx.drawImage(image,srcx,srcy,srcw,srch,x,y,w,h);
@@ -754,45 +1819,56 @@ function drawImageHeightCentered(image,x,y,h,ctx)
   var w = image.width*h/image.height;
   ctx.drawImage(image,x-w/2,y-h/2,w,h);
 }
-function drawImageBox(image,box,ctx)
+function drawImageBB(image,bb,ctx)
 {
-  ctx.drawImage(image,box.x,box.y,box.w,box.h);
+  ctx.drawImage(image,bb.x,bb.y,bb.w,bb.h);
 }
-function strokeBox(box,ctx)
+function drawImageSizeCentered(image,x,y,s,ctx)
 {
-  ctx.strokeRect(box.x,box.y,box.w,box.h);
+  var w = image.width*s/image.height;
+  var h = s;
+  if(w > s)
+  {
+    h = h*s/w;
+    w = s;
+  }
+  ctx.drawImage(image,x-w/2,y-h/2,w,h);
 }
-function fillBox(box,ctx)
+function strokeBB(bb,ctx)
 {
-  ctx.fillRect(box.x,box.y,box.w,box.h);
+  ctx.strokeRect(bb.x,bb.y,bb.w,bb.h);
 }
-function fillRBox(box,r,ctx)
+function fillBB(bb,ctx)
+{
+  ctx.fillRect(bb.x,bb.y,bb.w,bb.h);
+}
+function fillRBB(bb,r,ctx)
 {
   ctx.beginPath();
-  ctx.moveTo(box.x+r,box.y);
-  ctx.lineTo(box.x+box.w-r,box.y);
-  ctx.quadraticCurveTo(box.x+box.w,box.y,box.x+box.w,box.y+r);
-  ctx.lineTo(box.x+box.w,box.y+box.h-r);
-  ctx.quadraticCurveTo(box.x+box.w,box.y+box.h,box.x+box.w-r,box.y+box.h);
-  ctx.lineTo(box.x+r,box.y+box.h);
-  ctx.quadraticCurveTo(box.x,box.y+box.h,box.x,box.y+box.h-r);
-  ctx.lineTo(box.x,box.y+r);
-  ctx.quadraticCurveTo(box.x,box.y,box.x+r,box.y);
+  ctx.moveTo(bb.x+r,bb.y);
+  ctx.lineTo(bb.x+bb.w-r,bb.y);
+  ctx.quadraticCurveTo(bb.x+bb.w,bb.y,bb.x+bb.w,bb.y+r);
+  ctx.lineTo(bb.x+bb.w,bb.y+bb.h-r);
+  ctx.quadraticCurveTo(bb.x+bb.w,bb.y+bb.h,bb.x+bb.w-r,bb.y+bb.h);
+  ctx.lineTo(bb.x+r,bb.y+bb.h);
+  ctx.quadraticCurveTo(bb.x,bb.y+bb.h,bb.x,bb.y+bb.h-r);
+  ctx.lineTo(bb.x,bb.y+r);
+  ctx.quadraticCurveTo(bb.x,bb.y,bb.x+r,bb.y);
   ctx.closePath();
   ctx.fill();
 }
-function strokeRBox(box,r,ctx)
+function strokeRBB(bb,r,ctx)
 {
   ctx.beginPath();
-  ctx.moveTo(box.x+r,box.y);
-  ctx.lineTo(box.x+box.w-r,box.y);
-  ctx.quadraticCurveTo(box.x+box.w,box.y,box.x+box.w,box.y+r);
-  ctx.lineTo(box.x+box.w,box.y+box.h-r);
-  ctx.quadraticCurveTo(box.x+box.w,box.y+box.h,box.x+box.w-r,box.y+box.h);
-  ctx.lineTo(box.x+r,box.y+box.h);
-  ctx.quadraticCurveTo(box.x,box.y+box.h,box.x,box.y+box.h-r);
-  ctx.lineTo(box.x,box.y+r);
-  ctx.quadraticCurveTo(box.x,box.y,box.x+r,box.y);
+  ctx.moveTo(bb.x+r,bb.y);
+  ctx.lineTo(bb.x+bb.w-r,bb.y);
+  ctx.quadraticCurveTo(bb.x+bb.w,bb.y,bb.x+bb.w,bb.y+r);
+  ctx.lineTo(bb.x+bb.w,bb.y+bb.h-r);
+  ctx.quadraticCurveTo(bb.x+bb.w,bb.y+bb.h,bb.x+bb.w-r,bb.y+bb.h);
+  ctx.lineTo(bb.x+r,bb.y+bb.h);
+  ctx.quadraticCurveTo(bb.x,bb.y+bb.h,bb.x,bb.y+bb.h-r);
+  ctx.lineTo(bb.x,bb.y+r);
+  ctx.quadraticCurveTo(bb.x,bb.y,bb.x+r,bb.y);
   ctx.closePath();
   ctx.stroke();
 }
@@ -849,6 +1925,26 @@ function strokeRRect(x,y,w,h,r,ctx)
   ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
   ctx.stroke();
+}
+
+var UUIDint = function() //17 digits = 64 bit int; each second guaranteed unique, within a second = 1/99999 chance of collision (aka "not unique")
+{
+  var d = new Date();
+  var id = (""+d.getFullYear()).substring(2); //2
+  if(d.getMonth() < 10) id += "0";
+  id += d.getMonth(); //4
+  if(d.getDay() < 10) id += "0";
+  id += d.getDay(); //6
+  if(d.getHours() < 10) id += "0";
+  id += d.getHours(); //8
+  if(d.getMinutes() < 10)  id += "0";
+  id += d.getMinutes(); //10
+  if(d.getSeconds() < 10)  id += "0";
+  id += d.getSeconds(); //12
+  for(var i = 0; i < 5; i++)
+    id += Math.floor(rand()*10); //17
+
+  return parseInt(id);
 }
 
 //straight up stolen from the internet
@@ -1755,5 +2851,19 @@ var running_deriv_variable_graph = function()
     ctx.lineWidth = 1;
     ctx.strokeRect(self.x,self.y,self.w,self.h);
   }
+}
+
+function fullscreen()
+{
+  var el = document.body;
+  var requestMethod = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if(requestMethod) requestMethod.call(el);
+}
+
+function unfullscreen()
+{
+  var el = document;
+  var exitMethod = el.exitFullscreen || el.webkitExitFullscreen || el.mozCancelFullScreen || el.msExitFullscreen;
+  if(exitMethod) exitMethod.call(el);
 }
 

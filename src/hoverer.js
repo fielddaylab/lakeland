@@ -1,12 +1,7 @@
-var PersistentHoverer = function(init)
+var Hoverer = function(init)
 {
-  var default_init =
-  {
-    source:document.createElement('div')
-  }
-
   var self = this;
-  doMapInitDefaults(self,init,default_init);
+  self.source = init.source;
 
   var evts = [];
   var ENUM = 0;
@@ -15,23 +10,24 @@ var PersistentHoverer = function(init)
   var evt_types = [];
   self.attach = function() //will get auto-called on creation
   {
-    if(platform == "PC")
+    if(platform == PLATFORM_PC)
     {
       self.source.addEventListener('mousemove', hover, false);
       window.addEventListener('mousemove', detectOut, false);
     }
-    else if(platform == "MOBILE")
+    else if(platform == PLATFORM_MOBILE)
       ; //no hover on mobile, dummy
   }
   self.detach = function()
   {
-    if(platform == "PC")
+    if(platform == PLATFORM_PC)
     {
       self.source.removeEventListener('mousemove', hover);
       window.removeEventListener('mousemove', detectOut, false);
     }
-    else if(platform == "MOBILE")
+    else if(platform == PLATFORM_MOBILE)
       ; //no hover on mobile, dummy
+    self.source = 0;
   }
 
   function hover(evt)
@@ -87,12 +83,60 @@ var PersistentHoverer = function(init)
               hoverable.unhover(evt);
             }
           }
-
-          if((hoverable.shouldHover && hoverable.shouldHover(evt)) || (!hoverable.shouldHover && doEvtWithinBB(evt,hoverable)))
+          else if(!hoverable.hovering)
           {
-            hoverable.hovering = true;
-            hoverable.hover(evt);
-            hit = true;
+            if((hoverable.shouldHover && hoverable.shouldHover(evt)) || (!hoverable.shouldHover && doEvtWithinBB(evt,hoverable)))
+            {
+              hoverable.hovering = true;
+              hoverable.hover(evt);
+              hit = true;
+            }
+          }
+        }
+        break;
+      }
+    }
+    return hit;
+  }
+  self.quick_filter = function(x,y,w,h, hover) //NOT DONE!
+  {
+    var hit = false;
+    var evt;
+    for(var i = 0; i < evts.length; i++)
+    {
+      evt = evts[i];
+      switch(evt_types[i])
+      {
+        case EVT_TYPE_UNHOVER:
+        {
+          if(hoverable.hovering)
+          {
+            if(!doEvtWithinBB(evt,hoverable))
+            {
+              hoverable.hovering = false;
+              hoverable.unhover(evt);
+            }
+          }
+        }
+        break;
+        case EVT_TYPE_AMBIGUOUS:
+        {
+          if(hoverable.hovering)
+          {
+            if(!doEvtWithinBB(evt,hoverable))
+            {
+              hoverable.hovering = false;
+              hoverable.unhover(evt);
+            }
+          }
+          else if(!hoverable.hovering)
+          {
+            if(doEvtWithinBB(evt,hoverable))
+            {
+              hoverable.hovering = true;
+              hoverable.hover(evt);
+              hit = true;
+            }
           }
         }
         break;

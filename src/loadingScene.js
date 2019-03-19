@@ -1,20 +1,10 @@
-var LoadingScene = function(game, stage)
+var LoadingScene = function()
 {
   var self = this;
 
-  var canv;
-  var canvas;
-  var ctx;
-  self.resize = function(s)
+  self.resize = function()
   {
-    stage = s;
-    canv = stage.canv;
-    canvas = canv.canvas;
-    ctx = canv.context;
-
-    //ctx.font = text_font;
   }
-  self.resize(stage);
 
   var pad;
   var barw;
@@ -40,9 +30,7 @@ var LoadingScene = function(game, stage)
   var font_wrongdata;
   var font_canv;
   var font_canv_s;
-  var n_audios_loaded;
-  var audio_srcs;
-  var audios;
+  gg.aud_wrangler;
 
   var loadingImageLoaded = function()
   {
@@ -56,17 +44,6 @@ var LoadingScene = function(game, stage)
   {
     n_fonts_loaded++;
   };
-  var audioLoaded = function()
-  {
-    n_audios_loaded++;
-  };
-
-  self.resize = function(stage)
-  {
-    canv = stage.canv;
-    canvas = canv.canvas;
-    ctx = canv.context;
-  }
 
   var tryfont = function()
   {
@@ -78,8 +55,9 @@ var LoadingScene = function(game, stage)
 
   self.ready = function()
   {
+    self.resize();
     pad = 20;
-    barw = (canv.width-(2*pad));
+    barw = (gg.canvas.width-(2*pad));
 
     loading_percent_loaded = 0;
     ticks_since_loading_ready = 0;
@@ -99,9 +77,7 @@ var LoadingScene = function(game, stage)
     n_fonts_loaded = 0;
     font_srcs = [];
     font_loaded = [];
-    n_audios_loaded = 0;
     audio_srcs = [];
-    audios = [];
 
     //put asset paths in loading_img_srcs (for assets used on loading screen itself)
     //loading_img_srcs.push("assets/loading_img.png");
@@ -142,14 +118,9 @@ var LoadingScene = function(game, stage)
 
     //put asset paths in audio_srcs
     //audio_srcs.push("assets/audio.mp3");
+    gg.aud_wrangler = new AudWrangler();
     for(var i = 0; i < audio_srcs.length; i++)
-    {
-      audios[i] = new Audio();
-      audios[i].addEventListener('canplaythrough', audioLoaded, false);
-      audios[i].src = audio_srcs[i];
-      audios[i].load();
-    }
-    audioLoaded(); //call once to prevent 0/0 != 100% bug
+      gg.aud_wrangler.register(audio_srcs[i]);
   };
 
   self.tick = function()
@@ -178,26 +149,27 @@ var LoadingScene = function(game, stage)
     //note- assets used on loading screen itself NOT included in wait
     loading_percent_loaded = n_loading_imgs_loaded/(loading_img_srcs.length+1);
     if(loading_percent_loaded >= 1.0) ticks_since_loading_ready++;
-    percent_loaded = (n_imgs_loaded+n_fonts_loaded+n_audios_loaded)/((img_srcs.length+1)+(font_srcs.length+1)+(audio_srcs.length+1));
+    percent_loaded = (n_imgs_loaded+n_fonts_loaded+(gg.aud_wrangler.auds_loaded+1))/((img_srcs.length+1)+(font_srcs.length+1)+(audio_srcs.length+1));
     if(chase_percent_loaded <= percent_loaded) chase_percent_loaded += 0.01;
     lerp_percent_loaded = lerp(lerp_percent_loaded,percent_loaded,0.1);
     lerp_chase_percent_loaded = lerp(lerp_chase_percent_loaded,chase_percent_loaded,0.1);
     if(percent_loaded >= 1.0) ticks_since_ready++;
     if(ticks_since_ready >= post_load_countdown)
     {
-      if(ticks_since_loading_ready > 1) game.nextScene(); //set 1 = # ticks in preloading sequence
-      //game.nextScene();
+      if(ticks_since_loading_ready > 1) gg.game.nextScene(); //set 1 = # ticks in preloading sequence
+      //gg.game.nextScene();
     }
   };
 
   self.draw = function()
   {
+    var ctx = gg.ctx;
     if(chase_percent_loaded < 1)
     {
       ctx.fillStyle = "#888888";
       ctx.strokeStyle = "#888888";
-      ctx.fillRect(pad,canv.height/2,chase_percent_loaded*barw,1);
-      ctx.strokeRect(pad-1,(canv.height/2)-1,barw+2,3);
+      ctx.fillRect(pad,gg.canvas.height/2,chase_percent_loaded*barw,1);
+      ctx.strokeRect(pad-1,(gg.canvas.height/2)-1,barw+2,3);
     }
 
     if(loading_percent_loaded >= 1)
@@ -206,7 +178,6 @@ var LoadingScene = function(game, stage)
     }
 
 /*
-    ctx.fillStyle = blue;
     var x = 10;
     var y = 30;
     for(var i = 0; i < loading_img_srcs.length; i++)
@@ -242,7 +213,6 @@ var LoadingScene = function(game, stage)
 
   self.cleanup = function()
   {
-    audios = [];//just used them to cache assets in browser; let garbage collector handle 'em.
     imgs = [];//just used them to cache assets in browser; let garbage collector handle 'em.
     loading_imgs = [];//just used them to cache assets in browser; let garbage collector handle 'em.
   };

@@ -1,37 +1,34 @@
-var Hoverer = function(init)
+var PersistentHoverer = function(init)
 {
-  var default_init =
-  {
-    source:document.createElement('div')
-  }
-
   var self = this;
-  doMapInitDefaults(self,init,default_init);
+  self.source = init.source;
 
   var evts = [];
   var ENUM = 0;
   var EVT_TYPE_AMBIGUOUS = ENUM; ENUM++;
   var EVT_TYPE_UNHOVER   = ENUM; ENUM++;
   var evt_types = [];
+  var evt_options = {capture:true,once:false,passive:false};
   self.attach = function() //will get auto-called on creation
   {
-    if(platform == "PC")
+    if(platform == PLATFORM_PC)
     {
-      self.source.addEventListener('mousemove', hover, false);
-      window.addEventListener('mousemove', detectOut, false);
+      self.source.addEventListener('mousemove', hover, evt_options);
+      window.addEventListener('mousemove', detectOut, evt_options);
     }
-    else if(platform == "MOBILE")
+    else if(platform == PLATFORM_MOBILE)
       ; //no hover on mobile, dummy
   }
   self.detach = function()
   {
-    if(platform == "PC")
+    if(platform == PLATFORM_PC)
     {
-      self.source.removeEventListener('mousemove', hover);
-      window.removeEventListener('mousemove', detectOut, false);
+      self.source.removeEventListener('mousemove', hover, evt_options);
+      window.removeEventListener('mousemove', detectOut, evt_options);
     }
-    else if(platform == "MOBILE")
+    else if(platform == PLATFORM_MOBILE)
       ; //no hover on mobile, dummy
+    self.source = 0;
   }
 
   function hover(evt)
@@ -44,6 +41,7 @@ var Hoverer = function(init)
       evt_types.push(EVT_TYPE_UNHOVER);
     else
       evt_types.push(EVT_TYPE_AMBIGUOUS);
+    evt.preventDefault();
   }
   function detectOut(evt)
   {
@@ -54,6 +52,7 @@ var Hoverer = function(init)
       evts.push(evt);
       evt_types.push(EVT_TYPE_UNHOVER);
     }
+    evt.preventDefault();
   }
 
   self.filter = function(hoverable)
@@ -87,14 +86,12 @@ var Hoverer = function(init)
               hoverable.unhover(evt);
             }
           }
-          else if(!hoverable.hovering)
+
+          if((hoverable.shouldHover && hoverable.shouldHover(evt)) || (!hoverable.shouldHover && doEvtWithinBB(evt,hoverable)))
           {
-            if((hoverable.shouldHover && hoverable.shouldHover(evt)) || (!hoverable.shouldHover && doEvtWithinBB(evt,hoverable)))
-            {
-              hoverable.hovering = true;
-              hoverable.hover(evt);
-              hit = true;
-            }
+            hoverable.hovering = true;
+            hoverable.hover(evt);
+            hit = true;
           }
         }
         break;
@@ -109,29 +106,5 @@ var Hoverer = function(init)
   }
 
   self.attach();
-}
-
-//example hoverable- just needs x,y,w,h, hover and unhover callback
-var Hoverable = function(args)
-{
-  var self = this;
-
-  self.x = args.x ? args.x : 0;
-  self.y = args.y ? args.y : 0;
-  self.w = args.w ? args.w : 0;
-  self.h = args.h ? args.h : 0;
-  self.shouldHover = args.shouldHover ? args.shouldHover : function(evt) //optional
-  {
-    return doEvtWithinBB(evt, self);
-  }
-  self.hover = args.hover ? args.hover : function(){};
-  self.unhover = args.unhover ? args.unhover : function(){};
-
-  //nice for debugging purposes
-  self.draw = function(canv)
-  {
-    canv.context.strokeStyle = "#00FF00";
-    canv.context.strokeRect(self.x,self.y,self.w,self.h);
-  }
 }
 

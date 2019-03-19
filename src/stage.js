@@ -1,40 +1,22 @@
 var Stage = function(init)
 {
-  var default_init =
-  {
-    width:640,
-    height:320,
-    container:"stage_container"
-  }
-
   var self = this;
-  doMapInitDefaults(self,init,default_init);
 
-  //javascript is terrible
-  var dpr = window.devicePixelRatio ||
-            1;
-  var tmp_canvas = document.createElement('canvas');
-  var tmp_context = tmp_canvas.getContext('2d');
-  var bspr = tmp_context.webkitBackingStorePixelRatio ||
-             tmp_context.mozBackingStorePixelRatio ||
-             tmp_context.msBackingStorePixelRatio ||
-             tmp_context.oBackingStorePixelRatio ||
-             tmp_context.backingStorePixelRatio ||
-             1;
-  if(init.bspr) bspr = init.bspr;
+  self.width  = init.width;
+  self.height = init.height;
+  self.container = init.container;
+  self.dpr = init.dpr;
+  if(!self.dpr) self.dpr = window.devicePixelRatio;
+  if(!self.dpr) self.dpr = 1;
+  self.canvas = document.createElement('canvas');
+  self.canvas.width  = floor(self.width *self.dpr);
+  self.canvas.height = floor(self.height*self.dpr);
+  self.canvas.style.width = self.width+"px";
+  self.canvas.style.height = self.height+"px";
+  self.s_mod = (self.canvas.width < self.canvas.height ? self.canvas.width : self.canvas.height)/660;
+  self.context = self.canvas.getContext('2d');//,{alpha:false});
+  self.context.imageSmoothingEnabled = init.smoothing;
 
-  self.canv = new Canv({width:self.width,height:self.height,dpr_to_bspr:dpr/bspr});
-  self.canv.context.scale(self.canv.dpr_to_bspr, self.canv.dpr_to_bspr);
-  self.canv.scale = self.canv.dpr_to_bspr;
-
-  self.canv.canvas.style.width = self.width+"px";
-  self.canv.canvas.style.height = self.height+"px";
-
-  self.clear = function()
-  {
-    self.canv.clear();
-  };
-
-  document.getElementById(self.container).appendChild(self.canv.canvas);
+  document.getElementById(self.container).appendChild(self.canvas);
 };
 

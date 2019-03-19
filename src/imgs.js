@@ -231,7 +231,7 @@ var poop_light_img;
   var s = 10;
   poop_light_img = GenIcon(s,s);
   ctx = poop_light_img.context;
-  ctx.fillStyle = light_brown;
+  ctx.fillStyle = brown;
   ctx.fillRect(1,1,2,2); //bottom
   ctx.fillRect(2,7,2,2); //stink left
   ctx.fillRect(3,2,2,2); //middle
