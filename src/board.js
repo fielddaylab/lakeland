@@ -2191,17 +2191,33 @@ var board = function()
 
   self.draw_tile = function(t,x,y,w,h)
   {
+    var over = h/2;
+    y -= over;
+    h += over;
+    //gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
+    //gg.ctx.fillRect(x,y,w,h);
     switch(t.type)
     {
       case TILE_TYPE_LAND:
+        gg.ctx.drawImage(land_img,x,y,w,h);
+        break;
       case TILE_TYPE_WATER:
+        gg.ctx.drawImage(water_img,x,y,w,h);
+        break;
       case TILE_TYPE_SHORE:
+        gg.ctx.drawImage(shore_img,x,y,w,h);
+        break;
       case TILE_TYPE_LIVESTOCK:
+        gg.ctx.drawImage(livestock_img,x,y,w,h);
+        break;
       case TILE_TYPE_STORAGE:
+        gg.ctx.drawImage(storage_img,x,y,w,h);
+        break;
       case TILE_TYPE_PROCESSOR:
+        gg.ctx.drawImage(processor_img,x,y,w,h);
+        break;
       case TILE_TYPE_ROAD:
-        gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
-        gg.ctx.fillRect(x,y,w,h);
+        gg.ctx.drawImage(road_img,x,y,w,h);
         break;
       case TILE_TYPE_ROCK:
         gg.ctx.drawImage(rock_img,x,y,w,h);
@@ -2238,6 +2254,7 @@ var board = function()
     var tw;
     var nx;
     var ny;
+    gg.ctx.imageSmoothingEnabled = 0;
     if(self.nutrition_view)
     { //nutrition view
       ny = round(self.y+self.h-(0*h));
@@ -2282,6 +2299,7 @@ var board = function()
         }
       }
     }
+    gg.ctx.imageSmoothingEnabled = 1;
 
     var t;
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }

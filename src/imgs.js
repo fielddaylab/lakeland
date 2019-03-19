@@ -4,8 +4,9 @@ var farmbit_imgs = [];
   var s = 10;
   var i = 0;
   //idle
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -14,8 +15,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
   ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
@@ -24,8 +26,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(1,4,2,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -34,8 +37,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,2,4); //right_arm
@@ -44,8 +48,9 @@ var farmbit_imgs = [];
   i++
 
   //idle- water
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -55,8 +60,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug- water
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
   ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
@@ -66,8 +72,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms- water
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(1,4,2,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -77,8 +84,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs- water
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,2,4); //right_arm
@@ -88,8 +96,9 @@ var farmbit_imgs = [];
   i++
 
   //idle- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -101,8 +110,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -114,8 +124,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -127,8 +138,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -140,8 +152,9 @@ var farmbit_imgs = [];
   i++
 
   //idle- water- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -154,8 +167,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug- water- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -168,8 +182,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms- water- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -182,8 +197,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs- water- selected
-  farmbit_imgs[i] = GenIcon(s,s);
+  farmbit_imgs[i] = GenIcon(s,s*1.5);
   ctx = farmbit_imgs[i].context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -200,8 +216,9 @@ var food_img;
 {
   var ctx;
   var s = 10;
-  food_img = GenIcon(s,s);
+  food_img = GenIcon(s,s*1.5);
   ctx = food_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = yellow;
   ctx.fillRect(3,4,1,6); //stalk left
   ctx.fillRect(4,6,2,6); //stalk middle
@@ -215,8 +232,9 @@ var poop_img;
 {
   var ctx;
   var s = 10;
-  poop_img = GenIcon(s,s);
+  poop_img = GenIcon(s,s*1.5);
   ctx = poop_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = brown;
   ctx.fillRect(2,8,6,2); //bottom
   ctx.fillRect(3,6,4,2); //middle
@@ -229,8 +247,9 @@ var poop_light_img;
 {
   var ctx;
   var s = 10;
-  poop_light_img = GenIcon(s,s);
+  poop_light_img = GenIcon(s,s*1.5);
   ctx = poop_light_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = brown;
   ctx.fillRect(1,1,2,2); //bottom
   ctx.fillRect(2,7,2,2); //stink left
@@ -243,8 +262,9 @@ var valuable_img;
 {
   var ctx;
   var s = 10;
-  valuable_img = GenIcon(s,s);
+  valuable_img = GenIcon(s,s*1.5);
   ctx = valuable_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = green;
   ctx.fillRect(2,8,6,2); //bottom
   ctx.fillRect(3,6,4,2); //middle
@@ -253,12 +273,79 @@ var valuable_img;
   ctx.fillRect(6,1,1,3); //stink right
 }
 
+var land_img;
+{
+  var ctx;
+  var s = 10;
+  land_img = GenIcon(s,s*1.5);
+  ctx = land_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = "rgba(0,125,50)";
+  ctx.fillRect(0,0,s,s);
+}
+
+var shore_img;
+{
+  var ctx;
+  var s = 10;
+  shore_img = GenIcon(s,s*1.5);
+  ctx = shore_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = "rgba(150,150,255)";
+  ctx.fillRect(0,0,s,s);
+}
+
+var livestock_img;
+{
+  var ctx;
+  var s = 10;
+  livestock_img = GenIcon(s,s*1.5);
+  ctx = livestock_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = blue;
+  ctx.fillRect(0,0,s,s);
+}
+
+var storage_img;
+{
+  var ctx;
+  var s = 10;
+  storage_img = GenIcon(s,s*1.5);
+  ctx = storage_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = purple;
+  ctx.fillRect(0,0,s,s);
+}
+
+var processor_img;
+{
+  var ctx;
+  var s = 10;
+  processor_img = GenIcon(s,s*1.5);
+  ctx = processor_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = orange;
+  ctx.fillRect(0,0,s,s);
+}
+
+var road_img;
+{
+  var ctx;
+  var s = 10;
+  road_img = GenIcon(s,s*1.5);
+  ctx = road_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = gray;
+  ctx.fillRect(0,0,s,s);
+}
+
 var water_img;
 {
   var ctx;
   var s = 10;
-  water_img = GenIcon(s,s);
+  water_img = GenIcon(s,s*1.5);
   ctx = water_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = blue;
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#8888FF";
@@ -270,8 +357,9 @@ var rock_img;
 {
   var ctx;
   var s = 10;
-  rock_img = GenIcon(s,s);
+  rock_img = GenIcon(s,s*1.5);
   ctx = rock_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = gray;
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#AAAAAA";
@@ -283,8 +371,9 @@ var forrest_img;
 {
   var ctx;
   var s = 10;
-  forrest_img = GenIcon(s,s);
+  forrest_img = GenIcon(s,s*1.5);
   ctx = forrest_img.context;
+  ctx.translate(0,s*0.5);
   ctx.fillStyle = "#007733";
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#00AA44";
@@ -296,8 +385,9 @@ var home_img;
 {
   var ctx;
   var s = 10;
-  home_img = GenIcon(s,s);
+  home_img = GenIcon(s,s*1.5);
   ctx = home_img.context;
+  ctx.translate(0,s*0.5);
   ctx.clearRect(0,0,s,s);
   ctx.fillStyle = blue;
   ctx.fillRect(2,3,6,7);
@@ -306,4 +396,48 @@ var home_img;
   ctx.fillRect(2,1,6,1);
   ctx.fillRect(3,0,4,1);
 }
+
+//var farmbit_imgs = [];
+var tfood_img = new Image();
+tfood_img.onload = function(){ if(tfood_img.nativeWidth) food_img = tfood_img; };
+tfood_img.src = "assets/food_img.png";
+var tpoop_img = new Image();
+tpoop_img.onload = function(){ if(tpoop_img.nativeWidth) poop_img = tpoop_img; };
+tpoop_img.src = "assets/poop_img.png";
+var tpoop_light_img = new Image();
+tpoop_light_img.onload = function(){ if(tpoop_light_img.nativeWidth) poop_light_img = tpoop_light_img; };
+tpoop_light_img.src = "assets/poop_light_img.png";
+var tvaluable_img = new Image();
+tvaluable_img.onload = function(){ if(tvaluable_img.nativeWidth) valuable_img = tvaluable_img; };
+tvaluable_img.src = "assets/valuable_img.png";
+var tland_img = new Image();
+tland_img.onload = function(){ if(tland_img.nativeWidth) land_img = tland_img; };
+tland_img.src = "assets/land_img.png";
+var tshore_img = new Image();
+tshore_img.onload = function(){ if(tshore_img.nativeWidth) shore_img = tshore_img; };
+tshore_img.src = "assets/tshore.png";
+var tlivestock_img = new Image();
+tlivestock_img.onload = function(){ if(tlivestock_img.nativeWidth) livestock_img = tlivestock_img; };
+tlivestock_img.src = "assets/livestock_img.png";
+var tstorage_img = new Image();
+tstorage_img.onload = function(){ if(tstorage_img.nativeWidth) storage_img = tstorage_img; };
+tstorage_img.src = "assets/storage_img.png";
+var tprocessor_img = new Image();
+tprocessor_img.onload = function(){ if(tprocessor_img.nativeWidth) processor_img = tprocessor_img; };
+tprocessor_img.src = "assets/processor_img.png";
+var troad_img = new Image();
+troad_img.onload = function(){ if(troad_img.nativeWidth) road_img = troad_img; };
+troad_img.src = "assets/road_img.png";
+var twater_img = new Image();
+twater_img.onload = function(){ water_img = twater_img; };
+twater_img.src = "assets/water_img.png";
+var trock_img = new Image();
+trock_img.onload = function(){ if(trock_img.nativeWidth) rock_img = trock_img; };
+trock_img.src = "assets/rock_img.png";
+var tforrest_img = new Image();
+tforrest_img.onload = function(){ if(tforrest_img.nativeWidth) forrest_img = tforrest_img; };
+tforrest_img.src = "assets/forrest_img.png";
+var thome_img = new Image();
+thome_img.onload = function(){ if(thome_img.nativeWidth) home_img = thome_img; };
+thome_img.src = "assets/home_img.png";
 

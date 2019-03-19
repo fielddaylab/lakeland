@@ -24,7 +24,7 @@ var Game = function(init)
   }
   self.resize = function(args)
   {
-    if(args.width == gg.canvas.width && args.height == gg.canvas.height) return;
+    if(args.width == gg.stage.width && args.height == gg.stage.height) return;
     document.getElementById(gg.stage.container).removeChild(gg.stage.canvas);
     gg.stage.canvas.width = 0;
     gg.stage.canvas.height = 0;
