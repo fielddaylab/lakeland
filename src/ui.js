@@ -39,6 +39,10 @@ var playhead = function()
     setBB(self.speed_btn, btnx,btny,btnw,btnh); btnx += btnw+btnpad;
   }
 
+  self.pause_img = GenImg("assets/pause.png");
+  self.play_img = GenImg("assets/play.png");
+  self.speed_img = GenImg("assets/speed.png");
+
   self.pause_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 0; });
   self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 0; });
   self.speed_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 1; });
@@ -70,9 +74,10 @@ var playhead = function()
     gg.ctx.fillStyle = black;
     gg.ctx.textAlign = "left";
 
-    if(self.pause_btn.active) { strokeBB(self.pause_btn,gg.ctx); gg.ctx.fillText("||", self.pause_btn.x, self.pause_btn.y+20);  }
-    if(self.play_btn.active)  { strokeBB(self.play_btn,gg.ctx);  gg.ctx.fillText(">", self.play_btn.x, self.play_btn.y+20);  }
-    if(self.speed_btn.active) { strokeBB(self.speed_btn,gg.ctx); gg.ctx.fillText(">>",self.speed_btn.x,self.speed_btn.y+20); }
+    if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
+    if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn,gg.ctx); }
+    if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
+    gg.ctx.globalAlpha = 1;
   }
 }
 
