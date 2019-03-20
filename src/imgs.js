@@ -210,6 +210,14 @@ var farmbit_imgs = [];
   ctx.fillRect(6,7,1,3); //right_leg
   ctx.clearRect(0,5,10,5); //clear
   i++
+
+  for(var i = 0; i < farmbit_imgs.length; i++)
+  {
+    var f = farmbit_imgs[i];
+    var nf = GenIcon(f.width*10,f.height*10);
+    nf.context.drawImage(f,0,0,nf.width,nf.height);
+    farmbit_imgs[i] = nf;
+  }
 }
 
 var food_img;
@@ -472,6 +480,6 @@ var tfarm_img = new Image();
 tfarm_img.onload = function(){ farm_img = tfarm_img; };
 tfarm_img.src = "assets/farm.png";
 var tfarmbit_img = new Image();
-tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,0,farmbit_imgs[i].width,farmbit_imgs[i].width); };
+tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/3,farmbit_imgs[i].width,farmbit_imgs[i].width); };
 tfarmbit_img.src = "assets/farmbit.png";
 
