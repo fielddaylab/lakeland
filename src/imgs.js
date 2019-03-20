@@ -339,6 +339,20 @@ var road_img;
   ctx.fillRect(0,0,s,s);
 }
 
+var lake_img;
+{
+  var ctx;
+  var s = 10;
+  lake_img = GenIcon(s,s*1.5);
+  ctx = lake_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = blue;
+  ctx.fillRect(0,0,s,s);
+  ctx.fillStyle = "#8888FF";
+  ctx.fillRect(1,3,3,1);
+  ctx.fillRect(4,7,3,1);
+}
+
 var water_img;
 {
   var ctx;
@@ -367,12 +381,12 @@ var rock_img;
   ctx.fillRect(4,7,3,1);
 }
 
-var forrest_img;
+var forest_img;
 {
   var ctx;
   var s = 10;
-  forrest_img = GenIcon(s,s*1.5);
-  ctx = forrest_img.context;
+  forest_img = GenIcon(s,s*1.5);
+  ctx = forest_img.context;
   ctx.translate(0,s*0.5);
   ctx.fillStyle = "#007733";
   ctx.fillRect(0,0,s,s);
@@ -410,48 +424,51 @@ var farm_img;
 
 //var farmbit_imgs = [];
 var tfood_img = new Image();
-tfood_img.onload = function(){ if(tfood_img.nativeWidth) food_img = tfood_img; };
-tfood_img.src = "assets/food_img.png";
+tfood_img.onload = function(){ food_img = tfood_img; };
+tfood_img.src = "assets/food.png";
 var tpoop_img = new Image();
-tpoop_img.onload = function(){ if(tpoop_img.nativeWidth) poop_img = tpoop_img; };
-tpoop_img.src = "assets/poop_img.png";
+tpoop_img.onload = function(){ poop_img = tpoop_img; };
+tpoop_img.src = "assets/poop.png";
 var tpoop_light_img = new Image();
-tpoop_light_img.onload = function(){ if(tpoop_light_img.nativeWidth) poop_light_img = tpoop_light_img; };
-tpoop_light_img.src = "assets/poop_light_img.png";
+tpoop_light_img.onload = function(){ poop_light_img = tpoop_light_img; };
+tpoop_light_img.src = "assets/poop_light.png";
 var tvaluable_img = new Image();
-tvaluable_img.onload = function(){ if(tvaluable_img.nativeWidth) valuable_img = tvaluable_img; };
-tvaluable_img.src = "assets/valuable_img.png";
+tvaluable_img.onload = function(){ valuable_img = tvaluable_img; };
+tvaluable_img.src = "assets/valuable.png";
 var tland_img = new Image();
-tland_img.onload = function(){ if(tland_img.nativeWidth) land_img = tland_img; };
-tland_img.src = "assets/land_img.png";
+tland_img.onload = function(){ land_img = tland_img; };
+tland_img.src = "assets/land.png";
 var tshore_img = new Image();
-tshore_img.onload = function(){ if(tshore_img.nativeWidth) shore_img = tshore_img; };
-tshore_img.src = "assets/tshore.png";
+tshore_img.onload = function(){ shore_img = tshore_img; };
+tshore_img.src = "assets/shore.png";
 var tlivestock_img = new Image();
-tlivestock_img.onload = function(){ if(tlivestock_img.nativeWidth) livestock_img = tlivestock_img; };
-tlivestock_img.src = "assets/livestock_img.png";
+tlivestock_img.onload = function(){ livestock_img = tlivestock_img; };
+tlivestock_img.src = "assets/livestock.png";
 var tstorage_img = new Image();
-tstorage_img.onload = function(){ if(tstorage_img.nativeWidth) storage_img = tstorage_img; };
-tstorage_img.src = "assets/storage_img.png";
+tstorage_img.onload = function(){ storage_img = tstorage_img; };
+tstorage_img.src = "assets/storage.png";
 var tprocessor_img = new Image();
-tprocessor_img.onload = function(){ if(tprocessor_img.nativeWidth) processor_img = tprocessor_img; };
-tprocessor_img.src = "assets/processor_img.png";
+tprocessor_img.onload = function(){ processor_img = tprocessor_img; };
+tprocessor_img.src = "assets/processor.png";
 var troad_img = new Image();
-troad_img.onload = function(){ if(troad_img.nativeWidth) road_img = troad_img; };
-troad_img.src = "assets/road_img.png";
+troad_img.onload = function(){ road_img = troad_img; };
+troad_img.src = "assets/road.png";
+var tlake_img = new Image();
+tlake_img.onload = function(){ lake_img = tlake_img; };
+tlake_img.src = "assets/lake.png";
 var twater_img = new Image();
 twater_img.onload = function(){ water_img = twater_img; };
-twater_img.src = "assets/water_img.png";
+twater_img.src = "assets/water.png";
 var trock_img = new Image();
-trock_img.onload = function(){ if(trock_img.nativeWidth) rock_img = trock_img; };
-trock_img.src = "assets/rock_img.png";
-var tforrest_img = new Image();
-tforrest_img.onload = function(){ if(tforrest_img.nativeWidth) forrest_img = tforrest_img; };
-tforrest_img.src = "assets/forrest_img.png";
+trock_img.onload = function(){ rock_img = trock_img; };
+trock_img.src = "assets/rock.png";
+var tforest_img = new Image();
+tforest_img.onload = function(){ forest_img = tforest_img; };
+tforest_img.src = "assets/forest.png";
 var thome_img = new Image();
-thome_img.onload = function(){ if(thome_img.nativeWidth) home_img = thome_img; };
-thome_img.src = "assets/home_img.png";
+thome_img.onload = function(){ home_img = thome_img; };
+thome_img.src = "assets/home.png";
 var tfarm_img = new Image();
-tfarm_img.onload = function(){ if(tfarm_img.nativeWidth) farm_img = tfarm_img; };
-tfarm_img.src = "assets/farm_img.png";
+tfarm_img.onload = function(){ farm_img = tfarm_img; };
+tfarm_img.src = "assets/farm.png";
 

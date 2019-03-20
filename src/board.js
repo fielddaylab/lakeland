@@ -12,9 +12,9 @@ ENUM = 0;
 var TILE_TYPE_NULL      = ENUM; ENUM++;
 var TILE_TYPE_LAND      = ENUM; ENUM++;
 var TILE_TYPE_ROCK      = ENUM; ENUM++;
-var TILE_TYPE_WATER     = ENUM; ENUM++;
+var TILE_TYPE_LAKE     = ENUM; ENUM++;
 var TILE_TYPE_SHORE     = ENUM; ENUM++;
-var TILE_TYPE_FORREST   = ENUM; ENUM++;
+var TILE_TYPE_FOREST   = ENUM; ENUM++;
 var TILE_TYPE_HOME      = ENUM; ENUM++;
 var TILE_TYPE_FARM      = ENUM; ENUM++;
 var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
@@ -110,9 +110,9 @@ var walkability_check = function(type,state)
   {
     case TILE_TYPE_LAND:      return land_walkability;      break;
     case TILE_TYPE_ROCK:      return rock_walkability;      break;
-    case TILE_TYPE_WATER:     return water_walkability;     break;
+    case TILE_TYPE_LAKE:     return water_walkability;     break;
     case TILE_TYPE_SHORE:     return shore_walkability;     break;
-    case TILE_TYPE_FORREST:   return forrest_walkability;   break;
+    case TILE_TYPE_FOREST:   return forest_walkability;   break;
     case TILE_TYPE_HOME:      return home_walkability;      break;
     case TILE_TYPE_FARM:      return farm_walkability;      break;
     case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
@@ -129,9 +129,9 @@ var buildability_check = function(building,over)
   {
     case TILE_TYPE_LAND:
     case TILE_TYPE_ROCK:
-    case TILE_TYPE_WATER:
+    case TILE_TYPE_LAKE:
     case TILE_TYPE_SHORE:
-    case TILE_TYPE_FORREST:
+    case TILE_TYPE_FOREST:
       return 1;
       break;
     case TILE_TYPE_HOME:
@@ -147,7 +147,7 @@ var buildability_check = function(building,over)
       {
         case TILE_TYPE_LAND:
         case TILE_TYPE_ROCK:
-        case TILE_TYPE_WATER:
+        case TILE_TYPE_LAKE:
         case TILE_TYPE_SHORE:
           return 1;
           break;
@@ -633,7 +633,7 @@ var fullness_job_for_b = function(b)
     }
     else
     {
-      tp = closest_unlocked_nutrientdeficient_tile_from_list(t, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+      tp = closest_unlocked_nutrientdeficient_tile_from_list(t, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_LAKE]);
       if(tp)
       { //found lake
         b.go_idle();
@@ -697,7 +697,7 @@ var energy_job_for_b = function(b)
 var joy_job_for_b = function(b)
 {
   var t;
-  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+  t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_LAKE]);
   if(t)
   {
     b.go_idle();
@@ -782,7 +782,7 @@ var fulfillment_job_for_b = function(b)
     }
     else
     {
-      tp = closest_unlocked_nutrientdeficient_tile_from_list(t, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+      tp = closest_unlocked_nutrientdeficient_tile_from_list(t, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_LAKE]);
       if(tp)
       { //found lake
         b.go_idle();
@@ -974,7 +974,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         if(job_type == JOB_TYPE_PLANT && !job_object)
         { //get water
           job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_WATER);
-          if(!job_object) job_object = closest_unlocked_nutrientdeficient_tile_from_list(job_subject, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+          if(!job_object) job_object = closest_unlocked_nutrientdeficient_tile_from_list(job_subject, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_LAKE]);
           if(!job_object) return 0;
         }
 
@@ -1435,14 +1435,14 @@ var board = function()
     switch(type)
     {
       case TILE_TYPE_LAND: return land_img; break;
-      case TILE_TYPE_WATER: return water_img; break;
+      case TILE_TYPE_LAKE: return lake_img; break;
       case TILE_TYPE_SHORE: return shore_img; break;
       case TILE_TYPE_LIVESTOCK: return livestock_img; break;
       case TILE_TYPE_STORAGE: return storage_img; break;
       case TILE_TYPE_PROCESSOR: return processor_img; break;
       case TILE_TYPE_ROAD: return road_img; break;
       case TILE_TYPE_ROCK: return rock_img; break;
-      case TILE_TYPE_FORREST: return forrest_img; break;
+      case TILE_TYPE_FOREST: return forest_img; break;
       case TILE_TYPE_HOME: return home_img; break;
       case TILE_TYPE_FARM: return farm_img; break;
     }
@@ -1580,15 +1580,15 @@ var board = function()
         var src_tx = randIntBelow(self.tw);
         var src_ty = randIntBelow(self.th);
         var t = self.tiles_t(src_tx,src_ty);
-        t.type = TILE_TYPE_WATER;
+        t.type = TILE_TYPE_LAKE;
         var lake_size = lake_size_min+randIntBelow(lake_size_max-lake_size_min);
-        var lake_border = grow_fill(t,TILE_TYPE_WATER,lake_size,TILE_TYPE_WATER,1);
+        var lake_border = grow_fill(t,TILE_TYPE_LAKE,lake_size,TILE_TYPE_LAKE,1);
         for(var j = 0; j < lake_border.length; j++)
           lake_border[j].type = TILE_TYPE_SHORE;
       }
 
-      //fill forrests
-      for(var i = 0; i < n_forrests; i++)
+      //fill forests
+      for(var i = 0; i < n_forests; i++)
       {
         var src_tx = randIntBelow(self.tw);
         var src_ty = randIntBelow(self.th);
@@ -1599,9 +1599,9 @@ var board = function()
           src_ty = randIntBelow(self.th);
           t = self.tiles_t(src_tx,src_ty);
         }
-        t.type = TILE_TYPE_FORREST;
-        var forrest_size = forrest_size_min+randIntBelow(forrest_size_max-forrest_size_min);
-        var lake_border = grow_fill(t,TILE_TYPE_FORREST,lake_size,TILE_TYPE_LAND,0);
+        t.type = TILE_TYPE_FOREST;
+        var forest_size = forest_size_min+randIntBelow(forest_size_max-forest_size_min);
+        var lake_border = grow_fill(t,TILE_TYPE_FOREST,lake_size,TILE_TYPE_LAND,0);
       }
 
       for(var x = self.bounds_tx; x < self.bounds_tx+self.bounds_tw; x++)
@@ -1609,7 +1609,7 @@ var board = function()
         for(var y = self.bounds_ty; y < self.bounds_ty+self.bounds_th; y++)
         {
           var t = self.tiles_t(x,y);
-          if(t.type == TILE_TYPE_WATER) valid = 1;
+          if(t.type == TILE_TYPE_LAKE) valid = 1;
         }
       }
     }
@@ -1631,14 +1631,14 @@ var board = function()
     for(var i = 0; i < self.tiles.length; i++)
     {
       var t = self.tiles[i];
-      if(t.type == TILE_TYPE_WATER) continue;
+      if(t.type == TILE_TYPE_LAKE) continue;
       var closest_d = max_dist;
       var d;
       var tt;
       for(var ti = 0; ti < self.tiles.length; ti++)
       {
         var tt = self.tiles[ti];
-        if(tt.type != TILE_TYPE_WATER) continue;
+        if(tt.type != TILE_TYPE_LAKE) continue;
         d = distsqr(t.tx,t.ty,tt.tx,tt.ty);
         if(d < closest_d)
         {
@@ -1702,7 +1702,7 @@ var board = function()
       self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
     }
 
-    type = TILE_TYPE_WATER;
+    type = TILE_TYPE_LAKE;
     self.tile_colors[type] = [];
     for(var i = 0; i <= 255; i++)
     {
@@ -1724,7 +1724,7 @@ var board = function()
       self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
     }
 
-    type = TILE_TYPE_FORREST;
+    type = TILE_TYPE_FOREST;
     self.tile_colors[type] = [];
     for(var i = 0; i <= 255; i++)
     {
@@ -1817,7 +1817,7 @@ var board = function()
     {
       case TILE_TYPE_LAND:
         break;
-      case TILE_TYPE_WATER:
+      case TILE_TYPE_LAKE:
         break;
       case TILE_TYPE_SHORE:
         break;
@@ -1932,8 +1932,8 @@ var board = function()
   {
     var d = clamp(-1,1,from.nutrition-to.nutrition);
     if(
-      (d < 0 && from.type == TILE_TYPE_WATER) ||
-      (d > 0 && to.type   == TILE_TYPE_WATER)
+      (d < 0 && from.type == TILE_TYPE_LAKE) ||
+      (d > 0 && to.type   == TILE_TYPE_LAKE)
     )
     { //destination is water
       d *= nutrition_flow_rate;
@@ -1941,8 +1941,8 @@ var board = function()
       to.nutrition   += d;
     }
     else if(
-      (d > 0 && from.type == TILE_TYPE_WATER) ||
-      (d < 0 && to.type   == TILE_TYPE_WATER)
+      (d > 0 && from.type == TILE_TYPE_LAKE) ||
+      (d < 0 && to.type   == TILE_TYPE_LAKE)
     )
     { //src is water
       d *= d*d;
@@ -2238,10 +2238,10 @@ var board = function()
       case TILE_TYPE_FARM:
         gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h); //no break!
       case TILE_TYPE_LAND:
-      case TILE_TYPE_WATER:
+      case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
       case TILE_TYPE_ROCK:
-      case TILE_TYPE_FORREST:
+      case TILE_TYPE_FOREST:
         gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
         break;
     }
@@ -2264,7 +2264,6 @@ var board = function()
     var t;
     var w = self.w/self.tw;
     var h = self.h/self.th;
-    var i = 0;
     var x;
     var y;
     var th;
@@ -2274,6 +2273,7 @@ var board = function()
     gg.ctx.imageSmoothingEnabled = 0;
     if(self.nutrition_view)
     { //nutrition view
+      var i = 0;
       ny = round(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
@@ -2295,20 +2295,22 @@ var board = function()
     }
     else
     { //normal view
-      ny = round(self.y+self.h-(0*h));
-      for(var ty = 0; ty < self.th; ty++)
+      var i = 0;
+      ny = round(self.y);
+      for(var ty = self.th-1; ty >= 0; ty--)
       {
         y = ny;
-        ny = round(self.y+self.h-(ty+1)*h);
-        th = y-ny;
+        ny = round(self.y+self.h-ty*h);
+        th = ny-y;
         nx = round(self.x+(0*w));
+        i = self.tiles_i(0,ty);
         for(var tx = 0; tx < self.tw; tx++)
         {
           x = nx;
           nx = round(self.x+((tx+1)*w));
           tw = nx-x;
           var t = self.tiles[i];
-          self.draw_tile(t,x,ny,tw,th);
+          self.draw_tile(t,x,y,tw,th);
           gg.ctx.fillStyle = black;
           //if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
           //if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
@@ -2395,8 +2397,8 @@ var item = function()
 
   self.wx = 0;
   self.wy = 0;
-  self.ww = 20;
-  self.wh = 20;
+  self.ww = gg.b.tww;
+  self.wh = gg.b.twh;
   self.wz = 0;
   self.wvx = 0;
   self.wvy = 0;
@@ -2471,8 +2473,8 @@ var farmbit = function()
 
   self.wx = 0;
   self.wy = 0;
-  self.ww = 20;
-  self.wh = 20;
+  self.ww = gg.b.tww;
+  self.wh = gg.b.twh;
 
   self.x = 0;
   self.y = 0;
@@ -2716,7 +2718,7 @@ var farmbit = function()
       self.fulfillment *= fulfillment_depletion_rate;
     }
 
-    if(self.tile && self.tile.type == TILE_TYPE_WATER)
+    if(self.tile && self.tile.type == TILE_TYPE_LAKE)
     {
       if(self.tile.nutrition < water_fouled_threshhold)
         self.joy = min(1,self.joy+swim_joy);
@@ -2905,7 +2907,7 @@ var farmbit = function()
           {
             if(self.tile.nutrition > water_fouled_threshhold)
             {
-              var t = closest_unlocked_nutrientdeficient_tile_from_list(self.tile, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_WATER]);
+              var t = closest_unlocked_nutrientdeficient_tile_from_list(self.tile, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_LAKE]);
               if(t)
               {
                 self.job_subject = t;
@@ -3524,7 +3526,7 @@ var farmbit = function()
     x += w;
 
     var off = 0;
-    if(self.tile.type == TILE_TYPE_WATER || self.tile.type == TILE_TYPE_SHORE) off += 4;
+    if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE) off += 4;
          if(gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT && gg.inspector.detailed == self) off += 8;
     else if(gg.inspector.quick_type    == INSPECTOR_CONTENT_FARMBIT && gg.inspector.quick    == self) off += 8;
     switch(self.job_state)

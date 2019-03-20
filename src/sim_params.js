@@ -12,9 +12,9 @@ var n_rock_deposits = 8;
 var rock_size_min = floor(20*board_w*board_h/2500);
 var rock_size_max = floor(50*board_w*board_h/2500);
 
-var n_forrests = 2;
-var forrest_size_min = floor(100*board_w*board_h/2500);
-var forrest_size_max = floor(100*board_w*board_h/2500);
+var n_forests = 2;
+var forest_size_min = floor(100*board_w*board_h/2500);
+var forest_size_max = floor(100*board_w*board_h/2500);
 
 var farmbits_start_n = 0;
 var money_start_n = 300;
@@ -66,7 +66,7 @@ var land_walkability      = 1;
 var rock_walkability      = 0.7;
 var water_walkability     = 0.5;
 var shore_walkability     = 0.8;
-var forrest_walkability   = 0.6;
+var forest_walkability   = 0.6;
 var home_walkability      = 0.9;
 var farm_walkability      = 0.9;
 var livestock_walkability = 0.8;
