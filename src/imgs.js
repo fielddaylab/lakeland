@@ -471,4 +471,7 @@ thome_img.src = "assets/home.png";
 var tfarm_img = new Image();
 tfarm_img.onload = function(){ farm_img = tfarm_img; };
 tfarm_img.src = "assets/farm.png";
+var tfarmbit_img = new Image();
+tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,0,farmbit_imgs[i].width,farmbit_imgs[i].width); };
+tfarmbit_img.src = "assets/farmbit.png";
 
