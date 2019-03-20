@@ -2422,15 +2422,17 @@ var item = function()
   self.draw = function()
   {
     if(self.offscreen) return;
+    var y = self.y-self.h/2;
+    var h = self.h+self.h/2;
     switch(self.type)
     {
-      case ITEM_TYPE_WATER:drawImageBB(water_img,self,gg.ctx); break;
-      case ITEM_TYPE_FOOD: drawImageBB(food_img,self,gg.ctx); break;
+      case ITEM_TYPE_WATER:gg.ctx.drawImage(water_img,self.x,y,self.w,h); break;
+      case ITEM_TYPE_FOOD: gg.ctx.drawImage(food_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_POOP:
-             if(self.state == ITEM_STATE_POOP_RAW)   drawImageBB(poop_img,      self,gg.ctx);
-        else if(self.state == ITEM_STATE_POOP_LIGHT) drawImageBB(poop_light_img,self,gg.ctx);
+             if(self.state == ITEM_STATE_POOP_RAW)   gg.ctx.drawImage(poop_img,      self.x,y,self.w,h);
+        else if(self.state == ITEM_STATE_POOP_LIGHT) gg.ctx.drawImage(poop_light_img,self.x,y,self.w,h);
         break;
-      case ITEM_TYPE_VALUABLE: drawImageBB(valuable_img,self,gg.ctx); break;
+      case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(valuable_img,self.x,y,self.w,h); break;
     }
     if(self.sale)
     {
@@ -3519,11 +3521,11 @@ var farmbit = function()
         }
         //break; //don't break!
       case JOB_STATE_ACT:
-        gg.ctx.drawImage(farmbit_imgs[self.frame_i+off],self.x,self.y,self.w,self.h);
+        gg.ctx.drawImage(farmbit_imgs[self.frame_i+off],self.x,self.y-self.h/2,self.w,self.h+self.h/2);
         break;
       case JOB_STATE_GET:
       case JOB_STATE_SEEK:
-        gg.ctx.drawImage(farmbit_imgs[self.frame_i+2+off],self.x,self.y,self.w,self.h);
+        gg.ctx.drawImage(farmbit_imgs[self.frame_i+2+off],self.x,self.y-self.h/2,self.w,self.h+self.h/2);
         break;
     }
   }
