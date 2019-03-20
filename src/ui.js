@@ -40,8 +40,8 @@ var playhead = function()
   }
 
   self.pause_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 0; });
-  self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; });
-  self.speed_btn = new ButtonBox(0,0,0,0,function(){ DOUBLETIME = !DOUBLETIME; });
+  self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 0; });
+  self.speed_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 1; });
   self.resize();
 
   self.pause_btn.active = 0;

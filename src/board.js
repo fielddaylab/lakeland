@@ -1303,7 +1303,7 @@ var board = function()
     cam.wh = gg.canvas.height;
 
     var tw = ceil(self.bounds_tw+self.bounds_tw/ 2);
-    var th = ceil(self.bounds_th+self.bounds_th/10);
+    var th = ceil(self.bounds_th+self.bounds_th/5);
     var ww = self.ww*tw/self.tw;
     var wh = self.wh*th/self.th;
 
@@ -1323,7 +1323,7 @@ var board = function()
       cam.wh *= wh/cam.wh;
     }
     cam.wx = self.wx-self.ww/2+(self.bounds_tx+self.bounds_tw/2)*self.tww;
-    cam.wy = self.wy-self.wh/2+(self.bounds_ty+self.bounds_tw/2)*self.twh;
+    cam.wy = self.wy-self.wh/2+(self.bounds_ty+self.bounds_tw/2)*self.twh+(cam.wh-self.bounds_th*self.twh)/3;
 
     screenSpace(gg.cam, gg.canvas, self);
     self.screen_tile(self.tl_bound_tile);
