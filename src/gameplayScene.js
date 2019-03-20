@@ -143,6 +143,7 @@ var GamePlayScene = function()
     gg.inspector.draw();
     gg.ticker.draw();
 
+    /*
     var x = gg.canvas.width-100;
     var y = 520;
     h = 20;
@@ -153,6 +154,7 @@ var GamePlayScene = function()
     gg.ctx.fillText("x- toggle export", x,y); y += h;
     gg.ctx.fillText("a- debug pathing", x,y); y += h;
     gg.ctx.fillText("j- debug jobs",    x,y); y += h;
+    */
 
     gg.tutorial.draw();
   };

@@ -213,10 +213,10 @@ var inspector = function()
   var self = this;
   self.resize = function()
   {
-    self.w = 100*gg.stage.s_mod;
-    self.h = 200*gg.stage.s_mod;
-    self.x = gg.canvas.width-self.w-10*gg.stage.s_mod;
+    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w;
     self.y = 0;
+    self.w = gg.canvas.width-self.x;
+    self.h = gg.canvas.height;
   }
   self.resize();
 
@@ -227,8 +227,10 @@ var inspector = function()
 
   var vspace = 20*gg.stage.s_mod;
 
-  self.print_tile = function(t, x, y)
+  self.draw_tile = function(t)
   {
+    var x = self.x+vspace;
+    var y = vspace;
     gg.ctx.fillText("TILE",x,y);
     y += vspace;
     str = "Type: ";
@@ -310,8 +312,10 @@ var inspector = function()
     return y;
   }
 
-  self.print_item = function(it, x, y)
+  self.draw_item = function(it)
   {
+    var x = self.x+vspace;
+    var y = vspace;
     gg.ctx.fillText("ITEM",x,y);
     y += vspace;
     str = "Type: ";
@@ -332,8 +336,10 @@ var inspector = function()
     return y;
   }
 
-  self.print_farmbit = function(b, x, y)
+  self.draw_farmbit = function(b)
   {
+    var x = self.x+vspace;
+    var y = vspace;
     gg.ctx.fillText("FARMBIT",x,y);
     y += vspace;
     str = "Job: ";
@@ -418,27 +424,18 @@ var inspector = function()
 
   self.draw = function()
   {
-    var x = self.x;
-    var y = self.y;
     gg.ctx.fillStyle = black;
 
-    x += 10*gg.stage.s_mod;
-    y += vspace;
     switch(self.detailed_type)
     {
-      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",x,y); y += vspace; break;
-      case INSPECTOR_CONTENT_TILE:    y += self.print_tile(self.detailed,x,y); break;
-      case INSPECTOR_CONTENT_ITEM:    y += self.print_item(self.detailed,x,y); break;
-      case INSPECTOR_CONTENT_FARMBIT: y += self.print_farmbit(self.detailed,x,y); break;
+      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",10*gg.stage.s_mod,vspace); break;
+      case INSPECTOR_CONTENT_TILE:    self.draw_tile(self.detailed); break;
+      case INSPECTOR_CONTENT_ITEM:    self.draw_item(self.detailed); break;
+      case INSPECTOR_CONTENT_FARMBIT: self.draw_farmbit(self.detailed); break;
     }
-    switch(self.quick_type)
-    {
-      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing hovered)",x,y); y += vspace; break;
-      case INSPECTOR_CONTENT_TILE:    y += self.print_tile(self.quick,x,y); break;
-      case INSPECTOR_CONTENT_ITEM:    y += self.print_item(self.quick,x,y); break;
-      case INSPECTOR_CONTENT_FARMBIT: y += self.print_farmbit(self.quick,x,y); break;
-    }
+
   }
+
 }
 
 var ticker = function()

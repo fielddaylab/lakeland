@@ -1970,6 +1970,7 @@ var board = function()
     worldSpaceDoEvt(gg.cam, gg.canvas, evt);
     var old_hover_t = self.hover_t;
     self.hover_t = self.tiles_wt(evt.wx,evt.wy);
+    if(self.hover_t && !self.tile_in_bounds(self.hover_t)) { self.unhover(evt); return; }
     if(self.hover_t != old_hover_t && gg.shop.selected_buy)
       self.hover_t_placable = self.placement_valid(self.hover_t,gg.shop.selected_buy);
 
@@ -2003,6 +2004,7 @@ var board = function()
   self.unhover = function(evt)
   {
     self.hover_t = 0;
+    self.hover_t_placable = 0;
     gg.inspector.tile_quick = 0;
     gg.inspector.quick_type = INSPECTOR_CONTENT_NULL;
   }
@@ -2024,7 +2026,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_HOME);
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
@@ -2034,7 +2036,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_FARM);
               b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
@@ -2043,7 +2045,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
@@ -2052,7 +2054,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
@@ -2061,7 +2063,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
@@ -2076,7 +2078,7 @@ var board = function()
               else
                 self.spewing_road = roads_per_buy;
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
@@ -2086,7 +2088,7 @@ var board = function()
               self.abandon_tile(self.hover_t);
               self.alterTile(self.hover_t,self.hover_t.og_type);
               gg.shop.selected_buy = 0;
-              gg.hover_t_placable = 0;
+              self.hover_t_placable = 0;
               return;
             }
             break;
