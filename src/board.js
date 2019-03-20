@@ -1420,6 +1420,24 @@ var board = function()
   {
     return self.tile_colors[type][floor(min(nutrition*255,255))];
   }
+  self.tile_img = function(type)
+  {
+    switch(type)
+    {
+      case TILE_TYPE_LAND: return land_img; break;
+      case TILE_TYPE_WATER: return water_img; break;
+      case TILE_TYPE_SHORE: return shore_img; break;
+      case TILE_TYPE_LIVESTOCK: return livestock_img; break;
+      case TILE_TYPE_STORAGE: return storage_img; break;
+      case TILE_TYPE_PROCESSOR: return processor_img; break;
+      case TILE_TYPE_ROAD: return road_img; break;
+      case TILE_TYPE_ROCK: return rock_img; break;
+      case TILE_TYPE_FORREST: return forrest_img; break;
+      case TILE_TYPE_HOME: return home_img; break;
+      case TILE_TYPE_FARM: return farm_img; break;
+    }
+    return land_img;
+  }
 
   self.init = function()
   {
@@ -2198,47 +2216,32 @@ var board = function()
     //gg.ctx.fillRect(x,y,w,h);
     switch(t.type)
     {
-      case TILE_TYPE_LAND:
-        gg.ctx.drawImage(land_img,x,y,w,h);
-        break;
-      case TILE_TYPE_WATER:
-        gg.ctx.drawImage(water_img,x,y,w,h);
-        break;
-      case TILE_TYPE_SHORE:
-        gg.ctx.drawImage(shore_img,x,y,w,h);
-        break;
       case TILE_TYPE_LIVESTOCK:
-        gg.ctx.drawImage(livestock_img,x,y,w,h);
-        break;
       case TILE_TYPE_STORAGE:
-        gg.ctx.drawImage(storage_img,x,y,w,h);
-        break;
       case TILE_TYPE_PROCESSOR:
-        gg.ctx.drawImage(processor_img,x,y,w,h);
-        break;
       case TILE_TYPE_ROAD:
-        gg.ctx.drawImage(road_img,x,y,w,h);
-        break;
-      case TILE_TYPE_ROCK:
-        gg.ctx.drawImage(rock_img,x,y,w,h);
-        break;
-      case TILE_TYPE_FORREST:
-        gg.ctx.drawImage(forrest_img,x,y,w,h);
-        break;
       case TILE_TYPE_HOME:
-        gg.ctx.drawImage(home_img,x,y,w,h);
-        break;
       case TILE_TYPE_FARM:
-      {
-        switch(t.state)
-        {
-          case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
-          case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
-          case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
-        }
-        gg.ctx.fillRect(x,y,w,h);
-      }
+        gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h); //no break!
+      case TILE_TYPE_LAND:
+      case TILE_TYPE_WATER:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_ROCK:
+      case TILE_TYPE_FORREST:
+        gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
         break;
+    }
+    if(t.type == TILE_TYPE_FARM)
+    {
+      gg.ctx.globalAlpha = 0.5;
+      switch(t.state)
+      {
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
+        case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
+      }
+      gg.ctx.fillRect(x,y,w,h);
+      gg.ctx.globalAlpha = 1;
     }
   }
 

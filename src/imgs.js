@@ -397,6 +397,17 @@ var home_img;
   ctx.fillRect(3,0,4,1);
 }
 
+var farm_img;
+{
+  var ctx;
+  var s = 10;
+  farm_img = GenIcon(s,s*1.5);
+  ctx = farm_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = brown;
+  ctx.fillRect(0,0,s,s);
+}
+
 //var farmbit_imgs = [];
 var tfood_img = new Image();
 tfood_img.onload = function(){ if(tfood_img.nativeWidth) food_img = tfood_img; };
@@ -440,4 +451,7 @@ tforrest_img.src = "assets/forrest_img.png";
 var thome_img = new Image();
 thome_img.onload = function(){ if(thome_img.nativeWidth) home_img = thome_img; };
 thome_img.src = "assets/home_img.png";
+var tfarm_img = new Image();
+tfarm_img.onload = function(){ if(tfarm_img.nativeWidth) farm_img = tfarm_img; };
+tfarm_img.src = "assets/farm_img.png";
 
