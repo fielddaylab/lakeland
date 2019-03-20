@@ -1194,6 +1194,8 @@ var board = function()
   self.twh = self.wh/self.th;
 
   self.null_tile = new tile();
+  self.tl_bound_tile = self.null_tile; //gets set w/ zoom_tile
+  self.br_bound_tile = self.null_tile; //gets set w/ zoom_tile
   self.tiles = [];
   self.tile_groups = [];
   self.tiles_i = function(tx,ty)
@@ -1292,6 +1294,8 @@ var board = function()
     if(self.bounds_tw < self.tw) self.bounds_tw++;
     if(self.bounds_ty > 0 && self.bounds_th%2) self.bounds_ty--;
     if(self.bounds_th < self.th) self.bounds_th++;
+    self.tl_bound_tile = self.tiles[self.tiles_i(self.bounds_tx,self.bounds_ty+self.bounds_th-1)];
+    self.br_bound_tile = self.tiles[self.tiles_i(self.bounds_tx+self.bounds_tw-1,self.bounds_ty)];
   }
   self.zoom_bounds = function(cam)
   {
@@ -1320,6 +1324,10 @@ var board = function()
     }
     cam.wx = self.wx-self.ww/2+(self.bounds_tx+self.bounds_tw/2)*self.tww;
     cam.wy = self.wy-self.wh/2+(self.bounds_ty+self.bounds_tw/2)*self.twh;
+
+    screenSpace(gg.cam, gg.canvas, self);
+    self.screen_tile(self.tl_bound_tile);
+    self.screen_tile(self.br_bound_tile);
   }
 
   self.x = 0;
@@ -1652,6 +1660,8 @@ var board = function()
       if(ydir == -1 && t.ty == 0)         ydir = 0;
       t.shed = self.tiles[t.i+xdir+ydir*self.tw];
     }
+
+    self.inc_bounds();
 
     var type;
     var p;

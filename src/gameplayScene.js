@@ -33,12 +33,12 @@ var GamePlayScene = function()
     if(self.readied)
     {
       gg.b.resize();
+      gg.b.zoom_bounds(gg.cam);
       gg.playhead.resize();
       gg.shop.resize();
       gg.inspector.resize();
       gg.ticker.resize();
       gg.tutorial.resize();
-      gg.b.zoom_bounds(gg.cam);
     }
   }
 
@@ -50,6 +50,7 @@ var GamePlayScene = function()
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
 
     gg.b = new board();
+    gg.b.zoom_bounds(gg.cam);
     gg.money = money_start_n;
     gg.items = [];
     gg.farmbits = [];
@@ -65,7 +66,6 @@ var GamePlayScene = function()
     gg.inspector = new inspector();
     gg.ticker = new ticker();
     gg.tutorial = new tutorial();
-    gg.b.zoom_bounds(gg.cam);
     self.readied = 1;
   };
 

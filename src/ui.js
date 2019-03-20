@@ -22,25 +22,29 @@ var playhead = function()
   var self = this;
   self.resize = function()
   {
-    self.x = 100*gg.stage.s_mod;
-    self.y = 0;
-    self.w = 100*gg.stage.s_mod;
-    self.h = 200*gg.stage.s_mod;
+    var btnw = 40*gg.stage.s_mod;
+    var btnh = btnw;
+    var btnpad = 10*gg.stage.s_mod;
 
-    var x = self.x;
-    var y = self.y+30*gg.stage.s_mod;
-    var w = 40*gg.stage.s_mod;
-    var h = 40*gg.stage.s_mod;
-    x += 10*gg.stage.s_mod;
-    y += 10*gg.stage.s_mod;
-    setBB(self.play_btn, x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.speed_btn,x,y,w,h); y += h+10*gg.stage.s_mod;
+    self.w = btnw*3+btnpad*2;
+    self.h = btnh;
+    self.x = gg.canvas.width/2-self.w/2;
+    self.y = gg.b.tl_bound_tile.y-self.h-btnpad;
+
+    var btnx = self.x;
+    var btny = self.y;
+
+    setBB(self.pause_btn, btnx,btny,btnw,btnh); btnx += btnw+btnpad;
+    setBB(self.play_btn,  btnx,btny,btnw,btnh); btnx += btnw+btnpad;
+    setBB(self.speed_btn, btnx,btny,btnw,btnh); btnx += btnw+btnpad;
   }
 
-  self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = !RESUME_SIM; });
+  self.pause_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 0; });
+  self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; });
   self.speed_btn = new ButtonBox(0,0,0,0,function(){ DOUBLETIME = !DOUBLETIME; });
   self.resize();
 
+  self.pause_btn.active = 0;
   self.play_btn.active = 0;
   self.speed_btn.active = 0;
 
@@ -49,6 +53,7 @@ var playhead = function()
     if(gg.b.spewing_road) return;
     if(gg.shop.selected_buy) return;
     var check = true;
+    if(check && self.pause_btn.active) check = !filter.filter(self.pause_btn);
     if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
     if(check && self.speed_btn.active) check = !filter.filter(self.speed_btn);
     return !check;
@@ -65,8 +70,9 @@ var playhead = function()
     gg.ctx.fillStyle = black;
     gg.ctx.textAlign = "left";
 
-    if(self.play_btn.active)  { strokeBB(self.play_btn,gg.ctx);  gg.ctx.fillText("play", self.play_btn.x, self.play_btn.y+20);  }
-    if(self.speed_btn.active) { strokeBB(self.speed_btn,gg.ctx); gg.ctx.fillText("speed",self.speed_btn.x,self.speed_btn.y+20); }
+    if(self.pause_btn.active) { strokeBB(self.pause_btn,gg.ctx); gg.ctx.fillText("||", self.pause_btn.x, self.pause_btn.y+20);  }
+    if(self.play_btn.active)  { strokeBB(self.play_btn,gg.ctx);  gg.ctx.fillText(">", self.play_btn.x, self.play_btn.y+20);  }
+    if(self.speed_btn.active) { strokeBB(self.speed_btn,gg.ctx); gg.ctx.fillText(">>",self.speed_btn.x,self.speed_btn.y+20); }
   }
 }
 
@@ -77,27 +83,30 @@ var shop = function()
   {
     self.x = 0;
     self.y = 0;
-    self.w = 100*gg.stage.s_mod;
-    self.h = 200*gg.stage.s_mod;
+    self.w = gg.b.tl_bound_tile.x;
+    self.h = gg.canvas.height;
 
-    var x = self.x;
-    var y = self.y+30*gg.stage.s_mod;
-    var w = 40*gg.stage.s_mod;
-    var h = 40*gg.stage.s_mod;
-    x += 10*gg.stage.s_mod;
-    y += 10*gg.stage.s_mod;
-    setBB(self.home_btn,     x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.farm_btn,     x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.livestock_btn,x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.storage_btn,  x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.processor_btn,x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.road_btn,     x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.demolish_btn, x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.money_btn,    x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.abandon_btn,  x,y,w,h); y += h+10*gg.stage.s_mod;
-    setBB(self.refund_btn,   x,y,w,h); y += h+10*gg.stage.s_mod;
+    var btn_pad = 10*gg.stage.s_mod;
+    var btn_w = (self.w-btn_pad*3)/2;
+    var btn_h = self.h/6;
+    var btn_x = btn_pad;
+    var btn_y = btn_pad;
+
+    setBB(self.money_display, btn_x,btn_y,btn_w*2,gg.b.tl_bound_tile.y-btn_pad*2);
+    btn_y = gg.b.tl_bound_tile.y+gg.b.tl_bound_tile.h;
+    setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
+    setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
+    setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
+    setBB(self.storage_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
+    setBB(self.processor_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
+    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
+    setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
+    setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
+    setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
+    setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
   }
 
+  self.money_display = new BB();
   self.home_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      });
   self.farm_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      self.selected_buy = BUY_TYPE_FARM;      });
   self.livestock_btn = new ButtonBox(0,0,0,0,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; self.selected_buy = BUY_TYPE_LIVESTOCK; });
@@ -437,10 +446,10 @@ var ticker = function()
   var self = this;
   self.resize = function()
   {
-    self.x = 100*gg.stage.s_mod;
+    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w;
     self.y = 0;
-    self.w = 0;
-    self.h = 0;
+    self.w = gg.canvas.width-self.x;
+    self.h = gg.canvas.height;
   }
   self.resize();
 
@@ -469,7 +478,8 @@ var ticker = function()
 
   self.draw = function()
   {
-    var y = 0;
+    var pad = 20*gg.stage.s_mod;
+    var y = self.y+self.h-pad;
     for(var i = 0; i < self.feed.length; i++)
     {
       var index = self.feed.length-1-i;
@@ -478,7 +488,7 @@ var ticker = function()
       var r = floor(max(0,1-t*5)*255);
       gg.ctx.fillStyle = "rgba("+r+",0,0,"+a+")";
       gg.ctx.fillText(self.feed[index],self.x+10*gg.stage.s_mod,self.y+10*gg.stage.s_mod+y);
-      y += 20*gg.stage.s_mod;
+      y -= pad;
     }
     gg.ctx.fillStyle = black;
   }
@@ -788,7 +798,7 @@ var tutorial = function()
     function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Let's sell some.",i.x+i.w/2,i.y-i.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
-    function(){self.dotakeover(); gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0;}, //transition
+    function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1;gg.playhead.speed_btn.active = 1; RESUME_SIM = 0;}, //transition
     ffunc, //tick
     function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("the game is now paused-",b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
     self.next_state, //click
