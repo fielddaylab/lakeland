@@ -1298,23 +1298,25 @@ var board = function()
     cam.ww = gg.canvas.width;
     cam.wh = gg.canvas.height;
 
-    var tw = self.bounds_tw+4; if(self.bounds_tw+4 > self.tw) tw = self.tw;
-    var th = self.bounds_th+4; if(self.bounds_th+4 > self.th) th = self.th;
+    var tw = ceil(self.bounds_tw+self.bounds_tw/ 2);
+    var th = ceil(self.bounds_th+self.bounds_th/10);
     var ww = self.ww*tw/self.tw;
     var wh = self.wh*th/self.th;
 
-    var fake_bw = wh*cam.ww/cam.wh;
-    var fake_bh = wh;
+    if(ww/wh > cam.ww/cam.wh) //cam too short
+      wh = ww*cam.wh/cam.ww;
+    else //cam too thin
+      ww = wh*cam.ww/cam.wh;
 
-    if(cam.ww > fake_bw)
+    if(cam.ww > ww)
     {
-      cam.wh *= fake_bw/cam.ww;
-      cam.ww *= fake_bw/cam.ww;
+      cam.wh *= ww/cam.ww;
+      cam.ww *= ww/cam.ww;
     }
-    if(cam.wh > fake_bh)
+    if(cam.wh > wh)
     {
-      cam.ww *= fake_bh/cam.wh;
-      cam.wh *= fake_bh/cam.wh;
+      cam.ww *= wh/cam.wh;
+      cam.wh *= wh/cam.wh;
     }
     cam.wx = self.wx-self.ww/2+(self.bounds_tx+self.bounds_tw/2)*self.tww;
     cam.wy = self.wy-self.wh/2+(self.bounds_ty+self.bounds_tw/2)*self.twh;
