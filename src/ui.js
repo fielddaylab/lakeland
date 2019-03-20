@@ -28,13 +28,13 @@ var playhead = function()
     self.h = 200*gg.stage.s_mod;
 
     var x = self.x;
-    var y = self.y+30;
-    var w = 40;
-    var h = 40;
-    x += 10;
-    y += 10;
-    setBB(self.play_btn, x,y,w,h); y += h+10;
-    setBB(self.speed_btn,x,y,w,h); y += h+10;
+    var y = self.y+30*gg.stage.s_mod;
+    var w = 40*gg.stage.s_mod;
+    var h = 40*gg.stage.s_mod;
+    x += 10*gg.stage.s_mod;
+    y += 10*gg.stage.s_mod;
+    setBB(self.play_btn, x,y,w,h); y += h+10*gg.stage.s_mod;
+    setBB(self.speed_btn,x,y,w,h); y += h+10*gg.stage.s_mod;
   }
 
   self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = !RESUME_SIM; });
