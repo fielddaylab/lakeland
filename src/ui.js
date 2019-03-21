@@ -117,6 +117,21 @@ var shop = function()
 
   self.money_img = GenImg("assets/money.png");
 
+  self.buy_cost = function(buy)
+  {
+    switch(buy)
+    {
+      case BUY_TYPE_HOME:      return home_cost; break;
+      case BUY_TYPE_FARM:      return farm_cost; break;
+      case BUY_TYPE_LIVESTOCK: return livestock_cost; break;
+      case BUY_TYPE_STORAGE:   return storage_cost; break;
+      case BUY_TYPE_PROCESSOR: return processor_cost; break;
+      case BUY_TYPE_ROAD:      return road_cost; break;
+      case BUY_TYPE_DEMOLISH:  return demolish_cost; break;
+      default: return 0; break;
+    }
+  }
+
   self.money_display = new BB();
   self.home_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      });
   self.farm_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      self.selected_buy = BUY_TYPE_FARM;      });
@@ -127,20 +142,7 @@ var shop = function()
   self.demolish_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.money < demolish_cost)  return; gg.money -= demolish_cost;  self.selected_buy = BUY_TYPE_DEMOLISH;  });
   self.money_btn     = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; });
   self.abandon_btn   = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); });
-  self.refund_btn    = new ButtonBox(0,0,0,0,function(){
-    switch(self.selected_buy)
-    {
-      case BUY_TYPE_HOME:      gg.money += home_cost; break;
-      case BUY_TYPE_FARM:      gg.money += farm_cost; break;
-      case BUY_TYPE_LIVESTOCK: gg.money += livestock_cost; break;
-      case BUY_TYPE_STORAGE:   gg.money += storage_cost; break;
-      case BUY_TYPE_PROCESSOR: gg.money += processor_cost; break;
-      case BUY_TYPE_ROAD:      gg.money += road_cost; break;
-      case BUY_TYPE_DEMOLISH:  gg.money += demolish_cost; break;
-      default: break;
-    }
-    self.selected_buy = 0;
-  });
+  self.refund_btn    = new ButtonBox(0,0,0,0,function(){ gg.money += self.buy_cost(self.selected_buy); self.selected_buy = 0; });
   self.resize();
 
   self.selected_buy = 0;
@@ -182,22 +184,27 @@ var shop = function()
 
   }
 
-  self.draw_btn = function(bb,img,txt,active,cost,afford)
+  self.draw_btn = function(bb,img,txt,active,tactive,cost,afford,buying)
   {
     if(!active) return;
-    if(!afford) gg.ctx.fillStyle = gray;
-    else        gg.ctx.fillStyle = gg.backdrop_color;
+    if(!afford || !tactive) gg.ctx.globalAlpha = 0.5;
+    if(buying) gg.ctx.globalAlpha = 1;
+    gg.ctx.fillStyle = gg.backdrop_color;
     fillRBB(bb,self.pad,gg.ctx);
-
+    gg.ctx.strokeStyle = gg.font_color;
     gg.ctx.fillStyle = gg.font_color;
+    if(buying) gg.ctx.stroke();
 
     gg.ctx.fillText(txt,      bb.x+bb.w/2, bb.y+bb.h-self.pad-self.font_size);
     gg.ctx.drawImage(img,bb.x+bb.w/2-self.img_size/2,bb.y+self.pad-self.img_size/2,self.img_size,self.img_size*1.5);
     if(cost)
     {
-      gg.ctx.fillText("$"+cost, bb.x+bb.w/2, bb.y+bb.h-self.pad);
-      gg.ctx.drawImage(self.money_img,bb.x+self.pad,bb.y+bb.h-self.pad-self.font_size,self.font_size,self.font_size);
+      if(!afford) gg.ctx.fillStyle = red;
+      if(cost < 0) gg.ctx.fillText("+$"+(-cost), bb.x+bb.w/2, bb.y+bb.h-self.pad);
+      else         gg.ctx.fillText("$"+cost, bb.x+bb.w/2, bb.y+bb.h-self.pad);
+      gg.ctx.drawImage(self.money_img,bb.x+self.pad/2,bb.y+bb.h-self.pad-self.font_size,self.font_size,self.font_size);
     }
+    gg.ctx.globalAlpha = 1;
   }
 
   self.draw = function()
@@ -221,21 +228,18 @@ var shop = function()
     var fs = self.font_size;
     gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "center";
-    if(!self.selected_buy)
-    {
-      self.draw_btn(self.home_btn,      home_img,      "Home",      self.home_btn.active,      home_cost,      gg.money >= home_cost);
-      self.draw_btn(self.farm_btn,      farm_img,      "Farm",      self.farm_btn.active,      farm_cost,      gg.money >= farm_cost);
-      self.draw_btn(self.livestock_btn, livestock_img, "Livestock", self.livestock_btn.active, livestock_cost, gg.money >= livestock_cost);
-      self.draw_btn(self.storage_btn,   storage_img,   "Storage",   self.storage_btn.active,   storage_cost,   gg.money >= storage_cost);
-      self.draw_btn(self.processor_btn, processor_img, "Processor", self.processor_btn.active, processor_cost, gg.money >= processor_cost);
-      self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      road_cost,      gg.money >= road_cost);
-      self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  demolish_cost,  gg.money >= demolish_cost);
+    self.draw_btn(self.home_btn,      home_img,      "Home",      self.home_btn.active,      !self.selected_buy, home_cost,      gg.money >= home_cost,      0);
+    self.draw_btn(self.farm_btn,      farm_img,      "Farm",      self.farm_btn.active,      !self.selected_buy, farm_cost,      gg.money >= farm_cost,      0);
+    self.draw_btn(self.livestock_btn, livestock_img, "Livestock", self.livestock_btn.active, !self.selected_buy, livestock_cost, gg.money >= livestock_cost, 0);
+    self.draw_btn(self.storage_btn,   storage_img,   "Storage",   self.storage_btn.active,   !self.selected_buy, storage_cost,   gg.money >= storage_cost,   0);
+    self.draw_btn(self.processor_btn, processor_img, "Processor", self.processor_btn.active, !self.selected_buy, processor_cost, gg.money >= processor_cost, 0);
+    self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      !self.selected_buy, road_cost,      gg.money >= road_cost,      0);
+    self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
 
-      self.draw_btn(self.money_btn,   self.money_img,  "Money",   self.money_btn.active,   0, 1);
-      self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon", self.abandon_btn.active, 0, 1);
-    }
-    else
-      self.draw_btn(self.refund_btn, self.money_img, "Refund", self.refund_btn.active, 0, 1);
+    self.draw_btn(self.money_btn,   self.money_img,  "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
+    self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon", self.abandon_btn.active, !self.selected_buy, 0, 1, 0);
+    self.draw_btn(self.refund_btn,  self.money_img,  "Refund",  self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
+
     gg.ctx.textAlign = "left";
   }
 }
