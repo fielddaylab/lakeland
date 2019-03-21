@@ -100,7 +100,7 @@ var LoadingScene = function()
     imageLoaded(); //call once to prevent 0/0 != 100% bug
 
     //put font paths in font_srcs
-    //font_srcs.push("FontName"); //NEEDS DEFINITION IN index.html CSS!!
+    font_srcs.push("LeagueSpartan"); //NEEDS DEFINITION IN index.html CSS!!
     font_canv_s = 25;
     font_canv = GenIcon(font_canv_s,font_canv_s);
     // uncomment below for preview

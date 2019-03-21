@@ -70,6 +70,7 @@ var playhead = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = black;
     gg.ctx.textAlign = "left";
@@ -90,26 +91,31 @@ var shop = function()
     self.y = 0;
     self.w = gg.b.tl_bound_tile.x;
     self.h = gg.canvas.height;
+    self.pad = 10*gg.stage.s_mod;
 
-    var btn_pad = 10*gg.stage.s_mod;
-    var btn_w = (self.w-btn_pad*3)/2;
+    var btn_w = (self.w-self.pad*3)/2;
     var btn_h = self.h/6;
-    var btn_x = btn_pad;
-    var btn_y = btn_pad;
+    var btn_x = self.pad;
+    var btn_y = self.pad;
 
-    setBB(self.money_display, btn_x,btn_y,btn_w*2,gg.b.tl_bound_tile.y-btn_pad*2);
+    self.font_size = self.pad*2;
+    self.img_size = min(btn_w-self.pad*2,btn_h-self.pad*2-self.font_size*2);
+
+    setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.tl_bound_tile.y-self.pad*2);
     btn_y = gg.b.tl_bound_tile.y+gg.b.tl_bound_tile.h;
-    setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
-    setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
-    setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
-    setBB(self.storage_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
-    setBB(self.processor_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
-    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
-    setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
-    setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
-    setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+btn_pad;
-    setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = btn_pad; btn_y += btn_h+btn_pad;
+    setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.storage_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.processor_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
   }
+
+  self.money_img = GenImg("assets/money.png");
 
   self.money_display = new BB();
   self.home_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      });
@@ -176,40 +182,58 @@ var shop = function()
 
   }
 
+  self.draw_btn = function(bb,img,txt,active,cost,afford)
+  {
+    if(!active) return;
+    if(!afford) gg.ctx.fillStyle = gray;
+    else        gg.ctx.fillStyle = gg.backdrop_color;
+    fillRBB(bb,self.pad,gg.ctx);
+
+    gg.ctx.fillStyle = gg.font_color;
+
+    gg.ctx.fillText(txt,      bb.x+bb.w/2, bb.y+bb.h-self.pad-self.font_size);
+    gg.ctx.fillText("$"+cost, bb.x+bb.w/2, bb.y+bb.h-self.pad);
+    gg.ctx.drawImage(img,bb.x+bb.w/2-self.img_size/2,bb.y+self.pad-self.img_size/2,self.img_size,self.img_size*1.5);
+    gg.ctx.drawImage(self.money_img,bb.x+self.pad,bb.y+bb.h-self.pad-self.font_size,self.font_size,self.font_size);
+  }
+
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     gg.ctx.strokeStyle = black;
     gg.ctx.fillStyle = gray;
     gg.ctx.textAlign = "left";
 
+    gg.ctx.drawImage(self.money_img, self.money_display.x,self.money_display.y,self.money_display.h,self.money_display.h);
+    gg.ctx.fillStyle = gg.font_color;
+    var fs = self.money_display.h*0.7;
+    gg.ctx.font = fs+"px "+gg.font;
+    gg.ctx.fillText("$"+gg.money,self.money_display.x+self.money_display.h,self.money_display.y+self.money_display.h*4/5);
+    gg.ctx.strokeStyle = gg.backdrop_color;
+    var x = self.x+self.pad;
+    var y = self.money_display.y+self.money_display.h+self.pad;
+    gg.ctx.lineWidth = self.pad/2;
+    drawLine(x,y,self.x+self.w-self.pad,y,gg.ctx);
+
+    var fs = self.font_size;
+    gg.ctx.font = fs+"px "+gg.font;
+    gg.ctx.textAlign = "center";
     if(!self.selected_buy)
     {
-      if(self.home_btn.active)      { if(gg.money < home_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.home_btn,gg.ctx); }
-      if(self.farm_btn.active)      { if(gg.money < farm_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.farm_btn,gg.ctx); }
-      if(self.livestock_btn.active) { if(gg.money < livestock_cost) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.livestock_btn,gg.ctx); }
-      if(self.storage_btn.active)   { if(gg.money < storage_cost)   gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.storage_btn,gg.ctx); }
-      if(self.processor_btn.active) { if(gg.money < processor_cost) gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.processor_btn,gg.ctx); }
-      if(self.road_btn.active)      { if(gg.money < road_cost)      gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.road_btn,gg.ctx); }
-      if(self.demolish_btn.active)  { if(gg.money < demolish_cost)  gg.ctx.fillStyle = gray; else gg.ctx.fillStyle = white; fillBB(self.demolish_btn,gg.ctx); }
-    }
+      self.draw_btn(self.home_btn,      home_img,      "Home",      self.home_btn.active,      home_cost,      gg.money >= home_cost);
+      self.draw_btn(self.farm_btn,      farm_img,      "Farm",      self.farm_btn.active,      farm_cost,      gg.money >= farm_cost);
+      self.draw_btn(self.livestock_btn, livestock_img, "Livestock", self.livestock_btn.active, livestock_cost, gg.money >= livestock_cost);
+      self.draw_btn(self.storage_btn,   storage_img,   "Storage",   self.storage_btn.active,   storage_cost,   gg.money >= storage_cost);
+      self.draw_btn(self.processor_btn, processor_img, "Processor", self.processor_btn.active, processor_cost, gg.money >= processor_cost);
+      self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      road_cost,      gg.money >= road_cost);
+      self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  demolish_cost,  gg.money >= demolish_cost);
 
-    gg.ctx.fillStyle = black;
-    gg.ctx.fillText("$"+gg.money,10*gg.stage.s_mod,30*gg.stage.s_mod);
-
-    if(!self.selected_buy)
-    {
-      if(self.home_btn.active)      { strokeBB(self.home_btn,gg.ctx);      gg.ctx.fillText("home",                   self.home_btn.x,      self.home_btn.y+20*gg.stage.s_mod);      gg.ctx.fillText("$"+home_cost,      self.home_btn.x,      self.home_btn.y+30*gg.stage.s_mod); }
-      if(self.farm_btn.active)      { strokeBB(self.farm_btn,gg.ctx);      gg.ctx.fillText("farm",                   self.farm_btn.x,      self.farm_btn.y+20*gg.stage.s_mod);      gg.ctx.fillText("$"+farm_cost,      self.farm_btn.x,      self.farm_btn.y+30*gg.stage.s_mod); }
-      if(self.livestock_btn.active) { strokeBB(self.livestock_btn,gg.ctx); gg.ctx.fillText("livestock",              self.livestock_btn.x, self.livestock_btn.y+20*gg.stage.s_mod); gg.ctx.fillText("$"+livestock_cost, self.livestock_btn.x, self.livestock_btn.y+30*gg.stage.s_mod); }
-      if(self.storage_btn.active)   { strokeBB(self.storage_btn,gg.ctx);   gg.ctx.fillText("storage",                self.storage_btn.x,   self.storage_btn.y+20*gg.stage.s_mod);   gg.ctx.fillText("$"+storage_cost,   self.storage_btn.x,   self.storage_btn.y+30*gg.stage.s_mod); }
-      if(self.processor_btn.active) { strokeBB(self.processor_btn,gg.ctx); gg.ctx.fillText("processor",              self.processor_btn.x, self.processor_btn.y+20*gg.stage.s_mod); gg.ctx.fillText("$"+processor_cost, self.processor_btn.x, self.processor_btn.y+30*gg.stage.s_mod); }
-      if(self.road_btn.active)      { strokeBB(self.road_btn,gg.ctx);      gg.ctx.fillText("roadx"+roads_per_buy,    self.road_btn.x,      self.road_btn.y+20*gg.stage.s_mod);      gg.ctx.fillText("$"+road_cost,      self.road_btn.x,      self.road_btn.y+30*gg.stage.s_mod); }
-      if(self.demolish_btn.active)  { strokeBB(self.demolish_btn,gg.ctx);  gg.ctx.fillText("demolish",               self.demolish_btn.x,  self.demolish_btn.y+20*gg.stage.s_mod);  gg.ctx.fillText("$"+demolish_cost,  self.demolish_btn.x,  self.demolish_btn.y+30*gg.stage.s_mod); }
-      if(self.money_btn.active)     { strokeBB(self.money_btn,gg.ctx);     gg.ctx.fillText("money",                  self.money_btn.x,     self.money_btn.y+20*gg.stage.s_mod);     gg.ctx.fillText("+$"+free_money,    self.money_btn.x,     self.money_btn.y+30*gg.stage.s_mod); }
-      if(self.abandon_btn.active)   { strokeBB(self.abandon_btn,gg.ctx);   gg.ctx.fillText("abandon",                self.abandon_btn.x,   self.abandon_btn.y+20*gg.stage.s_mod); }
+      self.draw_btn(self.money_btn,   self.money_img,  "Money",   self.money_btn.active,   0, 1);
+      self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon", self.abandon_btn.active, 0, 1);
     }
     else
-      if(self.refund_btn.active) { strokeBB(self.refund_btn,gg.ctx); gg.ctx.fillText("refund", self.refund_btn.x, self.refund_btn.y+20*gg.stage.s_mod); }
+      self.draw_btn(self.refund_btn, self.money_img, "Refund", self.refund_btn.active, 0, 1);
+    gg.ctx.textAlign = "left";
   }
 }
 
@@ -429,11 +453,12 @@ var inspector = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     gg.ctx.fillStyle = black;
 
     switch(self.detailed_type)
     {
-      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",10*gg.stage.s_mod,vspace); break;
+      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",self.x+vspace,self.y+vspace); break;
       case INSPECTOR_CONTENT_TILE:    self.draw_tile(self.detailed); break;
       case INSPECTOR_CONTENT_ITEM:    self.draw_item(self.detailed); break;
       case INSPECTOR_CONTENT_FARMBIT: self.draw_farmbit(self.detailed); break;
@@ -480,6 +505,7 @@ var ticker = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     var pad = 20*gg.stage.s_mod;
     var y = self.y+self.h-pad;
     for(var i = 0; i < self.feed.length; i++)
@@ -686,6 +712,7 @@ var tutorial = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     self.state_funcs[self.state*4+2]();
     if(self.quest)
     {

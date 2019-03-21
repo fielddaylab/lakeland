@@ -2261,6 +2261,7 @@ var board = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     var t;
     var w = self.w/self.tw;
     var h = self.h/self.th;
@@ -2440,6 +2441,7 @@ var item = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     if(self.offscreen) return;
     var y = self.y-self.h/2;
     var h = self.h+self.h/2;
@@ -3462,6 +3464,7 @@ var farmbit = function()
 
   self.draw = function()
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     if(self.offscreen) return;
     if(debug_jobs)
     {

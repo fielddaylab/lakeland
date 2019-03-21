@@ -40,6 +40,11 @@ var GamePlayScene = function()
       gg.ticker.resize();
       gg.tutorial.resize();
     }
+
+    gg.font = "LeagueSpartan";
+    gg.font_size = 14*gg.stage.s_mod;
+    gg.font_color = "#17315B";
+    gg.backdrop_color = "#A0DEDB";
   }
 
   self.readied = 0;
@@ -131,7 +136,8 @@ var GamePlayScene = function()
     gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
 
     var fs = 12*gg.stage.s_mod;
-    gg.ctx.font = fs+"px Helvetica";
+    gg.ctx.font = fs+"px LeagueSpartan";
+    gg.ctx.fillStyle = "#17315B";
 
     gg.b.draw();
     for(var i = 0; i < gg.farmbits.length; i++)
