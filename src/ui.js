@@ -295,9 +295,6 @@ var inspector = function()
     y += self.pad+self.font_size;
     gg.ctx.fillText("("+t.tx+","+t.ty+")",x,y);
     y += self.pad+self.font_size;
-    str = "State: ";
-    gg.ctx.fillText(str,x,y);
-    y += self.pad+self.font_size;
     switch(t.type)
     {
       case TILE_TYPE_NULL:
@@ -358,7 +355,7 @@ var inspector = function()
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
 
     y += self.pad+self.font_size;
-    gg.ctx.fillText(str+" ("+it.tile.tx+","+it.tile.ty+")",x,y);
+    gg.ctx.fillText("("+it.tile.tx+","+it.tile.ty+")",x,y);
     y += self.pad+self.font_size;
     gg.ctx.fillText("lock:"+it.lock,x,y);
     y += self.pad+self.font_size;
@@ -370,9 +367,18 @@ var inspector = function()
 
   self.draw_farmbit = function(b)
   {
-    var x = self.x+self.pad+self.font_size;
-    var y = self.pad+self.font_size;
-    gg.ctx.fillText("FARMBIT",x,y);
+    gg.ctx.textAlign = "center";
+    gg.ctx.fillStyle = gg.font_color;
+    gg.ctx.font = self.font_size+"px "+gg.font;
+    var x = self.x+self.w/2;
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    gg.ctx.fillText(b.name,x,y);
+    y += self.pad;
+
+    gg.ctx.strokeStyle = gg.backdrop_color;
+    gg.ctx.lineWidth = self.pad/2;
+    drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+
     y += self.pad+self.font_size;
     str = "Job: ";
     switch(b.job_type)
@@ -392,7 +398,7 @@ var inspector = function()
       case JOB_TYPE_EXPORT:    str += "export";    break;
       case JOB_TYPE_COUNT:     str += "count";     break;
     }
-    gg.ctx.fillText(str+" ("+b.tile.tx+","+b.tile.ty+")",x,y);
+    gg.ctx.fillText(str+"("+b.tile.tx+","+b.tile.ty+")",x,y);
     y += self.pad+self.font_size;
     str = "Job State: ";
     switch(b.job_state)
@@ -451,6 +457,9 @@ var inspector = function()
     gg.ctx.fillText("t:"+b.job_state_t,x,y);
     y += self.pad+self.font_size;
     y += self.pad+self.font_size;
+
+    self.img_vignette(farmbit_imgs[0]);
+    self.border_vignette();
     return y;
   }
 
@@ -756,7 +765,7 @@ var tutorial = function()
     function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = ""; if(self.state_t%10 > 6) dots = ".."; else if(self.state_t%10 > 3) dots = "."; self.textat("Waiting."+dots,t.x+t.w/2,t.y-t.h); }, //draw
     noop, //click
 
-    self.dotakeover, //transition
+    function(){ var f = gg.farmbits[0]; gg.inspector.detailed = f; gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //transition
     ffunc, //tick
     function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click

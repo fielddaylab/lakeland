@@ -2111,6 +2111,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_HOME);
               gg.inspector.detailed = self.hover_t;
+              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2121,6 +2122,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_FARM);
               gg.inspector.detailed = self.hover_t;
+              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
               b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
@@ -2132,6 +2134,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
               gg.inspector.detailed = self.hover_t;
+              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2142,6 +2145,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
               gg.inspector.detailed = self.hover_t;
+              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2152,6 +2156,7 @@ var board = function()
             {
               self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
               gg.inspector.detailed = self.hover_t;
+              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2164,6 +2169,7 @@ var board = function()
               {
                 self.alterTile(self.hover_t,TILE_TYPE_ROAD);
                 gg.inspector.detailed = self.hover_t;
+                gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
                 self.spewing_road = roads_per_buy-1;
               }
               else
@@ -2179,6 +2185,7 @@ var board = function()
               self.abandon_tile(self.hover_t);
               self.alterTile(self.hover_t,self.hover_t.og_type);
               gg.inspector.detailed = self.hover_t;
+              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2364,6 +2371,30 @@ var board = function()
     var nx;
     var ny;
     gg.ctx.imageSmoothingEnabled = 0;
+    //normal view
+    var i = 0;
+    ny = round(self.y);
+    for(var ty = self.th-1; ty >= 0; ty--)
+    {
+      y = ny;
+      ny = round(self.y+self.h-ty*h);
+      th = ny-y;
+      nx = round(self.x+(0*w));
+      i = self.tiles_i(0,ty);
+      for(var tx = 0; tx < self.tw; tx++)
+      {
+        x = nx;
+        nx = round(self.x+((tx+1)*w));
+        tw = nx-x;
+        var t = self.tiles[i];
+        self.draw_tile(t,x,y,tw,th);
+        gg.ctx.fillStyle = black;
+        //if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
+        //if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
+        i++;
+      }
+    }
+    gg.ctx.globalAlpha = 0.5;
     if(self.nutrition_view)
     { //nutrition view
       var i = 0;
@@ -2386,31 +2417,7 @@ var board = function()
         }
       }
     }
-    else
-    { //normal view
-      var i = 0;
-      ny = round(self.y);
-      for(var ty = self.th-1; ty >= 0; ty--)
-      {
-        y = ny;
-        ny = round(self.y+self.h-ty*h);
-        th = ny-y;
-        nx = round(self.x+(0*w));
-        i = self.tiles_i(0,ty);
-        for(var tx = 0; tx < self.tw; tx++)
-        {
-          x = nx;
-          nx = round(self.x+((tx+1)*w));
-          tw = nx-x;
-          var t = self.tiles[i];
-          self.draw_tile(t,x,y,tw,th);
-          gg.ctx.fillStyle = black;
-          //if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
-          //if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
-          i++;
-        }
-      }
-    }
+    gg.ctx.globalAlpha = 1;
     gg.ctx.imageSmoothingEnabled = 1;
 
     var t;
