@@ -3,7 +3,10 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
+- prompts vary based on action required (click to advance, do thing to advance, etc...)
+- auto-select farmbit on entry
+- farm settings to tag produce as for sale or not
+- auto-select purchased thing on purchase
 - re-find export destination on item pickup
-- cloud render
 - standardized nutrition
 

@@ -1460,19 +1460,78 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_TYPE_LAND: return land_img; break;
-      case TILE_TYPE_LAKE: return lake_img; break;
-      case TILE_TYPE_SHORE: return shore_img; break;
+      case TILE_TYPE_LAND:      return land_img; break;
+      case TILE_TYPE_LAKE:      return lake_img; break;
+      case TILE_TYPE_SHORE:     return shore_img; break;
       case TILE_TYPE_LIVESTOCK: return livestock_img; break;
-      case TILE_TYPE_STORAGE: return storage_img; break;
+      case TILE_TYPE_STORAGE:   return storage_img; break;
       case TILE_TYPE_PROCESSOR: return processor_img; break;
-      case TILE_TYPE_ROAD: return road_img; break;
-      case TILE_TYPE_ROCK: return rock_img; break;
-      case TILE_TYPE_FOREST: return forest_img; break;
-      case TILE_TYPE_HOME: return home_img; break;
-      case TILE_TYPE_FARM: return farm_img; break;
+      case TILE_TYPE_ROAD:      return road_img; break;
+      case TILE_TYPE_ROCK:      return rock_img; break;
+      case TILE_TYPE_FOREST:    return forest_img; break;
+      case TILE_TYPE_HOME:      return home_img; break;
+      case TILE_TYPE_FARM:      return farm_img; break;
     }
     return land_img;
+  }
+  self.tile_name = function(type)
+  {
+    switch(type)
+    {
+      case TILE_TYPE_NULL:      return "Null";      break;
+      case TILE_TYPE_LAND:      return "Land";      break;
+      case TILE_TYPE_ROCK:      return "Rock";      break;
+      case TILE_TYPE_LAKE:      return "Lake";      break;
+      case TILE_TYPE_SHORE:     return "Shore";     break;
+      case TILE_TYPE_FOREST:    return "Forest";    break;
+      case TILE_TYPE_HOME:      return "Home";      break;
+      case TILE_TYPE_FARM:      return "Farm";      break;
+      case TILE_TYPE_LIVESTOCK: return "Livestock"; break;
+      case TILE_TYPE_STORAGE:   return "Storage";   break;
+      case TILE_TYPE_PROCESSOR: return "Processor"; break;
+      case TILE_TYPE_ROAD:      return "Road";      break;
+      case TILE_TYPE_COUNT:     return "Count";     break;
+    }
+  }
+  self.state_name = function(type)
+  {
+    switch(type)
+    {
+      case TILE_STATE_NULL:               return "null";       break;
+      case TILE_STATE_HOME_VACANT:        return "vacant";     break;
+      case TILE_STATE_HOME_OCCUPIED:      return "occupied";   break;
+      case TILE_STATE_FARM_UNPLANTED:     return "unplanted";  break;
+      case TILE_STATE_FARM_PLANTED:       return "planted";    break;
+      case TILE_STATE_FARM_GROWN:         return "grown";      break;
+      case TILE_STATE_LIVESTOCK_IDLE:     return "idle";       break;
+      case TILE_STATE_STORAGE_UNASSIGNED: return "unassigned"; break;
+      case TILE_STATE_STORAGE_FOOD:       return "food";       break;
+      case TILE_STATE_STORAGE_POOP:       return "poop";       break;
+      case TILE_STATE_STORAGE_VALUABLE:   return "valuable";   break;
+      case TILE_STATE_COUNT:              return "null";       break;
+    }
+  }
+  self.item_img = function(type)
+  {
+    switch(type)
+    {
+      case ITEM_TYPE_WATER:    return water_img;    break;
+      case ITEM_TYPE_FOOD:     return food_img;     break;
+      case ITEM_TYPE_POOP:     return poop_img;     break;
+      case ITEM_TYPE_VALUABLE: return valuable_img; break;
+    }
+  }
+  self.item_name = function(type)
+  {
+    switch(type)
+    {
+      case ITEM_TYPE_NULL:     return "Null";     break;
+      case ITEM_TYPE_WATER:    return "Water";    break;
+      case ITEM_TYPE_FOOD:     return "Food";     break;
+      case ITEM_TYPE_POOP:     return "Poop";     break;
+      case ITEM_TYPE_VALUABLE: return "Valuable"; break;
+      case ITEM_TYPE_COUNT:    return "Count";    break;
+    }
   }
 
   self.init = function()

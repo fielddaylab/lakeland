@@ -7,7 +7,8 @@ var GamePlayScene = function()
   var dragger;
   var keyer;
 
-  var keycatch = {
+  var keycatch =
+  {
     key:function(evt)
     {
       switch(evt.key)

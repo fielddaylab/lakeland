@@ -202,7 +202,7 @@ var shop = function()
       if(!afford) gg.ctx.fillStyle = red;
       if(cost < 0) gg.ctx.fillText("+$"+(-cost), bb.x+bb.w/2, bb.y+bb.h-self.pad);
       else         gg.ctx.fillText("$"+cost, bb.x+bb.w/2, bb.y+bb.h-self.pad);
-      gg.ctx.drawImage(self.money_img,bb.x+self.pad/2,bb.y+bb.h-self.pad-self.font_size,self.font_size,self.font_size);
+      gg.ctx.drawImage(self.money_img,bb.x+self.pad/2,bb.y+bb.h-self.pad*0.8-self.font_size,self.font_size,self.font_size);
     }
     gg.ctx.globalAlpha = 1;
   }
@@ -249,10 +249,17 @@ var inspector = function()
   var self = this;
   self.resize = function()
   {
-    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w;
+    self.pad = 10*gg.stage.s_mod;
+    self.font_size = self.pad*1.5;
+    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w+self.pad;
     self.y = 0;
     self.w = gg.canvas.width-self.x;
     self.h = gg.canvas.height;
+
+    self.vignette_x = self.x+self.pad*2;
+    self.vignette_y = self.y+self.pad*2;
+    self.vignette_w = self.w-self.pad*4;
+    self.vignette_h = self.vignette_w;
   }
   self.resize();
 
@@ -261,51 +268,36 @@ var inspector = function()
   self.quick = 0;
   self.quick_type = INSPECTOR_CONTENT_NULL;
 
-  var vspace = 20*gg.stage.s_mod;
+  self.img_vignette = function(img)
+  {
+    gg.ctx.drawImage(img,self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h);
+  }
+  self.border_vignette = function()
+  {
+    gg.ctx.lineWidth = self.pad/2;
+    strokeRRect(self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h,self.pad,gg.ctx);
+  }
 
   self.draw_tile = function(t)
   {
-    var x = self.x+vspace;
-    var y = vspace;
-    gg.ctx.fillText("TILE",x,y);
-    y += vspace;
-    str = "Type: ";
-    switch(t.type)
-    {
-      case TILE_TYPE_NULL:      str += "null";      break;
-      case TILE_TYPE_LAND:      str += "land";      break;
-      case TILE_TYPE_ROCK:      str += "rock";      break;
-      case TILE_TYPE_LAKE:     str += "water";     break;
-      case TILE_TYPE_SHORE:     str += "shore";     break;
-      case TILE_TYPE_FOREST:   str += "forest";   break;
-      case TILE_TYPE_HOME:      str += "home";      break;
-      case TILE_TYPE_FARM:      str += "farm";      break;
-      case TILE_TYPE_LIVESTOCK: str += "livestock"; break;
-      case TILE_TYPE_STORAGE:   str += "storage";   break;
-      case TILE_TYPE_PROCESSOR: str += "processor"; break;
-      case TILE_TYPE_ROAD:      str += "road";      break;
-      case TILE_TYPE_COUNT:     str += "count";     break;
-    }
-    gg.ctx.fillText(str+" ("+t.tx+","+t.ty+")",x,y);
-    y += vspace;
+    gg.ctx.textAlign = "center";
+    gg.ctx.fillStyle = gg.font_color;
+    gg.ctx.font = self.font_size+"px "+gg.font;
+    var x = self.x+self.w/2;
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    gg.ctx.fillText(gg.b.tile_name(t.type),x,y);
+    y += self.pad;
+
+    gg.ctx.strokeStyle = gg.backdrop_color;
+    gg.ctx.lineWidth = self.pad/2;
+    drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("("+t.tx+","+t.ty+")",x,y);
+    y += self.pad+self.font_size;
     str = "State: ";
-    switch(t.state)
-    {
-      case TILE_STATE_NULL:               str += "null";       break;
-      case TILE_STATE_HOME_VACANT:        str += "vacant";     break;
-      case TILE_STATE_HOME_OCCUPIED:      str += "occupied";   break;
-      case TILE_STATE_FARM_UNPLANTED:     str += "unplanted";  break;
-      case TILE_STATE_FARM_PLANTED:       str += "planted";    break;
-      case TILE_STATE_FARM_GROWN:         str += "grown";      break;
-      case TILE_STATE_LIVESTOCK_IDLE:     str += "idle";       break;
-      case TILE_STATE_STORAGE_UNASSIGNED: str += "unassigned"; break;
-      case TILE_STATE_STORAGE_FOOD:       str += "food";       break;
-      case TILE_STATE_STORAGE_POOP:       str += "poop";       break;
-      case TILE_STATE_STORAGE_VALUABLE:   str += "valuable";   break;
-      case TILE_STATE_COUNT:              str += "null";       break;
-    }
     gg.ctx.fillText(str,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
     switch(t.type)
     {
       case TILE_TYPE_NULL:
@@ -318,7 +310,7 @@ var inspector = function()
       case TILE_TYPE_FARM:
       {
         gg.ctx.fillText("val:"+fdisp(t.val)+" ("+fdisp(t.val*100/farm_nutrition_req)+"%)",x,y);
-        y += vspace;
+        y += self.pad+self.font_size;
       }
         break;
       case TILE_TYPE_LIVESTOCK:
@@ -326,11 +318,11 @@ var inspector = function()
       case TILE_TYPE_STORAGE:
       {
         gg.ctx.fillText("val:"+t.val,x,y);
-        y += vspace;
+        y += self.pad+self.font_size;
         gg.ctx.fillText("withdraw_lock:"+t.withdraw_lock,x,y);
-        y += vspace;
+        y += self.pad+self.font_size;
         gg.ctx.fillText("deposit_lock:"+t.deposit_lock,x,y);
-        y += vspace;
+        y += self.pad+self.font_size;
       }
         break;
       case TILE_TYPE_PROCESSOR:
@@ -339,45 +331,49 @@ var inspector = function()
         break;
     }
     gg.ctx.fillText("t:"+t.state_t,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
     gg.ctx.fillText("nutrition:"+fdisp(t.nutrition),x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
     gg.ctx.fillText("lock:"+t.lock,x,y);
-    y += vspace;
-    y += vspace;
+    y += self.pad+self.font_size;
+    y += self.pad+self.font_size;
+    self.img_vignette(gg.b.tile_img(t.type));
+    self.border_vignette();
+
     return y;
   }
 
   self.draw_item = function(it)
   {
-    var x = self.x+vspace;
-    var y = vspace;
-    gg.ctx.fillText("ITEM",x,y);
-    y += vspace;
-    str = "Type: ";
-    switch(it.type)
-    {
-      case ITEM_TYPE_NULL:     str += "null";     break;
-      case ITEM_TYPE_WATER:    str += "water";    break;
-      case ITEM_TYPE_FOOD:     str += "food";     break;
-      case ITEM_TYPE_POOP:     str += "poop";     break;
-      case ITEM_TYPE_VALUABLE: str += "valuable"; break;
-      case ITEM_TYPE_COUNT:    str += "count";    break;
-    }
+    gg.ctx.textAlign = "center";
+    gg.ctx.fillStyle = gg.font_color;
+    gg.ctx.font = self.font_size+"px "+gg.font;
+    var x = self.x+self.w/2;
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    gg.ctx.fillText(gg.b.item_name(it.type),x,y);
+    y += self.pad;
+
+    gg.ctx.strokeStyle = gg.backdrop_color;
+    gg.ctx.lineWidth = self.pad/2;
+    drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+
+    y += self.pad+self.font_size;
     gg.ctx.fillText(str+" ("+it.tile.tx+","+it.tile.ty+")",x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
     gg.ctx.fillText("lock:"+it.lock,x,y);
-    y += vspace;
-    y += vspace;
+    y += self.pad+self.font_size;
+    y += self.pad+self.font_size;
+    self.img_vignette(gg.b.item_img(it.type));
+    self.border_vignette();
     return y;
   }
 
   self.draw_farmbit = function(b)
   {
-    var x = self.x+vspace;
-    var y = vspace;
+    var x = self.x+self.pad+self.font_size;
+    var y = self.pad+self.font_size;
     gg.ctx.fillText("FARMBIT",x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
     str = "Job: ";
     switch(b.job_type)
     {
@@ -397,7 +393,7 @@ var inspector = function()
       case JOB_TYPE_COUNT:     str += "count";     break;
     }
     gg.ctx.fillText(str+" ("+b.tile.tx+","+b.tile.ty+")",x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
     str = "Job State: ";
     switch(b.job_state)
     {
@@ -410,7 +406,7 @@ var inspector = function()
       case JOB_STATE_COUNT:       str += "null";   break;
     }
     gg.ctx.fillText(str,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
 
     str = "fullness: "+fdisp(b.fullness)+" ";
     switch(b.fullness_state)
@@ -420,7 +416,7 @@ var inspector = function()
       case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
     }
     gg.ctx.fillText(str,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
 
     str = "energy: "+fdisp(b.energy)+" ";
     switch(b.energy_state)
@@ -430,7 +426,7 @@ var inspector = function()
       case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
     }
     gg.ctx.fillText(str,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
 
     str = "joy: "+fdisp(b.joy)+" ";
     switch(b.joy_state)
@@ -440,7 +436,7 @@ var inspector = function()
       case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
     }
     gg.ctx.fillText(str,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
 
     str = "fulfillment: "+fdisp(b.fulfillment)+" ";
     switch(b.fulfillment_state)
@@ -450,11 +446,11 @@ var inspector = function()
       case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
     }
     gg.ctx.fillText(str,x,y);
-    y += vspace;
+    y += self.pad+self.font_size;
 
     gg.ctx.fillText("t:"+b.job_state_t,x,y);
-    y += vspace;
-    y += vspace;
+    y += self.pad+self.font_size;
+    y += self.pad+self.font_size;
     return y;
   }
 
@@ -465,11 +461,12 @@ var inspector = function()
 
     switch(self.detailed_type)
     {
-      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",self.x+vspace,self.y+vspace); break;
+      case INSPECTOR_CONTENT_NULL: gg.ctx.fillText("(nothing selected)",self.x+self.pad,self.y+self.pad); break;
       case INSPECTOR_CONTENT_TILE:    self.draw_tile(self.detailed); break;
       case INSPECTOR_CONTENT_ITEM:    self.draw_item(self.detailed); break;
       case INSPECTOR_CONTENT_FARMBIT: self.draw_farmbit(self.detailed); break;
     }
+    gg.ctx.textAlign = "left";
 
   }
 
