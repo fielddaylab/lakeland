@@ -87,18 +87,18 @@ var shop = function()
   var self = this;
   self.resize = function()
   {
+    self.pad = 10*gg.stage.s_mod;
     self.x = 0;
     self.y = 0;
-    self.w = gg.b.tl_bound_tile.x;
+    self.w = gg.b.tl_bound_tile.x-self.pad;
     self.h = gg.canvas.height;
-    self.pad = 10*gg.stage.s_mod;
 
     var btn_w = (self.w-self.pad*3)/2;
-    var btn_h = self.h/6;
+    var btn_h = self.h/8;
     var btn_x = self.pad;
     var btn_y = self.pad;
 
-    self.font_size = self.pad*2;
+    self.font_size = self.pad*1.5;
     self.img_size = min(btn_w-self.pad*2,btn_h-self.pad*2-self.font_size*2);
 
     setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.tl_bound_tile.y-self.pad*2);
@@ -192,9 +192,12 @@ var shop = function()
     gg.ctx.fillStyle = gg.font_color;
 
     gg.ctx.fillText(txt,      bb.x+bb.w/2, bb.y+bb.h-self.pad-self.font_size);
-    gg.ctx.fillText("$"+cost, bb.x+bb.w/2, bb.y+bb.h-self.pad);
     gg.ctx.drawImage(img,bb.x+bb.w/2-self.img_size/2,bb.y+self.pad-self.img_size/2,self.img_size,self.img_size*1.5);
-    gg.ctx.drawImage(self.money_img,bb.x+self.pad,bb.y+bb.h-self.pad-self.font_size,self.font_size,self.font_size);
+    if(cost)
+    {
+      gg.ctx.fillText("$"+cost, bb.x+bb.w/2, bb.y+bb.h-self.pad);
+      gg.ctx.drawImage(self.money_img,bb.x+self.pad,bb.y+bb.h-self.pad-self.font_size,self.font_size,self.font_size);
+    }
   }
 
   self.draw = function()

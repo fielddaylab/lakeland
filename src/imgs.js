@@ -483,5 +483,6 @@ var tfarmbit_img = new Image();
 tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/3,farmbit_imgs[i].width,farmbit_imgs[i].width); };
 tfarmbit_img.src = "assets/farmbit.png";
 
+var clouds_img = GenImg("assets/clouds.png");
 var skull_img = GenImg("assets/skull.png");
 

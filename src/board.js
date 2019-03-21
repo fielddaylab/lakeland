@@ -1303,7 +1303,7 @@ var board = function()
     cam.wh = gg.canvas.height;
 
     var tw = ceil(self.bounds_tw+self.bounds_tw/ 2);
-    var th = ceil(self.bounds_th+self.bounds_th/5);
+    var th = ceil(self.bounds_th+self.bounds_th/8);
     var ww = self.ww*tw/self.tw;
     var wh = self.wh*th/self.th;
 
@@ -1328,6 +1328,32 @@ var board = function()
     screenSpace(gg.cam, gg.canvas, self);
     self.screen_tile(self.tl_bound_tile);
     self.screen_tile(self.br_bound_tile);
+
+    self.cloud_x = 0;
+    self.cloud_y = 0;
+    self.cloud_w = clouds_img.width;
+    self.cloud_h = clouds_img.height;
+    self.cloud_ix = 367;
+    self.cloud_iy = 104;
+    self.cloud_iw = 1360;
+    self.cloud_ih = 1200;
+
+    self.bounds_w = (self.bounds_tw/self.tw)*self.w;
+    self.bounds_h = (self.bounds_th/self.th)*self.h;
+    self.bounds_x = self.x+       (self.bounds_tx/self.tw)*self.w;
+    self.bounds_y = self.y+self.h-(self.bounds_ty/self.th)*self.h-self.bounds_h;
+
+    var wr = self.bounds_w/self.cloud_iw;
+    var hr = self.bounds_h/self.cloud_ih;
+
+    self.cloud_w *= wr;
+    self.cloud_h *= hr;
+    self.cloud_x = self.bounds_x-self.cloud_ix*wr;
+    self.cloud_y = self.bounds_y-self.cloud_iy*hr;
+    self.cloud_x = round(self.cloud_x);
+    self.cloud_y = round(self.cloud_y);
+    self.cloud_w = round(self.cloud_w);
+    self.cloud_h = round(self.cloud_h);
   }
 
   self.x = 0;
@@ -2381,12 +2407,14 @@ var board = function()
     }
 
     {
-      gg.ctx.strokeStyle = red;
-      var w = (self.bounds_tw/self.tw)*self.w;
-      var h = (self.bounds_th/self.th)*self.h;
-      var x = self.x+       (self.bounds_tx/self.tw)*self.w;
-      var y = self.y+self.h-(self.bounds_ty/self.th)*self.h-h;
-      gg.ctx.strokeRect(x,y,w,h);
+      //gg.ctx.strokeStyle = red;
+      //gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
+      gg.ctx.drawImage(clouds_img,self.cloud_x,self.cloud_y,self.cloud_w,self.cloud_h);
+      gg.ctx.fillStyle = "rgba(255,255,255,0.9)";
+      if(self.cloud_x              > 0)                gg.ctx.fillRect(0,0,self.cloud_x,gg.canvas.height);
+      if(self.cloud_x+self.cloud_w < gg.canvas.width)  gg.ctx.fillRect(self.cloud_x+self.cloud_w,           0,gg.canvas.width-self.cloud_x,gg.canvas.height);
+      if(self.cloud_y              > 0)                gg.ctx.fillRect(self.cloud_x,                        0,self.cloud_w,self.cloud_y);
+      if(self.cloud_y+self.cloud_h < gg.canvas.height) gg.ctx.fillRect(self.cloud_x,self.cloud_y+self.cloud_h,self.cloud_w,gg.canvas.height-(self.cloud_y+self.cloud_h));
     }
   }
 }
