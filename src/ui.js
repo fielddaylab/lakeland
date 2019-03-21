@@ -236,9 +236,9 @@ var shop = function()
     self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      !self.selected_buy, road_cost,      gg.money >= road_cost,      0);
     self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
 
-    self.draw_btn(self.money_btn,   self.money_img,  "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
-    self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon", self.abandon_btn.active, !self.selected_buy, 0, 1, 0);
-    self.draw_btn(self.refund_btn,  self.money_img,  "Refund",  self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
+    self.draw_btn(self.money_btn,   coin_img,        "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
+    self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, !self.selected_buy, 0, 1, 0);
+    self.draw_btn(self.refund_btn,  coin_img,        "Refund",     self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
 
     gg.ctx.textAlign = "left";
   }
