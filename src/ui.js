@@ -791,7 +791,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return self.purchased(BUY_TYPE_HOME); }, //tick
-    function(){ gg.ctx.textAlign = "left"; self.textat("<- Click here to buy",gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
+    function(){ gg.ctx.textAlign = "left"; self.textat("← Click here to buy",gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
     noop, //click
 
     noop, //transition
@@ -831,7 +831,7 @@ var tutorial = function()
 
     function(){ gg.shop.farm_btn.active = 1; }, //transition
     function(){ return self.purchased(BUY_TYPE_FARM); }, //tick
-    function(){ var b = gg.shop.farm_btn; gg.ctx.textAlign = "left"; self.textat("<- Click here to buy a farm.",b.x+b.w+20,b.y+b.h/2); }, //draw
+    function(){ var b = gg.shop.farm_btn; gg.ctx.textAlign = "left"; self.textat("← Click here to buy a farm.",b.x+b.w+20,b.y+b.h/2); }, //draw
     noop, //click
 
     self.dotakeover, //transition
@@ -919,14 +919,14 @@ var tutorial = function()
     function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
-    noop, //transition
+    function(){ var f = gg.farmbits[0]; self.setquest("Wait on "+f.name+"'s return"); }, //transition
     function(){ return !self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
     noop, //draw
     noop, //click
 
-    self.dotakeover, //transition
+    self.dokqtakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "left"; self.textat(g.name+" has returned!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "left"; self.textat(f.name+" has returned!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
@@ -939,7 +939,7 @@ var tutorial = function()
     function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("Save up for an additional farm.",gg.shop.x+gg.shop.w/2,gg.shop.y+30); self.ctc(); }, //draw
     self.next_state, //click
 
-    function(){ self.setquest("save up for an additional farm");}, //transition
+    function(){ self.setquest("save up for an additional farm"); }, //transition
     function(){ return self.time_passed(1000); }, //tick
     noop, //draw
     noop, //click
@@ -966,7 +966,7 @@ var tutorial = function()
 
     function(){ gg.shop.livestock_btn.active = 1; }, //transition
     noop, //tick
-    function(){ var b = gg.shop.livestock_btn; gg.ctx.textAlign = "left"; self.textat("<- Next, save up for some livestock. They might be able to help with that!",b.x+b.w+20,b.y+b.h/2); self.ctc(); }, //draw
+    function(){ var b = gg.shop.livestock_btn; gg.ctx.textAlign = "left"; self.textat("← Next, save up for some livestock. They might be able to help with that!",b.x+b.w+20,b.y+b.h/2); self.ctc(); }, //draw
     self.next_state, //click
 
     function(){ self.setquest("save up for some livestock");}, //transition
