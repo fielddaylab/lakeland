@@ -2430,8 +2430,6 @@ var board = function()
         var t = self.tiles[i];
         self.draw_tile(t,x,y,tw,th);
         gg.ctx.fillStyle = black;
-        //if(t.tx == self.bounds_tx) gg.ctx.fillText("btx",x+w/2,ny+h/2);
-        //if(t.ty == self.bounds_ty) gg.ctx.fillText("bty",x+w/2,ny+h/2);
         i++;
       }
     }
@@ -3634,6 +3632,7 @@ var farmbit = function()
       }
     }
 
+    /*
     var w = self.w/4;
     var x = self.x;
     var y = self.y;
@@ -3670,6 +3669,7 @@ var farmbit = function()
     }
     gg.ctx.fillRect(x,y-h*self.fulfillment,w,h*self.fulfillment);
     x += w;
+    */
 
     var off = 0;
     if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE) off += 4;

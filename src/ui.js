@@ -197,7 +197,7 @@ var shop = function()
   self.processor_btn.active = 0;
   self.road_btn.active = 0;
   self.demolish_btn.active = 0;
-  self.money_btn.active = 1;
+  self.money_btn.active = 0;
   self.abandon_btn.active = 0;
   self.refund_btn.active = 1;
 
@@ -280,7 +280,7 @@ var shop = function()
     self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
 
     self.draw_btn(self.money_btn,   coin_img,        "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
-    self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, !self.selected_buy, 0, 1, 0);
+    self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed.thing == THING_TYPE_FARMBIT), 0, 1, 0);
     self.draw_btn(self.refund_btn,  coin_img,        "Refund",     self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
 
     gg.ctx.textAlign = "left";
@@ -838,12 +838,12 @@ var tutorial = function()
 
     function(){ gg.nutrition_toggle.toggle_btn.active = 1; }, //transition
     function(){ return gg.b.nutrition_view; }, //tick
-    function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("Click to toggle nutrition view",b.x+b.w/2,b.y-b.h); }, //draw
+    function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("Click to toggle nutrition view",b.x+b.w/2,b.y-b.h); gg.nutrition_toggle.draw(); }, //draw
     noop, //click
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that soil.",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
+    function(){ gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that soil.",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -858,7 +858,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return !gg.b.nutrition_view; }, //tick
-    function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("(Click at anytime to toggle nutrition view)",b.x+b.w/2,b.y-b.h); }, //draw
+    function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("(Click at anytime to toggle nutrition view)",b.x+b.w/2,b.y-b.h); gg.nutrition_toggle.draw(); }, //draw
     noop, //click
 
     function(){ self.setquest("Wait on your farm..."); }, //transition
@@ -908,7 +908,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the extra food",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the marked food",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition

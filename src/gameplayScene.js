@@ -20,6 +20,21 @@ var GamePlayScene = function()
         case "x": gg.b.tiles[0].lock = !gg.b.tiles[0].lock; break;
         case "a": debug_pathfinding = !debug_pathfinding; break;
         case "j": debug_jobs = !debug_jobs; break;
+        case "u":
+        {
+          var s = gg.shop;
+          s.home_btn.active = 1;
+          s.farm_btn.active = 1;
+          s.livestock_btn.active = 1;
+          s.storage_btn.active = 1;
+          s.processor_btn.active = 1;
+          s.road_btn.active = 1;
+          s.demolish_btn.active = 1;
+          s.money_btn.active = 1;
+          s.abandon_btn.active = 1;
+          s.refund_btn.active = 1;
+          break;
+        }
       }
     }
   }
@@ -141,12 +156,10 @@ var GamePlayScene = function()
     gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
 
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.textAlign = "left";
 
-    gg.b.draw();
     gg.ctx.font = (gg.font_size*1.5)+"px "+gg.font;
     gg.ctx.textAlign = "center";
+    gg.b.draw();
     for(var i = 0; i < gg.farmbits.length; i++)
       gg.farmbits[i].draw();
     gg.ctx.textAlign = "left";
