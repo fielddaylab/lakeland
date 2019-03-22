@@ -1730,6 +1730,16 @@ var board = function()
           if(t.type == TILE_TYPE_LAKE) valid = 1;
         }
       }
+
+      //extra nutrition
+      for(var i = 0; i < 100; i++)
+      {
+        var t = self.tiles[self.tiles_i(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th))];
+        t.nutrition += rand();
+        t.nutrition *= t.nutrition;
+        t.nutrition *= t.nutrition;
+      }
+
     }
 
     //assign og

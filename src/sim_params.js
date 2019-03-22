@@ -98,7 +98,7 @@ var free_money = 1000;
 
 var harvest_profit = 0;
 
-var item_worth_food = 50;
+var item_worth_food = 100;
 var item_worth_poop = 10;
 var item_worth_valuable = 5000;
 
