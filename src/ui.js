@@ -989,7 +989,7 @@ var tutorial = function()
     function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy more houses to grow your town!",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
 
-    noop, //transition
+    function(){ self.setquest("Buy more houses to grow your town!"); keycatch.key({key:"U"}); }, //transition
     function(){ return self.time_passed(1000); }, //tick
     noop, //draw
     noop, //click
