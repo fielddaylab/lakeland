@@ -2273,9 +2273,12 @@ var board = function()
         return;
       }
 
-      gg.inspector.detailed = self.hover_t;
-      gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
-      if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
+      if(self.hover_t)
+      {
+        gg.inspector.detailed = self.hover_t;
+        gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+        if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
+      }
     }
   }
 
