@@ -2346,21 +2346,30 @@ var board = function()
     }
     if(t.type == TILE_TYPE_FARM)
     {
-      gg.ctx.globalAlpha = 0.5;
+      var r = w/4;
+      var p;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = brown; break;
-        case TILE_STATE_FARM_PLANTED:   gg.ctx.fillStyle = "rgba(255,"+floor(t.val/farm_nutrition_req*255)+",0,1)"; break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red; gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_PLANTED:
+          gg.ctx.fillStyle = white;
+          gg.ctx.beginPath();
+          gg.ctx.arc(x,y+h/3,r,0,twopi);
+          gg.ctx.fill();
+          gg.ctx.strokeStyle = black;
+          gg.ctx.stroke();
+          p = (t.val/farm_nutrition_req*twopi)-halfpi;
+          drawLine(x,y+h/3,x+cos(p)*r,y+h/3+sin(p)*r,gg.ctx);
+          break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
-      gg.ctx.fillRect(x,y,w,h);
-      gg.ctx.globalAlpha = 1;
     }
   }
 
   self.draw = function()
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
+    gg.ctx.textAlign = "center";
     var t;
     var w = self.w/self.tw;
     var h = self.h/self.th;

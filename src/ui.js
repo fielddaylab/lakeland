@@ -117,7 +117,8 @@ var nutrition_toggle = function()
       fillRRect(self.toggle_btn.x,self.toggle_btn.y+self.toggle_btn.h/4,self.toggle_btn.w,self.toggle_btn.h/2,self.pad,gg.ctx);
       gg.ctx.stroke();
       var x = self.x;
-      if(gg.b.nutrition_view) x = self.toggle_btn.x+self.toggle_btn.w/2;
+      gg.ctx.fillStyle = red;
+      if(gg.b.nutrition_view) { x = self.toggle_btn.x+self.toggle_btn.w/2; gg.ctx.fillStyle = green; }
       fillRRect(x,self.toggle_btn.y,self.toggle_btn.w/2,self.toggle_btn.h,self.pad,gg.ctx);
       gg.ctx.stroke();
     }
@@ -802,7 +803,7 @@ var tutorial = function()
     function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); self.hilight(t); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
-    noop, //transition
+    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; }, //transition
     function(){ return self.bits_exist(1); }, //tick
     function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = ""; if(self.state_t%10 > 6) dots = ".."; else if(self.state_t%10 > 3) dots = "."; self.textat("Waiting."+dots,t.x+t.w/2,t.y-t.h); }, //draw
     noop, //click
