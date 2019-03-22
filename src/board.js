@@ -2253,6 +2253,7 @@ var board = function()
         gg.farmbits.push(b);
         job_for_b(b);
         b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
+        b.home.state = TILE_STATE_HOME_OCCUPIED;
       }
       else
         gg.ticker.nq("There are no houses available!");
@@ -2572,9 +2573,9 @@ var item = function()
 }
 
 var farmbit_names = [
-"peter",
-"paul",
-"mary",
+"Peter",
+"Paul",
+"Mary",
 ];
 var farmbit = function()
 {
@@ -2595,6 +2596,7 @@ var farmbit = function()
   self.move_dir_y = 0.;
 
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
+  self.last_img = farmbit_imgs[0];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
   self.job_subject = 0;
@@ -2717,6 +2719,7 @@ var farmbit = function()
   self.die = function()
   {
     self.abandon_job(1);
+    self.home.state = TILE_STATE_HOME_VACANT;
     for(var i = 0; i < gg.farmbits.length; i++)
       if(gg.farmbits[i] == self) gg.farmbits.splice(i,1);
     gg.ticker.nq(self.name+" DIED!");
@@ -3650,11 +3653,13 @@ var farmbit = function()
         }
         //break; //don't break!
       case JOB_STATE_ACT:
-        gg.ctx.drawImage(farmbit_imgs[self.frame_i+off],self.x,self.y-self.h/2,self.w,self.h+self.h/2);
+        self.last_img = farmbit_imgs[self.frame_i+off];
+        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/2,self.w,self.h+self.h/2);
         break;
       case JOB_STATE_GET:
       case JOB_STATE_SEEK:
-        gg.ctx.drawImage(farmbit_imgs[self.frame_i+2+off],self.x,self.y-self.h/2,self.w,self.h+self.h/2);
+        self.last_img = farmbit_imgs[self.frame_i+2+off];
+        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/2,self.w,self.h+self.h/2);
         break;
     }
   }

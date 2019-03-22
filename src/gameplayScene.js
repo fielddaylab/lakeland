@@ -145,7 +145,7 @@ var GamePlayScene = function()
     gg.ctx.textAlign = "left";
 
     gg.b.draw();
-    gg.ctx.font = (gg.font_size*2)+"px "+gg.font;
+    gg.ctx.font = (gg.font_size*1.5)+"px "+gg.font;
     gg.ctx.textAlign = "center";
     for(var i = 0; i < gg.farmbits.length; i++)
       gg.farmbits[i].draw();

@@ -311,9 +311,10 @@ var inspector = function()
   self.quick = 0;
   self.quick_type = INSPECTOR_CONTENT_NULL;
 
-  self.img_vignette = function(img)
+  self.img_vignette = function(img,s)
   {
-    gg.ctx.drawImage(img,self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h);
+    if(s) gg.ctx.drawImage(img,self.vignette_x,self.vignette_y-self.vignette_h/2,self.vignette_w,self.vignette_h*3/2);
+    else  gg.ctx.drawImage(img,self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h);
   }
   self.border_vignette = function()
   {
@@ -336,8 +337,6 @@ var inspector = function()
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
 
     y += self.pad+self.font_size;
-    gg.ctx.fillText("("+t.tx+","+t.ty+")",x,y);
-    y += self.pad+self.font_size;
     switch(t.type)
     {
       case TILE_TYPE_NULL:
@@ -347,9 +346,29 @@ var inspector = function()
       case TILE_TYPE_SHORE:
       case TILE_TYPE_FOREST:
         break;
+      case TILE_TYPE_HOME:
+      {
+        switch(t.state)
+        {
+          case TILE_STATE_HOME_VACANT:   gg.ctx.fillText("VACANT",x,y); break;
+          case TILE_STATE_HOME_OCCUPIED:
+          {
+            var l = gg.farmbits;
+            var b = 0;
+            for(var i = 0; i < l.length; l++) if(l[i].home == t) b = l[i];
+            gg.ctx.fillText("Owner:"+b.name,x,y);
+          }
+          break;
+        }
+      }
       case TILE_TYPE_FARM:
       {
-        gg.ctx.fillText("val:"+fdisp(t.val)+" ("+fdisp(t.val*100/farm_nutrition_req)+"%)",x,y);
+        switch(t.state)
+        {
+          case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",x,y); break;
+          case TILE_STATE_FARM_PLANTED: gg.ctx.fillText("Growth:"+fdisp(t.val*100/farm_nutrition_req)+"%",x,y); break;
+          case TILE_STATE_FARM_GROWN: gg.ctx.fillText("Ready for Harvest!",x,y); break;
+        }
         y += self.pad+self.font_size;
       }
         break;
@@ -374,10 +393,10 @@ var inspector = function()
     y += self.pad+self.font_size;
     gg.ctx.fillText("nutrition:"+fdisp(t.nutrition),x,y);
     y += self.pad+self.font_size;
-    gg.ctx.fillText("lock:"+t.lock,x,y);
     y += self.pad+self.font_size;
     y += self.pad+self.font_size;
-    self.img_vignette(gg.b.tile_img(t.type));
+    self.img_vignette(gg.b.tile_img(t.og_type),1);
+    self.img_vignette(gg.b.tile_img(t.type),1);
     self.border_vignette();
 
     return y;
@@ -403,7 +422,8 @@ var inspector = function()
     gg.ctx.fillText("lock:"+it.lock,x,y);
     y += self.pad+self.font_size;
     y += self.pad+self.font_size;
-    self.img_vignette(gg.b.item_img(it.type));
+    self.img_vignette(gg.b.tile_img(it.tile.type),1);
+    self.img_vignette(gg.b.item_img(it.type),1);
     self.border_vignette();
     return y;
   }
@@ -501,7 +521,7 @@ var inspector = function()
     y += self.pad+self.font_size;
     y += self.pad+self.font_size;
 
-    self.img_vignette(farmbit_imgs[0]);
+    self.img_vignette(b.last_img,1);
     self.border_vignette();
     return y;
   }
@@ -850,7 +870,7 @@ var tutorial = function()
 
     noop, //transition
     function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
-    function(){ gg.ctx.textAlign = "center"; self.textat("Place your farm somewhere with fertil soil",gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ gg.ctx.textAlign = "center"; self.textat("Place your farm on fertile grassland",gg.canvas.width/2,gg.canvas.height/2); }, //draw
     noop, //click
 
     noop, //transition
