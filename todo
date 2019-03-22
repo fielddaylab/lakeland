@@ -3,6 +3,9 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
+- inspector cleanup
+- walkthrough draw content
+- make it rain
 - add toggle for free_money + unlocks
 - prompts vary based on action required (click to advance, do thing to advance, etc...)
 - farm settings to tag produce as for sale or not

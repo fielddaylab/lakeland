@@ -140,13 +140,16 @@ var GamePlayScene = function()
     gg.ctx.fillStyle = white;
     gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
 
-    var fs = 12*gg.stage.s_mod;
-    gg.ctx.font = fs+"px LeagueSpartan";
-    gg.ctx.fillStyle = "#17315B";
+    gg.ctx.font = gg.font_size+"px "+gg.font;
+    gg.ctx.fillStyle = gg.font_color;
+    gg.ctx.textAlign = "left";
 
     gg.b.draw();
+    gg.ctx.font = (gg.font_size*2)+"px "+gg.font;
+    gg.ctx.textAlign = "center";
     for(var i = 0; i < gg.farmbits.length; i++)
       gg.farmbits[i].draw();
+    gg.ctx.textAlign = "left";
     for(var i = 0; i < gg.items.length; i++)
       gg.items[i].draw();
     gg.playhead.draw();

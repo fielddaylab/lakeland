@@ -2368,8 +2368,6 @@ var board = function()
 
   self.draw = function()
   {
-    gg.ctx.font = gg.font_size+"px "+gg.font;
-    gg.ctx.textAlign = "center";
     var t;
     var w = self.w/self.tw;
     var h = self.h/self.th;
@@ -2552,7 +2550,6 @@ var item = function()
 
   self.draw = function()
   {
-    gg.ctx.font = gg.font_size+"px "+gg.font;
     if(self.offscreen) return;
     var y = self.y-self.h/2;
     var h = self.h+self.h/2;
@@ -2568,8 +2565,8 @@ var item = function()
     }
     if(self.sale)
     {
-      gg.ctx.strokeStyle = green;
-      strokeBB(self,gg.ctx);
+      gg.ctx.fillStyle = black;
+      gg.ctx.fillText("4SALE",self.x,self.y+self.h/3);
     }
   }
 }
@@ -3575,7 +3572,6 @@ var farmbit = function()
 
   self.draw = function()
   {
-    gg.ctx.font = gg.font_size+"px "+gg.font;
     if(self.offscreen) return;
     if(debug_jobs)
     {

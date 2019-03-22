@@ -845,7 +845,7 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that tile.",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that soil.",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
@@ -886,11 +886,6 @@ var tutorial = function()
     function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1;gg.playhead.speed_btn.active = 1; RESUME_SIM = 0;}, //transition
     ffunc, //tick
     function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("the game is now paused-",b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
-    self.next_state, //click
-
-    noop,
-    ffunc, //tick
-    function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("you can toggle game playback with this button",b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
     self.next_state, //click
 
     noop, //transition
