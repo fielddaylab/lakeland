@@ -411,6 +411,7 @@ var inspector = function()
     gg.ctx.strokeStyle = gg.backdrop_color;
     gg.ctx.lineWidth = self.pad/2;
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+    y += self.pad+self.font_size;
 
     if(it.sale)
     {
@@ -437,8 +438,8 @@ var inspector = function()
     gg.ctx.strokeStyle = gg.backdrop_color;
     gg.ctx.lineWidth = self.pad/2;
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
-
     y += self.pad+self.font_size;
+
     str = "Status: "+gg.b.job_name(b.job_type);
     gg.ctx.fillText(str,x,y);
     y += self.pad+self.font_size;
