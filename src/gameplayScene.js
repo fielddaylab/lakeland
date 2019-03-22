@@ -36,6 +36,7 @@ var GamePlayScene = function()
       gg.b.resize();
       gg.b.zoom_bounds(gg.cam);
       gg.playhead.resize();
+      gg.nutrition_toggle.resize();
       gg.shop.resize();
       gg.inspector.resize();
       gg.ticker.resize();
@@ -68,6 +69,7 @@ var GamePlayScene = function()
     }
     gg.jobs = [];
     gg.playhead = new playhead();
+    gg.nutrition_toggle = new nutrition_toggle();
     gg.shop = new shop();
     gg.inspector = new inspector();
     gg.ticker = new ticker();
@@ -88,6 +90,7 @@ var GamePlayScene = function()
     if(!gg.tutorial.takeover)
     {
       if(check) check = !gg.playhead.filter(clicker);
+      if(check) check = !gg.nutrition_toggle.filter(clicker);
       if(check) check = !gg.shop.filter(clicker);
       if(check) check = !clicker.filter(gg.b);
     }
@@ -122,6 +125,7 @@ var GamePlayScene = function()
             screenSpace(gg.cam, gg.canvas, f);
           }
           gg.playhead.tick();
+          gg.nutrition_toggle.tick();
           gg.shop.tick();
           gg.ticker.tick();
         }
@@ -146,6 +150,7 @@ var GamePlayScene = function()
     for(var i = 0; i < gg.items.length; i++)
       gg.items[i].draw();
     gg.playhead.draw();
+    gg.nutrition_toggle.draw();
     gg.shop.draw();
     gg.inspector.draw();
     gg.ticker.draw();

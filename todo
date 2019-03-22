@@ -3,6 +3,8 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
+- add toggle for free_money + unlocks
+- nutrient display conflicts with farm progress display
 - prompts vary based on action required (click to advance, do thing to advance, etc...)
 - auto-select farmbit on entry
 - farm settings to tag produce as for sale or not

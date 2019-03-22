@@ -54,8 +54,6 @@ var playhead = function()
 
   self.filter = function(filter)
   {
-    if(gg.b.spewing_road) return;
-    if(gg.shop.selected_buy) return;
     var check = true;
     if(check && self.pause_btn.active) check = !filter.filter(self.pause_btn);
     if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
@@ -70,15 +68,59 @@ var playhead = function()
 
   self.draw = function()
   {
-    gg.ctx.font = gg.font_size+"px "+gg.font;
-    gg.ctx.strokeStyle = black;
-    gg.ctx.fillStyle = black;
-    gg.ctx.textAlign = "left";
-
     if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
     if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn,gg.ctx); }
     if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
     gg.ctx.globalAlpha = 1;
+  }
+}
+
+var nutrition_toggle = function()
+{
+  var self = this;
+  self.resize = function()
+  {
+    self.pad = 10*gg.stage.s_mod;
+
+    self.w = 40*gg.stage.s_mod;
+    self.h = self.w;
+    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w-self.w-self.pad;
+    self.y = gg.b.br_bound_tile.y+gg.b.br_bound_tile.h-self.h-self.pad;
+
+    setBB(self.toggle_btn, self.x,self.y,self.w,self.h);
+  }
+
+  self.toggle_btn = new ButtonBox(0,0,0,0,function(){ gg.b.nutrition_view = !gg.b.nutrition_view; });
+  self.resize();
+
+  self.toggle_btn.active = 0;
+
+  self.filter = function(filter)
+  {
+    var check = true;
+    if(check && self.toggle_btn.active) check = !filter.filter(self.toggle_btn);
+    return !check;
+  }
+
+  self.tick = function()
+  {
+
+  }
+
+  self.draw = function()
+  {
+    gg.ctx.strokeStyle = gg.font_color;
+    gg.ctx.fillStyle = gg.backdrop_color;
+
+    if(self.toggle_btn.active)
+    {
+      fillRRect(self.toggle_btn.x,self.toggle_btn.y+self.toggle_btn.h/4,self.toggle_btn.w,self.toggle_btn.h/2,self.pad,gg.ctx);
+      gg.ctx.stroke();
+      var x = self.x;
+      if(gg.b.nutrition_view) x = self.toggle_btn.x+self.toggle_btn.w/2;
+      fillRRect(x,self.toggle_btn.y,self.toggle_btn.w/2,self.toggle_btn.h,self.pad,gg.ctx);
+      gg.ctx.stroke();
+    }
   }
 }
 
@@ -795,9 +837,9 @@ var tutorial = function()
     function(){ self.wash(); gg.ctx.textAlign = "center";self.textat("Before you place it on the map...",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
-    self.dotakeover, //transition
+    function(){ gg.nutrition_toggle.toggle_btn.active = 1; }, //transition
     function(){ return gg.b.nutrition_view; }, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Press 'n' to toggle Nutrition View",gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("Click to toggle nutrition view",b.x+b.w/2,b.y-b.h); }, //draw
     noop, //click
 
     self.dotakeover, //transition
@@ -815,9 +857,9 @@ var tutorial = function()
     function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" will automatically manage the farm.",t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
-    self.dotakeover, //transition
+    noop, //transition
     function(){ return !gg.b.nutrition_view; }, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("(Press 'n' at any time to toggle Nutrition View)",gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("(Click at anytime to toggle nutrition view)",b.x+b.w/2,b.y-b.h); }, //draw
     noop, //click
 
     function(){ self.setquest("Wait on your farm..."); }, //transition

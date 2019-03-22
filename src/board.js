@@ -2398,6 +2398,7 @@ var board = function()
     if(self.nutrition_view)
     { //nutrition view
       var i = 0;
+      gg.ctx.fillStyle = red;
       ny = round(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
@@ -2411,7 +2412,7 @@ var board = function()
           nx = round(self.x+((tx+1)*w));
           tw = nx-x;
           t = self.tiles[i];
-          gg.ctx.fillStyle = self.tile_color(TILE_TYPE_NULL, t.nutrition);
+          gg.ctx.globalAlpha = t.nutrition;
           gg.ctx.fillRect(x,ny,tw,th);
           i++;
         }
