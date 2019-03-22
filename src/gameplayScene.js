@@ -1,3 +1,4 @@
+var keycatch;
 var GamePlayScene = function()
 {
   var self = this;
@@ -7,7 +8,7 @@ var GamePlayScene = function()
   var dragger;
   var keyer;
 
-  var keycatch =
+  keycatch =
   {
     key:function(evt)
     {

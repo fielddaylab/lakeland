@@ -995,7 +995,7 @@ var tutorial = function()
     self.delay_next_state, //click
 
     function(){ self.setquest("Buy more houses to grow your town!"); keycatch.key({key:"U"}); }, //transition
-    function(){ return self.time_passed(1000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
@@ -1005,7 +1005,7 @@ var tutorial = function()
     noop, //click
 
     function(){ gg.b.raining = 0; }, //transition
-    function(){ return self.time_passed(3000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
@@ -1015,7 +1015,7 @@ var tutorial = function()
     noop, //click
 
     function(){ gg.b.raining = 0; }, //transition
-    function(){ return self.time_passed(3000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
@@ -1025,7 +1025,7 @@ var tutorial = function()
     noop, //click
 
     function(){ gg.b.raining = 0; }, //transition
-    function(){ return self.time_passed(3000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
@@ -1035,7 +1035,7 @@ var tutorial = function()
     noop, //click
 
     function(){ gg.b.raining = 0; }, //transition
-    function(){ return self.time_passed(3000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
@@ -1045,7 +1045,7 @@ var tutorial = function()
     noop, //click
 
     function(){ gg.b.raining = 0; }, //transition
-    function(){ return self.time_passed(3000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
@@ -1055,7 +1055,7 @@ var tutorial = function()
     noop, //click
 
     function(){ gg.b.raining = 0; }, //transition
-    function(){ return self.time_passed(3000); }, //tick
+    function(){ return self.time_passed(10000); }, //tick
     noop, //draw
     noop, //click
 
