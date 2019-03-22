@@ -1665,7 +1665,7 @@ var board = function()
       var grow_fill = function(t,type,amt,constraint,invert_constraint)
       {
         var border = slow_flood_border(slow_flood_fill([t]));
-        for(var j = 0; j < amt; j++)
+        for(var j = 0; j < amt && border.length; j++)
         {
           var b_i = randIntBelow(border.length);
           var t = border[b_i];

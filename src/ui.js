@@ -668,8 +668,11 @@ var tutorial = function()
   }
   self.ctc = function()
   {
+    var x = gg.canvas.width/2
+    var y = gg.b.bounds_y+gg.b.bounds_h-gg.font_size*2;
+    gg.ctx.fillStyle = black;
     gg.ctx.textAlign = "center";
-    self.textat("(click anywhere to continue)",gg.canvas.width/2,gg.canvas.height*3/4);
+    gg.ctx.fillText("(click anywhere to continue)",x,y);
   }
   self.onscreentextat = function(text,x,y)
   {
@@ -987,6 +990,72 @@ var tutorial = function()
     self.delay_next_state, //click
 
     noop, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 1; }, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 0; }, //transition
+    function(){ return self.time_passed(3000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 1; }, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 0; }, //transition
+    function(){ return self.time_passed(3000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 1; }, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 0; }, //transition
+    function(){ return self.time_passed(3000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 1; }, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 0; }, //transition
+    function(){ return self.time_passed(3000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 1; }, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 0; }, //transition
+    function(){ return self.time_passed(3000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 1; }, //transition
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    noop, //click
+
+    function(){ gg.b.raining = 0; }, //transition
+    function(){ return self.time_passed(3000); }, //tick
+    noop, //draw
+    noop, //click
+
+    /*
+    noop, //transition
     function(){ return self.bits_hungry(1); }, //tick
     noop, //draw
     noop, //click
@@ -995,6 +1064,7 @@ var tutorial = function()
     ffunc, //tick
     function(){self.textat("you've got a hungry boy",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.delay_next_state, //click
+    */
 
     noop, //transition
     ffunc, //tick

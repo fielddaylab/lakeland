@@ -3,10 +3,11 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
-- inspector cleanup
+- fill w/ more nutrition
+- if they plant a bad farm, prompt "u messed up"
+- fill out quests
 - walkthrough draw content
 - make it rain
-- add toggle for free_money + unlocks
 - prompts vary based on action required (click to advance, do thing to advance, etc...)
 - farm settings to tag produce as for sale or not
 - re-find export destination on item pickup
