@@ -486,4 +486,5 @@ tfarmbit_img.src = "assets/farmbit.png";
 var clouds_img = GenImg("assets/clouds.png");
 var skull_img = GenImg("assets/skull.png");
 var coin_img = GenImg("assets/coin.png");
+var cow_img = GenImg("assets/cow.png");
 

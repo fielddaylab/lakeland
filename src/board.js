@@ -2398,6 +2398,7 @@ var board = function()
         case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
     }
+    if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
   }
 
   self.draw = function()
@@ -2429,7 +2430,6 @@ var board = function()
         tw = nx-x;
         var t = self.tiles[i];
         self.draw_tile(t,x,y,tw,th);
-        gg.ctx.fillStyle = black;
         i++;
       }
     }
