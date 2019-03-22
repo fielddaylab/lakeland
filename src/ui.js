@@ -926,6 +926,11 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "left"; self.textat(g.name+" has returned!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    self.delay_next_state, //click
+
+    self.dotakeover, //transition
+    noop, //tick
     function(){ self.wash(); gg.ctx.textAlign = "left"; self.textat("You just made $50!",gg.shop.x+gg.shop.w/2,gg.shop.y+30); self.ctc(); }, //draw
     self.delay_next_state, //click
 

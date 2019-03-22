@@ -1732,10 +1732,12 @@ var board = function()
       }
 
       //extra nutrition
-      for(var i = 0; i < 100; i++)
+      for(var i = 0; i < 50; i++)
       {
         var t = self.tiles[self.tiles_i(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th))];
         t.nutrition += rand();
+        t.nutrition *= t.nutrition;
+        t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
       }
