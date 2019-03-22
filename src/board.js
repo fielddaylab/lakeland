@@ -2523,11 +2523,13 @@ var board = function()
     if(self.raining)
     {
       gg.ctx.fillStyle = blue;
+      var s = 3*gg.stage.s_mod;
+      var hs = s/2;
       for(var i = 0; i < 1000; i++)
       {
         var x = rand()*self.w;
         var y = rand()*self.h;
-        gg.ctx.fillRect(self.x+x-1,self.y+y-1,2,2);
+        gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
       }
     }
 
