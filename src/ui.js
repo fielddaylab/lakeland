@@ -356,7 +356,7 @@ var inspector = function()
             var l = gg.farmbits;
             var b = 0;
             for(var i = 0; i < l.length; l++) if(l[i].home == t) b = l[i];
-            gg.ctx.fillText("Owner:"+b.name,x,y);
+            gg.ctx.fillText("Owner: "+b.name,x,y);
           }
           break;
         }
@@ -366,7 +366,7 @@ var inspector = function()
         switch(t.state)
         {
           case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",x,y); break;
-          case TILE_STATE_FARM_PLANTED: gg.ctx.fillText("Growth:"+fdisp(t.val*100/farm_nutrition_req)+"%",x,y); break;
+          case TILE_STATE_FARM_PLANTED: gg.ctx.fillText("Growth: "+floor(t.val*100/farm_nutrition_req)+"%",x,y); break;
           case TILE_STATE_FARM_GROWN: gg.ctx.fillText("Ready for Harvest!",x,y); break;
         }
         y += self.pad+self.font_size;
@@ -376,11 +376,11 @@ var inspector = function()
         break;
       case TILE_TYPE_STORAGE:
       {
-        gg.ctx.fillText("val:"+t.val,x,y);
+        gg.ctx.fillText("val: "+t.val,x,y);
         y += self.pad+self.font_size;
-        gg.ctx.fillText("withdraw_lock:"+t.withdraw_lock,x,y);
+        gg.ctx.fillText("withdraw_lock: "+t.withdraw_lock,x,y);
         y += self.pad+self.font_size;
-        gg.ctx.fillText("deposit_lock:"+t.deposit_lock,x,y);
+        gg.ctx.fillText("deposit_lock: "+t.deposit_lock,x,y);
         y += self.pad+self.font_size;
       }
         break;
@@ -389,11 +389,7 @@ var inspector = function()
       case TILE_TYPE_COUNT:
         break;
     }
-    gg.ctx.fillText("t:"+t.state_t,x,y);
-    y += self.pad+self.font_size;
-    gg.ctx.fillText("nutrition:"+fdisp(t.nutrition),x,y);
-    y += self.pad+self.font_size;
-    y += self.pad+self.font_size;
+    gg.ctx.fillText("Nutrition: "+floor(clamp(0,1,t.nutrition)*100)+"%",x,y);
     y += self.pad+self.font_size;
     self.img_vignette(gg.b.tile_img(t.og_type),1);
     self.img_vignette(gg.b.tile_img(t.type),1);
@@ -416,12 +412,12 @@ var inspector = function()
     gg.ctx.lineWidth = self.pad/2;
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
 
+    if(it.sale)
+    {
+    gg.ctx.fillText("Marked for Sale",x,y);
     y += self.pad+self.font_size;
-    gg.ctx.fillText("("+it.tile.tx+","+it.tile.ty+")",x,y);
-    y += self.pad+self.font_size;
-    gg.ctx.fillText("lock:"+it.lock,x,y);
-    y += self.pad+self.font_size;
-    y += self.pad+self.font_size;
+    }
+
     self.img_vignette(gg.b.tile_img(it.tile.type),1);
     self.img_vignette(gg.b.item_img(it.type),1);
     self.border_vignette();
@@ -443,82 +439,63 @@ var inspector = function()
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
 
     y += self.pad+self.font_size;
-    str = "Job: ";
-    switch(b.job_type)
-    {
-      case JOB_TYPE_NULL:      str += "null";      break;
-      case JOB_TYPE_IDLE:      str += "idle";      break;
-      case JOB_TYPE_WAIT:      str += "wait";      break;
-      case JOB_TYPE_EAT:       str += "eat";       break;
-      case JOB_TYPE_SLEEP:     str += "sleep";     break;
-      case JOB_TYPE_PLAY:      str += "play";      break;
-      case JOB_TYPE_PLANT:     str += "plant";     break;
-      case JOB_TYPE_HARVEST:   str += "harvest";   break;
-      case JOB_TYPE_FERTILIZE: str += "fertilize"; break;
-      case JOB_TYPE_STORE:     str += "store";     break;
-      case JOB_TYPE_PROCESS:   str += "process";   break;
-      case JOB_TYPE_KICK:      str += "kick";      break;
-      case JOB_TYPE_EXPORT:    str += "export";    break;
-      case JOB_TYPE_COUNT:     str += "count";     break;
-    }
-    gg.ctx.fillText(str+"("+b.tile.tx+","+b.tile.ty+")",x,y);
-    y += self.pad+self.font_size;
-    str = "Job State: ";
-    switch(b.job_state)
-    {
-      case JOB_STATE_NULL:        str += "null";   break;
-      case JOB_STATE_GET:         str += "get";    break;
-      case JOB_STATE_SEEK:        str += "seek";   break;
-      case JOB_STATE_ACT:         str += "act";    break;
-      case JOB_STATE_IDLE_CHILL:  str += "chill";  break;
-      case JOB_STATE_IDLE_WANDER: str += "wander"; break;
-      case JOB_STATE_COUNT:       str += "null";   break;
-    }
+    str = "Status: "+gg.b.job_name(b.job_type);
     gg.ctx.fillText(str,x,y);
     y += self.pad+self.font_size;
 
-    str = "fullness: "+fdisp(b.fullness)+" ";
+    var sy = y;
+    x = self.x;
+    gg.ctx.textAlign = "left";
+
+    gg.ctx.fillText("Fullness:",x,y);
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("Energy:",x,y);
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("Joy:",x,y);
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("Fulfillment:",x,y);
+    y += self.pad+self.font_size;
+
+    y = sy;
+    x = self.x+self.w-self.pad;
+    gg.ctx.textAlign = "right";
+
     switch(b.fullness_state)
     {
-      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
-      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
-      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+      case FARMBIT_STATE_CONTENT:   gg.ctx.fillStyle = green;  break;
+      case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
+      case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(str,x,y);
+    gg.ctx.fillText(floor(b.fullness*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
-    str = "energy: "+fdisp(b.energy)+" ";
     switch(b.energy_state)
     {
-      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
-      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
-      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+      case FARMBIT_STATE_CONTENT:   gg.ctx.fillStyle = green;  break;
+      case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
+      case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(str,x,y);
+    gg.ctx.fillText(floor(b.energy*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
-    str = "joy: "+fdisp(b.joy)+" ";
     switch(b.joy_state)
     {
-      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
-      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
-      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+      case FARMBIT_STATE_CONTENT:   gg.ctx.fillStyle = green;  break;
+      case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
+      case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(str,x,y);
+    gg.ctx.fillText(floor(b.joy*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
-    str = "fulfillment: "+fdisp(b.fulfillment)+" ";
     switch(b.fulfillment_state)
     {
-      case FARMBIT_STATE_CONTENT:   str += "(CONTENT)";   break;
-      case FARMBIT_STATE_MOTIVATED: str += "(MOTIVATED)"; break;
-      case FARMBIT_STATE_DESPERATE: str += "(DESPERATE)"; break;
+      case FARMBIT_STATE_CONTENT:   gg.ctx.fillStyle = green;  break;
+      case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
+      case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(str,x,y);
+    gg.ctx.fillText(floor(b.fulfillment*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
-    gg.ctx.fillText("t:"+b.job_state_t,x,y);
-    y += self.pad+self.font_size;
     y += self.pad+self.font_size;
 
     self.img_vignette(b.last_img,1);

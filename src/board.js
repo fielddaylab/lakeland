@@ -1497,18 +1497,18 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_STATE_NULL:               return "null";       break;
-      case TILE_STATE_HOME_VACANT:        return "vacant";     break;
-      case TILE_STATE_HOME_OCCUPIED:      return "occupied";   break;
-      case TILE_STATE_FARM_UNPLANTED:     return "unplanted";  break;
-      case TILE_STATE_FARM_PLANTED:       return "planted";    break;
-      case TILE_STATE_FARM_GROWN:         return "grown";      break;
-      case TILE_STATE_LIVESTOCK_IDLE:     return "idle";       break;
-      case TILE_STATE_STORAGE_UNASSIGNED: return "unassigned"; break;
-      case TILE_STATE_STORAGE_FOOD:       return "food";       break;
-      case TILE_STATE_STORAGE_POOP:       return "poop";       break;
-      case TILE_STATE_STORAGE_VALUABLE:   return "valuable";   break;
-      case TILE_STATE_COUNT:              return "null";       break;
+      case TILE_STATE_NULL:               return "Null";       break;
+      case TILE_STATE_HOME_VACANT:        return "Vacant";     break;
+      case TILE_STATE_HOME_OCCUPIED:      return "Occupied";   break;
+      case TILE_STATE_FARM_UNPLANTED:     return "Unplanted";  break;
+      case TILE_STATE_FARM_PLANTED:       return "Planted";    break;
+      case TILE_STATE_FARM_GROWN:         return "Grown";      break;
+      case TILE_STATE_LIVESTOCK_IDLE:     return "Idle";       break;
+      case TILE_STATE_STORAGE_UNASSIGNED: return "Unassigned"; break;
+      case TILE_STATE_STORAGE_FOOD:       return "Food";       break;
+      case TILE_STATE_STORAGE_POOP:       return "Poop";       break;
+      case TILE_STATE_STORAGE_VALUABLE:   return "Valuable";   break;
+      case TILE_STATE_COUNT:              return "Null";       break;
     }
   }
   self.item_img = function(type)
@@ -1531,6 +1531,39 @@ var board = function()
       case ITEM_TYPE_POOP:     return "Poop";     break;
       case ITEM_TYPE_VALUABLE: return "Valuable"; break;
       case ITEM_TYPE_COUNT:    return "Count";    break;
+    }
+  }
+  self.job_name = function(type)
+  {
+    switch(type)
+    {
+      case JOB_TYPE_NULL:      return "Null";      break;
+      case JOB_TYPE_IDLE:      return "Idle";      break;
+      case JOB_TYPE_WAIT:      return "Wait";      break;
+      case JOB_TYPE_EAT:       return "Eat";       break;
+      case JOB_TYPE_SLEEP:     return "Sleep";     break;
+      case JOB_TYPE_PLAY:      return "Play";      break;
+      case JOB_TYPE_PLANT:     return "Plant";     break;
+      case JOB_TYPE_HARVEST:   return "Harvest";   break;
+      case JOB_TYPE_FERTILIZE: return "Fertilize"; break;
+      case JOB_TYPE_STORE:     return "Store";     break;
+      case JOB_TYPE_PROCESS:   return "Process";   break;
+      case JOB_TYPE_KICK:      return "Kick";      break;
+      case JOB_TYPE_EXPORT:    return "Export";    break;
+      case JOB_TYPE_COUNT:     return "Count";     break;
+    }
+  }
+  self.job_state_name = function(state)
+  {
+    switch(state)
+    {
+      case JOB_STATE_NULL:        return "Null";   break;
+      case JOB_STATE_GET:         return "Get";    break;
+      case JOB_STATE_SEEK:        return "Seek";   break;
+      case JOB_STATE_ACT:         return "Act";    break;
+      case JOB_STATE_IDLE_CHILL:  return "Chill";  break;
+      case JOB_STATE_IDLE_WANDER: return "Wander"; break;
+      case JOB_STATE_COUNT:       return "Null";   break;
     }
   }
 
