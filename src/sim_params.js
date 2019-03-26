@@ -34,9 +34,9 @@ var joy_content           = 0.4;
 var fulfillment_content   = 0.4;
 
 //applies to farm
-var nutrition_desperate = 0.01;
-var nutrition_motivated = 0.02;
-var nutrition_content = 0.05;
+var nutrition_desperate = 0.1;
+var nutrition_motivated = 0.2;
+var nutrition_content = 0.5;
 
 var fullness_depletion_rate    = 0.9999;
 var energy_depletion_rate      = 0.999;

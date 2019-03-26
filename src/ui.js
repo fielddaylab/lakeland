@@ -722,6 +722,14 @@ var tutorial = function()
     gg.ctx.fillText(text,x,y);
   }
 
+  self.jmp = function(i)
+  {
+    self.takeover = 0;
+    self.state+=i;
+    self.state_t = 0;
+    self.state_funcs[self.state*4+0]();
+  }
+
   self.next_state = function()
   {
     self.takeover = 0;
@@ -814,10 +822,29 @@ var tutorial = function()
     function(){ gg.ctx.textAlign = "left"; self.textat("← Click here to buy",gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
     noop, //click
 
-    noop, //transition
+    self.dotakeover, //transition
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ gg.ctx.textAlign = "center"; self.textat("Place it somewhere on the map",gg.canvas.width/2,gg.canvas.height/2); }, //draw
-    noop, //click
+    function(evt)
+    {
+      var b = gg.b;
+      if(b.hover_t)
+      {
+        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
+          self.jmp(1);
+        else
+        {
+          gg.b.click(evt);
+          self.jmp(2);
+        }
+      }
+    }, //click
+
+    //can't build there
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Can't build a house there!",gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ self.jmp(-1); }, //click
 
     noop, //transition
     function(){ return self.bits_exist(1); }, //tick
@@ -869,10 +896,37 @@ var tutorial = function()
     function(){ gg.ctx.textAlign = "center"; self.textat("The red represents the fertility of that soil.",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
-    noop, //transition
+    self.dotakeover, //transition
     function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
     function(){ gg.ctx.textAlign = "center"; self.textat("Place your farm on fertile grassland",gg.canvas.width/2,gg.canvas.height/2); }, //draw
-    noop, //click
+    function(evt)
+    {
+      var b = gg.b;
+      if(b.hover_t)
+      {
+        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
+          self.jmp(1);
+        else if(b.hover_t.nutrition < nutrition_motivated)
+          self.jmp(2);
+        else
+        {
+          gg.b.click(evt);
+          self.jmp(3);
+        }
+      }
+    }, //click
+
+    //can't build there
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Can't build a farm there!",gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ self.jmp(-1); }, //click
+
+    //find more fertile spot
+    self.dotakeover, //transition
+    noop, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Not very fertile!",gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ self.jmp(-2); }, //click
 
     noop, //transition
     noop, //tick
