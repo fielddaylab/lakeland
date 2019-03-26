@@ -371,6 +371,25 @@ var inspector = function()
           case TILE_STATE_FARM_GROWN: gg.ctx.fillText("Ready for Harvest!",x,y); break;
         }
         y += self.pad+self.font_size;
+
+        var sy = y;
+        gg.ctx.textAlign = "left";
+        x = self.x;
+        gg.ctx.fillText("Soil Quality:",x,y);
+        y += self.pad+self.font_size;
+
+        y = sy;
+        x = self.x+self.w-self.pad;
+        gg.ctx.textAlign = "right";
+
+             if(t.nutrition > nutrition_motivated) gg.ctx.fillStyle = green;
+        else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
+        else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
+        gg.ctx.fillText(floor(t.nutrition*10)+"/10",x,y);
+        y += self.pad+self.font_size;
+        gg.ctx.fillStyle = gg.font_color;
+        gg.ctx.textAlign = "center";
+        x = self.x+self.w/2;
       }
         break;
       case TILE_TYPE_LIVESTOCK:

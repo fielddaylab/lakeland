@@ -1670,6 +1670,7 @@ var board = function()
 
       var slow_flood_fill = function(fill)
       {
+        var type;
         if(fill.length) type = fill[0].type;
         for(var i = 0; i < fill.length; i++)
         {
@@ -2299,7 +2300,9 @@ var board = function()
       {
         case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red; gg.ctx.fillText("x",x,y+h/3); break;
         case TILE_STATE_FARM_PLANTED:
-          gg.ctx.fillStyle = white;
+               if(t.nutrition > nutrition_motivated) gg.ctx.fillStyle = green;
+          else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
+          else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
           gg.ctx.beginPath();
           gg.ctx.arc(x,y+h/3,r,0,twopi);
           gg.ctx.fill();
@@ -2312,6 +2315,12 @@ var board = function()
       }
     }
     if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
+    if(t.type == TILE_TYPE_LAKE)
+    {
+      gg.ctx.globalAlpha = t.nutrition;
+      gg.ctx.drawImage(bloom_img,x,y,w,h);
+      gg.ctx.globalAlpha = 1;
+    }
   }
 
   self.draw = function()
