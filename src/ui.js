@@ -342,6 +342,7 @@ var inspector = function()
       case TILE_TYPE_NULL:
       case TILE_TYPE_LAND:
       case TILE_TYPE_ROCK:
+      case TILE_TYPE_GRAVE:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
       case TILE_TYPE_FOREST:

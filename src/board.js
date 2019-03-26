@@ -12,9 +12,10 @@ ENUM = 0;
 var TILE_TYPE_NULL      = ENUM; ENUM++;
 var TILE_TYPE_LAND      = ENUM; ENUM++;
 var TILE_TYPE_ROCK      = ENUM; ENUM++;
-var TILE_TYPE_LAKE     = ENUM; ENUM++;
+var TILE_TYPE_GRAVE     = ENUM; ENUM++;
+var TILE_TYPE_LAKE      = ENUM; ENUM++;
 var TILE_TYPE_SHORE     = ENUM; ENUM++;
-var TILE_TYPE_FOREST   = ENUM; ENUM++;
+var TILE_TYPE_FOREST    = ENUM; ENUM++;
 var TILE_TYPE_HOME      = ENUM; ENUM++;
 var TILE_TYPE_FARM      = ENUM; ENUM++;
 var TILE_TYPE_LIVESTOCK = ENUM; ENUM++;
@@ -110,9 +111,10 @@ var walkability_check = function(type,state)
   {
     case TILE_TYPE_LAND:      return land_walkability;      break;
     case TILE_TYPE_ROCK:      return rock_walkability;      break;
-    case TILE_TYPE_LAKE:     return water_walkability;     break;
+    case TILE_TYPE_GRAVE:     return grave_walkability;     break;
+    case TILE_TYPE_LAKE:      return water_walkability;     break;
     case TILE_TYPE_SHORE:     return shore_walkability;     break;
-    case TILE_TYPE_FOREST:   return forest_walkability;   break;
+    case TILE_TYPE_FOREST:    return forest_walkability;    break;
     case TILE_TYPE_HOME:      return home_walkability;      break;
     case TILE_TYPE_FARM:      return farm_walkability;      break;
     case TILE_TYPE_LIVESTOCK: return livestock_walkability; break;
@@ -129,6 +131,7 @@ var buildability_check = function(building,over)
   {
     case TILE_TYPE_LAND:
     case TILE_TYPE_ROCK:
+    case TILE_TYPE_GRAVE:
     case TILE_TYPE_LAKE:
     case TILE_TYPE_SHORE:
     case TILE_TYPE_FOREST:
@@ -147,6 +150,7 @@ var buildability_check = function(building,over)
       {
         case TILE_TYPE_LAND:
         case TILE_TYPE_ROCK:
+        case TILE_TYPE_GRAVE:
         case TILE_TYPE_LAKE:
         case TILE_TYPE_SHORE:
           return 1;
@@ -259,6 +263,43 @@ var closest_edge_tile = function(goal)
   {
     var t = list[i];
     if(!gg.b.tile_on_fudge_bounds(t)) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
+var closest_graveable_tile = function(goal)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  var list = gg.b.tiles;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || !gg.b.tile_in_bounds(t)) continue;
+    switch(t.type)
+    {
+      case  TILE_TYPE_LAND:
+      case  TILE_TYPE_ROCK:
+      case  TILE_TYPE_ROAD:
+      case  TILE_TYPE_FOREST:
+      case  TILE_TYPE_GRAVE:
+      case  TILE_TYPE_SHORE:
+        break;
+      case  TILE_TYPE_LAKE:
+      case  TILE_TYPE_HOME:
+      case  TILE_TYPE_FARM:
+      case  TILE_TYPE_LIVESTOCK:
+      case  TILE_TYPE_STORAGE:
+      case  TILE_TYPE_PROCESSOR:
+        continue;
+        break;
+    }
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -1468,6 +1509,7 @@ var board = function()
       case TILE_TYPE_PROCESSOR: return processor_img; break;
       case TILE_TYPE_ROAD:      return road_img; break;
       case TILE_TYPE_ROCK:      return rock_img; break;
+      case TILE_TYPE_GRAVE:     return grave_img; break;
       case TILE_TYPE_FOREST:    return forest_img; break;
       case TILE_TYPE_HOME:      return home_img; break;
       case TILE_TYPE_FARM:      return farm_img; break;
@@ -1481,6 +1523,7 @@ var board = function()
       case TILE_TYPE_NULL:      return "Null";      break;
       case TILE_TYPE_LAND:      return "Land";      break;
       case TILE_TYPE_ROCK:      return "Rock";      break;
+      case TILE_TYPE_GRAVE:     return "Grave";     break;
       case TILE_TYPE_LAKE:      return "Lake";      break;
       case TILE_TYPE_SHORE:     return "Shore";     break;
       case TILE_TYPE_FOREST:    return "Forest";    break;
@@ -2383,6 +2426,7 @@ var board = function()
       case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_ROAD:
       case TILE_TYPE_HOME:
+      case TILE_TYPE_GRAVE:
       case TILE_TYPE_FARM:
         gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h); //no break!
       case TILE_TYPE_LAND:
@@ -2768,6 +2812,26 @@ var farmbit = function()
   {
     self.abandon_job(1);
     self.home.state = TILE_STATE_HOME_VACANT;
+    var t = self.tile;
+    switch(t.type)
+    {
+      case  TILE_TYPE_LAND:
+      case  TILE_TYPE_ROCK:
+      case  TILE_TYPE_ROAD:
+      case  TILE_TYPE_FOREST:
+      case  TILE_TYPE_GRAVE:
+      case  TILE_TYPE_SHORE:
+        break;
+      case  TILE_TYPE_LAKE:
+      case  TILE_TYPE_HOME:
+      case  TILE_TYPE_FARM:
+      case  TILE_TYPE_LIVESTOCK:
+      case  TILE_TYPE_STORAGE:
+      case  TILE_TYPE_PROCESSOR:
+        t = closest_graveable_tile(t);
+        break;
+    }
+    gg.b.alterTile(t,TILE_TYPE_GRAVE);
     for(var i = 0; i < gg.farmbits.length; i++)
       if(gg.farmbits[i] == self) gg.farmbits.splice(i,1);
     gg.ticker.nq(self.name+" DIED!");

@@ -20,7 +20,7 @@ var farmbits_start_n = 0;
 var money_start_n = 300;
 
 //in order of priority
-var fullness_desperate    = 0.01; //death
+var fullness_desperate    = 0.015; //death
 var energy_desperate      = 0.01; //sleep on spot
 var joy_desperate         = 0.01; //refuse any other work
 var fulfillment_desperate = 0.01; //n/a
@@ -64,6 +64,7 @@ var valuable_carryability = 0.2;
 
 var land_walkability      = 1;
 var rock_walkability      = 0.7;
+var grave_walkability     = 0.7;
 var water_walkability     = 0.5;
 var shore_walkability     = 0.8;
 var forest_walkability   = 0.6;

@@ -430,6 +430,17 @@ var farm_img;
   ctx.fillRect(0,0,s,s);
 }
 
+var grave_img;
+{
+  var ctx;
+  var s = 10;
+  farm_img = GenIcon(s,s*1.5);
+  ctx = farm_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = "#555555";
+  ctx.fillRect(0,0,s,s);
+}
+
 //var farmbit_imgs = [];
 var tfood_img = new Image();
 tfood_img.onload = function(){ food_img = tfood_img; };
@@ -479,6 +490,9 @@ thome_img.src = "assets/home.png";
 var tfarm_img = new Image();
 tfarm_img.onload = function(){ farm_img = tfarm_img; };
 tfarm_img.src = "assets/farm.png";
+var tgrave_img = new Image();
+tgrave_img.onload = function(){ grave_img = tgrave_img; };
+tgrave_img.src = "assets/skull.png";
 var tfarmbit_img = new Image();
 tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/3,farmbit_imgs[i].width,farmbit_imgs[i].width); };
 tfarmbit_img.src = "assets/farmbit.png";
