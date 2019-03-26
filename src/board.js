@@ -1492,11 +1492,6 @@ var board = function()
       self.tiles[i].directions_dirty = 1;
   }
 
-  self.tile_colors = [];
-  self.tile_color = function(type, nutrition)
-  {
-    return self.tile_colors[type][floor(min(nutrition*255,255))];
-  }
   self.tile_img = function(type)
   {
     switch(type)
@@ -1835,145 +1830,6 @@ var board = function()
     }
 
     self.inc_bounds();
-
-    var type;
-    var p;
-    var r;
-    var g;
-    var b;
-
-    type = TILE_TYPE_NULL;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = (255-i);
-      b = 255;
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_LAND;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = i;
-      g = floor((255-i)/2);
-      b = 50;
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_ROCK;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 100;
-      g = 100;
-      b = 100;
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_LAKE;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 0;
-      g = floor(p*150);
-      b = 255-floor(p*150);
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_SHORE;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 150;
-      g = 150+floor(p*75);
-      b = 255-floor(p*75);
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_FOREST;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 0;
-      g = 100;
-      b = 50;
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_HOME;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 0;
-      b = 0;
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_FARM;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 255;
-      b = 255;
-      self.tile_colors[type][i] = "rgba("+r+","+g+","+b+",1)";
-    }
-
-    type = TILE_TYPE_LIVESTOCK;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 255;
-      b = 255;
-      self.tile_colors[type][i] = blue;
-    }
-
-    type = TILE_TYPE_STORAGE;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 255;
-      b = 255;
-      self.tile_colors[type][i] = purple;
-    }
-
-    type = TILE_TYPE_PROCESSOR;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 255;
-      b = 255;
-      self.tile_colors[type][i] = orange;
-    }
-
-    type = TILE_TYPE_ROAD;
-    self.tile_colors[type] = [];
-    for(var i = 0; i <= 255; i++)
-    {
-      p = i/255;
-      r = 255;
-      g = 255;
-      b = 255;
-      self.tile_colors[type][i] = gray;
-    }
-
     self.hovering = 0;
   }
   self.init();
@@ -2417,8 +2273,6 @@ var board = function()
     var over = h/2;
     y -= over;
     h += over;
-    //gg.ctx.fillStyle = self.tile_color(t.type, t.nutrition);
-    //gg.ctx.fillRect(x,y,w,h);
     switch(t.type)
     {
       case TILE_TYPE_LIVESTOCK:
@@ -2811,7 +2665,7 @@ var farmbit = function()
   self.die = function()
   {
     self.abandon_job(1);
-    self.home.state = TILE_STATE_HOME_VACANT;
+    if(self.home) self.home.state = TILE_STATE_HOME_VACANT;
     var t = self.tile;
     switch(t.type)
     {
