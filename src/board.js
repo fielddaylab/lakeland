@@ -1198,8 +1198,8 @@ var tile = function()
   self.state_t = 0;
   self.val = 0;
   self.nutrition = 0;
-  self.withdraw_lock = 0;
-  self.deposit_lock = 0;
+  self.withdraw_lock = 0; //repurposed for farms as produce toggle :O
+  self.deposit_lock = 0; //repurposed for farms as produce toggle :O
   self.lock = 0;
   //only calc'd/updated on 'screen_tile'
   self.x = 0;
@@ -3131,10 +3131,13 @@ var farmbit = function()
               it = new item();
               it.type = ITEM_TYPE_FOOD;
               it.tile = t;
+              if(!i && t.withdraw_lock) it.sale = 1;
+              if( i && t.deposit_lock)  it.sale = 1;
               gg.b.tiles_tw(it.tile,it);
               kick_item(it);
               gg.items.push(it);
-              if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
+              if(it.sale) b_for_job(JOB_TYPE_EXPORT, 0, it);
+              else if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
             }
 
             b_for_job(JOB_TYPE_PLANT, t, 0);

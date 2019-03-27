@@ -3,11 +3,13 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
-- if they plant a bad farm, prompt "u messed up"
+- if quickbuy house- skip appropriate tut
+- as nutrition deltas, show it
+- sale toggle in item inspect
+- farm autosale toggle
 - fill out quests
-- walkthrough draw content
-- make it rain
-- prompts vary based on action required (click to advance, do thing to advance, etc...)
+- walkthrough draw content (?)
+- prompt viz vary based on action required (click to advance, do thing to advance, etc...)
 - farm settings to tag produce as for sale or not
 - re-find export destination on item pickup
 - standardized nutrition

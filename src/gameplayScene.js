@@ -108,6 +108,7 @@ var GamePlayScene = function()
       if(check) check = !gg.playhead.filter(clicker);
       if(check) check = !gg.nutrition_toggle.filter(clicker);
       if(check) check = !gg.shop.filter(clicker);
+      if(check) check = !gg.inspector.filter(clicker);
       if(check) check = !clicker.filter(gg.b);
     }
     clicker.filter(gg.tutorial);

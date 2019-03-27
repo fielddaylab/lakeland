@@ -17,6 +17,16 @@ var INSPECTOR_CONTENT_ITEM    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_TILE    = ENUM; ENUM++;
 var INSPECTOR_CONTENT_COUNT   = ENUM; ENUM++;
 
+var draw_switch = function(x,y,w,h,p,on)
+{
+  fillRRect(x,y+h/4,w,h/2,p,gg.ctx);
+  gg.ctx.stroke();
+  if(on) { x = x+w/2; gg.ctx.fillStyle = green; }
+  else gg.ctx.fillStyle = red;
+  fillRRect(x,y,w/2,h,p,gg.ctx);
+  gg.ctx.stroke();
+}
+
 var playhead = function()
 {
   var self = this;
@@ -113,15 +123,7 @@ var nutrition_toggle = function()
     gg.ctx.fillStyle = gg.backdrop_color;
 
     if(self.toggle_btn.active)
-    {
-      fillRRect(self.toggle_btn.x,self.toggle_btn.y+self.toggle_btn.h/4,self.toggle_btn.w,self.toggle_btn.h/2,self.pad,gg.ctx);
-      gg.ctx.stroke();
-      var x = self.x;
-      gg.ctx.fillStyle = red;
-      if(gg.b.nutrition_view) { x = self.toggle_btn.x+self.toggle_btn.w/2; gg.ctx.fillStyle = green; }
-      fillRRect(x,self.toggle_btn.y,self.toggle_btn.w/2,self.toggle_btn.h,self.pad,gg.ctx);
-      gg.ctx.stroke();
-    }
+      draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,self.pad,gg.b.nutrition_view);
   }
 }
 
@@ -411,11 +413,185 @@ var inspector = function()
     }
     gg.ctx.fillText("Nutrition: "+floor(clamp(0,1,t.nutrition)*100)+"%",x,y);
     y += self.pad+self.font_size;
+
+    gg.ctx.textAlign = "left";
+    if(t.type == TILE_TYPE_FARM)
+    {
+      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.fillText("Produce Autosell:",self.x,y);
+      draw_switch(self.x+self.w/2,y,self.w/2,self.w/4,self.pad,t.withdraw_lock);
+      y += self.w/4+self.pad;
+      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.fillText("Produce Autosell:",self.x,y);
+      draw_switch(self.x+self.w/2,y,self.w/2,self.w/4,self.pad,t.deposit_lock);
+      y += self.w/4+self.pad;
+    }
+
     self.img_vignette(gg.b.tile_img(t.og_type),1);
     self.img_vignette(gg.b.tile_img(t.type),1);
     self.border_vignette();
 
     return y;
+  }
+
+  self.tick_tile = function(t)
+  {
+    gg.ctx.textAlign = "center";
+    gg.ctx.fillStyle = gg.font_color;
+    gg.ctx.font = self.font_size+"px "+gg.font;
+    var x = self.x+self.w/2;
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    gg.ctx.fillText(gg.b.tile_name(t.type),x,y);
+    y += self.pad;
+
+    gg.ctx.strokeStyle = gg.backdrop_color;
+    gg.ctx.lineWidth = self.pad/2;
+    drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+
+    y += self.pad+self.font_size;
+    switch(t.type)
+    {
+      case TILE_TYPE_NULL:
+      case TILE_TYPE_LAND:
+      case TILE_TYPE_ROCK:
+      case TILE_TYPE_GRAVE:
+      case TILE_TYPE_LAKE:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_FOREST:
+        break;
+      case TILE_TYPE_HOME:
+      {
+        switch(t.state)
+        {
+          case TILE_STATE_HOME_VACANT:   gg.ctx.fillText("VACANT",x,y); break;
+          case TILE_STATE_HOME_OCCUPIED:
+          {
+            var l = gg.farmbits;
+            var b = 0;
+            for(var i = 0; i < l.length; l++) if(l[i].home == t) b = l[i];
+            gg.ctx.fillText("Owner: "+b.name,x,y);
+          }
+          break;
+        }
+      }
+      case TILE_TYPE_FARM:
+      {
+        switch(t.state)
+        {
+          case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",x,y); break;
+          case TILE_STATE_FARM_PLANTED: gg.ctx.fillText("Growth: "+floor(t.val*100/farm_nutrition_req)+"%",x,y); break;
+          case TILE_STATE_FARM_GROWN: gg.ctx.fillText("Ready for Harvest!",x,y); break;
+        }
+        y += self.pad+self.font_size;
+
+        var sy = y;
+        gg.ctx.textAlign = "left";
+        x = self.x;
+        gg.ctx.fillText("Soil Quality:",x,y);
+        y += self.pad+self.font_size;
+
+        y = sy;
+        x = self.x+self.w-self.pad;
+        gg.ctx.textAlign = "right";
+
+             if(t.nutrition > nutrition_motivated) gg.ctx.fillStyle = green;
+        else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
+        else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
+        gg.ctx.fillText(floor(t.nutrition*10)+"/10",x,y);
+        y += self.pad+self.font_size;
+        gg.ctx.fillStyle = gg.font_color;
+        gg.ctx.textAlign = "center";
+        x = self.x+self.w/2;
+      }
+        break;
+      case TILE_TYPE_LIVESTOCK:
+        break;
+      case TILE_TYPE_STORAGE:
+      {
+        gg.ctx.fillText("val: "+t.val,x,y);
+        y += self.pad+self.font_size;
+        gg.ctx.fillText("withdraw_lock: "+t.withdraw_lock,x,y);
+        y += self.pad+self.font_size;
+        gg.ctx.fillText("deposit_lock: "+t.deposit_lock,x,y);
+        y += self.pad+self.font_size;
+      }
+        break;
+      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_ROAD:
+      case TILE_TYPE_COUNT:
+        break;
+    }
+    gg.ctx.fillText("Nutrition: "+floor(clamp(0,1,t.nutrition)*100)+"%",x,y);
+    y += self.pad+self.font_size;
+    self.img_vignette(gg.b.tile_img(t.og_type),1);
+    self.img_vignette(gg.b.tile_img(t.type),1);
+    self.border_vignette();
+
+    return y;
+  }
+
+  self.filter_tile = function(clicker,t)
+  {
+    var x = self.x+self.w/2;
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    //gg.ctx.fillText(gg.b.tile_name(t.type),x,y);
+    y += self.pad;
+
+    y += self.pad+self.font_size;
+    switch(t.type)
+    {
+      case TILE_TYPE_NULL:
+      case TILE_TYPE_LAND:
+      case TILE_TYPE_ROCK:
+      case TILE_TYPE_GRAVE:
+      case TILE_TYPE_LAKE:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_FOREST:
+        break;
+      case TILE_TYPE_HOME:
+        //gg.ctx.fillText("VACANT"/"Owner:"+blah,x,y);
+        break;
+      case TILE_TYPE_FARM:
+      {
+        //gg.ctx.fillText("Needs Water"/"Ready for harvest!",x,y);
+        y += self.pad+self.font_size;
+
+        var sy = y;
+        //gg.ctx.fillText("Soil Quality:",x,y);
+        y += self.pad+self.font_size;
+      }
+        break;
+      case TILE_TYPE_LIVESTOCK:
+        break;
+      case TILE_TYPE_STORAGE:
+      {
+        //gg.ctx.fillText("val: "+t.val,x,y);
+        y += self.pad+self.font_size;
+        //gg.ctx.fillText("withdraw_lock: "+t.withdraw_lock,x,y);
+        y += self.pad+self.font_size;
+        //gg.ctx.fillText("deposit_lock: "+t.deposit_lock,x,y);
+        y += self.pad+self.font_size;
+      }
+        break;
+      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_ROAD:
+      case TILE_TYPE_COUNT:
+        break;
+    }
+    //gg.ctx.fillText("Nutrition: "+floor(clamp(0,1,t.nutrition)*100)+"%",x,y);
+    y += self.pad+self.font_size;
+
+    if(t.type == TILE_TYPE_FARM)
+    {
+      //gg.ctx.fillText("Produce Autosell:",self.x,y);
+      if(clicker.consumeif(self.x+self.w/2,y,self.w/2,self.w/4,function(){t.withdraw_lock = !t.withdraw_lock;})) return 1;
+      y += self.w/4+self.pad;
+      //gg.ctx.fillText("Produce Autosell:",self.x,y);
+      if(clicker.consumeif(self.x+self.w/2,y,self.w/2,self.w/4,function(){t.deposit_lock = !t.deposit_lock;})) return 1;
+      y += self.w/4+self.pad;
+    }
+
+    return 0;
   }
 
   self.draw_item = function(it)
@@ -433,16 +609,48 @@ var inspector = function()
     drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
     y += self.pad+self.font_size;
 
-    if(it.sale)
-    {
-    gg.ctx.fillText("Marked for Sale",x,y);
-    y += self.pad+self.font_size;
-    }
+    gg.ctx.textAlign = "left";
+    gg.ctx.fillStyle = gg.font_color;
+    gg.ctx.fillText("For Sale:",self.x,y);
+    draw_switch(self.x+self.w/2,y,self.w/2,self.w/4,self.pad,it.sale);
+    y += self.w/4+self.pad;
 
     self.img_vignette(gg.b.tile_img(it.tile.type),1);
     self.img_vignette(gg.b.item_img(it.type),1);
     self.border_vignette();
     return y;
+  }
+
+  self.tick_item = function(it)
+  {
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    //gg.ctx.fillText(gg.b.item_name(it.type),x,y);
+    y += self.pad;
+
+    y += self.pad+self.font_size;
+
+    if(it.sale)
+    {
+    //gg.ctx.fillText("Marked for Sale",x,y);
+    y += self.pad+self.font_size;
+    }
+
+    return y;
+  }
+
+  self.filter_item = function(clicker,it)
+  {
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    //gg.ctx.fillText(gg.b.item_name(it.type),x,y);
+    y += self.pad;
+
+    y += self.pad+self.font_size;
+
+    //gg.ctx.fillText("Produce Autosell:",self.x,y);
+    if(clicker.consumeif(self.x+self.w/2,y,self.w/2,self.w/4,function(){it.sale = !it.sale;})) return 1;
+    y += self.w/4+self.pad;
+
+    return 0;
   }
 
   self.draw_farmbit = function(b)
@@ -522,6 +730,79 @@ var inspector = function()
     self.img_vignette(b.last_img,1);
     self.border_vignette();
     return y;
+  }
+
+  self.tick_farmbit = function(b)
+  {
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    //gg.ctx.fillText(b.name,x,y);
+    y += self.pad;
+
+    y += self.pad+self.font_size;
+
+    //gg.ctx.fillText("Status:",x,y);
+    y += self.pad+self.font_size;
+
+    gg.ctx.fillText("Fullness:",x,y);
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("Energy:",x,y);
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("Joy:",x,y);
+    y += self.pad+self.font_size;
+    gg.ctx.fillText("Fulfillment:",x,y);
+    y += self.pad+self.font_size;
+
+    y += self.pad+self.font_size;
+
+    return y;
+  }
+
+  self.filter_farmbit = function(clicker,b)
+  {
+    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    //gg.ctx.fillText(b.name,x,y);
+    y += self.pad;
+
+    y += self.pad+self.font_size;
+
+    //gg.ctx.fillText("Status:",x,y);
+    y += self.pad+self.font_size;
+
+    //gg.ctx.fillText("Fullness:",x,y);
+    y += self.pad+self.font_size;
+    //gg.ctx.fillText("Energy:",x,y);
+    y += self.pad+self.font_size;
+    //gg.ctx.fillText("Joy:",x,y);
+    y += self.pad+self.font_size;
+    //gg.ctx.fillText("Fulfillment:",x,y);
+    y += self.pad+self.font_size;
+
+    y += self.pad+self.font_size;
+
+    return 0;
+  }
+
+  self.filter = function(clicker)
+  {
+    switch(self.detailed_type)
+    {
+      case INSPECTOR_CONTENT_NULL:  break;
+      case INSPECTOR_CONTENT_TILE:    if(self.filter_tile(   clicker,self.detailed)) return 1; break;
+      case INSPECTOR_CONTENT_ITEM:    if(self.filter_item(   clicker,self.detailed)) return 1; break;
+      case INSPECTOR_CONTENT_FARMBIT: if(self.filter_farmbit(clicker,self.detailed)) return 1; break;
+    }
+    return 0;
+  }
+
+  self.tick = function()
+  {
+    switch(self.detailed_type)
+    {
+      case INSPECTOR_CONTENT_NULL:  break;
+      case INSPECTOR_CONTENT_TILE:    self.tick_tile(self.detailed); break;
+      case INSPECTOR_CONTENT_ITEM:    self.tick_item(self.detailed); break;
+      case INSPECTOR_CONTENT_FARMBIT: self.tick_farmbit(self.detailed); break;
+    }
   }
 
   self.draw = function()
