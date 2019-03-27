@@ -310,6 +310,7 @@ var inspector = function()
 
   self.detailed = 0;
   self.detailed_type = INSPECTOR_CONTENT_NULL;
+  self.known_nutrition = 0;
   self.quick = 0;
   self.quick_type = INSPECTOR_CONTENT_NULL;
 
@@ -322,6 +323,13 @@ var inspector = function()
   {
     gg.ctx.lineWidth = self.pad/2;
     strokeRRect(self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h,self.pad,gg.ctx);
+  }
+
+  self.select_tile = function(t)
+  {
+    self.detailed = t;
+    self.detailed_type = INSPECTOR_CONTENT_TILE;
+    self.known_nutrition = floor(clamp(0,1,t.nutrition)*100);
   }
 
   self.draw_tile = function(t)
@@ -411,7 +419,11 @@ var inspector = function()
       case TILE_TYPE_COUNT:
         break;
     }
-    gg.ctx.fillText("Nutrition: "+floor(clamp(0,1,t.nutrition)*100)+"%",x,y);
+    var n = floor(clamp(0,1,t.nutrition)*100);
+    if(self.known_nutrition > n) gg.ctx.fillStyle = red;
+    if(self.known_nutrition < n) gg.ctx.fillStyle = green;
+    gg.ctx.fillText("Nutrition: "+n+"%",x,y);
+    self.known_nutrition = n;
     y += self.pad+self.font_size;
 
     gg.ctx.textAlign = "left";
@@ -594,6 +606,12 @@ var inspector = function()
     return 0;
   }
 
+  self.select_item = function(it)
+  {
+    self.detailed = it;
+    self.detailed_type = INSPECTOR_CONTENT_ITEM;
+  }
+
   self.draw_item = function(it)
   {
     gg.ctx.textAlign = "center";
@@ -651,6 +669,12 @@ var inspector = function()
     y += self.w/4+self.pad;
 
     return 0;
+  }
+
+  self.select_farmbit = function(f)
+  {
+    self.detailed = f;
+    self.detailed_type = INSPECTOR_CONTENT_FARMBIT;
   }
 
   self.draw_farmbit = function(b)
@@ -1137,7 +1161,7 @@ var tutorial = function()
     function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = ""; if(self.state_t%10 > 6) dots = ".."; else if(self.state_t%10 > 3) dots = "."; self.textat("Waiting."+dots,t.x+t.w/2,t.y-t.h); }, //draw
     noop, //click
 
-    function(){ var f = gg.farmbits[0]; gg.inspector.detailed = f; gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //transition
+    function(){ var f = gg.farmbits[0]; gg.inspector.select_farmbit(f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //transition
     ffunc, //tick
     function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click

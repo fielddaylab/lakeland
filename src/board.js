@@ -2055,8 +2055,7 @@ var board = function()
             case BUY_TYPE_HOME:
             {
               self.alterTile(self.hover_t,TILE_TYPE_HOME);
-              gg.inspector.detailed = self.hover_t;
-              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+              gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2066,8 +2065,7 @@ var board = function()
             case BUY_TYPE_FARM:
             {
               self.alterTile(self.hover_t,TILE_TYPE_FARM);
-              gg.inspector.detailed = self.hover_t;
-              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+              gg.inspector.select_tile(self.hover_t);
               b_for_job(JOB_TYPE_PLANT, self.hover_t, 0);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
@@ -2078,8 +2076,7 @@ var board = function()
             case BUY_TYPE_LIVESTOCK:
             {
               self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
-              gg.inspector.detailed = self.hover_t;
-              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+              gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2089,8 +2086,7 @@ var board = function()
             case BUY_TYPE_STORAGE:
             {
               self.alterTile(self.hover_t,TILE_TYPE_STORAGE);
-              gg.inspector.detailed = self.hover_t;
-              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+              gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2100,8 +2096,7 @@ var board = function()
             case BUY_TYPE_PROCESSOR:
             {
               self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
-              gg.inspector.detailed = self.hover_t;
-              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+              gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2113,8 +2108,7 @@ var board = function()
               if(self.hover_t.type != TILE_TYPE_ROAD)
               {
                 self.alterTile(self.hover_t,TILE_TYPE_ROAD);
-                gg.inspector.detailed = self.hover_t;
-                gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+                gg.inspector.select_tile(self.hover_t);
                 self.spewing_road = roads_per_buy-1;
               }
               else
@@ -2129,8 +2123,7 @@ var board = function()
             {
               self.abandon_tile(self.hover_t);
               self.alterTile(self.hover_t,self.hover_t.og_type);
-              gg.inspector.detailed = self.hover_t;
-              gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+              gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
@@ -2160,23 +2153,20 @@ var board = function()
             }
           }
         }
-        gg.inspector.detailed = clicked;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_ITEM;
+        gg.inspector.select_item(clicked);
         return;
       }
 
       for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBB(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
-        gg.inspector.detailed = clicked;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT;
+        gg.inspector.select_farmbit(clicked);
         return;
       }
 
       if(self.hover_t)
       {
-        gg.inspector.detailed = self.hover_t;
-        gg.inspector.detailed_type = INSPECTOR_CONTENT_TILE;
+        gg.inspector.select_tile(self.hover_t);
         if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
       }
     }
