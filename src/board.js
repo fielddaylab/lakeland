@@ -1384,13 +1384,18 @@ var board = function()
     self.bounds_x = self.x+       (self.bounds_tx/self.tw)*self.w;
     self.bounds_y = self.y+self.h-(self.bounds_ty/self.th)*self.h-self.bounds_h;
 
-    var wr = self.bounds_w/self.cloud_iw;
-    var hr = self.bounds_h/self.cloud_ih;
+    self.cbounds_w = ((self.bounds_tw+1)/self.tw)*self.w;
+    self.cbounds_h = ((self.bounds_th+1)/self.th)*self.h;
+    self.cbounds_x = self.x+       ((self.bounds_tx-0.5)/self.tw)*self.w;
+    self.cbounds_y = self.y+self.h-((self.bounds_ty-0.5)/self.th)*self.h-self.cbounds_h;
+
+    var wr = self.cbounds_w/self.cloud_iw;
+    var hr = self.cbounds_h/self.cloud_ih;
 
     self.cloud_w *= wr;
     self.cloud_h *= hr;
-    self.cloud_x = self.bounds_x-self.cloud_ix*wr;
-    self.cloud_y = self.bounds_y-self.cloud_iy*hr;
+    self.cloud_x = self.cbounds_x-self.cloud_ix*wr;
+    self.cloud_y = self.cbounds_y-self.cloud_iy*hr;
     self.cloud_x = round(self.cloud_x);
     self.cloud_y = round(self.cloud_y);
     self.cloud_w = round(self.cloud_w);

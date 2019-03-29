@@ -32,29 +32,30 @@ var playhead = function()
   var self = this;
   self.resize = function()
   {
-    var btnw = 40*gg.stage.s_mod;
-    var btnh = btnw;
-    var btnpad = 10*gg.stage.s_mod;
+    self.pad = 10*gg.stage.s_mod;
 
-    self.w = btnw*3+btnpad*2;
+    var btnh = gg.b.cbounds_y-self.pad*2;
+    var btnw = btnh;
+
+    self.w = btnw*3+self.pad*2;
     self.h = btnh;
     self.x = gg.canvas.width/2-self.w/2;
-    self.y = gg.b.tl_bound_tile.y-self.h-btnpad;
+    self.y = self.pad;
 
     var btnx = self.x;
     var btny = self.y;
 
-    setBB(self.pause_btn, btnx,btny,btnw,btnh); btnx += btnw+btnpad;
-    setBB(self.play_btn,  btnx,btny,btnw,btnh); btnx += btnw+btnpad;
-    setBB(self.speed_btn, btnx,btny,btnw,btnh); btnx += btnw+btnpad;
+    setBB(self.pause_btn, btnx,btny,btnw,btnh); btnx += btnw+self.pad;
+    setBB(self.play_btn,  btnx,btny,btnw,btnh); btnx += btnw+self.pad;
+    setBB(self.speed_btn, btnx,btny,btnw,btnh); btnx += btnw+self.pad;
   }
 
   self.pause_img = GenImg("assets/pause.png");
   self.play_img = GenImg("assets/play.png");
   self.speed_img = GenImg("assets/speed.png");
 
-  self.pause_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 0; });
-  self.play_btn  = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 0; });
+  self.pause_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
+  self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(!DOUBLETIME) RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
   self.speed_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 1; });
   self.resize();
 
@@ -135,7 +136,7 @@ var shop = function()
     self.pad = 10*gg.stage.s_mod;
     self.x = 0;
     self.y = 0;
-    self.w = gg.b.tl_bound_tile.x-self.pad;
+    self.w = gg.b.cbounds_x-self.pad;
     self.h = gg.canvas.height;
 
     var btn_w = (self.w-self.pad*3)/2;
@@ -296,7 +297,7 @@ var inspector = function()
   {
     self.pad = 10*gg.stage.s_mod;
     self.font_size = self.pad*1.5;
-    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w+self.pad;
+    self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad;
     self.y = 0;
     self.w = gg.canvas.width-self.x;
     self.h = gg.canvas.height;
@@ -852,7 +853,8 @@ var ticker = function()
   var self = this;
   self.resize = function()
   {
-    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w;
+    self.pad = 10*gg.stage.s_mod;
+    self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad;
     self.y = 0;
     self.w = gg.canvas.width-self.x;
     self.h = gg.canvas.height;
