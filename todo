@@ -3,7 +3,6 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
-- export toggle from w/i inspector triggers event (to drop/etc...)
 - on export, deselect from inspector
 - display "currently exporting dudes"
 - if quickbuy house- skip appropriate tut

@@ -2145,19 +2145,6 @@ var board = function()
       for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBB(it,evt.doX,evt.doY)) clicked = it; }
       if(clicked)
       {
-        if(gg.inspector.detailed == clicked)
-        {
-          clicked.sale = !clicked.sale;
-          if(clicked.lock)
-          {
-            var f = farmbit_with_item(clicked);
-            if(f)
-            {
-                   if(f.job_type == JOB_TYPE_EXPORT && !clicked.sale) f.abandon_job(0);
-              else if(f.job_type != JOB_TYPE_EXPORT &&  clicked.sale) f.abandon_job(0);
-            }
-          }
-        }
         gg.inspector.select_item(clicked);
         return;
       }
@@ -2312,7 +2299,7 @@ var board = function()
     if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
     if(t.type == TILE_TYPE_LAKE)
     {
-      gg.ctx.globalAlpha = t.nutrition;
+      gg.ctx.globalAlpha = bias1(t.nutrition);
       gg.ctx.drawImage(bloom_img,x,y,w,h);
       gg.ctx.globalAlpha = 1;
     }
@@ -3469,6 +3456,8 @@ var farmbit = function()
               self.job_state = JOB_STATE_ACT;
               self.job_state_t = 0;
               self.offscreen = 1;
+              if(gg.inspector.detailed == self || gg.inspector.detailed == self.item)
+                gg.inspector.deselect();
               self.item.offscreen = 1;
             }
           }

@@ -326,6 +326,11 @@ var inspector = function()
     strokeRRect(self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h,self.pad,gg.ctx);
   }
 
+  self.deselect = function()
+  {
+    self.detailed = 0;
+    self.detailed_type = INSPECTOR_CONTENT_NULL;
+  }
   self.select_tile = function(t)
   {
     self.detailed = t;
@@ -666,7 +671,20 @@ var inspector = function()
     y += self.pad+self.font_size;
 
     //gg.ctx.fillText("Produce Autosell:",self.x,y);
-    if(clicker.consumeif(self.x+self.w/2,y,self.w/2,self.w/4,function(){it.sale = !it.sale;})) return 1;
+    if(clicker.consumeif(self.x+self.w/2,y,self.w/2,self.w/4,function(){
+      it.sale = !it.sale;
+      if(it.lock)
+      {
+        var f = farmbit_with_item(it);
+        if(f)
+        {
+               if(f.job_type == JOB_TYPE_EXPORT && !it.sale) f.abandon_job(0);
+          else if(f.job_type != JOB_TYPE_EXPORT &&  it.sale) f.abandon_job(0);
+        }
+      }
+      if(!it.lock && it.sale)
+        b_for_job(JOB_TYPE_EXPORT, 0, it);
+    })) return 1;
     y += self.w/4+self.pad;
 
     return 0;
