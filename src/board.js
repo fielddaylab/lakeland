@@ -3439,6 +3439,7 @@ var farmbit = function()
             else
             {
               self.item = self.job_object;
+              self.job_subject = closest_edge_tile(t);
               self.job_state = JOB_STATE_SEEK;
               self.job_state_t = 0;
             }

@@ -3,14 +3,11 @@
 - water cleaner (slow!)
 - orient "find best" to include properties other than distance
 
-- on export, deselect from inspector
 - display "currently exporting dudes"
 - if quickbuy house- skip appropriate tut
 - as nutrition deltas, show it
 - fill out quests
 - walkthrough draw content (?)
 - prompt viz vary based on action required (click to advance, do thing to advance, etc...)
-- farm settings to tag produce as for sale or not
-- re-find export destination on item pickup
 - standardized nutrition
 
