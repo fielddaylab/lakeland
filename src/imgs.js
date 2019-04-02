@@ -236,6 +236,18 @@ var food_img;
   ctx.fillRect(5,2,3,3); //bulb right
 }
 
+var milk_img;
+{
+  var ctx;
+  var s = 10;
+  milk_img = GenIcon(s,s*1.5);
+  ctx = milk_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = white;
+  ctx.fillRect(4,6,2,6); //stalk middle
+  ctx.fillRect(6,4,4,3); //bulb middle
+}
+
 var poop_img;
 {
   var ctx;

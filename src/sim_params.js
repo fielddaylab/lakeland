@@ -55,6 +55,7 @@ var farm_nutrition_req = 0.1;
 var farm_nutrition_fertilize_threshhold = 1;//0.2;
 var water_fouled_threshhold = 0.5;
 var livestock_poop_t = 3000;
+var livestock_milk_t = 3000;
 var livestock_feed_threshhold = 0.2;
 var livestock_food_val = 1;
 var livestock_fullness_depletion_rate = 0.999;
@@ -65,6 +66,7 @@ var food_carryability = 0.8;
 var poop_raw_carryability = 0.2;
 var poop_light_carryability = 0.6;
 var poop_potent_carryability = 0.2;
+var milk_carryability = 0.8;
 var valuable_carryability = 0.2;
 
 var land_walkability      = 1;
@@ -106,6 +108,7 @@ var harvest_profit = 0;
 
 var item_worth_food = 100;
 var item_worth_poop = 10;
+var item_worth_milk = 200;
 var item_worth_valuable = 5000;
 
 var roads_per_buy = 10;

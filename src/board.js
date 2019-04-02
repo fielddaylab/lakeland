@@ -25,24 +25,28 @@ var TILE_TYPE_ROAD      = ENUM; ENUM++;
 var TILE_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
-var TILE_STATE_NULL               = ENUM; ENUM++;
-var TILE_STATE_HOME_VACANT        = ENUM; ENUM++;
-var TILE_STATE_HOME_OCCUPIED      = ENUM; ENUM++;
-var TILE_STATE_FARM_UNPLANTED     = ENUM; ENUM++;
-var TILE_STATE_FARM_PLANTED       = ENUM; ENUM++;
-var TILE_STATE_FARM_GROWN         = ENUM; ENUM++;
-var TILE_STATE_LIVESTOCK_IDLE     = ENUM; ENUM++;
-var TILE_STATE_STORAGE_UNASSIGNED = ENUM; ENUM++;
-var TILE_STATE_STORAGE_FOOD       = ENUM; ENUM++;
-var TILE_STATE_STORAGE_POOP       = ENUM; ENUM++;
-var TILE_STATE_STORAGE_VALUABLE   = ENUM; ENUM++;
-var TILE_STATE_COUNT              = ENUM; ENUM++;
+var TILE_STATE_NULL                = ENUM; ENUM++;
+var TILE_STATE_HOME_VACANT         = ENUM; ENUM++;
+var TILE_STATE_HOME_OCCUPIED       = ENUM; ENUM++;
+var TILE_STATE_FARM_UNPLANTED      = ENUM; ENUM++;
+var TILE_STATE_FARM_PLANTED        = ENUM; ENUM++;
+var TILE_STATE_FARM_GROWN          = ENUM; ENUM++;
+var TILE_STATE_LIVESTOCK_DIGESTING = ENUM; ENUM++;
+var TILE_STATE_LIVESTOCK_MILKING   = ENUM; ENUM++;
+var TILE_STATE_LIVESTOCK_MILKABLE  = ENUM; ENUM++;
+var TILE_STATE_STORAGE_UNASSIGNED  = ENUM; ENUM++;
+var TILE_STATE_STORAGE_FOOD        = ENUM; ENUM++;
+var TILE_STATE_STORAGE_POOP        = ENUM; ENUM++;
+var TILE_STATE_STORAGE_MILK        = ENUM; ENUM++;
+var TILE_STATE_STORAGE_VALUABLE    = ENUM; ENUM++;
+var TILE_STATE_COUNT               = ENUM; ENUM++;
 
 ENUM = 0;
 var ITEM_TYPE_NULL     = ENUM; ENUM++;
 var ITEM_TYPE_WATER    = ENUM; ENUM++;
 var ITEM_TYPE_FOOD     = ENUM; ENUM++;
 var ITEM_TYPE_POOP     = ENUM; ENUM++;
+var ITEM_TYPE_MILK     = ENUM; ENUM++;
 var ITEM_TYPE_VALUABLE = ENUM; ENUM++;
 var ITEM_TYPE_COUNT    = ENUM; ENUM++;
 
@@ -51,6 +55,7 @@ var ITEM_STATE_NULL        = ENUM; ENUM++;
 var ITEM_STATE_POOP_RAW    = ENUM; ENUM++;
 var ITEM_STATE_POOP_LIGHT  = ENUM; ENUM++;
 var ITEM_STATE_POOP_POTENT = ENUM; ENUM++;
+var ITEM_STATE_MILK_RAW    = ENUM; ENUM++;
 var ITEM_STATE_COUNT       = ENUM; ENUM++;
 
 ENUM = 0;
@@ -64,6 +69,7 @@ var JOB_TYPE_PLANT     = ENUM; ENUM++;
 var JOB_TYPE_HARVEST   = ENUM; ENUM++;
 var JOB_TYPE_FEED      = ENUM; ENUM++;
 var JOB_TYPE_FERTILIZE = ENUM; ENUM++;
+var JOB_TYPE_MILK      = ENUM; ENUM++;
 var JOB_TYPE_STORE     = ENUM; ENUM++;
 var JOB_TYPE_PROCESS   = ENUM; ENUM++;
 var JOB_TYPE_KICK      = ENUM; ENUM++;
@@ -186,6 +192,7 @@ var storage_for_item = function(item_type)
   {
     case ITEM_TYPE_FOOD:     return TILE_STATE_STORAGE_FOOD;
     case ITEM_TYPE_POOP:     return TILE_STATE_STORAGE_POOP;
+    case ITEM_TYPE_MILK:     return TILE_STATE_STORAGE_MILK;
     case ITEM_TYPE_VALUABLE: return TILE_STATE_STORAGE_VALUABLE;
     default: return TILE_STATE_STORAGE_UNASSIGNED;
   }
@@ -197,6 +204,7 @@ var worth_for_item = function(item_type)
   {
     case ITEM_TYPE_FOOD:     return item_worth_food;
     case ITEM_TYPE_POOP:     return item_worth_poop;
+    case ITEM_TYPE_MILK:     return item_worth_milk;
     case ITEM_TYPE_VALUABLE: return item_worth_valuable;
     default: return 0;
   }
@@ -216,6 +224,7 @@ var need_met_for_above_job = function(need, job_type)
         case JOB_TYPE_FEED:
         case JOB_TYPE_PROCESS:
         case JOB_TYPE_FERTILIZE:
+        case JOB_TYPE_MILK:
         case JOB_TYPE_STORE:
         case JOB_TYPE_KICK:
         case JOB_TYPE_EXPORT:
@@ -336,6 +345,24 @@ var closest_unlocked_nutrientsufficient_tile_from_list = function(goal, threshho
   {
     var t = list[i];
     if(t.lock || t.nutrition < threshhold || !gg.b.tile_in_bounds(t)) continue;
+    d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
+    if(d < closest_d)
+    {
+      closest_d = d;
+      closest = t;
+    }
+  }
+  return closest;
+}
+var closest_unlocked_milkable_tile_from_list = function(goal, list)
+{
+  var closest_d = max_dist;
+  var d;
+  var closest = 0;
+  for(var i = 0; i < list.length; i++)
+  {
+    var t = list[i];
+    if(t.lock || t.state != TILE_STATE_LIVESTOCK_MILKABLE || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -890,6 +917,19 @@ var fulfillment_job_for_b = function(b)
     }
   }
 
+  //milk
+  t = closest_unlocked_milkable_tile_from_list(b.tile, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
+  if(t)
+  {
+    b.go_idle();
+    b.job_subject = t;
+    b.lock_subject(b.job_subject);
+    b.job_type = JOB_TYPE_MILK;
+    b.job_state = JOB_STATE_SEEK;
+    gg.ticker.nq(b.name+" is going to milk a cow.");
+    return 1;
+  }
+
   //store
   it = closest_unlocked_nosale_item(b.tile);
   if(it)
@@ -909,6 +949,7 @@ var fulfillment_job_for_b = function(b)
       b.job_state = JOB_STATE_GET;
       if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to store some food for later.");
       if(it.type == ITEM_TYPE_POOP)     gg.ticker.nq(b.name+" is going to store some poop for later.");
+      if(it.type == ITEM_TYPE_MILK)     gg.ticker.nq(b.name+" is going to store some milk for later.");
       if(it.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(b.name+" is going to store some valuables for later.");
       return 1;
     }
@@ -926,6 +967,7 @@ var fulfillment_job_for_b = function(b)
     b.job_state = JOB_STATE_GET;
     if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to export some food- safe travels!");
     if(it.type == ITEM_TYPE_POOP)     gg.ticker.nq(b.name+" is going to export some poop- safe travels!");
+    if(it.type == ITEM_TYPE_MILK)     gg.ticker.nq(b.name+" is going to export some milk- safe travels!");
     if(it.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(b.name+" is going to export some valuables- safe travels!");
     return 1;
   }
@@ -941,6 +983,7 @@ var fulfillment_job_for_b = function(b)
     b.job_state = JOB_STATE_GET;
     if(it.type == ITEM_TYPE_FOOD)     gg.ticker.nq(b.name+" is going to kick around some food.");
     if(it.type == ITEM_TYPE_POOP)     gg.ticker.nq(b.name+" is going to kick around some poop.");
+    if(it.type == ITEM_TYPE_MILK)     gg.ticker.nq(b.name+" is going to kick around some milk.");
     if(it.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(b.name+" is going to kick around some valuables.");
     return 1;
   }
@@ -1091,6 +1134,24 @@ var b_for_job = function(job_type, job_subject, job_object)
       }
     }
       break;
+    case JOB_TYPE_MILK:
+    {
+      if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
+      if(!job_subject) return 0;
+
+      var best = closest_free_farmbit_with_desire(job_object.tile, 0, 0, 0, 1);
+      if(best)
+      {
+        best.go_idle();
+        best.job_type = job_type;
+        best.job_subject = job_subject;
+        best.lock_subject(best.job_subject);
+        best.job_state = JOB_STATE_SEEK;
+        gg.ticker.nq(best.name+" is going to milk a cow.");
+        return 1;
+      }
+    }
+      break;
     case JOB_TYPE_STORE:
     {
       /*
@@ -1119,6 +1180,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_subject.state = storage_for_item(best.job_object.type);
         if(job_object.type == ITEM_TYPE_FOOD)     gg.ticker.nq(best.name+" is going to store some food for later.");
         if(job_object.type == ITEM_TYPE_POOP)     gg.ticker.nq(best.name+" is going to store some poop for later.");
+        if(job_object.type == ITEM_TYPE_MILK)     gg.ticker.nq(best.name+" is going to store some milk for later.");
         if(job_object.type == ITEM_TYPE_VALUABLE) gg.ticker.nq(best.name+" is going to store some valuables for later.");
         return 1;
       }
@@ -1543,18 +1605,21 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_STATE_NULL:               return "Null";       break;
-      case TILE_STATE_HOME_VACANT:        return "Vacant";     break;
-      case TILE_STATE_HOME_OCCUPIED:      return "Occupied";   break;
-      case TILE_STATE_FARM_UNPLANTED:     return "Unplanted";  break;
-      case TILE_STATE_FARM_PLANTED:       return "Planted";    break;
-      case TILE_STATE_FARM_GROWN:         return "Grown";      break;
-      case TILE_STATE_LIVESTOCK_IDLE:     return "Idle";       break;
-      case TILE_STATE_STORAGE_UNASSIGNED: return "Unassigned"; break;
-      case TILE_STATE_STORAGE_FOOD:       return "Food";       break;
-      case TILE_STATE_STORAGE_POOP:       return "Poop";       break;
-      case TILE_STATE_STORAGE_VALUABLE:   return "Valuable";   break;
-      case TILE_STATE_COUNT:              return "Null";       break;
+      case TILE_STATE_NULL:                return "Null";       break;
+      case TILE_STATE_HOME_VACANT:         return "Vacant";     break;
+      case TILE_STATE_HOME_OCCUPIED:       return "Occupied";   break;
+      case TILE_STATE_FARM_UNPLANTED:      return "Unplanted";  break;
+      case TILE_STATE_FARM_PLANTED:        return "Planted";    break;
+      case TILE_STATE_FARM_GROWN:          return "Grown";      break;
+      case TILE_STATE_LIVESTOCK_DIGESTING: return "Digesting";  break;
+      case TILE_STATE_LIVESTOCK_MILKING:   return "Milking";    break;
+      case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
+      case TILE_STATE_STORAGE_UNASSIGNED:  return "Unassigned"; break;
+      case TILE_STATE_STORAGE_FOOD:        return "Food";       break;
+      case TILE_STATE_STORAGE_POOP:        return "Poop";       break;
+      case TILE_STATE_STORAGE_MILK:        return "Milk";       break;
+      case TILE_STATE_STORAGE_VALUABLE:    return "Valuable";   break;
+      case TILE_STATE_COUNT:               return "Null";       break;
     }
   }
   self.item_img = function(type)
@@ -1564,6 +1629,7 @@ var board = function()
       case ITEM_TYPE_WATER:    return water_img;    break;
       case ITEM_TYPE_FOOD:     return food_img;     break;
       case ITEM_TYPE_POOP:     return poop_img;     break;
+      case ITEM_TYPE_MILK:     return milk_img;     break;
       case ITEM_TYPE_VALUABLE: return valuable_img; break;
     }
   }
@@ -1575,6 +1641,7 @@ var board = function()
       case ITEM_TYPE_WATER:    return "Water";    break;
       case ITEM_TYPE_FOOD:     return "Food";     break;
       case ITEM_TYPE_POOP:     return "Poop";     break;
+      case ITEM_TYPE_MILK:     return "Milk";     break;
       case ITEM_TYPE_VALUABLE: return "Valuable"; break;
       case ITEM_TYPE_COUNT:    return "Count";    break;
     }
@@ -1592,6 +1659,7 @@ var board = function()
       case JOB_TYPE_PLANT:     return "Plant";     break;
       case JOB_TYPE_HARVEST:   return "Harvest";   break;
       case JOB_TYPE_FERTILIZE: return "Fertilize"; break;
+      case JOB_TYPE_MILK:      return "Milk";      break;
       case JOB_TYPE_STORE:     return "Store";     break;
       case JOB_TYPE_PROCESS:   return "Process";   break;
       case JOB_TYPE_KICK:      return "Kick";      break;
@@ -1875,7 +1943,7 @@ var board = function()
         t.state = TILE_STATE_FARM_UNPLANTED;
         break;
       case TILE_TYPE_LIVESTOCK:
-        t.state = TILE_STATE_LIVESTOCK_IDLE;
+        t.state = TILE_STATE_LIVESTOCK_DIGESTING;
         t.val = 1; //fullness
         break;
       case TILE_TYPE_STORAGE:
@@ -1921,6 +1989,7 @@ var board = function()
       {
         case TILE_STATE_STORAGE_FOOD:     item_type = ITEM_TYPE_FOOD; break;
         case TILE_STATE_STORAGE_POOP:     item_type = ITEM_TYPE_POOP; break;
+        case TILE_STATE_STORAGE_MILK:     item_type = ITEM_TYPE_MILK; break;
         case TILE_STATE_STORAGE_VALUABLE: item_type = ITEM_TYPE_VALUABLE; break;
       }
       for(var i = 0; i < t.val; i++)
@@ -2222,9 +2291,9 @@ var board = function()
         case TILE_TYPE_LIVESTOCK:
         {
           t.val *= livestock_fullness_depletion_rate;
-          if(t.state == TILE_STATE_LIVESTOCK_IDLE && t.state_t > livestock_poop_t)
+          if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t > livestock_poop_t)
           {
-            t.state = TILE_STATE_LIVESTOCK_IDLE;
+            t.state = TILE_STATE_LIVESTOCK_MILKING;
             t.state_t = 0;
 
             //gen poop
@@ -2240,6 +2309,16 @@ var board = function()
               !b_for_job(JOB_TYPE_FERTILIZE, 0, it) &&
               !b_for_job(JOB_TYPE_PROCESS, 0, it) &&
               !b_for_job(JOB_TYPE_STORE, 0, it)
+              )
+              ; //do nothing- all atempts present in if
+          }
+          else if(t.state == TILE_STATE_LIVESTOCK_MILKING && t.state_t > livestock_milk_t)
+          {
+            t.state = TILE_STATE_LIVESTOCK_MILKABLE;
+            t.state_t = 0;
+
+            if(
+              !b_for_job(JOB_TYPE_MILK, t, 0)
               )
               ; //do nothing- all atempts present in if
           }
@@ -2522,6 +2601,7 @@ var item = function()
              if(self.state == ITEM_STATE_POOP_RAW)   gg.ctx.drawImage(poop_img,      self.x,y,self.w,h);
         else if(self.state == ITEM_STATE_POOP_LIGHT) gg.ctx.drawImage(poop_light_img,self.x,y,self.w,h);
         break;
+      case ITEM_TYPE_MILK: gg.ctx.drawImage(milk_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(valuable_img,self.x,y,self.w,h); break;
     }
     if(self.sale)
@@ -2602,6 +2682,7 @@ var farmbit = function()
           }
         }
           break;
+        case ITEM_TYPE_MILK:     mod *= milk_carryability; break;
         case ITEM_TYPE_VALUABLE: mod *= valuable_carryability; break;
       }
     }
@@ -2784,6 +2865,7 @@ var farmbit = function()
       case JOB_TYPE_HARVEST:
       case JOB_TYPE_FEED:
       case JOB_TYPE_FERTILIZE:
+      case JOB_TYPE_MILK:
       case JOB_TYPE_STORE:
       case JOB_TYPE_PROCESS:
         b_for_job(job_type, job_subject, job_object); break;
@@ -3313,6 +3395,51 @@ var farmbit = function()
         }
       }
         break;
+      case JOB_TYPE_MILK:
+      {
+        switch(self.job_state)
+        {
+          case JOB_STATE_SEEK:
+          {
+            var t = self.job_subject;
+            if(self.tile != t)
+              self.walk_toward_tile(t);
+            else
+            {
+              self.job_state = JOB_STATE_ACT;
+              self.job_state_t = 0;
+            }
+          }
+            break;
+          case JOB_STATE_ACT:
+          {
+            self.release_locks();
+            var t = self.job_subject;
+            t.state = TILE_STATE_LIVESTOCK_DIGESTING;
+            t.state_t = 0;
+
+            self.fulfillment += milking_fulfillment;
+            self.calibrate_stats();
+            gg.ticker.nq(self.name+" milked a cow.");
+            self.go_idle();
+
+            var it;
+            it = new item();
+            it.type = ITEM_TYPE_MILK;
+            it.tile = t;
+            if(t.withdraw_lock) it.sale = 1;
+            gg.b.tiles_tw(it.tile,it);
+            kick_item(it);
+            gg.items.push(it);
+            if(it.sale) b_for_job(JOB_TYPE_EXPORT, 0, it);
+            else if(b_for_job(JOB_TYPE_STORE, 0, it)) ;
+
+            if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
+          }
+            break;
+        }
+      }
+        break;
       case JOB_TYPE_STORE:
       {
         switch(self.job_state)
@@ -3544,6 +3671,7 @@ var farmbit = function()
             {
               case ITEM_TYPE_FOOD: if(!b_for_job(JOB_TYPE_EAT,       0, it)) b_for_job(JOB_TYPE_STORE, 0, it); break;
               case ITEM_TYPE_POOP: if(!b_for_job(JOB_TYPE_FERTILIZE, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it); break;
+              case ITEM_TYPE_MILK: if(b_for_job(JOB_TYPE_STORE, 0, it)) ; break;
             }
             job_for_b(self);
           }
