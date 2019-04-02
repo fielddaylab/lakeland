@@ -318,6 +318,8 @@ var inspector = function()
   self.detailed = 0;
   self.detailed_type = INSPECTOR_CONTENT_NULL;
   self.known_nutrition = 0;
+  self.nutrition_delta_t = 0;
+  self.nutrition_delta_d = 0;
   self.quick = 0;
   self.quick_type = INSPECTOR_CONTENT_NULL;
 
@@ -432,8 +434,23 @@ var inspector = function()
         break;
     }
     var n = floor(clamp(0,1,t.nutrition)*100);
-    if(self.known_nutrition > n) gg.ctx.fillStyle = red;
-    if(self.known_nutrition < n) gg.ctx.fillStyle = green;
+    if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
+    if(self.known_nutrition < n) { self.nutrition_delta_d =  1; self.nutrition_delta_t = 10; }
+    if(self.nutrition_delta_t)
+    {
+      self.nutrition_delta_t--;
+      var as = 50*gg.stage.s_mod;
+      if(self.nutrition_delta_d < 0)
+      {
+        gg.ctx.fillStyle = red;
+        gg.ctx.drawImage(down_img,x-as/2,y-self.nutrition_delta_t-as/2,as,as);
+      }
+      if(self.nutrition_delta_d > 0)
+      {
+        gg.ctx.fillStyle = green;
+        gg.ctx.drawImage(up_img,x-as/2,y+self.nutrition_delta_t-as/2,as,as);
+      }
+    }
     gg.ctx.fillText("Nutrition: "+n+"%",x,y);
     self.known_nutrition = n;
     y += self.pad+self.font_size;

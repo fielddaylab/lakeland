@@ -441,6 +441,30 @@ var grave_img;
   ctx.fillRect(0,0,s,s);
 }
 
+var down_img;
+{
+  var ctx;
+  var s = 50;
+  down_img = GenIcon(s,s);
+  ctx = down_img.context;
+  ctx.lineWidth = s/4;
+  ctx.fillStyle = "#FF0000";
+  ctx.strokeStyle = "#FF0000";
+  drawArrow(s/2,0,s/2,s*3/4,s/8,ctx)
+}
+
+var up_img;
+{
+  var ctx;
+  var s = 50;
+  up_img = GenIcon(s,s);
+  ctx = up_img.context;
+  ctx.lineWidth = s/4;
+  ctx.fillStyle = "#00FF00";
+  ctx.strokeStyle = "#00FF00";
+  drawArrow(s/2,s*3/4,s/2,0,s/8,ctx)
+}
+
 //var farmbit_imgs = [];
 var tfood_img = new Image();
 tfood_img.onload = function(){ food_img = tfood_img; };
