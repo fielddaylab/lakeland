@@ -1944,6 +1944,7 @@ var board = function()
         break;
       case TILE_TYPE_LIVESTOCK:
         t.state = TILE_STATE_LIVESTOCK_DIGESTING;
+        t.withdraw_lock = 1; //set for sale
         t.val = 1; //fullness
         break;
       case TILE_TYPE_STORAGE:
@@ -2003,6 +2004,11 @@ var board = function()
         kick_item(it);
         gg.items.push(it);
       }
+    }
+    if(t.type == TILE_TYPE_FARM || t.type == TILE_TYPE_LIVESTOCK)
+    {
+      t.withdraw_lock = 0; //undo auto-set-sell
+      t.deposit_lock = 0; //undo auto-set-sell
     }
   }
 

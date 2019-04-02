@@ -86,6 +86,7 @@ var export_walkability    = 1;
 var plant_fulfillment     = 0.1;
 var harvest_fulfillment   = 0.1;
 var fertilize_fulfillment = 0.1;
+var milking_fulfillment   = 0.1;
 var feed_fulfillment      = 0.1;
 var store_fulfillment     = 0.1;
 var process_fulfillment   = 0.1;
