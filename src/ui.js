@@ -26,6 +26,8 @@ var TEXT_TYPE_COUNT   = ENUM; ENUM++;
 
 var draw_switch = function(x,y,w,h,p,on)
 {
+  gg.ctx.strokeStyle = gg.font_color;
+  gg.ctx.fillStyle = gg.backdrop_color;
   fillRRect(x,y+h/4,w,h/2,p,gg.ctx);
   gg.ctx.stroke();
   if(on) { x = x+w/2; gg.ctx.fillStyle = green; }
@@ -127,9 +129,6 @@ var nutrition_toggle = function()
 
   self.draw = function()
   {
-    gg.ctx.strokeStyle = gg.font_color;
-    gg.ctx.fillStyle = gg.backdrop_color;
-
     if(self.toggle_btn.active)
       draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,self.pad,gg.b.nutrition_view);
   }
@@ -444,11 +443,11 @@ var inspector = function()
     {
       gg.ctx.fillStyle = gg.font_color;
       gg.ctx.fillText("Produce Autosell:",self.x,y);
-      draw_switch(self.x+self.w/2,y,self.w/2,self.w/4,self.pad,t.withdraw_lock);
+      draw_switch(self.x+self.w/2,y,self.w/2-self.pad,self.w/6,self.pad,t.withdraw_lock);
       y += self.w/4+self.pad;
       gg.ctx.fillStyle = gg.font_color;
       gg.ctx.fillText("Produce Autosell:",self.x,y);
-      draw_switch(self.x+self.w/2,y,self.w/2,self.w/4,self.pad,t.deposit_lock);
+      draw_switch(self.x+self.w/2,y,self.w/2-self.pad,self.w/6,self.pad,t.deposit_lock);
       y += self.w/4+self.pad;
     }
 
@@ -643,7 +642,7 @@ var inspector = function()
     gg.ctx.textAlign = "left";
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.fillText("For Sale:",self.x,y);
-    draw_switch(self.x+self.w/2,y,self.w/2,self.w/4,self.pad,it.sale);
+    draw_switch(self.x+self.w/2,y,self.w/2-self.pad,self.w/6,self.pad,it.sale);
     y += self.w/4+self.pad;
 
     self.img_vignette(gg.b.tile_img(it.tile.type),1);
@@ -1213,7 +1212,7 @@ var tutorial = function()
 
     function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; }, //transition
     function(){ return self.bits_exist(1); }, //tick
-    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = ""; if(self.state_t%10 > 6) dots = ".."; else if(self.state_t%10 > 3) dots = "."; self.textat("Waiting."+dots,TEXT_TYPE_OBSERVE,t.x+t.w/2,t.y-t.h); }, //draw
+    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = "  "; if(self.state_t%10 > 6) dots = ".."; else if(self.state_t%10 > 3) dots = ". "; self.textat("Waiting."+dots,TEXT_TYPE_OBSERVE,t.x+t.w/2,t.y-t.h); }, //draw
     noop, //click
 
     function(){ var f = gg.farmbits[0]; gg.inspector.select_farmbit(f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //transition
