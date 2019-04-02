@@ -445,7 +445,7 @@ var inspector = function()
         gg.ctx.fillStyle = red;
         gg.ctx.drawImage(down_img,x-as/2,y-self.nutrition_delta_t-as/2,as,as);
       }
-      if(self.nutrition_delta_d > 0)
+      else if(self.nutrition_delta_d > 0)
       {
         gg.ctx.fillStyle = green;
         gg.ctx.drawImage(up_img,x-as/2,y+self.nutrition_delta_t-as/2,as,as);

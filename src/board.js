@@ -1198,6 +1198,9 @@ var tile = function()
   self.state_t = 0;
   self.val = 0;
   self.nutrition = 0;
+  self.known_nutrition = 0;
+  self.known_nutrition_d = 0;
+  self.known_nutrition_t = 0;
   self.withdraw_lock = 0; //repurposed for farms as produce toggle :O
   self.deposit_lock = 0; //repurposed for farms as produce toggle :O
   self.lock = 0;
@@ -2249,6 +2252,20 @@ var board = function()
       if(top.type != TILE_TYPE_NULL) self.flow(t,top);
       if(self.raining) self.rainflow(t);
     }
+
+    for(var i = 0; i < n; i++)
+    {
+      var t = self.tiles[i];
+      var fn = floor(t.nutrition*100);
+      var d = fn-t.known_nutrition;
+      if(d)
+      {
+        t.known_nutrition_d = d;
+        t.known_nutrition_t = 10;
+      }
+      else if(t.known_nutrition_t) t.known_nutrition_t--;
+      t.known_nutrition = fn;
+    }
   }
 
   self.draw_tile = function(t,x,y,w,h)
@@ -2302,6 +2319,12 @@ var board = function()
       gg.ctx.globalAlpha = bias1(t.nutrition);
       gg.ctx.drawImage(bloom_img,x,y,w,h);
       gg.ctx.globalAlpha = 1;
+    }
+    if(t.known_nutrition_t)
+    {
+      var as = 50*gg.stage.s_mod;
+           if(t.known_nutrition_d < 0) gg.ctx.drawImage(down_img,x+w/2-as/2,y+h/2-t.known_nutrition_t-as/2,as,as);
+      else if(t.known_nutrition_d > 0) gg.ctx.drawImage(up_img,x+w/2-as/2,y+h/2+t.known_nutrition_t-as/2,as,as);
     }
   }
 
