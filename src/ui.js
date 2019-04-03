@@ -839,8 +839,8 @@ var tutorial = function()
     function(){ self.wash(); gg.ctx.textAlign = "center";self.textat("Before you place it on the map...",gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
     self.next_state, //click
 
-    function(){ gg.nutrition_toggle.toggle_btn.active = 1; }, //transition
-    function(){ return gg.b.nutrition_view; }, //tick
+    function(){ gg.nutrition_toggle.toggle_btn.active = 1; self.dotakeover(); }, //transition
+    function(){ gg.nutrition_toggle.filter(gg.clicker); return gg.b.nutrition_view; }, //tick
     function(){ self.wash(); var b = gg.nutrition_toggle.toggle_btn; gg.ctx.textAlign = "center"; self.textat("Click to toggle nutrition view",b.x+b.w/2,b.y-b.h); gg.nutrition_toggle.draw(); }, //draw
     noop, //click
 
