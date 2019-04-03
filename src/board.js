@@ -1746,6 +1746,7 @@ var board = function()
           t.nutrition *= t.nutrition;
           t.nutrition *= t.nutrition;
           t.nutrition *= t.nutrition;
+          t.nutrition = floor(t.nutrition*10000);
           self.tiles[i] = t;
         }
 
@@ -1900,6 +1901,7 @@ var board = function()
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
+        t.nutrition = floor(t.nutrition*10000);
       }
 
     }
@@ -2088,13 +2090,13 @@ var board = function()
 
   self.flow = function(from, to) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
   {
-    var d = clamp(-1,1,from.nutrition-to.nutrition);
+    var d = from.nutrition-to.nutrition;
     if(
       (d < 0 && from.type == TILE_TYPE_LAKE) ||
       (d > 0 && to.type   == TILE_TYPE_LAKE)
     )
     { //destination is water
-      d *= nutrition_flow_rate;
+      d = floor(d*watersnk_nutrition_flow_rate);
       from.nutrition -= d;
       to.nutrition   += d;
     }
@@ -2103,15 +2105,13 @@ var board = function()
       (d < 0 && to.type   == TILE_TYPE_LAKE)
     )
     { //src is water
-      d *= d*d;
-      d *= nutrition_flow_rate*nutrition_flow_rate;
+      d = floor(d*watersrc_nutrition_flow_rate);
       from.nutrition -= d;
       to.nutrition   += d;
     }
     else
     { //anything else
-      d *= d*d;
-      d *= nutrition_flow_rate;
+      d = floor(d*nutrition_flow_rate);
       from.nutrition -= d;
       to.nutrition   += d;
     }
@@ -2119,8 +2119,9 @@ var board = function()
 
   self.rainflow = function(t)
   {
-    t.shed.nutrition += t.nutrition*0.01;
-    t.nutrition *= 0.99;
+    var d = floor(t.nutrition*0.01);
+    t.shed.nutrition += d;
+    t.nutrition -= d;
   }
 
   self.hover = function(evt)
@@ -2325,7 +2326,7 @@ var board = function()
         {
           if(t.state == TILE_STATE_FARM_PLANTED)
           {
-            var d = min(t.nutrition*farm_nutrition_uptake_p,farm_nutrition_uptake_max);
+            var d = min(floor(t.nutrition*farm_nutrition_uptake_p),farm_nutrition_uptake_max);
             t.nutrition -= d;
             d = max(d,farm_nutrition_uptake_min); //nutrition created out of thin air!
             t.val += d;
@@ -2447,7 +2448,7 @@ var board = function()
     if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
     if(t.type == TILE_TYPE_LAKE)
     {
-      gg.ctx.globalAlpha = bias1(t.nutrition);
+      gg.ctx.globalAlpha = bias1(t.nutrition/10000);
       gg.ctx.drawImage(bloom_img,x,y,w,h);
       gg.ctx.globalAlpha = 1;
     }
@@ -2573,7 +2574,7 @@ var board = function()
           nx = round(self.x+((tx+1)*w));
           tw = nx-x;
           t = self.tiles[i];
-          gg.ctx.globalAlpha = t.nutrition;
+          gg.ctx.globalAlpha = t.nutrition/10000;
           gg.ctx.fillRect(x,ny,tw,th);
           i++;
         }

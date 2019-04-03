@@ -34,9 +34,9 @@ var joy_content           = 0.4;
 var fulfillment_content   = 0.4;
 
 //applies to farm
-var nutrition_desperate = 0.1;
-var nutrition_motivated = 0.2;
-var nutrition_content = 0.5;
+var nutrition_desperate = 1000;
+var nutrition_motivated = 2000;
+var nutrition_content = 5000;
 
 var fullness_depletion_rate    = 0.9999;
 var energy_depletion_rate      = 0.999;
@@ -46,14 +46,16 @@ var fulfillment_depletion_rate = 0.999;
 var wait_t = 100;
 var export_t = 2000;
 
-var nutrition_flow_rate = 0.001;
-var poop_nutrition_leak = 0.0001;
+var nutrition_flow_rate = 0.001; //*%
+var watersrc_nutrition_flow_rate = 0.00001; //*%
+var watersnk_nutrition_flow_rate = 0.01; //*%
+var poop_nutrition_leak = 1; //+v
 var farm_nutrition_uptake_p = 0.0005; //*%
-var farm_nutrition_uptake_max = 0.0002; //+v
-var farm_nutrition_uptake_min = 0.00001; //+v //difference created out of thin air!
-var farm_nutrition_req = 0.1;
-var farm_nutrition_fertilize_threshhold = 1;//0.2;
-var water_fouled_threshhold = 0.5;
+var farm_nutrition_uptake_max = 2; //+v
+var farm_nutrition_uptake_min = 1; //+v //difference created out of thin air!
+var farm_nutrition_req = 1000;
+var farm_nutrition_fertilize_threshhold = 1;
+var water_fouled_threshhold = 5000;
 var livestock_poop_t = 3000;
 var livestock_milk_t = 3000;
 var livestock_feed_threshhold = 0.2;
