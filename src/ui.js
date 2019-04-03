@@ -343,7 +343,7 @@ var inspector = function()
   {
     self.detailed = t;
     self.detailed_type = INSPECTOR_CONTENT_TILE;
-    self.known_nutrition = floor(t.nutrition/100);
+    self.known_nutrition = floor(t.nutrition/nutrition_percent);
   }
 
   self.draw_tile = function(t)
@@ -409,7 +409,7 @@ var inspector = function()
              if(t.nutrition > nutrition_motivated) gg.ctx.fillStyle = green;
         else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
         else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
-        gg.ctx.fillText(floor(t.nutrition/1000)+"/10",x,y);
+        gg.ctx.fillText(floor(t.nutrition/(nutrition_percent*10))+"/10",x,y);
         y += self.pad+self.font_size;
         gg.ctx.fillStyle = gg.font_color;
         gg.ctx.textAlign = "center";
@@ -433,7 +433,7 @@ var inspector = function()
       case TILE_TYPE_COUNT:
         break;
     }
-    var n = floor(t.nutrition/100);
+    var n = floor(t.nutrition/nutrition_percent);
     if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
     if(self.known_nutrition < n) { self.nutrition_delta_d =  1; self.nutrition_delta_t = 10; }
     if(self.nutrition_delta_t)

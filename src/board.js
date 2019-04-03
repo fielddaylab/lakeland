@@ -1746,7 +1746,7 @@ var board = function()
           t.nutrition *= t.nutrition;
           t.nutrition *= t.nutrition;
           t.nutrition *= t.nutrition;
-          t.nutrition = floor(t.nutrition*10000);
+          t.nutrition = floor(t.nutrition*nutrition_max);
           self.tiles[i] = t;
         }
 
@@ -1901,7 +1901,7 @@ var board = function()
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
         t.nutrition *= t.nutrition;
-        t.nutrition = floor(t.nutrition*10000);
+        t.nutrition = floor(t.nutrition*nutrition_max);
       }
 
     }
@@ -2119,7 +2119,7 @@ var board = function()
 
   self.rainflow = function(t)
   {
-    var d = floor(t.nutrition*0.01);
+    var d = floor(t.nutrition*rain_nutrition_flow_rate);
     t.shed.nutrition += d;
     t.nutrition -= d;
   }
@@ -2387,7 +2387,7 @@ var board = function()
     for(var i = 0; i < n; i++)
     {
       var t = self.tiles[i];
-      var fn = floor(t.nutrition*100);
+      var fn = floor(t.nutrition/nutrition_percent);
       var d = fn-t.known_nutrition;
       if(d)
       {
@@ -2448,7 +2448,7 @@ var board = function()
     if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
     if(t.type == TILE_TYPE_LAKE)
     {
-      gg.ctx.globalAlpha = bias1(t.nutrition/10000);
+      gg.ctx.globalAlpha = bias1(t.nutrition/nutrition_max);
       gg.ctx.drawImage(bloom_img,x,y,w,h);
       gg.ctx.globalAlpha = 1;
     }
@@ -2574,7 +2574,7 @@ var board = function()
           nx = round(self.x+((tx+1)*w));
           tw = nx-x;
           t = self.tiles[i];
-          gg.ctx.globalAlpha = t.nutrition/10000;
+          gg.ctx.globalAlpha = t.nutrition/nutrition_max;
           gg.ctx.fillRect(x,ny,tw,th);
           i++;
         }
