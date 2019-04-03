@@ -49,8 +49,9 @@ var GamePlayScene = function()
 
     if(self.readied)
     {
-      gg.b.resize();
+      screenSpace(gg.cam, gg.canvas, gg.b);
       gg.b.zoom_bounds(gg.cam);
+      gg.b.resize();
       gg.playhead.resize();
       gg.nutrition_toggle.resize();
       gg.shop.resize();
@@ -73,7 +74,9 @@ var GamePlayScene = function()
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
 
     gg.b = new board();
+    screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.zoom_bounds(gg.cam);
+    gg.b.resize();
     gg.money = money_start_n;
     gg.items = [];
     gg.farmbits = [];
@@ -127,7 +130,6 @@ var GamePlayScene = function()
         if(!gg.tutorial.takeover)
         {
           gg.b.tick();
-          screenSpace(gg.cam, gg.canvas, gg.b);
           for(var i = 0; i < gg.items.length; i++)
           {
             var o = gg.items[i];

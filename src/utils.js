@@ -1307,7 +1307,6 @@ var atlas = function()
         var img = self.imgs[i];
         pimg.onload = 0;
         //HACK TO APPEASE APPLE BUG
-        cpa_dealloc(img.width,img.height,"atlas"+i+" (load)");
         img.width = 0; img.height = 0;
         if(self.context == img.context) self.context = 0;
         img = 0;
@@ -1336,13 +1335,35 @@ var atlas = function()
     if(self.imgs.length) self.commiti(self.imgs.length-1);
     var i = self.imgs.length;
     self.imgs[i] = GenIcon(self.w,self.h);
-    cpa_alloc(self.w,self.h,"atlas"+i);
     self.x = 0;
     self.y = 0;
     self.row_h = 0;
     self.context = self.imgs[i].context;
     self.context.fillStyle = "#00FF00";
     if(self.debug) self.context.fillRect(0,0,self.w,self.h);
+  }
+  self.destroy = function()
+  {
+    for(var i = 0; i < self.pimgs.length; i++)
+    {
+      var pimg = self.pimgs[i];
+      if(pimg)
+      {
+        pimg.onload = 0;
+        self.pimgs[i] = 0;
+      }
+    }
+    for(var i = 0; i < self.imgs.length; i++)
+    {
+      var img = self.imgs[i];
+      if(img.tagName == "CANVAS")
+      {
+        img.width = 0;
+        img.height = 0;
+        self.imgs[i] = 0;
+      }
+    }
+    self.context = 0;
   }
 
   self.sprite_w = function(i)
@@ -1437,8 +1458,8 @@ var atlas = function()
     w = ceil(w);
     h = ceil(h);
     if(self.x+w > self.w) self.nextRow();
-    if(h > self.row_h) self.row_h = h;
     if(self.y+h > self.h) self.nextAtlas();
+    if(h > self.row_h) self.row_h = h;
     var i = self.getWholeSprite(self.x,self.y,w,h);
     self.x += w;
     return i;
@@ -1452,8 +1473,8 @@ var atlas = function()
     inw = ceil(inw);
     inh = ceil(inh);
     if(self.x+inw > self.w) self.nextRow();
-    if(inh > self.row_h) self.row_h = inh;
     if(self.y+inh > self.h) self.nextAtlas();
+    if(inh > self.row_h) self.row_h = inh;
     var i = self.getPartSprite(self.x,self.y,w,h,inx,iny,inw,inh);
     self.x += inw;
     return i;

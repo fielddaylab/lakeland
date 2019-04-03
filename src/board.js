@@ -1277,11 +1277,56 @@ var board = function()
 {
   var self = this;
 
+  self.atlas;
+  self.atlas_i = [];
+
   self.resize = function()
   {
+    if(self.atlas) self.atlas.destroy();
+    self.atlas = new atlas();
+    self.min_draw_tw = floor(self.w/self.tw);
+    self.min_draw_th = floor(self.h/self.th*1.5);
+    var total_tw = self.min_draw_tw*2+1;
+    var total_th = self.min_draw_th*2+1;
+    self.atlas.init(total_tw*TILE_TYPE_COUNT,total_th);
 
+    var x = 0;
+    var y = 0;
+    var ctx = self.atlas.context;
+    var tx = 0;
+    var ty = 0;
+    var tw = 0;
+    var th = 0;
+    for(var i = 0; i < TILE_TYPE_COUNT; i++)
+    {
+      tx = x;
+      ty = y;
+      tw = self.min_draw_tw;
+      th = self.min_draw_th;
+      self.atlas_i[i] = self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx += self.min_draw_tw;
+      tw = self.min_draw_tw+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx = x;
+      ty += self.min_draw_th;
+      tw = self.min_draw_tw;
+      th = self.min_draw_th+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx += self.min_draw_tw;
+      tw = self.min_draw_tw+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+      self.atlas.commitSprite();
+      x += total_tw;
+    }
+    self.atlas.commit();
   }
-  self.resize();
 
   self.tw = board_w;
   self.th = board_h;
@@ -2353,11 +2398,8 @@ var board = function()
     }
   }
 
-  self.draw_tile = function(t,x,y,w,h)
+  self.draw_tile_root = function(t,x,y,w,h)
   {
-    var over = h/2;
-    y -= over;
-    h += over;
     switch(t.type)
     {
       case TILE_TYPE_LIVESTOCK:
@@ -2376,6 +2418,10 @@ var board = function()
         gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
         break;
     }
+  }
+
+  self.draw_tile_overlay = function(t,x,y,w,h)
+  {
     if(t.type == TILE_TYPE_FARM)
     {
       var r = w/4;
@@ -2413,6 +2459,66 @@ var board = function()
     }
   }
 
+  self.draw_tile = function(t,x,y,w,h)
+  {
+    var over = h/2;
+    y -= over;
+    h += over;
+    self.draw_tile_root(t,x,y,w,h);
+    self.draw_tile_overlay(t,x,y,w,h);
+  }
+
+  self.draw_tile_root_fast = function(t,x,y,w,h)
+  {
+    if(!self.atlas) return self.draw_tile_root(t,x,y,w,h);
+    switch(t.type)
+    {
+      case TILE_TYPE_LIVESTOCK:
+      case TILE_TYPE_STORAGE:
+      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_ROAD:
+      case TILE_TYPE_HOME:
+      case TILE_TYPE_GRAVE:
+      case TILE_TYPE_FARM:
+        if(w == self.min_draw_tw)
+        {
+          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+0,x,y,gg.ctx);
+          else                      self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+2,x,y,gg.ctx);
+        }
+        else
+        {
+          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+1,x,y,gg.ctx);
+          else                      self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+3,x,y,gg.ctx);
+        }
+      case TILE_TYPE_LAND:
+      case TILE_TYPE_LAKE:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_ROCK:
+      case TILE_TYPE_FOREST:
+        if(w == self.min_draw_tw)
+        {
+          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.type]+0,x,y,gg.ctx);
+          else                      self.atlas.blitWholeSprite(self.atlas_i[t.type]+2,x,y,gg.ctx);
+        }
+        else
+        {
+          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.type]+1,x,y,gg.ctx);
+          else                      self.atlas.blitWholeSprite(self.atlas_i[t.type]+3,x,y,gg.ctx);
+        }
+        break;
+    }
+  }
+
+  self.draw_tile_fast = function(t,x,y,w,h)
+  {
+    //Should pre-compute this!
+    //var over = h/2;
+    //y -= over;
+    //h += over;
+    self.draw_tile_root_fast(t,x,y,w,h);
+    self.draw_tile_overlay(t,x,y,w,h);
+  }
+
   self.draw = function()
   {
     var t;
@@ -2420,7 +2526,9 @@ var board = function()
     var h = self.h/self.th;
     var x;
     var y;
+    var dy;
     var th;
+    var dth;
     var tw;
     var nx;
     var ny;
@@ -2433,6 +2541,8 @@ var board = function()
       y = ny;
       ny = round(self.y+self.h-ty*h);
       th = ny-y;
+      dy = floor(y-th/2);
+      dth = floor(th*1.5);
       nx = round(self.x+(0*w));
       i = self.tiles_i(0,ty);
       for(var tx = 0; tx < self.tw; tx++)
@@ -2441,7 +2551,7 @@ var board = function()
         nx = round(self.x+((tx+1)*w));
         tw = nx-x;
         var t = self.tiles[i];
-        self.draw_tile(t,x,y,tw,th);
+        self.draw_tile_fast(t,x,dy,tw,dth);
         i++;
       }
     }
