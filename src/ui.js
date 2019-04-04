@@ -759,8 +759,10 @@ var inspector = function()
     y += self.pad+self.font_size;
     gg.ctx.fillText("Joy:",x,y);
     y += self.pad+self.font_size;
+    /*
     gg.ctx.fillText("Fulfillment:",x,y);
     y += self.pad+self.font_size;
+    */
 
     y = sy;
     x = self.x+self.w-self.pad;
@@ -793,6 +795,7 @@ var inspector = function()
     gg.ctx.fillText(floor(b.joy*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
+/*
     switch(b.fulfillment_state)
     {
       case FARMBIT_STATE_CONTENT:   gg.ctx.fillStyle = green;  break;
@@ -801,6 +804,7 @@ var inspector = function()
     }
     gg.ctx.fillText(floor(b.fulfillment*10)+"/10",x,y);
     y += self.pad+self.font_size;
+*/
 
     y += self.pad+self.font_size;
 
@@ -811,6 +815,7 @@ var inspector = function()
 
   self.tick_farmbit = function(b)
   {
+    return;
     var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
     //gg.ctx.fillText(b.name,x,y);
     y += self.pad;
@@ -820,13 +825,13 @@ var inspector = function()
     //gg.ctx.fillText("Status:",x,y);
     y += self.pad+self.font_size;
 
-    gg.ctx.fillText("Fullness:",x,y);
+    //gg.ctx.fillText("Fullness:",x,y);
     y += self.pad+self.font_size;
-    gg.ctx.fillText("Energy:",x,y);
+    //gg.ctx.fillText("Energy:",x,y);
     y += self.pad+self.font_size;
-    gg.ctx.fillText("Joy:",x,y);
+    //gg.ctx.fillText("Joy:",x,y);
     y += self.pad+self.font_size;
-    gg.ctx.fillText("Fulfillment:",x,y);
+    //gg.ctx.fillText("Fulfillment:",x,y);
     y += self.pad+self.font_size;
 
     y += self.pad+self.font_size;
