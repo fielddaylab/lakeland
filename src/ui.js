@@ -417,6 +417,17 @@ var inspector = function()
       }
         break;
       case TILE_TYPE_LIVESTOCK:
+        switch(t.state)
+        {
+          case TILE_STATE_LIVESTOCK_DIGESTING: gg.ctx.fillText("Digesting",x,y); break;
+          case TILE_STATE_LIVESTOCK_MILKING: gg.ctx.fillText("Producing Milk",x,y); break;
+          case TILE_STATE_LIVESTOCK_MILKABLE: gg.ctx.fillText("Ready For Milking!",x,y); break;
+        }
+        y += self.pad+self.font_size;
+
+        gg.ctx.fillText("Hunger:"+fdisp(1-t.val),x,y);
+        y += self.pad+self.font_size;
+
         break;
       case TILE_TYPE_STORAGE:
       {

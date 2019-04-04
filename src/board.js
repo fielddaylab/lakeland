@@ -1139,7 +1139,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
       if(!job_subject) return 0;
 
-      var best = closest_free_farmbit_with_desire(job_object.tile, 0, 0, 0, 1);
+      var best = closest_free_farmbit_with_desire(job_subect, 0, 0, 0, 1);
       if(best)
       {
         best.go_idle();
