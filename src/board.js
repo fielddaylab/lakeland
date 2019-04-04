@@ -1523,6 +1523,8 @@ var board = function()
   self.hovering;
   self.hover_t;
   self.hover_t_placable;
+  self.hover_x = 0;
+  self.hover_y = 0;
 
   var direction_insert = function(index,directions,flow_d,list)
   {
@@ -2130,6 +2132,8 @@ var board = function()
     worldSpaceDoEvt(gg.cam, gg.canvas, evt);
     var old_hover_t = self.hover_t;
     self.hover_t = self.tiles_wt(evt.wx,evt.wy);
+    self.hover_x = evt.doX;
+    self.hover_y = evt.doY;
     if(self.hover_t && !self.tile_in_bounds(self.hover_t)) { self.unhover(evt); return; }
     if(self.hover_t != old_hover_t && gg.shop.selected_buy)
       self.hover_t_placable = self.placement_valid(self.hover_t,gg.shop.selected_buy);
@@ -2655,6 +2659,11 @@ var board = function()
       if(self.cloud_y              > 0)                gg.ctx.fillRect(self.cloud_x,                        0,self.cloud_w,self.cloud_y);
       if(self.cloud_y+self.cloud_h < gg.canvas.height) gg.ctx.fillRect(self.cloud_x,self.cloud_y+self.cloud_h,self.cloud_w,gg.canvas.height-(self.cloud_y+self.cloud_h));
     }
+
+    if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 10;
+    for(var i = 0; i < self.spewing_road; i++)
+      gg.ctx.drawImage(self.tile_img(TILE_TYPE_ROAD),self.hover_x,self.hover_y-self.min_draw_th/2-i*self.min_draw_th/10,self.min_draw_tw,self.min_draw_th);
+    if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 0;
   }
 }
 
@@ -3807,7 +3816,6 @@ var farmbit = function()
 
   self.draw = function()
   {
-    if(self.offscreen) return;
     if(debug_jobs)
     {
       if(self.job_subject)
@@ -3871,6 +3879,15 @@ var farmbit = function()
     gg.ctx.fillRect(x,y-h*self.fulfillment,w,h*self.fulfillment);
     x += w;
     */
+    if(self.offscreen)
+    {
+      if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
+      {
+        gg.ctx.fillStyle = black;
+        gg.ctx.fillText("BACK SOON",self.x+self.w/2,self.y+self.h/2);
+      }
+      return;
+    }
 
     var off = 0;
     if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE) off += 4;

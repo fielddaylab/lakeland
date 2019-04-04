@@ -1119,6 +1119,13 @@ var tutorial = function()
     if(self.state_t > 30) self.next_state();
   }
 
+  self.end = function()
+  {
+    self.state = (self.state_funcs.length/4)-1;
+    self.takeover = 0;
+    keycatch.key({key:"u"});
+  }
+
   self.click = function(evt)
   {
     self.state_funcs[self.state*4+3](evt);
@@ -1334,7 +1341,7 @@ var tutorial = function()
     function(){ self.wash(); var i = self.items_exist(ITEM_TYPE_FOOD,1); gg.ctx.textAlign = "center"; self.onscreentextat("Let's sell some.",TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
-    function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1;gg.playhead.speed_btn.active = 1; RESUME_SIM = 0;}, //transition
+    function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0;}, //transition
     ffunc, //tick
     function(){ self.wash(); var b = gg.playhead.play_btn; gg.ctx.textAlign = "center"; self.textat("First, we'll pause the game.",TEXT_TYPE_DISMISS,b.x+b.w/2,b.y+b.h*2); self.ctc(); }, //draw
     self.next_state, //click
