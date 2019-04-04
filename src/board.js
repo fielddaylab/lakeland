@@ -2094,12 +2094,15 @@ var board = function()
   self.flow = function(from, to) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
   {
     var d = from.nutrition-to.nutrition;
+    var dd;
     if(
       (d < 0 && from.type == TILE_TYPE_LAKE) ||
       (d > 0 && to.type   == TILE_TYPE_LAKE)
     )
     { //destination is water
-      d = floor(d*watersnk_nutrition_flow_rate);
+      dd = d*watersnk_nutrition_flow_rate;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
       from.nutrition -= d;
       to.nutrition   += d;
     }
@@ -2108,13 +2111,17 @@ var board = function()
       (d < 0 && to.type   == TILE_TYPE_LAKE)
     )
     { //src is water
-      d = floor(d*watersrc_nutrition_flow_rate);
+      dd = d*watersrc_nutrition_flow_rate;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
       from.nutrition -= d;
       to.nutrition   += d;
     }
     else
     { //anything else
-      d = floor(d*nutrition_flow_rate);
+      dd = d*nutrition_flow_rate;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
       from.nutrition -= d;
       to.nutrition   += d;
     }
