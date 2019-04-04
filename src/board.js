@@ -1286,7 +1286,7 @@ var board = function()
     if(self.atlas) self.atlas.destroy();
     self.atlas = new atlas();
     self.min_draw_tw = floor(self.w/self.tw);
-    self.min_draw_th = floor(self.h/self.th*1.5);
+    self.min_draw_th = floor(self.h/self.th)+floor(self.h/self.th/2);
     var total_tw = self.min_draw_tw*2+1;
     var total_th = self.min_draw_th*2+1;
     self.atlas.init(total_tw*TILE_TYPE_COUNT,total_th);
@@ -2497,13 +2497,13 @@ var board = function()
       case TILE_TYPE_FARM:
         if(w == self.min_draw_tw)
         {
-          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+0,x,y,gg.ctx);
-          else                      self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+2,x,y,gg.ctx);
+                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+0,x,y,gg.ctx);
+          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+2,x,y,gg.ctx);
         }
-        else
+        else /*if(w == self.min_draw_tw+1)*/
         {
-          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+1,x,y,gg.ctx);
-          else                      self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+3,x,y,gg.ctx);
+                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+1,x,y,gg.ctx);
+          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+3,x,y,gg.ctx);
         }
       case TILE_TYPE_LAND:
       case TILE_TYPE_LAKE:
@@ -2512,13 +2512,13 @@ var board = function()
       case TILE_TYPE_FOREST:
         if(w == self.min_draw_tw)
         {
-          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.type]+0,x,y,gg.ctx);
-          else                      self.atlas.blitWholeSprite(self.atlas_i[t.type]+2,x,y,gg.ctx);
+                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.type]+0,x,y,gg.ctx);
+          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.type]+2,x,y,gg.ctx);
         }
-        else
+        else /*if(w == self.min_draw_tw+1)*/
         {
-          if(h == self.min_draw_th) self.atlas.blitWholeSprite(self.atlas_i[t.type]+1,x,y,gg.ctx);
-          else                      self.atlas.blitWholeSprite(self.atlas_i[t.type]+3,x,y,gg.ctx);
+                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.type]+1,x,y,gg.ctx);
+          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.type]+3,x,y,gg.ctx);
         }
         break;
     }
@@ -2550,20 +2550,21 @@ var board = function()
     gg.ctx.imageSmoothingEnabled = 0;
     //normal view
     var i = 0;
-    ny = round(self.y);
+    ny = floor(self.y);
+    var dhd = floor(h/2);
     for(var ty = self.th-1; ty >= 0; ty--)
     {
       y = ny;
-      ny = round(self.y+self.h-ty*h);
+      ny = floor(self.y+self.h-ty*h);
       th = ny-y;
-      dy = floor(y-th/2);
-      dth = floor(th*1.5);
-      nx = round(self.x+(0*w));
+      dth = th+dhd;
+      dy = y-dhd;
+      nx = floor(self.x+(0*w));
       i = self.tiles_i(0,ty);
       for(var tx = 0; tx < self.tw; tx++)
       {
         x = nx;
-        nx = round(self.x+((tx+1)*w));
+        nx = floor(self.x+((tx+1)*w));
         tw = nx-x;
         var t = self.tiles[i];
         self.draw_tile_fast(t,x,dy,tw,dth);
@@ -2575,17 +2576,17 @@ var board = function()
     { //nutrition view
       var i = 0;
       gg.ctx.fillStyle = red;
-      ny = round(self.y+self.h-(0*h));
+      ny = floor(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
         y = ny;
-        ny = round(self.y+self.h-(ty+1)*h);
+        ny = floor(self.y+self.h-(ty+1)*h);
         th = y-ny;
-        nx = round(self.x+(0*w));
+        nx = floor(self.x+(0*w));
         for(var tx = 0; tx < self.tw; tx++)
         {
           x = nx;
-          nx = round(self.x+((tx+1)*w));
+          nx = floor(self.x+((tx+1)*w));
           tw = nx-x;
           t = self.tiles[i];
           gg.ctx.globalAlpha = t.nutrition/nutrition_max;
