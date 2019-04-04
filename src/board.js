@@ -2312,7 +2312,7 @@ var board = function()
 
       if(gg.farmbits.length < gg.b.tile_groups[TILE_TYPE_HOME].length)
       {
-        if(gg.farmbits.length == self.bounds_n) { self.inc_bounds(); self.zoom_bounds(gg.cam); self.bounds_n++; }
+        if(gg.farmbits.length == self.bounds_n) { self.inc_bounds(); self.zoom_bounds(gg.cam); self.bounds_n++; self.resize(); }
         var t = self.tiles_t(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th));
         var b = new farmbit();
         gg.ticker.nq(b.name+" decided to move in!");
