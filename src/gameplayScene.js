@@ -3,11 +3,6 @@ var GamePlayScene = function()
 {
   var self = this;
 
-  var hoverer;
-  var clicker;
-  var dragger;
-  var keyer;
-
   keycatch =
   {
     key:function(evt)
@@ -49,10 +44,10 @@ var GamePlayScene = function()
 
   self.resize = function()
   {
-    if(hoverer) hoverer.detach(); hoverer = new PersistentHoverer({source:gg.canvas});
-    if(clicker) clicker.detach(); clicker = new Clicker({source:gg.canvas});
-    if(dragger) dragger.detach(); dragger = new Dragger({source:gg.canvas});
-    if(keyer)   keyer.detach();   keyer   = new Keyer({source:gg.canvas});
+    if(gg.hoverer) gg.hoverer.detach(); gg.hoverer = new PersistentHoverer({source:gg.canvas});
+    if(gg.clicker) gg.clicker.detach(); gg.clicker = new Clicker({source:gg.canvas});
+    if(gg.dragger) gg.dragger.detach(); gg.dragger = new Dragger({source:gg.canvas});
+    if(gg.keyer)   gg.keyer.detach();   gg.keyer   = new Keyer({source:gg.canvas});
 
     if(self.readied)
     {
@@ -110,7 +105,7 @@ var GamePlayScene = function()
     if(t_mod_twelve_pi > twelvepi) t_mod_twelve_pi -= twelvepi;
     if(DOUBLETIME) times = 4;
 
-    hoverer.filter(gg.b);
+    gg.hoverer.filter(gg.b);
 
     var check = true;
     if(!gg.tutorial.takeover)
@@ -121,14 +116,9 @@ var GamePlayScene = function()
       if(check) check = !gg.inspector.filter(clicker);
       if(check) check = !clicker.filter(gg.b);
     }
-    clicker.filter(gg.tutorial);
+    gg.clicker.filter(gg.tutorial);
 
-    keyer.filter(keycatch);
-
-    clicker.flush();
-    hoverer.flush();
-    dragger.flush();
-    keyer.flush();
+    gg.keyer.filter(keycatch);
 
     if(RESUME_SIM)
     {
@@ -159,6 +149,11 @@ var GamePlayScene = function()
       }
     }
     gg.tutorial.tick();
+
+    gg.clicker.flush();
+    gg.hoverer.flush();
+    gg.dragger.flush();
+    gg.keyer.flush();
   };
 
   self.draw = function()
@@ -200,10 +195,10 @@ var GamePlayScene = function()
 
   self.cleanup = function()
   {
-    if(hoverer) hoverer.detach(); hoverer = null;
-    if(clicker) clicker.detach(); clicker = null;
-    if(dragger) dragger.detach(); dragger = null;
-    if(keyer)   keyer.detach();   keyer   = null;
+    if(gg.hoverer) gg.hoverer.detach(); gg.hoverer = null;
+    if(gg.clicker) gg.clicker.detach(); gg.clicker = null;
+    if(gg.dragger) gg.dragger.detach(); gg.dragger = null;
+    if(gg.keyer)   gg.keyer.detach();   gg.keyer   = null;
   };
 
 };
