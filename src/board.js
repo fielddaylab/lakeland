@@ -3888,13 +3888,14 @@ var farmbit = function()
     gg.ctx.fillRect(x,y-h*self.fulfillment,w,h*self.fulfillment);
     x += w;
     */
+
+    gg.ctx.textAlign = "center";
+    gg.ctx.fillStyle = black;
+
     if(self.offscreen)
     {
       if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
-      {
-        gg.ctx.fillStyle = black;
         gg.ctx.fillText("BACK SOON",self.x+self.w/2,self.y+self.h/2);
-      }
       return;
     }
 
@@ -3905,11 +3906,10 @@ var farmbit = function()
     switch(self.job_state)
     {
       case JOB_STATE_ACT:
-        gg.ctx.fillStyle = black;
         switch(self.job_type)
         {
-          case JOB_TYPE_SLEEP: gg.ctx.fillText("ZZ",self.x,self.y-10); break;
-          case JOB_TYPE_PLAY:  gg.ctx.fillText(":)",self.x,self.y-10); break;
+          case JOB_TYPE_SLEEP: gg.ctx.fillText("ZZ",self.x+self.w/2,self.y-10); break;
+          case JOB_TYPE_PLAY:  gg.ctx.fillText(":)",self.x+self.w/2,self.y-10); break;
         }
         //break; //don't break!
       case JOB_STATE_ACT:
@@ -3922,6 +3922,13 @@ var farmbit = function()
         gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/2,self.w,self.h+self.h/2);
         break;
     }
+
+         if(self.fullness_state    == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",self.x+self.w/2,self.y);
+    else if(self.energy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",self.x+self.w/2,self.y);
+    else if(self.joy_state         == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("DEPRESSED",self.x+self.w/2,self.y);
+    else if(self.fullness_state    == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",self.x+self.w/2,self.y);
+    else if(self.energy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",self.x+self.w/2,self.y);
+    else if(self.joy_state         == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("depressed",self.x+self.w/2,self.y);
   }
 }
 
