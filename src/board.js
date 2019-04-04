@@ -1229,6 +1229,7 @@ var b_for_job = function(job_type, job_subject, job_object)
 
 var break_item = function(it)
 {
+  if(gg.inspector.detailed == it) gg.inspector.deselect();
   for(var i = 0; i < gg.items.length; i++)
     if(gg.items[i] == it) gg.items.splice(i,1);
 }

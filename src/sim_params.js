@@ -88,14 +88,14 @@ var processor_walkability = 0.9;
 var road_walkability      = 4;
 var export_walkability    = 1;
 
-var plant_fulfillment     = 0.1;
-var harvest_fulfillment   = 0.1;
-var fertilize_fulfillment = 0.1;
-var milking_fulfillment   = 0.1;
-var feed_fulfillment      = 0.1;
-var store_fulfillment     = 0.1;
-var process_fulfillment   = 0.1;
-var kick_fulfillment      = 0.1;
+var plant_fulfillment     = 0.5;
+var harvest_fulfillment   = 0.5;
+var fertilize_fulfillment = 0.5;
+var milking_fulfillment   = 0.5;
+var feed_fulfillment      = 0.5;
+var store_fulfillment     = 0.5;
+var process_fulfillment   = 0.5;
+var kick_fulfillment      = 0.5;
 var swim_joy = 0.02; //per frame
 
 var max_dist = 9999999;
