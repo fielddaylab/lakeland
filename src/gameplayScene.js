@@ -98,11 +98,11 @@ var GamePlayScene = function()
     self.readied = 1;
   };
 
-  var t_mod_twelve_pi = 0;
+  gg.t_mod_twelve_pi = 0;
   self.tick = function(times)
   {
-    t_mod_twelve_pi += 0.01*times;
-    if(t_mod_twelve_pi > twelvepi) t_mod_twelve_pi -= twelvepi;
+    gg.t_mod_twelve_pi += 0.01*times;
+    if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
     if(DOUBLETIME) times = 4;
 
     gg.hoverer.filter(gg.b);

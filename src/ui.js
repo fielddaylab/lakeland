@@ -1217,7 +1217,7 @@ var tutorial = function()
     self.delay_next_state, //click
 
     noop, //transition
-    function(){ return self.purchased(BUY_TYPE_HOME); }, //tick
+    function(){ return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ gg.ctx.textAlign = "left"; self.textat("← Click here to buy",TEXT_TYPE_DIRECT,gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
     noop, //click
 
@@ -1241,7 +1241,7 @@ var tutorial = function()
 
     //can't build there
     self.dotakeover, //transition
-    noop, //tick
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ gg.ctx.textAlign = "center"; self.textat("Can't build a house there!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2); }, //draw
     function(){ self.jmp(-1); }, //click
 

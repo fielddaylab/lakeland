@@ -2495,16 +2495,25 @@ var board = function()
       case TILE_TYPE_HOME:
       case TILE_TYPE_GRAVE:
       case TILE_TYPE_FARM:
+      {
+        var off = 0;
         if(w == self.min_draw_tw)
         {
-                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+0,x,y,gg.ctx);
-          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+2,x,y,gg.ctx);
+                 if(h == self.min_draw_th)     off = 0;
+          else /*if(h == self.min_draw_th+1)*/ off = 2;
         }
         else /*if(w == self.min_draw_tw+1)*/
         {
-                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+1,x,y,gg.ctx);
-          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+3,x,y,gg.ctx);
+                 if(h == self.min_draw_th)     off = 1;
+          else /*if(h == self.min_draw_th+1)*/ off = 3;
         }
+        var yd = psin(gg.t_mod_twelve_pi*(10+DOUBLETIME*10));
+        var xd = bias0(1-yd)*w/10;
+        yd *= h/10;
+        self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+off,x,y,gg.ctx);
+        self.atlas.drawWholeSprite(self.atlas_i[t.type]+off,x-xd/2,y-yd,w+xd,h+yd,gg.ctx);
+      }
+        break;
       case TILE_TYPE_LAND:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
