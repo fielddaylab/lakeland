@@ -37,7 +37,7 @@ var GamePlayScene = function()
 
           break;
         }
-        case "t": gg.tutorial.end(); console.log("tf"); break;
+        case "t": gg.tutorial.end(); break;
       }
     }
   }
@@ -110,11 +110,11 @@ var GamePlayScene = function()
     var check = true;
     if(!gg.tutorial.takeover)
     {
-      if(check) check = !gg.playhead.filter(clicker);
-      if(check) check = !gg.nutrition_toggle.filter(clicker);
-      if(check) check = !gg.shop.filter(clicker);
-      if(check) check = !gg.inspector.filter(clicker);
-      if(check) check = !clicker.filter(gg.b);
+      if(check) check = !gg.playhead.filter(gg.clicker);
+      if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
+      if(check) check = !gg.shop.filter(gg.clicker);
+      if(check) check = !gg.inspector.filter(gg.clicker);
+      if(check) check = !gg.clicker.filter(gg.b);
     }
     gg.clicker.filter(gg.tutorial);
 
