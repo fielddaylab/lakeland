@@ -2129,7 +2129,9 @@ var board = function()
 
   self.rainflow = function(t)
   {
-    var d = floor(t.nutrition*rain_nutrition_flow_rate);
+    var dd = t.nutrition*rain_nutrition_flow_rate;
+    var d = floor(dd);
+    if(rand < dd-d) d++;
     t.shed.nutrition += d;
     t.nutrition -= d;
   }
