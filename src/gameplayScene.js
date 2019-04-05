@@ -101,7 +101,7 @@ var GamePlayScene = function()
   gg.t_mod_twelve_pi = 0;
   self.tick = function(times)
   {
-    gg.t_mod_twelve_pi += 0.01*times;
+    gg.t_mod_twelve_pi += 0.01*times*(DOUBLETIME+1);
     if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
     if(DOUBLETIME) times = 4;
 

@@ -2483,7 +2483,7 @@ var board = function()
     self.draw_tile_overlay(t,x,y,w,h);
   }
 
-  self.draw_tile_root_fast = function(t,x,y,w,h)
+  self.draw_tile_root_fast = function(t,x,y,w,h,xd,yd)
   {
     if(!self.atlas) return self.draw_tile_root(t,x,y,w,h);
     switch(t.type)
@@ -2507,9 +2507,6 @@ var board = function()
                  if(h == self.min_draw_th)     off = 1;
           else /*if(h == self.min_draw_th+1)*/ off = 3;
         }
-        var yd = psin(gg.t_mod_twelve_pi*(10+DOUBLETIME*10));
-        var xd = bias0(1-yd)*w/10;
-        yd *= h/10;
         self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+off,x,y,gg.ctx);
         self.atlas.drawWholeSprite(self.atlas_i[t.type]+off,x-xd/2,y-yd,w+xd,h+yd,gg.ctx);
       }
@@ -2533,13 +2530,13 @@ var board = function()
     }
   }
 
-  self.draw_tile_fast = function(t,x,y,w,h)
+  self.draw_tile_fast = function(t,x,y,w,h,xd,yd)
   {
     //Should pre-compute this!
     //var over = h/2;
     //y -= over;
     //h += over;
-    self.draw_tile_root_fast(t,x,y,w,h);
+    self.draw_tile_root_fast(t,x,y,w,h,xd,yd);
     self.draw_tile_overlay(t,x,y,w,h);
   }
 
@@ -2561,6 +2558,11 @@ var board = function()
     var i = 0;
     ny = floor(self.y);
     var dhd = floor(h/2);
+
+    var yd = psin(gg.t_mod_twelve_pi*10);
+    var xd = bias0(1-yd)*self.min_draw_tw/10;
+    yd *= self.min_draw_th/10;
+
     for(var ty = self.th-1; ty >= 0; ty--)
     {
       y = ny;
@@ -2576,7 +2578,7 @@ var board = function()
         nx = floor(self.x+((tx+1)*w));
         tw = nx-x;
         var t = self.tiles[i];
-        self.draw_tile_fast(t,x,dy,tw,dth);
+        self.draw_tile_fast(t,x,dy,tw,dth,xd,yd);
         i++;
       }
     }
@@ -2598,7 +2600,7 @@ var board = function()
           nx = floor(self.x+((tx+1)*w));
           tw = nx-x;
           t = self.tiles[i];
-          gg.ctx.globalAlpha = t.nutrition/nutrition_max;
+          gg.ctx.globalAlpha = bias1(t.nutrition/nutrition_max);
           gg.ctx.fillRect(x,ny,tw,th);
           i++;
         }
