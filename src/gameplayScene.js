@@ -101,9 +101,12 @@ var GamePlayScene = function()
   gg.t_mod_twelve_pi = 0;
   self.tick = function(times)
   {
-    gg.t_mod_twelve_pi += 0.01*times*(DOUBLETIME+1);
-    if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
+    if(RESUME_SIM && !gg.tutorial.takeover)
+    {
     if(DOUBLETIME) times = 4;
+    gg.t_mod_twelve_pi += 0.01*times;
+    if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
+    }
 
     gg.hoverer.filter(gg.b);
 
