@@ -104,8 +104,8 @@ var nutrition_toggle = function()
 
     self.w = 40*gg.stage.s_mod;
     self.h = self.w;
-    self.x = gg.b.br_bound_tile.x+gg.b.br_bound_tile.w-self.w-self.pad;
-    self.y = gg.b.br_bound_tile.y+gg.b.br_bound_tile.h-self.h-self.pad;
+    self.x = gg.b.vbounds_x+gg.b.vbounds_w-self.w-self.pad;
+    self.y = gg.b.vbounds_y+gg.b.vbounds_h-self.h-self.pad;
 
     setBB(self.toggle_btn, self.x,self.y,self.w,self.h);
   }
@@ -153,8 +153,8 @@ var shop = function()
     self.font_size = self.pad*1.5;
     self.img_size = min(btn_w-self.pad*2,btn_h-self.pad*2-self.font_size*2);
 
-    setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.tl_bound_tile.y-self.pad*2);
-    btn_y = gg.b.tl_bound_tile.y+gg.b.tl_bound_tile.h;
+    setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.vbounds_y-self.pad*2);
+    btn_y = gg.b.vbounds_y+(gg.b.h/gg.b.th);
     setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
@@ -1067,7 +1067,7 @@ var tutorial = function()
   self.ctc = function()
   {
     var x = gg.canvas.width/2
-    var y = gg.b.bounds_y+gg.b.bounds_h-gg.font_size*2;
+    var y = gg.b.cbounds_y+gg.b.cbounds_h-gg.font_size*2;
     gg.ctx.fillStyle = black;
     gg.ctx.textAlign = "center";
     gg.ctx.fillText("(click anywhere to continue)",x,y);
@@ -1389,12 +1389,12 @@ var tutorial = function()
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the marked food",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat(f.name+" is exporting the marked food",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.delay_next_state, //click
 
     self.dotakeover, //transition
     noop, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){ self.wash(); var f = gg.farmbits[0]; gg.ctx.textAlign = "center"; self.textat("They'll be back soon with some money!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
     self.next_state, //click
 
     function(){ var f = gg.farmbits[0]; self.setquest("Wait on "+f.name+"'s return"); }, //transition

@@ -1335,8 +1335,10 @@ var board = function()
   self.bounds_ty = floor(self.th*3/8);
   self.bounds_tw = floor(self.tw*1/4);
   self.bounds_th = floor(self.th*1/4);
-  //self.bounds_tw = 1;
-  //self.bounds_th = 1;
+  self.vbounds_tx = self.bounds_tx;
+  self.vbounds_ty = self.bounds_ty;
+  self.vbounds_tw = self.bounds_tw;
+  self.vbounds_th = self.bounds_th;
   self.bounds_n = 1;
   self.wx = 0;
   self.wy = 0;
@@ -1346,8 +1348,6 @@ var board = function()
   self.twh = self.wh/self.th;
 
   self.null_tile = new tile();
-  self.tl_bound_tile = self.null_tile; //gets set w/ zoom_tile
-  self.br_bound_tile = self.null_tile; //gets set w/ zoom_tile
   self.tiles = [];
   self.tile_groups = [];
   self.tiles_i = function(tx,ty)
@@ -1446,8 +1446,6 @@ var board = function()
     if(self.bounds_tw < self.tw) self.bounds_tw++;
     if(self.bounds_ty > 0 && self.bounds_th%2) self.bounds_ty--;
     if(self.bounds_th < self.th) self.bounds_th++;
-    self.tl_bound_tile = self.tiles[self.tiles_i(self.bounds_tx,self.bounds_ty+self.bounds_th-1)];
-    self.br_bound_tile = self.tiles[self.tiles_i(self.bounds_tx+self.bounds_tw-1,self.bounds_ty)];
   }
   self.zoom_bounds = function(cam)
   {
@@ -1474,12 +1472,10 @@ var board = function()
       cam.ww *= wh/cam.wh;
       cam.wh *= wh/cam.wh;
     }
-    cam.wx = self.wx-self.ww/2+(self.bounds_tx+self.bounds_tw/2)*self.tww;
-    cam.wy = self.wy-self.wh/2+(self.bounds_ty+self.bounds_tw/2)*self.twh+(cam.wh-self.bounds_th*self.twh)/3;
+    cam.wx = self.wx-self.ww/2+(self.vbounds_tx+self.vbounds_tw/2)*self.tww;
+    cam.wy = self.wy-self.wh/2+(self.vbounds_ty+self.vbounds_tw/2)*self.twh+(cam.wh-self.vbounds_th*self.twh)/3;
 
     screenSpace(gg.cam, gg.canvas, self);
-    self.screen_tile(self.tl_bound_tile);
-    self.screen_tile(self.br_bound_tile);
 
     self.cloud_x = 0;
     self.cloud_y = 0;
@@ -1495,10 +1491,16 @@ var board = function()
     self.bounds_x = self.x+       (self.bounds_tx/self.tw)*self.w;
     self.bounds_y = self.y+self.h-(self.bounds_ty/self.th)*self.h-self.bounds_h;
 
-    self.cbounds_w = ((self.bounds_tw+1)/self.tw)*self.w;
-    self.cbounds_h = ((self.bounds_th+1)/self.th)*self.h;
-    self.cbounds_x = self.x+       ((self.bounds_tx-0.5)/self.tw)*self.w;
-    self.cbounds_y = self.y+self.h-((self.bounds_ty-0.5)/self.th)*self.h-self.cbounds_h;
+    //should technically be the same as bounds_*, as this should only be called once (when they are identical)
+    self.vbounds_w = (self.vbounds_tw/self.tw)*self.w;
+    self.vbounds_h = (self.vbounds_th/self.th)*self.h;
+    self.vbounds_x = self.x+       (self.vbounds_tx/self.tw)*self.w;
+    self.vbounds_y = self.y+self.h-(self.vbounds_ty/self.th)*self.h-self.vbounds_h;
+
+    self.cbounds_w = ((self.vbounds_tw+1)/self.tw)*self.w;
+    self.cbounds_h = ((self.vbounds_th+1)/self.th)*self.h;
+    self.cbounds_x = self.x+       ((self.vbounds_tx-0.5)/self.tw)*self.w;
+    self.cbounds_y = self.y+self.h-((self.vbounds_ty-0.5)/self.th)*self.h-self.cbounds_h;
 
     var wr = self.cbounds_w/self.cloud_iw;
     var hr = self.cbounds_h/self.cloud_ih;
@@ -2312,7 +2314,7 @@ var board = function()
 
       if(gg.farmbits.length < gg.b.tile_groups[TILE_TYPE_HOME].length)
       {
-        if(gg.farmbits.length == self.bounds_n) { self.inc_bounds(); self.zoom_bounds(gg.cam); self.bounds_n++; self.resize(); }
+        if(gg.farmbits.length == self.bounds_n) { self.inc_bounds(); self.bounds_n++; self.resize(); }
         var t = self.tiles_t(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th));
         var b = new farmbit();
         gg.ticker.nq(b.name+" decided to move in!");
