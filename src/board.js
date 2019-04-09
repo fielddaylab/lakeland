@@ -1475,8 +1475,11 @@ var board = function()
     cam.wx = self.wx-self.ww/2+(self.vbounds_tx+self.vbounds_tw/2)*self.tww;
     cam.wy = self.wy-self.wh/2+(self.vbounds_ty+self.vbounds_tw/2)*self.twh+(cam.wh-self.vbounds_th*self.twh)/3;
 
-    screenSpace(gg.cam, gg.canvas, self);
-
+    screenSpace(cam, gg.canvas, self);
+    self.screen_bounds(cam);
+  }
+  self.screen_bounds = function(cam)
+  {
     self.cloud_x = 0;
     self.cloud_y = 0;
     self.cloud_w = clouds_img.width;
@@ -1491,16 +1494,16 @@ var board = function()
     self.bounds_x = self.x+       (self.bounds_tx/self.tw)*self.w;
     self.bounds_y = self.y+self.h-(self.bounds_ty/self.th)*self.h-self.bounds_h;
 
-    //should technically be the same as bounds_*, as this should only be called once (when they are identical)
+    //if bounds_* == vbounds_*, then these should be identical
     self.vbounds_w = (self.vbounds_tw/self.tw)*self.w;
     self.vbounds_h = (self.vbounds_th/self.th)*self.h;
     self.vbounds_x = self.x+       (self.vbounds_tx/self.tw)*self.w;
     self.vbounds_y = self.y+self.h-(self.vbounds_ty/self.th)*self.h-self.vbounds_h;
 
-    self.cbounds_w = ((self.vbounds_tw+1)/self.tw)*self.w;
-    self.cbounds_h = ((self.vbounds_th+1)/self.th)*self.h;
-    self.cbounds_x = self.x+       ((self.vbounds_tx-0.5)/self.tw)*self.w;
-    self.cbounds_y = self.y+self.h-((self.vbounds_ty-0.5)/self.th)*self.h-self.cbounds_h;
+    self.cbounds_w = ((self.bounds_tw+1)/self.tw)*self.w;
+    self.cbounds_h = ((self.bounds_th+1)/self.th)*self.h;
+    self.cbounds_x = self.x+       ((self.bounds_tx-0.5)/self.tw)*self.w;
+    self.cbounds_y = self.y+self.h-((self.bounds_ty-0.5)/self.th)*self.h-self.cbounds_h;
 
     var wr = self.cbounds_w/self.cloud_iw;
     var hr = self.cbounds_h/self.cloud_ih;
@@ -2184,7 +2187,29 @@ var board = function()
     gg.inspector.quick_type = INSPECTOR_CONTENT_NULL;
   }
 
-  self.click = function(evt)
+  self.dragStart = function(evt)
+  {
+    self.dragging_t = 0;
+    self.dragging_x = evt.doX;
+    self.dragging_y = evt.doY;
+    self.cam_sx = gg.cam.wx;
+    self.cam_sy = gg.cam.wy;
+  }
+  self.drag = function(evt)
+  {
+    if(self.dragging_t > 10 || lensqr(self.dragging_x-evt.doX,self.dragging_y-evt.doY) > 10)
+    {
+      gg.cam.wx = self.cam_sx + (self.dragging_x-evt.doX)/gg.canvas.width*gg.cam.ww;
+      gg.cam.wy = self.cam_sy - (self.dragging_y-evt.doY)/gg.canvas.height*gg.cam.wh;
+    }
+  }
+  self.dragFinish = function(evt)
+  {
+    if(self.dragging_t/(DOUBLETIME*3+1) < 10)
+      self.click(evt);
+  }
+
+  self.click = function(evt) //gets called by dragfinish rather than straight filtered
   {
     if(self.spewing_road) return;
 
@@ -2306,6 +2331,7 @@ var board = function()
 
   self.tick = function()
   {
+    if(self.dragging) self.dragging_t++;
     self.visit_t++;
     var n = 1000;
     if(self.visit_t > n)
@@ -2673,8 +2699,8 @@ var board = function()
     }
 
     {
-      //gg.ctx.strokeStyle = red;
-      //gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
+      gg.ctx.strokeStyle = red;
+      gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
       gg.ctx.drawImage(clouds_img,self.cloud_x,self.cloud_y,self.cloud_w,self.cloud_h);
       gg.ctx.fillStyle = "rgba(255,255,255,0.9)";
       if(self.cloud_x              > 0)                gg.ctx.fillRect(0,0,self.cloud_x,gg.canvas.height);

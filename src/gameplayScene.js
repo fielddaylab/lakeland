@@ -117,12 +117,14 @@ var GamePlayScene = function()
       if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
       if(check) check = !gg.shop.filter(gg.clicker);
       if(check) check = !gg.inspector.filter(gg.clicker);
-      if(check) check = !gg.clicker.filter(gg.b);
+      if(check) check = !gg.dragger.filter(gg.b);
     }
     gg.clicker.filter(gg.tutorial);
 
     gg.keyer.filter(keycatch);
 
+    screenSpace(gg.cam, gg.canvas, gg.b);
+    gg.b.screen_bounds(gg.cam);
     if(RESUME_SIM)
     {
       while(times)
