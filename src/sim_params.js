@@ -60,6 +60,7 @@ var farm_nutrition_uptake_max = 20; //+v
 var farm_nutrition_uptake_min = 1; //+v //difference created out of thin air!
 var farm_nutrition_req = 10000;
 var farm_nutrition_fertilize_threshhold = nutrition_percent*20;
+var fertilizer_nutrition = farm_nutrition_req;
 var water_fouled_threshhold = nutrition_percent*10;
 var livestock_poop_t = 3000;
 var livestock_milk_t = 3000;

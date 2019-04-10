@@ -438,6 +438,23 @@ var inspector = function()
         gg.ctx.fillStyle = gg.font_color;
         gg.ctx.textAlign = "center";
         x = self.x+self.w/2;
+
+        var n_fertz = 0;
+        var t_fertz = 0;
+        for(var i = 0; i < gg.items.length; i++)
+          if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
+          {
+            n_fertz++;
+            t_fertz += gg.items[i].state;
+          }
+        if(n_fertz)
+        {
+          gg.ctx.fillText("Remaining Fertilizer:",x,y);
+          y += self.pad;
+          draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,t_fertz/(n_fertz*fertilizer_nutrition));
+          gg.ctx.fillStyle = black;
+          y += self.pad*4;
+        }
       }
         break;
       case TILE_TYPE_LIVESTOCK:

@@ -3639,7 +3639,7 @@ var farmbit = function()
             it = new item();
             it.type = ITEM_TYPE_FERTILIZER;
             it.lock = 1; //permalocked
-            it.state = farm_nutrition_req;
+            it.state = fertilizer_nutrition;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             gg.items.push(it);
