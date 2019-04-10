@@ -48,7 +48,8 @@ var export_t = 2000;
 
 var nutrition_max = 1000000;
 var nutrition_percent = nutrition_max/100;
-var nutrition_flow_rate = 0.00005; //*%
+var presim_nutrition_flow_rate_mul = 100; //*%
+var nutrition_flow_rate = 0.00001; //*%
 var rain_nutrition_flow_rate = 0.001; //*%
 var watersrc_nutrition_flow_rate = 0.00001; //*%
 var watersnk_nutrition_flow_rate = 0.001; //*%

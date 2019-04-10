@@ -1734,6 +1734,51 @@ var board = function()
     }
   }
 
+  self.flow = function(from, to) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
+  {
+    var d = from.nutrition-to.nutrition;
+    var dd;
+    if(
+      (d < 0 && from.type == TILE_TYPE_LAKE) ||
+      (d > 0 && to.type   == TILE_TYPE_LAKE)
+    )
+    { //destination is water
+      dd = d*watersnk_nutrition_flow_rate;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+    else if(
+      (d > 0 && from.type == TILE_TYPE_LAKE) ||
+      (d < 0 && to.type   == TILE_TYPE_LAKE)
+    )
+    { //src is water
+      dd = d*watersrc_nutrition_flow_rate;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+    else
+    { //anything else
+      dd = d*nutrition_flow_rate;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+  }
+
+  self.rainflow = function(t)
+  {
+    var dd = t.nutrition*rain_nutrition_flow_rate;
+    var d = floor(dd);
+    if(rand < dd-d) d++;
+    t.shed.nutrition += d;
+    t.nutrition -= d;
+  }
+
   self.init = function()
   {
     var valid = false;
@@ -1961,6 +2006,45 @@ var board = function()
       t.shed = self.tiles[t.i+xdir+ydir*self.tw];
     }
 
+    //presim flow
+    {
+      var n = self.tw*self.th;
+      var nutrition_flow_rate_old = nutrition_flow_rate;
+      var watersrc_nutrition_flow_rate_old = watersrc_nutrition_flow_rate;
+      var watersnk_nutrition_flow_rate_old = watersnk_nutrition_flow_rate;
+      nutrition_flow_rate          *= presim_nutrition_flow_rate_mul;
+      watersrc_nutrition_flow_rate *= presim_nutrition_flow_rate_mul;
+      watersnk_nutrition_flow_rate *= presim_nutrition_flow_rate_mul;
+      for(var k = 0; k < 100; k++)
+      {
+        for(var i = 0; i < n; i++)
+        {
+          var t = self.tiles[i];
+          var right = self.safe_tiles_t(t.tx+1,t.ty  );
+          var top   = self.safe_tiles_t(t.tx  ,t.ty+1);
+          if(right.type != TILE_TYPE_NULL) self.flow(t,right);
+          if(top.type != TILE_TYPE_NULL) self.flow(t,top);
+        }
+      }
+      nutrition_flow_rate = nutrition_flow_rate_old;
+      watersrc_nutrition_flow_rate = watersrc_nutrition_flow_rate_old;
+      watersnk_nutrition_flow_rate = watersnk_nutrition_flow_rate_old;
+
+      for(var i = 0; i < n; i++)
+      {
+        var t = self.tiles[i];
+        var fn = floor(t.nutrition/nutrition_percent);
+        var d = fn-t.known_nutrition;
+        if(d)
+        {
+          t.known_nutrition_d = d;
+          t.known_nutrition_t = 10;
+        }
+        else if(t.known_nutrition_t) t.known_nutrition_t--;
+        t.known_nutrition = fn;
+      }
+    }
+
     self.inc_bounds();
     self.hovering = 0;
   }
@@ -2094,51 +2178,6 @@ var board = function()
         return demolishability_check(tile.type);
     }
     return 0;
-  }
-
-  self.flow = function(from, to) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
-  {
-    var d = from.nutrition-to.nutrition;
-    var dd;
-    if(
-      (d < 0 && from.type == TILE_TYPE_LAKE) ||
-      (d > 0 && to.type   == TILE_TYPE_LAKE)
-    )
-    { //destination is water
-      dd = d*watersnk_nutrition_flow_rate;
-      d = floor(dd);
-      if(rand() < dd-d) d++;
-      from.nutrition -= d;
-      to.nutrition   += d;
-    }
-    else if(
-      (d > 0 && from.type == TILE_TYPE_LAKE) ||
-      (d < 0 && to.type   == TILE_TYPE_LAKE)
-    )
-    { //src is water
-      dd = d*watersrc_nutrition_flow_rate;
-      d = floor(dd);
-      if(rand() < dd-d) d++;
-      from.nutrition -= d;
-      to.nutrition   += d;
-    }
-    else
-    { //anything else
-      dd = d*nutrition_flow_rate;
-      d = floor(dd);
-      if(rand() < dd-d) d++;
-      from.nutrition -= d;
-      to.nutrition   += d;
-    }
-  }
-
-  self.rainflow = function(t)
-  {
-    var dd = t.nutrition*rain_nutrition_flow_rate;
-    var d = floor(dd);
-    if(rand < dd-d) d++;
-    t.shed.nutrition += d;
-    t.nutrition -= d;
   }
 
   self.hover = function(evt)
