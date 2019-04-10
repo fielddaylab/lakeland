@@ -263,6 +263,21 @@ var poop_img;
   ctx.fillRect(6,1,1,3); //stink right
 }
 
+var fertilizer_img;
+{
+  var ctx;
+  var s = 10;
+  fertilizer_img = GenIcon(s,s*1.5);
+  ctx = fertilizer_img.context;
+  ctx.translate(0,s*0.5);
+  ctx.fillStyle = brown;
+  ctx.fillRect(2,8,6,2); //bottom
+  ctx.fillRect(3,6,4,2); //middle
+  ctx.fillRect(4,4,2,2); //top
+  ctx.fillRect(2,2,1,3); //stink left
+  ctx.fillRect(6,1,1,3); //stink right
+}
+
 var poop_light_img;
 {
   var ctx;

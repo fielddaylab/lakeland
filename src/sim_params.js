@@ -54,6 +54,7 @@ var rain_nutrition_flow_rate = 0.001; //*%
 var watersrc_nutrition_flow_rate = 0.00001; //*%
 var watersnk_nutrition_flow_rate = 0.001; //*%
 var poop_nutrition_leak = 1; //+v
+var fertilizer_nutrition_leak = 10; //+v
 var farm_nutrition_uptake_p = 0.0005; //*%
 var farm_nutrition_uptake_max = 20; //+v
 var farm_nutrition_uptake_min = 1; //+v //difference created out of thin air!

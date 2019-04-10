@@ -560,6 +560,11 @@ var inspector = function()
 
   self.select_item = function(it)
   {
+    if(it.type == ITEM_TYPE_FERTILIZER)
+    {
+      self.select_tile(it.tile);
+      return;
+    }
     self.detailed = it;
     self.detailed_type = INSPECTOR_CONTENT_ITEM;
   }
