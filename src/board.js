@@ -2824,12 +2824,14 @@ var item = function()
     {
       case ITEM_TYPE_POOP:       self.tile.nutrition += poop_nutrition_leak; break;
       case ITEM_TYPE_FERTILIZER:
+        self.state -= fertilizer_nutrition_leak;
         self.tile.nutrition += fertilizer_nutrition_leak;
         if(gg.b.raining)
         {
           self.wvx += (self.tile.shed.tx-self.tile.tx)*0.01;
           self.wvy += (self.tile.shed.ty-self.tile.ty)*0.01;
         }
+        if(self.state <= 0) break_item(self);
         break;
     }
   }
@@ -3637,6 +3639,7 @@ var farmbit = function()
             it = new item();
             it.type = ITEM_TYPE_FERTILIZER;
             it.lock = 1; //permalocked
+            it.state = farm_nutrition_req;
             it.tile = t;
             gg.b.tiles_tw(it.tile,it);
             gg.items.push(it);
