@@ -229,6 +229,7 @@ var pi = Math.PI;
 var twopi = 2*pi;
 var halfpi = pi/2;
 var quarterpi = pi/4;
+var eighthpi = pi/8;
 var twelvepi = 12*pi;
 
 function noop(){}

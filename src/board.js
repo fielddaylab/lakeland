@@ -2745,6 +2745,40 @@ var board = function()
       }
     }
 
+    var debug_sheds = 1;
+    if(debug_sheds)
+    {
+      gg.ctx.strokeStyle = green;
+      var lt = (gg.t_mod_twelve_pi%eighthpi)/eighthpi;
+      gg.ctx.globalAlpha = -4*lt*lt+4*lt;
+      var l = w*2/3;
+      var g = 1;
+      var d = gg.inspector.detailed;
+      var i = 0;
+      var sx = 0;
+      var ex = 0;
+      var sy = 0;
+      var ey = 0;
+      for(var ty = 0; ty < self.th; ty++)
+      {
+        for(var tx = 0; tx < self.tw; tx++)
+        {
+          var t = self.tiles[i];
+          var x = self.x+tx*w+w/2;
+          var y = self.y+self.h-(ty*h)-h/2;
+          var dx = t.shed.tx-t.tx;
+          var dy = t.shed.ty-t.ty;
+          sx = x;
+          ex = x+dx*l;
+          sy = y;
+          ey = y-dy*l;
+          drawLine(lerp(sx,ex,lt),lerp(sy,ey,lt),lerp(sx,ex,lt+0.2),lerp(sy,ey,lt+0.2),gg.ctx);
+          i++;
+        }
+      }
+      gg.ctx.globalAlpha = 1;
+    }
+
     if(self.raining)
     {
       gg.ctx.fillStyle = blue;
