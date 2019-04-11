@@ -1280,9 +1280,9 @@ var tile = function()
   self.state_t = 0;
   self.val = 0;
   self.nutrition = 0;
-  self.known_nutrition = 0;
-  self.known_nutrition_d = 0;
-  self.known_nutrition_t = 0;
+  //self.known_nutrition = 0;
+  //self.known_nutrition_d = 0;
+  //self.known_nutrition_t = 0;
   self.withdraw_lock = 0; //repurposed for farms as produce toggle :O
   self.deposit_lock = 0; //repurposed for farms as produce toggle :O
   self.lock = 0;
@@ -2051,6 +2051,7 @@ var board = function()
       watersrc_nutrition_flow_rate = watersrc_nutrition_flow_rate_old;
       watersnk_nutrition_flow_rate = watersnk_nutrition_flow_rate_old;
 
+      /*
       for(var i = 0; i < n; i++)
       {
         var t = self.tiles[i];
@@ -2064,6 +2065,7 @@ var board = function()
         else if(t.known_nutrition_t) t.known_nutrition_t--;
         t.known_nutrition = fn;
       }
+      */
     }
 
     self.inc_bounds();
@@ -2486,6 +2488,7 @@ var board = function()
       if(self.raining) self.rainflow(t);
     }
 
+    /*
     for(var i = 0; i < n; i++)
     {
       var t = self.tiles[i];
@@ -2499,6 +2502,7 @@ var board = function()
       else if(t.known_nutrition_t) t.known_nutrition_t--;
       t.known_nutrition = fn;
     }
+    */
   }
 
   self.draw_tile_root = function(t,x,y,w,h)
@@ -2554,12 +2558,14 @@ var board = function()
       gg.ctx.drawImage(bloom_img,x,y,w,h);
       gg.ctx.globalAlpha = 1;
     }
+    /*
     if(t.known_nutrition_t)
     {
       var as = 50*gg.stage.s_mod;
            if(t.known_nutrition_d < 0) gg.ctx.drawImage(down_img,x+w/2-as/2,y+h/2-t.known_nutrition_t-as/2,as,as);
       else if(t.known_nutrition_d > 0) gg.ctx.drawImage(up_img,x+w/2-as/2,y+h/2+t.known_nutrition_t-as/2,as,as);
     }
+    */
   }
 
   self.draw_tile = function(t,x,y,w,h)
