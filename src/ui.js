@@ -339,7 +339,7 @@ var inspector = function()
 
   self.img_vignette = function(img,s)
   {
-    if(s) gg.ctx.drawImage(img,self.vignette_x,self.vignette_y-self.vignette_h/2,self.vignette_w,self.vignette_h*3/2);
+    if(s) gg.ctx.drawImage(img,self.vignette_x,self.vignette_y-self.vignette_h/4,self.vignette_w,self.vignette_h*5/4);
     else  gg.ctx.drawImage(img,self.vignette_x,self.vignette_y,self.vignette_w,self.vignette_h);
   }
   self.border_vignette = function()
@@ -409,10 +409,10 @@ var inspector = function()
           case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",x,y); break;
           case TILE_STATE_FARM_PLANTED:
           {
-            var rn = t.val*100/farm_nutrition_req;
-            gg.ctx.fillText("Growth: "+floor(rn)+"%",x,y);
+            var rg = t.val*100/farm_nutrition_req;
+            gg.ctx.fillText("Growth: "+floor(g)+"%",x,y);
             y += self.pad;
-            draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(rn/100));
+            draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(rg/100));
             gg.ctx.fillStyle = black;
             y += self.pad*4;
             y -= self.pad+self.font_size; //because will be re-added at end of switch
@@ -528,7 +528,7 @@ var inspector = function()
 
     self.img_vignette(gg.b.tile_img(t.og_type),1);
     self.img_vignette(gg.b.tile_img(t.type),1);
-    self.border_vignette();
+    //self.border_vignette();
 
     return y;
   }
@@ -611,7 +611,7 @@ var inspector = function()
 
     self.img_vignette(gg.b.tile_img(it.tile.type),1);
     self.img_vignette(gg.b.item_img(it.type),1);
-    self.border_vignette();
+    //self.border_vignette();
     return y;
   }
 
@@ -737,7 +737,7 @@ var inspector = function()
     y += self.pad+self.font_size;
 
     self.img_vignette(b.last_img,1);
-    self.border_vignette();
+    //self.border_vignette();
     return y;
   }
 
