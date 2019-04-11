@@ -367,6 +367,8 @@ var inspector = function()
     gg.ctx.font = self.font_size+"px "+gg.font;
     var x = self.x+self.w/2;
     var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
+    var rn = t.nutrition/nutrition_percent;
+    var n = floor(rn);
     gg.ctx.fillText(gg.b.tile_name(t.type),x,y);
     y += self.pad;
 
@@ -381,9 +383,9 @@ var inspector = function()
       case TILE_TYPE_LAND:
       case TILE_TYPE_ROCK:
       case TILE_TYPE_GRAVE:
-      case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
       case TILE_TYPE_FOREST:
+      case TILE_TYPE_LAKE:
         break;
       case TILE_TYPE_HOME:
       {
@@ -485,8 +487,6 @@ var inspector = function()
       case TILE_TYPE_COUNT:
         break;
     }
-    var rn = t.nutrition/nutrition_percent;
-    var n = floor(rn);
     if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
     if(self.known_nutrition < n) { self.nutrition_delta_d =  1; self.nutrition_delta_t = 10; }
     if(self.nutrition_delta_t)
@@ -506,6 +506,7 @@ var inspector = function()
     }
     gg.ctx.fillText("Nutrition: "+n+"%",x,y);
     y += self.pad;
+    if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(0.5));
     draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(rn/100));
     y += self.pad*4;
     self.known_nutrition = n;
