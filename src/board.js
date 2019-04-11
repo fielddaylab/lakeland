@@ -1305,7 +1305,7 @@ var board = function()
     if(self.atlas) self.atlas.destroy();
     self.atlas = new atlas();
     self.min_draw_tw = floor(self.w/self.tw);
-    self.min_draw_th = floor(self.h/self.th)+floor(self.h/self.th/2);
+    self.min_draw_th = floor(self.h/self.th)+floor(self.h/self.th/4);
     var total_tw = self.min_draw_tw*2+1;
     var total_th = self.min_draw_th*2+1;
     self.atlas.init(total_tw*TILE_TYPE_COUNT,total_th);
@@ -2570,7 +2570,7 @@ var board = function()
 
   self.draw_tile = function(t,x,y,w,h)
   {
-    var over = h/2;
+    var over = h/4;
     y -= over;
     h += over;
     self.draw_tile_root(t,x,y,w,h);
@@ -2627,7 +2627,7 @@ var board = function()
   self.draw_tile_fast = function(t,x,y,w,h,xd,yd)
   {
     //Should pre-compute this!
-    //var over = h/2;
+    //var over = h/4;
     //y -= over;
     //h += over;
     self.draw_tile_root_fast(t,x,y,w,h,xd,yd);
@@ -2651,7 +2651,7 @@ var board = function()
     //normal view
     var i = 0;
     ny = floor(self.y);
-    var dhd = floor(h/2);
+    var dhd = floor(h/4);
 
     var yd = psin(gg.t_mod_twelve_pi*10);
     var xd = bias0(1-yd)*self.min_draw_tw/10;
@@ -2729,7 +2729,7 @@ var board = function()
       var i = 0;
       for(var ty = 0; ty < self.th; ty++)
       {
-        var y = self.y+self.h-(ty*h)-h/2;
+        var y = self.y+self.h-(ty*h)-h/4;
         if(y < 0 || y > gg.canvas.height) { i += self.tw; continue; }
         for(var tx = 0; tx < self.tw; tx++)
         {
@@ -2774,7 +2774,7 @@ var board = function()
       var n;
       for(var ty = 0; ty < self.th; ty++)
       {
-        var y = self.y+self.h-(ty*h)-h/2;
+        var y = self.y+self.h-(ty*h)-h/4;
         if(y < 0 || y > gg.canvas.height) { i += self.tw; continue; }
         for(var tx = 0; tx < self.tw; tx++)
         {
@@ -2823,7 +2823,7 @@ var board = function()
 
     if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 10;
     for(var i = 0; i < self.spewing_road; i++)
-      gg.ctx.drawImage(self.tile_img(TILE_TYPE_ROAD),self.hover_x,self.hover_y-self.min_draw_th/2-i*self.min_draw_th/10,self.min_draw_tw,self.min_draw_th);
+      gg.ctx.drawImage(self.tile_img(TILE_TYPE_ROAD),self.hover_x,self.hover_y-self.min_draw_th/4-i*self.min_draw_th/10,self.min_draw_tw,self.min_draw_th);
     if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 0;
   }
 }
@@ -2891,8 +2891,8 @@ var item = function()
   self.draw = function()
   {
     if(self.offscreen) return;
-    var y = self.y-self.h/2;
-    var h = self.h+self.h/2;
+    var y = self.y-self.h/4;
+    var h = self.h+self.h/4;
     switch(self.type)
     {
       case ITEM_TYPE_WATER:gg.ctx.drawImage(water_img,self.x,y,self.w,h); break;
@@ -4090,12 +4090,12 @@ var farmbit = function()
         //break; //don't break!
       case JOB_STATE_ACT:
         self.last_img = farmbit_imgs[self.frame_i+off];
-        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/2,self.w,self.h+self.h/2);
+        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
         break;
       case JOB_STATE_GET:
       case JOB_STATE_SEEK:
         self.last_img = farmbit_imgs[self.frame_i+2+off];
-        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/2,self.w,self.h+self.h/2);
+        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
         break;
     }
 

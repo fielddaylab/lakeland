@@ -4,9 +4,9 @@ var farmbit_imgs = [];
   var s = 10;
   var i = 0;
   //idle
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -15,9 +15,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
   ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
@@ -26,9 +26,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(1,4,2,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -37,9 +37,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,2,4); //right_arm
@@ -48,9 +48,9 @@ var farmbit_imgs = [];
   i++
 
   //idle- water
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -60,9 +60,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug- water
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
   ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
@@ -72,9 +72,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms- water
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(1,4,2,4); //left_arm
   ctx.fillRect(7,4,1,4); //right_arm
@@ -84,9 +84,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs- water
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillRect(3,1,4,6); //body
   ctx.fillRect(2,4,1,4); //left_arm
   ctx.fillRect(7,4,2,4); //right_arm
@@ -96,9 +96,9 @@ var farmbit_imgs = [];
   i++
 
   //idle- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -110,9 +110,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -124,9 +124,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -138,9 +138,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -152,9 +152,9 @@ var farmbit_imgs = [];
   i++
 
   //idle- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -167,9 +167,9 @@ var farmbit_imgs = [];
   i++
 
   //shrug- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -182,9 +182,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat arms- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -197,9 +197,9 @@ var farmbit_imgs = [];
   i++
 
   //walk- fat legs- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.5);
+  farmbit_imgs[i] = GenIcon(s,s*1.25);
   ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,0,6,6);
   ctx.fillStyle = black;
@@ -224,9 +224,9 @@ var food_img;
 {
   var ctx;
   var s = 10;
-  food_img = GenIcon(s,s*1.5);
+  food_img = GenIcon(s,s*1.25);
   ctx = food_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = yellow;
   ctx.fillRect(3,4,1,6); //stalk left
   ctx.fillRect(4,6,2,6); //stalk middle
@@ -240,9 +240,9 @@ var milk_img;
 {
   var ctx;
   var s = 10;
-  milk_img = GenIcon(s,s*1.5);
+  milk_img = GenIcon(s,s*1.25);
   ctx = milk_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = white;
   ctx.fillRect(4,6,2,6); //stalk middle
   ctx.fillRect(6,4,4,3); //bulb middle
@@ -252,9 +252,9 @@ var poop_img;
 {
   var ctx;
   var s = 10;
-  poop_img = GenIcon(s,s*1.5);
+  poop_img = GenIcon(s,s*1.25);
   ctx = poop_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = brown;
   ctx.fillRect(2,8,6,2); //bottom
   ctx.fillRect(3,6,4,2); //middle
@@ -267,9 +267,9 @@ var fertilizer_img;
 {
   var ctx;
   var s = 10;
-  fertilizer_img = GenIcon(s,s*1.5);
+  fertilizer_img = GenIcon(s,s*1.25);
   ctx = fertilizer_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = brown;
   ctx.fillRect(2,8,6,2); //bottom
   ctx.fillRect(3,6,4,2); //middle
@@ -282,9 +282,9 @@ var poop_light_img;
 {
   var ctx;
   var s = 10;
-  poop_light_img = GenIcon(s,s*1.5);
+  poop_light_img = GenIcon(s,s*1.25);
   ctx = poop_light_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = brown;
   ctx.fillRect(1,1,2,2); //bottom
   ctx.fillRect(2,7,2,2); //stink left
@@ -297,9 +297,9 @@ var valuable_img;
 {
   var ctx;
   var s = 10;
-  valuable_img = GenIcon(s,s*1.5);
+  valuable_img = GenIcon(s,s*1.25);
   ctx = valuable_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = green;
   ctx.fillRect(2,8,6,2); //bottom
   ctx.fillRect(3,6,4,2); //middle
@@ -312,9 +312,9 @@ var land_img;
 {
   var ctx;
   var s = 10;
-  land_img = GenIcon(s,s*1.5);
+  land_img = GenIcon(s,s*1.25);
   ctx = land_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = "rgba(0,125,50)";
   ctx.fillRect(0,0,s,s);
 }
@@ -323,9 +323,9 @@ var shore_img;
 {
   var ctx;
   var s = 10;
-  shore_img = GenIcon(s,s*1.5);
+  shore_img = GenIcon(s,s*1.25);
   ctx = shore_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = "rgba(150,150,255)";
   ctx.fillRect(0,0,s,s);
 }
@@ -334,9 +334,9 @@ var livestock_img;
 {
   var ctx;
   var s = 10;
-  livestock_img = GenIcon(s,s*1.5);
+  livestock_img = GenIcon(s,s*1.25);
   ctx = livestock_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = blue;
   ctx.fillRect(0,0,s,s);
 }
@@ -345,9 +345,9 @@ var storage_img;
 {
   var ctx;
   var s = 10;
-  storage_img = GenIcon(s,s*1.5);
+  storage_img = GenIcon(s,s*1.25);
   ctx = storage_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = purple;
   ctx.fillRect(0,0,s,s);
 }
@@ -356,9 +356,9 @@ var processor_img;
 {
   var ctx;
   var s = 10;
-  processor_img = GenIcon(s,s*1.5);
+  processor_img = GenIcon(s,s*1.25);
   ctx = processor_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = orange;
   ctx.fillRect(0,0,s,s);
 }
@@ -367,9 +367,9 @@ var road_img;
 {
   var ctx;
   var s = 10;
-  road_img = GenIcon(s,s*1.5);
+  road_img = GenIcon(s,s*1.25);
   ctx = road_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = gray;
   ctx.fillRect(0,0,s,s);
 }
@@ -378,9 +378,9 @@ var lake_img;
 {
   var ctx;
   var s = 10;
-  lake_img = GenIcon(s,s*1.5);
+  lake_img = GenIcon(s,s*1.25);
   ctx = lake_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = blue;
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#8888FF";
@@ -392,9 +392,9 @@ var water_img;
 {
   var ctx;
   var s = 10;
-  water_img = GenIcon(s,s*1.5);
+  water_img = GenIcon(s,s*1.25);
   ctx = water_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = blue;
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#8888FF";
@@ -406,9 +406,9 @@ var rock_img;
 {
   var ctx;
   var s = 10;
-  rock_img = GenIcon(s,s*1.5);
+  rock_img = GenIcon(s,s*1.25);
   ctx = rock_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = gray;
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#AAAAAA";
@@ -420,9 +420,9 @@ var forest_img;
 {
   var ctx;
   var s = 10;
-  forest_img = GenIcon(s,s*1.5);
+  forest_img = GenIcon(s,s*1.25);
   ctx = forest_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = "#007733";
   ctx.fillRect(0,0,s,s);
   ctx.fillStyle = "#00AA44";
@@ -434,9 +434,9 @@ var home_img;
 {
   var ctx;
   var s = 10;
-  home_img = GenIcon(s,s*1.5);
+  home_img = GenIcon(s,s*1.25);
   ctx = home_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.clearRect(0,0,s,s);
   ctx.fillStyle = blue;
   ctx.fillRect(2,3,6,7);
@@ -450,9 +450,9 @@ var farm_img;
 {
   var ctx;
   var s = 10;
-  farm_img = GenIcon(s,s*1.5);
+  farm_img = GenIcon(s,s*1.25);
   ctx = farm_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = brown;
   ctx.fillRect(0,0,s,s);
 }
@@ -461,9 +461,9 @@ var grave_img;
 {
   var ctx;
   var s = 10;
-  farm_img = GenIcon(s,s*1.5);
+  farm_img = GenIcon(s,s*1.25);
   ctx = farm_img.context;
-  ctx.translate(0,s*0.5);
+  ctx.translate(0,s*0.25);
   ctx.fillStyle = "#555555";
   ctx.fillRect(0,0,s,s);
 }
@@ -545,7 +545,7 @@ var tgrave_img = new Image();
 tgrave_img.onload = function(){ grave_img = tgrave_img; };
 tgrave_img.src = "assets/skull.png";
 var tfarmbit_img = new Image();
-tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/3,farmbit_imgs[i].width,farmbit_imgs[i].width); };
+tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/5,farmbit_imgs[i].width,farmbit_imgs[i].width); };
 tfarmbit_img.src = "assets/farmbit.png";
 
 var clouds_img = GenImg("assets/clouds.png");
