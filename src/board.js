@@ -2651,7 +2651,6 @@ var board = function()
     var xd = bias0(1-yd)*self.min_draw_tw/10;
     yd *= self.min_draw_th/10;
 
-    //if(ny < dth || dy > self.canvas.height) continue;
     for(var ty = self.th-1; ty >= 0; ty--)
     {
       y = ny;
@@ -2661,11 +2660,13 @@ var board = function()
       dy = y-dhd;
       nx = floor(self.x+(0*w));
       i = self.tiles_i(0,ty);
+      if(dy < -dth || dy > gg.canvas.height) { i += self.tw; continue; }
       for(var tx = 0; tx < self.tw; tx++)
       {
         x = nx;
         nx = floor(self.x+((tx+1)*w));
         tw = nx-x;
+        if(x < -tw || x > gg.canvas.width) { i++; continue; }
         var t = self.tiles[i];
         self.draw_tile_fast(t,x,dy,tw,dth,xd,yd);
         i++;
@@ -2683,11 +2684,13 @@ var board = function()
         ny = floor(self.y+self.h-(ty+1)*h);
         th = y-ny;
         nx = floor(self.x+(0*w));
+        if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
         for(var tx = 0; tx < self.tw; tx++)
         {
           x = nx;
           nx = floor(self.x+((tx+1)*w));
           tw = nx-x;
+          if(x < -tw || x > gg.canvas.width) { i++; continue; }
           t = self.tiles[i];
           gg.ctx.globalAlpha = bias1(t.nutrition/nutrition_max);
           gg.ctx.fillRect(x,ny,tw,th);
@@ -2720,11 +2723,13 @@ var board = function()
       var i = 0;
       for(var ty = 0; ty < self.th; ty++)
       {
+        var y = self.y+self.h-(ty*h)-h/2;
+        if(y < 0 || y > gg.canvas.height) { i += self.tw; continue; }
         for(var tx = 0; tx < self.tw; tx++)
         {
           var t = d.directions[i];
           var x = self.x+tx*w+w/2;
-          var y = self.y+self.h-(ty*h)-h/2;
+          if(x < 0 || x > gg.canvas.width) { i++; continue; }
           var dx;
           var dy;
           switch(d.directions[i])
@@ -2747,7 +2752,7 @@ var board = function()
     }
 
     var debug_sheds = 1;
-    if(debug_sheds)
+    if(debug_sheds && self.raining)
     {
       gg.ctx.strokeStyle = red;
       var lt = (gg.t_mod_twelve_pi%eighthpi)/eighthpi;
@@ -2763,12 +2768,14 @@ var board = function()
       var n;
       for(var ty = 0; ty < self.th; ty++)
       {
+        var y = self.y+self.h-(ty*h)-h/2;
+        if(y < 0 || y > gg.canvas.height) { i += self.tw; continue; }
         for(var tx = 0; tx < self.tw; tx++)
         {
+          var x = self.x+tx*w+w/2;
+          if(x < 0 || x > gg.canvas.width) { i++; continue; }
           var t = self.tiles[i];
           n = t.nutrition/nutrition_percent/100;
-          var x = self.x+tx*w+w/2;
-          var y = self.y+self.h-(ty*h)-h/2;
           var dx = t.shed.tx-t.tx;
           var dy = t.shed.ty-t.ty;
           sx = x;
