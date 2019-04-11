@@ -2651,6 +2651,7 @@ var board = function()
     var xd = bias0(1-yd)*self.min_draw_tw/10;
     yd *= self.min_draw_th/10;
 
+    //if(ny < dth || dy > self.canvas.height) continue;
     for(var ty = self.th-1; ty >= 0; ty--)
     {
       y = ny;
@@ -2748,9 +2749,9 @@ var board = function()
     var debug_sheds = 1;
     if(debug_sheds)
     {
-      gg.ctx.strokeStyle = green;
+      gg.ctx.strokeStyle = red;
       var lt = (gg.t_mod_twelve_pi%eighthpi)/eighthpi;
-      gg.ctx.globalAlpha = -4*lt*lt+4*lt;
+      var base_alpha = -4*lt*lt+4*lt;
       var l = w*2/3;
       var g = 1;
       var d = gg.inspector.detailed;
@@ -2759,11 +2760,13 @@ var board = function()
       var ex = 0;
       var sy = 0;
       var ey = 0;
+      var n;
       for(var ty = 0; ty < self.th; ty++)
       {
         for(var tx = 0; tx < self.tw; tx++)
         {
           var t = self.tiles[i];
+          n = t.nutrition/nutrition_percent/100;
           var x = self.x+tx*w+w/2;
           var y = self.y+self.h-(ty*h)-h/2;
           var dx = t.shed.tx-t.tx;
@@ -2772,6 +2775,8 @@ var board = function()
           ex = x+dx*l;
           sy = y;
           ey = y-dy*l;
+          gg.ctx.globalAlpha = base_alpha*bias1(bias1(n));
+          gg.ctx.lineWidth = (0.5+n/2)*10*gg.stage.s_mod;
           drawLine(lerp(sx,ex,lt),lerp(sy,ey,lt),lerp(sx,ex,lt+0.2),lerp(sy,ey,lt+0.2),gg.ctx);
           i++;
         }
