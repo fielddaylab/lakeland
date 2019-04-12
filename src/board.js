@@ -2263,14 +2263,33 @@ var board = function()
     {
       gg.cam.wx = self.cam_sx + (self.dragging_x-evt.doX)/gg.canvas.width*gg.cam.ww;
       gg.cam.wy = self.cam_sy - (self.dragging_y-evt.doY)/gg.canvas.height*gg.cam.wh;
-      var rbwx = self.wx-self.ww/2+((self.bounds_tx+self.bounds_tw  )/self.tw)*self.ww;
-      var lbwx = self.wx-self.ww/2+((self.bounds_tx                 )/self.tw)*self.ww;
-      var tbwy = self.wy+self.wh/2-((self.bounds_ty+1               )/self.th)*self.wh;//why is this +1?
-      var bbwy = self.wy+self.wh/2-((self.bounds_ty+self.bounds_th+1)/self.th)*self.wh;//why is this +1?
-      if(gg.cam.wx+gg.cam.ww/2 < rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
-      if(gg.cam.wx-gg.cam.ww/2 > lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
-      if(gg.cam.wy+gg.cam.wh/2 < tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
-      if(gg.cam.wy-gg.cam.wh/2 > bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+      var bww = self.ww*(self.bounds_tw+2)/self.tw;
+      var bwh = self.wh*(self.bounds_th+2)/self.th;
+      var rbwx = self.wx-self.ww/2+((self.bounds_tx-1+self.bounds_tw+2)/self.tw)*self.ww;
+      var lbwx = self.wx-self.ww/2+((self.bounds_tx-1                 )/self.tw)*self.ww;
+      var tbwy = self.wy-self.wh/2+((self.bounds_ty-1+self.bounds_th+2)/self.th)*self.wh;
+      var bbwy = self.wy-self.wh/2+((self.bounds_ty-1                 )/self.th)*self.wh;
+      if(bww > gg.cam.ww)
+      {
+        if(gg.cam.wx+gg.cam.ww/2 > rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
+        if(gg.cam.wx-gg.cam.ww/2 < lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
+      }
+      else
+      {
+        if(gg.cam.wx+gg.cam.ww/2 < rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
+        if(gg.cam.wx-gg.cam.ww/2 > lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
+      }
+
+      if(bwh > gg.cam.wh)
+      {
+        if(gg.cam.wy+gg.cam.wh/2 > tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
+        if(gg.cam.wy-gg.cam.wh/2 < bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+      }
+      else
+      {
+        if(gg.cam.wy+gg.cam.wh/2 < tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
+        if(gg.cam.wy-gg.cam.wh/2 > bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+      }
     }
   }
   self.dragFinish = function(evt)
