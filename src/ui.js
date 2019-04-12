@@ -6,6 +6,7 @@ var BUY_TYPE_FARM      = ENUM; ENUM++;
 var BUY_TYPE_LIVESTOCK = ENUM; ENUM++;
 var BUY_TYPE_STORAGE   = ENUM; ENUM++;
 var BUY_TYPE_PROCESSOR = ENUM; ENUM++;
+var BUY_TYPE_SIGN      = ENUM; ENUM++;
 var BUY_TYPE_ROAD      = ENUM; ENUM++;
 var BUY_TYPE_DEMOLISH  = ENUM; ENUM++;
 var BUY_TYPE_COUNT     = ENUM; ENUM++;
@@ -170,11 +171,12 @@ var shop = function()
     setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.storage_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.processor_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.sign_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
   }
 
   self.money_img = GenImg("assets/money.png");
@@ -188,6 +190,7 @@ var shop = function()
       case BUY_TYPE_LIVESTOCK: return livestock_cost; break;
       case BUY_TYPE_STORAGE:   return storage_cost; break;
       case BUY_TYPE_PROCESSOR: return processor_cost; break;
+      case BUY_TYPE_SIGN:      return sign_cost; break;
       case BUY_TYPE_ROAD:      return road_cost; break;
       case BUY_TYPE_DEMOLISH:  return demolish_cost; break;
       default: return 0; break;
@@ -200,6 +203,7 @@ var shop = function()
   self.livestock_btn = new ButtonBox(0,0,0,0,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; self.selected_buy = BUY_TYPE_LIVESTOCK; });
   self.storage_btn   = new ButtonBox(0,0,0,0,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   self.selected_buy = BUY_TYPE_STORAGE;   });
   self.processor_btn = new ButtonBox(0,0,0,0,function(){ if(gg.money < processor_cost) return; gg.money -= processor_cost; self.selected_buy = BUY_TYPE_PROCESSOR; });
+  self.sign_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < sign_cost)      return; gg.money -= sign_cost;      self.selected_buy = BUY_TYPE_SIGN;      });
   self.road_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      self.selected_buy = BUY_TYPE_ROAD;      });
   self.demolish_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.money < demolish_cost)  return; gg.money -= demolish_cost;  self.selected_buy = BUY_TYPE_DEMOLISH;  });
   self.money_btn     = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; });
@@ -214,6 +218,7 @@ var shop = function()
   self.livestock_btn.active = 0;
   self.storage_btn.active = 0;
   self.processor_btn.active = 0;
+  self.sign_btn.active = 0;
   self.road_btn.active = 0;
   self.demolish_btn.active = 0;
   self.money_btn.active = 0;
@@ -231,6 +236,7 @@ var shop = function()
       if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
       if(check && self.storage_btn.active)   check = !filter.filter(self.storage_btn);
       if(check && self.processor_btn.active) check = !filter.filter(self.processor_btn);
+      if(check && self.sign_btn.active)      check = !filter.filter(self.sign_btn);
       if(check && self.road_btn.active)      check = !filter.filter(self.road_btn);
       if(check && self.demolish_btn.active)  check = !filter.filter(self.demolish_btn);
       if(check && self.money_btn.active)     check = !filter.filter(self.money_btn);
@@ -295,6 +301,7 @@ var shop = function()
     self.draw_btn(self.livestock_btn, livestock_img, "Livestock", self.livestock_btn.active, !self.selected_buy, livestock_cost, gg.money >= livestock_cost, 0);
     self.draw_btn(self.storage_btn,   storage_img,   "Storage",   self.storage_btn.active,   !self.selected_buy, storage_cost,   gg.money >= storage_cost,   0);
     self.draw_btn(self.processor_btn, processor_img, "Processor", self.processor_btn.active, !self.selected_buy, processor_cost, gg.money >= processor_cost, 0);
+    self.draw_btn(self.sign_btn,      sign_img,      "Sign",      self.sign_btn.active,      !self.selected_buy, sign_cost,      gg.money >= sign_cost,      0);
     self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      !self.selected_buy, road_cost,      gg.money >= road_cost,      0);
     self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
 
@@ -456,6 +463,7 @@ var inspector = function()
       case TILE_TYPE_LAKE:
       case TILE_TYPE_STORAGE:
       case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
       case TILE_TYPE_COUNT:
       {
@@ -509,6 +517,7 @@ var inspector = function()
       case TILE_TYPE_LAKE:
       case TILE_TYPE_STORAGE:
       case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
       case TILE_TYPE_COUNT:
       case TILE_TYPE_HOME:
@@ -618,6 +627,7 @@ var inspector = function()
       }
         break;
       case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
       case TILE_TYPE_COUNT:
       case TILE_TYPE_NULL:

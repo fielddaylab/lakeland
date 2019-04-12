@@ -13,6 +13,7 @@ var TILE_TYPE_NULL      = ENUM; ENUM++;
 var TILE_TYPE_LAND      = ENUM; ENUM++;
 var TILE_TYPE_ROCK      = ENUM; ENUM++;
 var TILE_TYPE_GRAVE     = ENUM; ENUM++;
+var TILE_TYPE_SIGN      = ENUM; ENUM++;
 var TILE_TYPE_LAKE      = ENUM; ENUM++;
 var TILE_TYPE_SHORE     = ENUM; ENUM++;
 var TILE_TYPE_FOREST    = ENUM; ENUM++;
@@ -119,6 +120,7 @@ var walkability_check = function(type,state)
     case TILE_TYPE_LAND:      return land_walkability;      break;
     case TILE_TYPE_ROCK:      return rock_walkability;      break;
     case TILE_TYPE_GRAVE:     return grave_walkability;     break;
+    case TILE_TYPE_SIGN:      return sign_walkability;      break;
     case TILE_TYPE_LAKE:      return water_walkability;     break;
     case TILE_TYPE_SHORE:     return shore_walkability;     break;
     case TILE_TYPE_FOREST:    return forest_walkability;    break;
@@ -151,13 +153,26 @@ var buildability_check = function(building,over)
     case TILE_TYPE_PROCESSOR:
       return over == TILE_TYPE_LAND;
       break;
+    case TILE_TYPE_SIGN:
+    {
+      switch(over)
+      {
+        case TILE_TYPE_LAND:
+        case TILE_TYPE_ROCK:
+        case TILE_TYPE_SHORE:
+          return 1;
+          break;
+        default:
+          return 0;
+          break;
+      }
+    }
     case TILE_TYPE_ROAD:
     {
       switch(over)
       {
         case TILE_TYPE_LAND:
         case TILE_TYPE_ROCK:
-        case TILE_TYPE_GRAVE:
         case TILE_TYPE_LAKE:
         case TILE_TYPE_SHORE:
           return 1;
@@ -180,6 +195,7 @@ var demolishability_check = function(over)
     case TILE_TYPE_LIVESTOCK:
     case TILE_TYPE_STORAGE:
     case TILE_TYPE_PROCESSOR:
+    case TILE_TYPE_SIGN:
     case TILE_TYPE_ROAD:
       return 1;
       break;
@@ -300,9 +316,10 @@ var closest_graveable_tile = function(goal)
       case  TILE_TYPE_ROCK:
       case  TILE_TYPE_ROAD:
       case  TILE_TYPE_FOREST:
-      case  TILE_TYPE_GRAVE:
       case  TILE_TYPE_SHORE:
         break;
+      case  TILE_TYPE_GRAVE:
+      case  TILE_TYPE_SIGN:
       case  TILE_TYPE_LAKE:
       case  TILE_TYPE_HOME:
       case  TILE_TYPE_FARM:
@@ -1647,6 +1664,7 @@ var board = function()
       case TILE_TYPE_ROAD:      return road_img; break;
       case TILE_TYPE_ROCK:      return rock_img; break;
       case TILE_TYPE_GRAVE:     return grave_img; break;
+      case TILE_TYPE_SIGN:      return sign_img; break;
       case TILE_TYPE_FOREST:    return forest_img; break;
       case TILE_TYPE_HOME:      return home_img; break;
       case TILE_TYPE_FARM:      return farm_img; break;
@@ -1661,6 +1679,7 @@ var board = function()
       case TILE_TYPE_LAND:      return "Land";      break;
       case TILE_TYPE_ROCK:      return "Rock";      break;
       case TILE_TYPE_GRAVE:     return "Grave";     break;
+      case TILE_TYPE_SIGN:      return "Sign";      break;
       case TILE_TYPE_LAKE:      return "Lake";      break;
       case TILE_TYPE_SHORE:     return "Shore";     break;
       case TILE_TYPE_FOREST:    return "Forest";    break;
@@ -1981,7 +2000,7 @@ var board = function()
     }
 
     //assign og
-    for(var i = 0; i < TILE_TYPE_COUNT; i++)
+    for(var i = 0; i < self.tiles.length; i++)
       self.tiles[i].og_type = self.tiles[i].type;
 
     //group tiles
@@ -2083,12 +2102,6 @@ var board = function()
     t.state_t = 0;
     switch(type)
     {
-      case TILE_TYPE_LAND:
-        break;
-      case TILE_TYPE_LAKE:
-        break;
-      case TILE_TYPE_SHORE:
-        break;
       case TILE_TYPE_HOME:
         t.state = TILE_STATE_HOME_VACANT;
         for(var i = 0; i < gg.farmbits.length; i++)
@@ -2112,8 +2125,13 @@ var board = function()
       case TILE_TYPE_STORAGE:
         t.state = TILE_STATE_STORAGE_UNASSIGNED;
         break;
-      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_SIGN:
+        //TODO
         break;
+      case TILE_TYPE_LAND:
+      case TILE_TYPE_LAKE:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_ROAD:
         break;
     }
@@ -2195,6 +2213,8 @@ var board = function()
         return buildability_check(TILE_TYPE_STORAGE,tile.type);
       case BUY_TYPE_PROCESSOR:
         return buildability_check(TILE_TYPE_PROCESSOR,tile.type);
+      case BUY_TYPE_SIGN:
+        return buildability_check(TILE_TYPE_SIGN,tile.type);
       case BUY_TYPE_ROAD:
         return (buildability_check(TILE_TYPE_ROAD,tile.type) || tile.type == TILE_TYPE_ROAD);
       case BUY_TYPE_DEMOLISH:
@@ -2355,6 +2375,16 @@ var board = function()
             case BUY_TYPE_PROCESSOR:
             {
               self.alterTile(self.hover_t,TILE_TYPE_PROCESSOR);
+              gg.inspector.select_tile(self.hover_t);
+              gg.shop.selected_buy = 0;
+              self.hover_t_placable = 0;
+              return;
+            }
+            break;
+
+            case BUY_TYPE_SIGN:
+            {
+              self.alterTile(self.hover_t,TILE_TYPE_SIGN);
               gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
@@ -2542,6 +2572,7 @@ var board = function()
       case TILE_TYPE_ROAD:
       case TILE_TYPE_HOME:
       case TILE_TYPE_GRAVE:
+      case TILE_TYPE_SIGN:
       case TILE_TYPE_FARM:
         gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h); //no break!
       case TILE_TYPE_LAND:
@@ -2615,6 +2646,7 @@ var board = function()
       case TILE_TYPE_ROAD:
       case TILE_TYPE_HOME:
       case TILE_TYPE_GRAVE:
+      case TILE_TYPE_SIGN:
       case TILE_TYPE_FARM:
       {
         var off = 0;
@@ -3097,9 +3129,10 @@ var farmbit = function()
       case  TILE_TYPE_ROCK:
       case  TILE_TYPE_ROAD:
       case  TILE_TYPE_FOREST:
-      case  TILE_TYPE_GRAVE:
       case  TILE_TYPE_SHORE:
         break;
+      case  TILE_TYPE_GRAVE:
+      case  TILE_TYPE_SIGN:
       case  TILE_TYPE_LAKE:
       case  TILE_TYPE_HOME:
       case  TILE_TYPE_FARM:

@@ -363,6 +363,19 @@ var processor_img;
   ctx.fillRect(0,0,s,s);
 }
 
+var sign_img;
+{
+  var ctx;
+  var s = 10;
+  sign_img = GenIcon(s,s*1.25);
+  ctx = sign_img.context;
+  ctx.translate(0,s*0.25);
+  ctx.fillStyle = orange;
+  ctx.fillRect(s/2-1,s/2,2,s/2);
+  ctx.fillStyle = white;
+  ctx.fillRect(0,0,s,s/2);
+}
+
 var road_img;
 {
   var ctx;

@@ -24,6 +24,7 @@ var GamePlayScene = function()
           s.livestock_btn.active = 1;
           s.storage_btn.active = 1;
           s.processor_btn.active = 1;
+          s.sign_btn.active = 1;
           s.road_btn.active = 1;
           s.demolish_btn.active = 1;
           s.money_btn.active = 1;
