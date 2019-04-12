@@ -410,7 +410,7 @@ var inspector = function()
           case TILE_STATE_FARM_PLANTED:
           {
             var rg = t.val*100/farm_nutrition_req;
-            gg.ctx.fillText("Growth: "+floor(g)+"%",x,y);
+            gg.ctx.fillText("Growth: "+floor(rg)+"%",x,y);
             y += self.pad;
             draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(rg/100));
             gg.ctx.fillStyle = black;
