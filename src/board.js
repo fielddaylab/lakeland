@@ -3001,9 +3001,6 @@ var farmbit = function()
   self.w = 0;
   self.h = 0;
 
-  self.move_dir_x = 0.;
-  self.move_dir_y = 0.;
-
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
   self.last_img = farmbit_imgs[0];
   self.home = 0;
@@ -3312,14 +3309,12 @@ var farmbit = function()
         {
           case JOB_STATE_SEEK:
           {
+            self.walk_toward_tile(self.job_subject);
             if(rand() < 0.01)
             {
               self.job_state = JOB_STATE_ACT;
               self.job_state_t = 0;
             }
-            var mod = self.walk_mod();
-            self.wx += self.move_dir_x*gg.b.walk_speed*mod;
-            self.wy += self.move_dir_y*gg.b.walk_speed*mod;
           }
             break;
           case JOB_STATE_ACT:
@@ -3328,9 +3323,9 @@ var farmbit = function()
             {
               self.job_state = JOB_STATE_SEEK;
               self.job_state_t = 0;
-              var theta = rand()*twopi;
-              self.move_dir_x = cos(theta);
-              self.move_dir_y = sin(theta);
+              var stx = gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw);
+              var sty = gg.b.bounds_ty+randIntBelow(gg.b.bounds_th);
+              self.job_subject = gg.b.bounded_tiles_t(stx,sty);
             }
           }
             break;
