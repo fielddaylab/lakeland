@@ -1593,6 +1593,9 @@ var board = function()
     var ct;
     var cd;
     var diagonal_tax = 1.4;
+    var signs = gg.b.tile_groups[TILE_TYPE_SIGN];
+    var sign_tax;
+    var sign_d;
 
     cindex = t.i;
     cd = t.directions[cindex];
@@ -1607,20 +1610,26 @@ var board = function()
       cindex = check.pop();
       ct = gg.b.tiles[cindex];
       cd = t.directions[cindex];
+      sign_tax = 1;
+      for(var i = 0; i < signs.length; i++)
+      {
+        sign_d = lensqr(signs[i].tx-ct.tx,signs[i].ty-ct.ty);
+        if(sign_d < 5) sign_tax += 1/sign_d;
+      }
       if(ct.ty > 0)
       {
-        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw-1,diagonal_tax,check); //check bottom left
-                              handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,             1,check); //check bottom
-        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw+1,diagonal_tax,check); //check bottom right
+        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw-1,diagonal_tax*sign_tax,check); //check bottom left
+                              handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw,             1*sign_tax,check); //check bottom
+        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex-self.tw+1,diagonal_tax*sign_tax,check); //check bottom right
       }
       if(ct.ty < self.th-1)
       {
-        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw-1,diagonal_tax,check); //check top left
-                              handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,             1,check); //check top
-        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw+1,diagonal_tax,check); //check top right
+        if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw-1,diagonal_tax*sign_tax,check); //check top left
+                              handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw,             1*sign_tax,check); //check top
+        if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+self.tw+1,diagonal_tax*sign_tax,check); //check top right
       }
-      if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-1,1,check); //check left
-      if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+1,1,check); //check right
+      if(ct.tx > 0)         handle(cindex,t.directions,flow_v,flow_d,cindex-1,1*sign_tax,check); //check left
+      if(ct.tx < self.tw-1) handle(cindex,t.directions,flow_v,flow_d,cindex+1,1*sign_tax,check); //check right
     }
 
     for(var i = 0; i < t.directions.length; i++)
