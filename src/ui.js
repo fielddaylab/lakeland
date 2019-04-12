@@ -527,12 +527,14 @@ var inspector = function()
 
         self.farm_autosell_0_y = y;
         draw_switch(self.x+self.w/2,self.farm_autosell_0_y,self.w/2-self.pad,self.w/6,self.pad,t.withdraw_lock);
+        gg.ctx.fillStyle = gg.font_color;
         y += self.font_size;
         gg.ctx.fillText("Corn 1 Export",self.x+self.pad,y);
         y += self.pad;
 
         self.farm_autosell_1_y = y;
         draw_switch(self.x+self.w/2,self.farm_autosell_1_y,self.w/2-self.pad,self.w/6,self.pad,t.deposit_lock);
+        gg.ctx.fillStyle = gg.font_color;
         y += self.font_size;
         gg.ctx.fillText("Corn 2 Export",self.x+self.pad,y);
         y += self.pad;
@@ -571,10 +573,11 @@ var inspector = function()
         y += self.font_size;
         gg.ctx.fillText("Growth:",self.x+self.pad,y);
         gg.ctx.textAlign = "right";
-        gg.ctx.fillText(floor(rg)+"%",self.x+self.w-self.pad,y);
+        gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,y);
         y += self.pad;
 
         draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,rg);
+        gg.ctx.fillStyle = gg.font_color;
         y += self.pad*2;
         y += self.pad;
 
@@ -593,6 +596,7 @@ var inspector = function()
               y += self.pad;
             }
             draw_bar(x,y,self.pad*3,self.pad*2,self.pad,gg.items[i].state/fertilizer_nutrition);
+            gg.ctx.fillStyle = gg.font_color;
             x += self.pad*4;
           }
         }
@@ -661,6 +665,7 @@ var inspector = function()
 
     if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(0.5));
     draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(rn/100));
+    gg.ctx.fillStyle = gg.font_color;
     y += self.pad*2;
     y += self.pad;
 
@@ -723,6 +728,13 @@ var inspector = function()
 
   self.draw_item = function(it)
   {
+    //bg
+    gg.ctx.fillStyle = white;
+    fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
+
+    self.img_vignette(gg.b.tile_img(it.tile.type),1);
+    self.img_vignette(gg.b.item_img(it.type),1);
+
     gg.ctx.textAlign = "center";
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.font = self.font_size+"px "+gg.font;
@@ -731,9 +743,7 @@ var inspector = function()
     gg.ctx.fillText(gg.b.item_name(it.type),x,y);
     y += self.pad;
 
-    gg.ctx.strokeStyle = gg.backdrop_color;
-    gg.ctx.lineWidth = self.pad/2;
-    drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+    self.line(y);
     y += self.pad+self.font_size;
 
     gg.ctx.textAlign = "left";
@@ -741,11 +751,8 @@ var inspector = function()
     gg.ctx.fillText("For Sale:",self.x,y);
     self.item_sell_y = y;
     draw_switch(self.x+self.w/2,self.item_sell_y,self.w/2-self.pad,self.w/6,self.pad,it.sale);
+    gg.ctx.fillStyle = gg.font_color;
     y += self.w/4+self.pad;
-
-    self.img_vignette(gg.b.tile_img(it.tile.type),1);
-    self.img_vignette(gg.b.item_img(it.type),1);
-    //self.border_vignette();
     return y;
   }
 
@@ -794,6 +801,12 @@ var inspector = function()
 
   self.draw_farmbit = function(b)
   {
+    //bg
+    gg.ctx.fillStyle = white;
+    fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
+
+    self.img_vignette(b.last_img,1);
+
     gg.ctx.textAlign = "center";
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.font = self.font_size+"px "+gg.font;
@@ -802,9 +815,7 @@ var inspector = function()
     gg.ctx.fillText(b.name,x,y);
     y += self.pad;
 
-    gg.ctx.strokeStyle = gg.backdrop_color;
-    gg.ctx.lineWidth = self.pad/2;
-    drawLine(self.x+self.pad,y,self.x+self.w-self.pad,y,gg.ctx);
+    self.line(y);
     y += self.pad+self.font_size;
 
     str = "Status: "+gg.b.job_name(b.job_type);
@@ -870,8 +881,6 @@ var inspector = function()
 
     y += self.pad+self.font_size;
 
-    self.img_vignette(b.last_img,1);
-    //self.border_vignette();
     return y;
   }
 
@@ -984,12 +993,14 @@ var ticker = function()
   var feed_t_max = 500;
   self.nq = function(txt)
   {
+    return;
     self.feed.push(txt);
     self.feed_t.push(0);
   }
 
   self.tick = function()
   {
+    return;
     for(var i = 0; i < self.feed.length; i++)
     {
       self.feed_t[i]++;
@@ -1004,6 +1015,7 @@ var ticker = function()
 
   self.draw = function()
   {
+    return;
     gg.ctx.font = gg.font_size+"px "+gg.font;
     var pad = 20*gg.stage.s_mod;
     var y = self.y+self.h-pad;
