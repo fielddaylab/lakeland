@@ -1614,7 +1614,7 @@ var board = function()
       for(var i = 0; i < signs.length; i++)
       {
         sign_d = lensqr(signs[i].tx-ct.tx,signs[i].ty-ct.ty);
-        if(sign_d < 5) sign_tax += 1/sign_d;
+        if(sign_d < 10) sign_tax += 5/sign_d;
       }
       if(ct.ty > 0)
       {

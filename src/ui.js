@@ -601,7 +601,7 @@ var inspector = function()
             {
               y += self.font_size;
               gg.ctx.textAlign = "left";
-              gg.ctx.fillText("Applied Fertilizer:");
+              gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
               y += self.pad;
             }
             draw_bar(x,y,self.pad*3,self.pad*2,self.pad,gg.items[i].state/fertilizer_nutrition);
