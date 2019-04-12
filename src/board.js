@@ -2782,7 +2782,7 @@ var board = function()
     if(debug_pathfinding && gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
     {
       gg.ctx.strokeStyle = green;
-      var l = 10;
+      var l = 20*gg.stage.s_mod;
       var g = 1;
       var d = gg.inspector.detailed;
       var i = 0;
