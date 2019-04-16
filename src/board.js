@@ -3769,13 +3769,21 @@ var farmbit = function()
             //t.nutrition += farm_nutrition_req;
 
             var it;
-            it = new item();
-            it.type = ITEM_TYPE_FERTILIZER;
-            it.lock = 1; //permalocked
-            it.state = fertilizer_nutrition;
-            it.tile = t;
-            gg.b.tiles_tw(it.tile,it);
-            gg.items.push(it);
+            for(var i = 0; i < gg.items.length; i++)
+              if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
+               it = gg.items[i];
+
+            if(!it)
+            {
+              it = new item();
+              it.type = ITEM_TYPE_FERTILIZER;
+              it.lock = 1; //permalocked
+              it.state = 0;
+              it.tile = t;
+              gg.b.tiles_tw(it.tile,it);
+              gg.items.push(it);
+            }
+            it.state += fertilizer_nutrition;
 
             self.fulfillment += fertilize_fulfillment;
             self.calibrate_stats();
