@@ -343,8 +343,7 @@ var inspector = function()
   self.quick_type = INSPECTOR_CONTENT_NULL;
 
   self.item_sell_y = 0;
-  self.farm_autosell_0_y = 0;
-  self.farm_autosell_1_y = 0;
+  self.farm_autosell_y = 0;
 
   self.line = function(y)
   {
@@ -534,18 +533,22 @@ var inspector = function()
         gg.ctx.fillText("Export Options:",self.x+self.pad,y);
         y += self.pad;
 
-        self.farm_autosell_0_y = y;
-        draw_switch(self.x+self.w/2,self.farm_autosell_0_y,self.w/2-self.pad,self.w/6,self.pad,t.withdraw_lock);
-        gg.ctx.fillStyle = gg.font_color;
-        y += self.font_size;
-        gg.ctx.fillText("Corn 1 Export",self.x+self.pad,y);
-        y += self.pad;
+        self.farm_autosell_y = y;
 
-        self.farm_autosell_1_y = y;
-        draw_switch(self.x+self.w/2,self.farm_autosell_1_y,self.w/2-self.pad,self.w/6,self.pad,t.deposit_lock);
+        var sx = self.x+self.pad;
+        var sy = self.farm_autosell_y;
+        var sw = self.w/2-self.pad*2;
+        var sh = self.w/2;
+
+        fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
+        draw_switch(sx,sy,sw,sh,self.pad,t.withdraw_lock);
+
+        sx = self.x+self.w/2+self.pad/2;
+        fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
+        draw_switch(sx,sy,sw,sh,self.pad,t.deposit_lock);
+
         gg.ctx.fillStyle = gg.font_color;
-        y += self.font_size;
-        gg.ctx.fillText("Corn 2 Export",self.x+self.pad,y);
+        y += self.w/2;
         y += self.pad;
 
         self.line(y);
@@ -642,11 +645,6 @@ var inspector = function()
         break;
     }
 
-
-
-
-
-
     if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
     if(self.known_nutrition < n) { self.nutrition_delta_d =  1; self.nutrition_delta_t = 10; }
     if(self.nutrition_delta_t)
@@ -718,8 +716,8 @@ var inspector = function()
   {
     if(t.type == TILE_TYPE_FARM)
     {
-      if(clicker.consumeif(self.x+self.w/2,self.farm_autosell_0_y,self.w/2,self.pad*2,function(){t.withdraw_lock = !t.withdraw_lock;})) return 1;
-      if(clicker.consumeif(self.x+self.w/2,self.farm_autosell_1_y,self.w/2,self.pad*2,function(){t.deposit_lock = !t.deposit_lock;})) return 1;
+      if(clicker.consumeif(self.x,         self.farm_autosell_y,self.w/2,self.w/2,function(){t.withdraw_lock = !t.withdraw_lock;})) return 1;
+      if(clicker.consumeif(self.x+self.w/2,self.farm_autosell_y,self.w/2,self.w/2,function(){t.deposit_lock  = !t.deposit_lock; })) return 1;
     }
 
     return 0;

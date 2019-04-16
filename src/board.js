@@ -2622,11 +2622,16 @@ var board = function()
       }
     }
     if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
+    var a;
     if(t.type == TILE_TYPE_LAKE)
     {
-      gg.ctx.globalAlpha = bias1(t.nutrition/nutrition_max);
-      gg.ctx.drawImage(bloom_img,x,y,w,h);
-      gg.ctx.globalAlpha = 1;
+      a = bias1(t.nutrition/nutrition_max);
+      if(a > 0.05)
+      {
+        gg.ctx.globalAlpha = a;
+        gg.ctx.drawImage(bloom_img,x,y,w,h);
+        gg.ctx.globalAlpha = 1;
+      }
     }
     /*
     if(t.known_nutrition_t)
@@ -2749,10 +2754,10 @@ var board = function()
         i++;
       }
     }
-    gg.ctx.globalAlpha = 0.5;
     if(self.nutrition_view)
     { //nutrition view
       var i = 0;
+      var a;
       gg.ctx.fillStyle = red;
       ny = floor(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
@@ -2769,8 +2774,12 @@ var board = function()
           tw = nx-x;
           if(x < -tw || x > gg.canvas.width) { i++; continue; }
           t = self.tiles[i];
-          gg.ctx.globalAlpha = bias1(t.nutrition/nutrition_max);
-          gg.ctx.fillRect(x,ny,tw,th);
+          a = bias1(t.nutrition/nutrition_max);
+          if(a > 0.05)
+          {
+            gg.ctx.globalAlpha = a;
+            gg.ctx.fillRect(x,ny,tw,th);
+          }
           i++;
         }
       }
@@ -2843,6 +2852,7 @@ var board = function()
       var sy = 0;
       var ey = 0;
       var n;
+      var a;
       for(var ty = 0; ty < self.th; ty++)
       {
         var y = self.y+self.h-(ty*h)-h/4;
@@ -2859,9 +2869,13 @@ var board = function()
           ex = x+dx*l;
           sy = y;
           ey = y-dy*l;
-          gg.ctx.globalAlpha = base_alpha*bias1(bias1(n));
-          gg.ctx.lineWidth = (0.5+n/2)*10*gg.stage.s_mod;
-          drawLine(lerp(sx,ex,lt),lerp(sy,ey,lt),lerp(sx,ex,lt+0.2),lerp(sy,ey,lt+0.2),gg.ctx);
+          a = base_alpha*bias1(bias1(n));
+          if(a > 0.05)
+          {
+            gg.ctx.globalAlpha = a;
+            gg.ctx.lineWidth = (0.5+n/2)*10*gg.stage.s_mod;
+            drawLine(lerp(sx,ex,lt),lerp(sy,ey,lt),lerp(sx,ex,lt+0.2),lerp(sy,ey,lt+0.2),gg.ctx);
+          }
           i++;
         }
       }
@@ -2883,7 +2897,7 @@ var board = function()
 
     {
       gg.ctx.strokeStyle = red;
-      gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
+      //gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
       gg.ctx.drawImage(clouds_img,self.cloud_x,self.cloud_y,self.cloud_w,self.cloud_h);
       gg.ctx.fillStyle = "rgba(255,255,255,0.9)";
       if(self.cloud_x              > 0)                gg.ctx.fillRect(0,0,self.cloud_x,gg.canvas.height);

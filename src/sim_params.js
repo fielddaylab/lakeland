@@ -1,8 +1,8 @@
 var RESUME_SIM = 1;
 var DOUBLETIME = 0;
 
-var board_w = 50;
-var board_h = 50;
+var board_w = 50*2;
+var board_h = 50*2;
 
 var n_lakes = 4;
 var lake_size_min = floor(50*board_w*board_h/2500);
