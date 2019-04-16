@@ -25,26 +25,51 @@ var TEXT_TYPE_DISMISS = ENUM; ENUM++;
 var TEXT_TYPE_DIRECT  = ENUM; ENUM++;
 var TEXT_TYPE_COUNT   = ENUM; ENUM++;
 
-var draw_switch = function(x,y,w,h,p,on)
+var draw_switch = function(x,y,w,h,on)
 {
   gg.ctx.strokeStyle = gg.font_color;
   gg.ctx.fillStyle = gg.backdrop_color;
-  fillRRect(x,y+h/4,w,h/2,p,gg.ctx);
+  fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
   gg.ctx.stroke();
   if(on) { x = x+w/2; gg.ctx.fillStyle = green; }
   else gg.ctx.fillStyle = red;
-  fillRRect(x,y,w/2,h,p,gg.ctx);
+  fillRRect(x,y,w/2,h,h/4,gg.ctx);
   gg.ctx.stroke();
 }
 
-var draw_bar = function(x,y,w,h,p,t)
+var draw_money_switch = function(x,y,w,h,on)
 {
-  gg.ctx.strokeStyle = gg.font_color;
+  if(on) gg.ctx.fillStyle = "#91B15D";
+  else   gg.ctx.fillStyle = light_gray;
+  fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
+  if(on) gg.ctx.drawImage(coin_img,x+w-h,y,h,h);
+  else   gg.ctx.drawImage(coin_img,x,    y,h,h);
+}
+
+var draw_bar = function(x,y,w,h,t)
+{
+  var r = h/2;
+  if(t >= 1)
+  {
+    gg.ctx.fillStyle = gg.backdrop_color;
+    fillRRect(x,y,w,h,r,gg.ctx);
+    return;
+  }
+  gg.ctx.fillStyle = light_gray;
+  fillRRect(x,y,w,h,r,gg.ctx);
+  if(t <= 0) return;
   gg.ctx.fillStyle = gg.backdrop_color;
-  fillRRect(x,y+h/4,w,h/2,p/2,gg.ctx);
-  gg.ctx.stroke();
-  fillRRect(lerp(x,x+w-p,t),y,p,h,p/2,gg.ctx);
-  gg.ctx.stroke();
+
+  var tx = x+r+(w-r*2)*t;
+
+  gg.ctx.beginPath();
+  gg.ctx.moveTo(tx,y+h);
+  gg.ctx.lineTo(x+r,y+h);
+  gg.ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  gg.ctx.quadraticCurveTo(x,y,x+r,y);
+  gg.ctx.lineTo(tx,y);
+  gg.ctx.closePath();
+  gg.ctx.fill();
 }
 
 var playhead = function()
@@ -141,7 +166,7 @@ var nutrition_toggle = function()
   self.draw = function()
   {
     if(self.toggle_btn.active)
-      draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,self.pad,gg.b.nutrition_view);
+      draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,gg.b.nutrition_view);
   }
 }
 
@@ -553,7 +578,7 @@ var inspector = function()
         if(t.withdraw_lock) gg.ctx.fillStyle = "#CDE1A9";
         else                gg.ctx.fillStyle = "#BAEDE1";
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_switch(tx,ty,tw,th,th/2,t.withdraw_lock);
+        draw_money_switch(tx,ty,tw,th,t.withdraw_lock);
         gg.ctx.drawImage(food_img,ix,iy,iw,ih);
 
         sx = self.x+self.w/2+self.pad/2;
@@ -563,7 +588,7 @@ var inspector = function()
         if(t.deposit_lock) gg.ctx.fillStyle = "#CDE1A9";
         else               gg.ctx.fillStyle = "#BAEDE1";
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_switch(tx,ty,tw,th,th/2,t.deposit_lock);
+        draw_money_switch(tx,ty,tw,th,t.deposit_lock);
         gg.ctx.drawImage(food_img,ix,iy,iw,ih);
 
         gg.ctx.fillStyle = gg.font_color;
@@ -607,7 +632,7 @@ var inspector = function()
         gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,y);
         y += self.pad;
 
-        draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,rg);
+        draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,rg);
         gg.ctx.fillStyle = gg.font_color;
         y += self.pad*2;
         y += self.pad;
@@ -621,11 +646,11 @@ var inspector = function()
         {
           if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
           {
-            draw_bar(x,y,self.pad*3,self.pad*2,self.pad,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
+            draw_bar(x,y,self.pad*3,self.pad*2,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
             x += self.pad*4;
-            for(var j = 0; j*fertilizer_nutrition < gg.items[i].state; j++)
+            for(var j = 0; (j+1)*fertilizer_nutrition < gg.items[i].state; j++)
             {
-              draw_bar(x,y,self.pad*3,self.pad*2,self.pad,1);
+              draw_bar(x,y,self.pad*3,self.pad*2,1);
               x += self.pad*4;
             }
             break;
@@ -687,8 +712,8 @@ var inspector = function()
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
     y += self.pad;
 
-    if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(0.5));
-    draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,self.pad,bias1(rn/100));
+    if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,bias1(0.5));
+    draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,bias1(rn/100));
     gg.ctx.fillStyle = gg.font_color;
     y += self.pad*2;
     y += self.pad;
@@ -774,7 +799,7 @@ var inspector = function()
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.fillText("For Sale:",self.x,y);
     self.item_sell_y = y;
-    draw_switch(self.x+self.w/2,self.item_sell_y,self.w/2-self.pad,self.w/6,self.pad,it.sale);
+    draw_switch(self.x+self.w/2,self.item_sell_y,self.w/2-self.pad,self.w/6,it.sale);
     gg.ctx.fillStyle = gg.font_color;
     y += self.w/4+self.pad;
     return y;
