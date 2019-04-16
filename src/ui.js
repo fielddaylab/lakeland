@@ -540,12 +540,31 @@ var inspector = function()
         var sw = self.w/2-self.pad*2;
         var sh = self.w/2;
 
+        var tx = sx+self.pad;
+        var ty = sy+sh*3/4;
+        var tw = self.w/2-self.pad*4;
+        var th = sh/6;
+
+        var ix = tx+self.pad;
+        var iy = sy+self.pad;
+        var iw = tw-self.pad*2;;
+        var ih = iw*1.25;
+
+        if(t.withdraw_lock) gg.ctx.fillStyle = "#CDE1A9";
+        else                gg.ctx.fillStyle = "#BAEDE1";
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_switch(sx,sy,sw,sh,self.pad,t.withdraw_lock);
+        draw_switch(tx,ty,tw,th,th/2,t.withdraw_lock);
+        gg.ctx.drawImage(food_img,ix,iy,iw,ih);
 
         sx = self.x+self.w/2+self.pad/2;
+        tx = sx+self.pad;
+        ix = tx+self.pad;
+
+        if(t.deposit_lock) gg.ctx.fillStyle = "#CDE1A9";
+        else               gg.ctx.fillStyle = "#BAEDE1";
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_switch(sx,sy,sw,sh,self.pad,t.deposit_lock);
+        draw_switch(tx,ty,tw,th,th/2,t.deposit_lock);
+        gg.ctx.drawImage(food_img,ix,iy,iw,ih);
 
         gg.ctx.fillStyle = gg.font_color;
         y += self.w/2;
@@ -593,30 +612,27 @@ var inspector = function()
         y += self.pad*2;
         y += self.pad;
 
-        var n_fertz = 0;
         var x = self.x+self.pad;
+        y += self.font_size;
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
+        y += self.pad;
         for(var i = 0; i < gg.items.length; i++)
         {
           if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
           {
-            n_fertz++;
-            if(n_fertz == 1)
-            {
-              y += self.font_size;
-              gg.ctx.textAlign = "left";
-              gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
-              y += self.pad;
-            }
-            draw_bar(x,y,self.pad*3,self.pad*2,self.pad,gg.items[i].state/fertilizer_nutrition);
-            gg.ctx.fillStyle = gg.font_color;
+            draw_bar(x,y,self.pad*3,self.pad*2,self.pad,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
             x += self.pad*4;
+            for(var j = 0; j*fertilizer_nutrition < gg.items[i].state; j++)
+            {
+              draw_bar(x,y,self.pad*3,self.pad*2,self.pad,1);
+              x += self.pad*4;
+            }
+            break;
           }
         }
-        if(n_fertz)
-        {
-          y += self.pad*2;
-          y += self.pad;
-        }
+        y += self.pad*2;
+        y += self.pad;
       }
         break;
       case TILE_TYPE_STORAGE:
