@@ -1238,6 +1238,11 @@ var advisors = function()
     }
   }
 
+  self.swap_advisor = function(a)
+  {
+    self.advisor = a;
+  }
+
   self.jmp = function(i)
   {
     self.takeover = 0;
@@ -1276,7 +1281,7 @@ var advisors = function()
     self.takeover = 0;
     self.thread_i++;
     self.thread_t = 0;
-    if(self.thread_i*THREADF_TYPE_COUNT > self.thread.length)
+    if(self.thread_i*THREADF_TYPE_COUNT >= self.thread.length)
     {
       self.thread = [];
       self.advisor = ADVISOR_TYPE_NULL;
@@ -1309,16 +1314,14 @@ var advisors = function()
 
   self.tick = function()
   {
+    self.thread_t++;
     if(!self.advisor)
     {
       for(var i = 0; i < self.triggers.length; i++)
         if(self.triggers[i]()) { self.triggers.splice(i,1); break; }
     }
     else
-    {
-      self.thread_t++;
       if(self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_TICK]()) self.adv_thread();
-    }
   }
 
   self.draw = function()
@@ -1341,72 +1344,7 @@ var advisors = function()
     }
   }
 
-  self.triggers.push(function(){
-    return self.launch_thread(ADVISOR_TYPE_BUSINESS,[
-    noop, //transition
-    function(){ return self.time_passed(100); }, //tick
-    noop, //draw
-    noop, //click
-
-    self.dotakeover, //transition
-    ffunc, //tick
-    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy your first house.",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
-    self.delay_adv_thread, //click
-
-    noop, //transition
-    function(){ return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
-    function(){ gg.ctx.textAlign = "left"; self.textat("← Click here to buy",TEXT_TYPE_DIRECT,gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
-    noop, //click
-
-    self.dotakeover, //transition
-    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
-    function(){ gg.ctx.textAlign = "center"; self.textat("Place it somewhere on the map",TEXT_TYPE_DIRECT,gg.canvas.width/2,gg.canvas.height/2); }, //draw
-    function(evt)
-    {
-      var b = gg.b;
-      if(b.hover_t)
-      {
-        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
-          self.jmp(1);
-        else
-        {
-          gg.b.click(evt);
-          self.jmp(2);
-        }
-      }
-    }, //click
-
-    //can't build there
-    self.dotakeover, //transition
-    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
-    function(){ gg.ctx.textAlign = "center"; self.textat("Can't build a house there!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2); }, //draw
-    function(){ self.jmp(-1); }, //click
-
-    noop, //transition
-    function(){ return self.bits_exist(1); }, //tick
-    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); self.hilight(t); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
-    self.delay_adv_thread, //click
-
-    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; }, //transition
-    function(){ return self.bits_exist(1); }, //tick
-    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = "  "; if(self.thread_t%10 > 6) dots = ".."; else if(self.thread_t%10 > 3) dots = ". "; self.textat("Waiting."+dots,TEXT_TYPE_OBSERVE,t.x+t.w/2,t.y-t.h); }, //draw
-    noop, //click
-
-    function(){ var f = gg.farmbits[0]; gg.inspector.select_farmbit(f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //transition
-    ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
-    self.delay_adv_thread, //click
-
-    self.dotakeover, //transition
-    ffunc, //tick
-    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
-    self.adv_thread, //click
-
-    noop, //transition
-    function(){ return self.time_passed(100); }, //tick
-    noop, //draw
-    noop, //click
-
+  var do_the_rest = [
     self.dotakeover, //transition
     ffunc, //tick
     function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" will eventually need some food...",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
@@ -1690,8 +1628,76 @@ var advisors = function()
     ffunc, //tick
     noop, //draw
     noop, //click
-    ]);
-  });
+    ];
+
+  var build_a_house = [
+    noop, //transition
+    function(){ return self.time_passed(100); }, //tick
+    noop, //draw
+    noop, //click
+
+    self.dotakeover, //transition
+    ffunc, //tick
+    function(){ self.wash(); gg.ctx.textAlign = "center"; self.textat("Buy your first house.",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2); self.ctc(); }, //draw
+    self.delay_adv_thread, //click
+
+    noop, //transition
+    function(){ return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ gg.ctx.textAlign = "left"; self.textat("← Click here to buy",TEXT_TYPE_DIRECT,gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2); }, //draw
+    noop, //click
+
+    self.dotakeover, //transition
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Place it somewhere on the map",TEXT_TYPE_DIRECT,gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(evt)
+    {
+      var b = gg.b;
+      if(b.hover_t)
+      {
+        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
+          self.jmp(1);
+        else
+        {
+          gg.b.click(evt);
+          self.jmp(2);
+        }
+      }
+    }, //click
+
+    //can't build there
+    self.dotakeover, //transition
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ gg.ctx.textAlign = "center"; self.textat("Can't build a house there!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2); }, //draw
+    function(){ self.jmp(-1); }, //click
+
+    noop, //transition
+    function(){ return self.bits_exist(1); }, //tick
+    function(){ self.wash(); var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); self.hilight(t); gg.ctx.textAlign = "center"; self.textat("Someone should move in soon!",TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h); self.ctc(); }, //draw
+    self.delay_adv_thread, //click
+
+    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; }, //transition
+    function(){ return self.bits_exist(1); }, //tick
+    function(){ var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]); gg.ctx.textAlign = "center"; var dots = "  "; if(self.thread_t%10 > 6) dots = ".."; else if(self.thread_t%10 > 3) dots = ". "; self.textat("Waiting."+dots,TEXT_TYPE_OBSERVE,t.x+t.w/2,t.y-t.h); }, //draw
+    noop, //click
+
+    function(){ var f = gg.farmbits[0]; gg.inspector.select_farmbit(f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //transition
+    ffunc, //tick
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat(f.name+" moved into your town!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    self.delay_adv_thread, //click
+
+    self.dotakeover, //transition
+    ffunc, //tick
+    function(){ self.wash(); var f = gg.farmbits[0]; self.hilight(f); gg.ctx.textAlign = "center"; self.onscreentextat("It's your job to ensure their survival!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h); self.ctc(); }, //draw
+    function(){
+    self.adv_thread();
+    self.triggers.push(function(){
+      if(!self.time_passed(100)) return 0;
+      else return self.launch_thread(ADVISOR_TYPE_FARMER,do_the_rest);
+      });
+    },
+  ];
+
+  self.triggers.push(function(){ return self.launch_thread(ADVISOR_TYPE_BUSINESS,build_a_house); });
 
 }
 
