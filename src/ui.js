@@ -1174,6 +1174,19 @@ var advisors = function()
     var p = h*0.5;
     w += p*2;
     h += p*2;
+    switch(self.advisor)
+    {
+      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillStyle = red;   break;
+      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillStyle = green; break;
+      case ADVISOR_TYPE_FARM:     gg.ctx.fillStyle = blue;  break;
+    }
+    if(self.advisor)
+    {
+      gg.ctx.beginPath();
+      if(gg.ctx.textAlign == "center") gg.ctx.arc(x-w/2,y-h,h*2,0,twopi);
+      else gg.ctx.arc(x,y-h,h*2,0,twopi);
+      gg.ctx.fill();
+    }
     switch(type)
     {
       case TEXT_TYPE_OBSERVE:
@@ -1211,39 +1224,20 @@ var advisors = function()
     var p = h*0.5;
     w += p*2;
     h += p*2;
-    switch(type)
-    {
-      case TEXT_TYPE_OBSERVE:
-        gg.ctx.fillStyle = gray;
-        break;
-      case TEXT_TYPE_DISMISS:
-        gg.ctx.fillStyle = white;
-        break;
-      case TEXT_TYPE_DIRECT:
-        gg.ctx.fillStyle = green;
-        break;
-      default:
-        gg.ctx.fillStyle = white;
-        break;
-    }
-    gg.ctx.strokeStyle = black;
     if(y-h+p < 0) y = h-p;
     if(y+p > gg.canvas.height) y = gg.canvas.height-p;
     if(gg.ctx.textAlign == "center")
     {
       if(x-w/2 < 0) x = w/2;
       if(x+w/2 > gg.canvas.width) x = gg.canvas.width-w/2;
-      fillRRect(x-w/2,y-h+p,w,h,h*0.25,gg.ctx);
+      self.textat(text,type,x,y);
     }
     else
     {
       if(x-p < 0) x = p;
       if(x-p+w > gg.canvas.width) x = gg.canvas.width-w+p;
-      fillRRect(x-p,y-h+p,w,h,h*0.25,gg.ctx);
+      self.textat(text,type,x,y);
     }
-    gg.ctx.stroke();
-    gg.ctx.fillStyle = black;
-    gg.ctx.fillText(text,x,y);
   }
 
   self.jmp = function(i)
@@ -1254,8 +1248,26 @@ var advisors = function()
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_TRANSITION]();
   }
 
+  self.end = function()
+  {
+    self.advisor = 0;
+    self.takeover = 0;
+    self.thread_i = 0;
+    self.thread_t = 0;
+    self.mayor_triggers = [];
+    self.business_triggers = [];
+    self.farmer_triggers = [];
+    keycatch.key({key:"u"});
+  }
+
   self.launch_thread = function(atype,t)
   {
+    switch(atype)
+    {
+      case ADVISOR_TYPE_MAYOR:    self.mayor_active = 1; break;
+      case ADVISOR_TYPE_BUSINESS: self.business_active = 1; break;
+      case ADVISOR_TYPE_FARM:     self.farm_active = 1; break;
+    }
     self.advisor = atype;
     self.thread = t;
     self.thread_i = 0;
@@ -1284,11 +1296,24 @@ var advisors = function()
   self.click = function(evt)
   {
     if(self.advisor) self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_CLICK](evt);
+    else
+    {
+      var h = gg.stage.s_mod*50;
+      var w = h;
+      var x = gg.canvas.width/2-w*2;
+      var y = gg.canvas.height-h;
+      if(self.mayor_active)    { /*fillRRect(x,y,w,h,h/4,gg.ctx);*/ }
+      x += w*1.5;
+      if(self.business_active) { /*fillRRect(x,y,w,h,h/4,gg.ctx);*/ }
+      x += w*1.5;
+      if(self.farmer_active)   { /*fillRRect(x,y,w,h,h/4,gg.ctx);*/ }
+      x += w*1.5;
+    }
   }
 
   self.tick = function()
   {
-    if(self.advisor == ADVISOR_TYPE_NULL)
+    if(!self.advisor)
     {
       for(var i = 0; i < self.mayor_triggers.length; i++)
         if(self.mayor_triggers[i]()) { self.mayor_triggers.splice(i,1); break; }
@@ -1307,8 +1332,21 @@ var advisors = function()
   self.draw = function()
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    if(self.advisor != ADVISOR_TYPE_NULL)
+    if(self.advisor)
       self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_DRAW]();
+    else
+    {
+      var h = gg.stage.s_mod*50;
+      var w = h;
+      var x = gg.canvas.width/2-w*2;
+      var y = gg.canvas.height-h;
+      if(self.mayor_active)    { gg.ctx.fillStyle = blue; fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.fillStyle = black; gg.ctx.fillText("MAYOR",x,y); }
+      x += w*1.5;
+      if(self.business_active) { gg.ctx.fillStyle = blue; fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.fillStyle = black; gg.ctx.fillText("BUSINESS",x,y); }
+      x += w*1.5;
+      if(self.farmer_active)   { gg.ctx.fillStyle = blue; fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.fillStyle = black; gg.ctx.fillText("FARMER",x,y); }
+      x += w*1.5;
+    }
   }
 
   self.business_triggers.push(function(){

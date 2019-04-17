@@ -36,6 +36,10 @@ var GamePlayScene = function()
           gg.playhead.play_btn.active = 1;
           gg.playhead.speed_btn.active = 1;
 
+          gg.advisors.mayor_active = 1;
+          gg.advisors.business_active = 1;
+          gg.advisors.farmer_active = 1;
+
           break;
         }
         case "t": gg.advisors.end(); break;
