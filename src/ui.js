@@ -1111,9 +1111,7 @@ var advisors = function()
   self.mayor_active    = 0;
   self.business_active = 0;
   self.farmer_active   = 0;
-  self.mayor_triggers    = [noop];
-  self.business_triggers = [noop];
-  self.farmer_triggers   = [noop];
+  self.triggers = [];
   self.mayor_history    = [];
   self.business_history = [];
   self.farmer_history   = [];
@@ -1254,9 +1252,7 @@ var advisors = function()
     self.takeover = 0;
     self.thread_i = 0;
     self.thread_t = 0;
-    self.mayor_triggers = [];
-    self.business_triggers = [];
-    self.farmer_triggers = [];
+    self.triggers = [];
     keycatch.key({key:"u"});
   }
 
@@ -1315,12 +1311,8 @@ var advisors = function()
   {
     if(!self.advisor)
     {
-      for(var i = 0; i < self.mayor_triggers.length; i++)
-        if(self.mayor_triggers[i]()) { self.mayor_triggers.splice(i,1); break; }
-      for(var i = 0; i < self.business_triggers.length; i++)
-        if(self.business_triggers[i]()) { self.business_triggers.splice(i,1); break; }
-      for(var i = 0; i < self.farmer_triggers.length; i++)
-        if(self.farmer_triggers[i]()) { self.farmer_triggers.splice(i,1); break; }
+      for(var i = 0; i < self.triggers.length; i++)
+        if(self.triggers[i]()) { self.triggers.splice(i,1); break; }
     }
     else
     {
@@ -1349,7 +1341,7 @@ var advisors = function()
     }
   }
 
-  self.business_triggers.push(function(){
+  self.triggers.push(function(){
     return self.launch_thread(ADVISOR_TYPE_BUSINESS,[
     noop, //transition
     function(){ return self.time_passed(100); }, //tick
