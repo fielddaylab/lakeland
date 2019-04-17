@@ -38,7 +38,7 @@ var GamePlayScene = function()
 
           break;
         }
-        case "t": gg.tutorial.end(); break;
+        case "t": gg.advisors.end(); break;
       }
     }
   }
@@ -60,7 +60,7 @@ var GamePlayScene = function()
       gg.shop.resize();
       gg.inspector.resize();
       gg.ticker.resize();
-      gg.tutorial.resize();
+      gg.advisors.resize();
     }
 
     gg.font = "LeagueSpartan";
@@ -95,14 +95,14 @@ var GamePlayScene = function()
     gg.shop = new shop();
     gg.inspector = new inspector();
     gg.ticker = new ticker();
-    gg.tutorial = new tutorial();
+    gg.advisors = new advisors();
     self.readied = 1;
   };
 
   gg.t_mod_twelve_pi = 0;
   self.tick = function(times)
   {
-    if(RESUME_SIM && !gg.tutorial.takeover)
+    if(RESUME_SIM && !gg.advisors.takeover)
     {
     if(DOUBLETIME) times = 4;
     gg.t_mod_twelve_pi += 0.01*times;
@@ -112,7 +112,7 @@ var GamePlayScene = function()
     gg.hoverer.filter(gg.b);
 
     var check = true;
-    if(!gg.tutorial.takeover)
+    if(!gg.advisors.takeover)
     {
       if(check) check = !gg.playhead.filter(gg.clicker);
       if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
@@ -120,7 +120,7 @@ var GamePlayScene = function()
       if(check) check = !gg.inspector.filter(gg.clicker);
       if(check) check = !gg.dragger.filter(gg.b);
     }
-    gg.clicker.filter(gg.tutorial);
+    gg.clicker.filter(gg.advisors);
 
     gg.keyer.filter(keycatch);
 
@@ -130,7 +130,7 @@ var GamePlayScene = function()
     {
       while(times)
       {
-        if(!gg.tutorial.takeover)
+        if(!gg.advisors.takeover)
         {
           gg.b.tick();
           for(var i = 0; i < gg.items.length; i++)
@@ -154,7 +154,7 @@ var GamePlayScene = function()
         times--;
       }
     }
-    gg.tutorial.tick();
+    gg.advisors.tick();
 
     gg.clicker.flush();
     gg.hoverer.flush();
@@ -196,7 +196,7 @@ var GamePlayScene = function()
     gg.ctx.fillText("j- debug jobs",    x,y); y += h;
     */
 
-    gg.tutorial.draw();
+    gg.advisors.draw();
   };
 
   self.cleanup = function()

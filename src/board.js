@@ -3302,8 +3302,8 @@ var farmbit = function()
     }
     switch(self.joy_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is depressed.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY depressed!"); dirty = 1;  if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_JOY, self.job_type)) { self.abandon_job(1); } } break;
+      case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; gg.ticker.nq(self.name+" is sad");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; gg.ticker.nq(self.name+" is VERY sad!"); dirty = 1;  if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_JOY, self.job_type)) { self.abandon_job(1); } } break;
       default: break;
     }
     switch(self.fulfillment_state)
@@ -4190,10 +4190,10 @@ var farmbit = function()
 
          if(self.fullness_state    == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",self.x+self.w/2,self.y);
     else if(self.energy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",self.x+self.w/2,self.y);
-    else if(self.joy_state         == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("DEPRESSED",self.x+self.w/2,self.y);
+    else if(self.joy_state         == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SAD",self.x+self.w/2,self.y);
     else if(self.fullness_state    == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",self.x+self.w/2,self.y);
     else if(self.energy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",self.x+self.w/2,self.y);
-    else if(self.joy_state         == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("depressed",self.x+self.w/2,self.y);
+    else if(self.joy_state         == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",self.x+self.w/2,self.y);
   }
 }
 
