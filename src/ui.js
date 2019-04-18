@@ -198,6 +198,7 @@ var shop = function()
 
     setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.vbounds_y-self.pad*2);
     btn_y = gg.b.vbounds_y+(gg.b.h/gg.b.th);
+    setBB(self.tab, self.x+self.w,btn_y,btn_w,btn_h);
     setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
@@ -210,6 +211,8 @@ var shop = function()
     setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
   }
+
+  self.open = 1;
 
   self.money_img = GenImg("assets/money.png");
 
@@ -230,6 +233,7 @@ var shop = function()
   }
 
   self.money_display = new BB();
+  self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open;});
   self.home_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      });
   self.farm_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      self.selected_buy = BUY_TYPE_FARM;      });
   self.livestock_btn = new ButtonBox(0,0,0,0,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; self.selected_buy = BUY_TYPE_LIVESTOCK; });
@@ -263,16 +267,20 @@ var shop = function()
     var check = true;
     if(!self.selected_buy)
     {
-      if(check && self.home_btn.active)      check = !filter.filter(self.home_btn);
-      if(check && self.farm_btn.active)      check = !filter.filter(self.farm_btn);
-      if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
-      if(check && self.storage_btn.active)   check = !filter.filter(self.storage_btn);
-      if(check && self.processor_btn.active) check = !filter.filter(self.processor_btn);
-      if(check && self.sign_btn.active)      check = !filter.filter(self.sign_btn);
-      if(check && self.road_btn.active)      check = !filter.filter(self.road_btn);
-      if(check && self.demolish_btn.active)  check = !filter.filter(self.demolish_btn);
-      if(check && self.money_btn.active)     check = !filter.filter(self.money_btn);
-      if(check && self.abandon_btn.active)   check = !filter.filter(self.abandon_btn);
+      if(check) check = !filter.filter(self.tab);
+      if(self.open)
+      {
+        if(check && self.home_btn.active)      check = !filter.filter(self.home_btn);
+        if(check && self.farm_btn.active)      check = !filter.filter(self.farm_btn);
+        if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
+        if(check && self.storage_btn.active)   check = !filter.filter(self.storage_btn);
+        if(check && self.processor_btn.active) check = !filter.filter(self.processor_btn);
+        if(check && self.sign_btn.active)      check = !filter.filter(self.sign_btn);
+        if(check && self.road_btn.active)      check = !filter.filter(self.road_btn);
+        if(check && self.demolish_btn.active)  check = !filter.filter(self.demolish_btn);
+        if(check && self.money_btn.active)     check = !filter.filter(self.money_btn);
+        if(check && self.abandon_btn.active)   check = !filter.filter(self.abandon_btn);
+      }
     }
     else
       if(check && self.refund_btn.active) check = !filter.filter(self.refund_btn);
@@ -281,12 +289,24 @@ var shop = function()
 
   self.tick = function()
   {
-
+    if(self.open)
+    {
+      if(self.x < 1) self.x = lerp(self.x,0,0.1);
+      else self.x = 0;
+    }
+    else
+    {
+      if(self.x > -self.w) self.x = lerp(self.x,-self.w,0.1);
+      else self.x = -self.w;
+    }
+    self.tab.x = self.x+self.w;
   }
 
   self.draw_btn = function(bb,img,txt,active,tactive,cost,afford,buying)
   {
     if(!active) return;
+    var old_x = bb.x;
+    bb.x += self.x;
     if(!afford || !tactive) gg.ctx.globalAlpha = 0.5;
     if(buying) gg.ctx.globalAlpha = 1;
     gg.ctx.fillStyle = gg.backdrop_color;
@@ -305,6 +325,7 @@ var shop = function()
       gg.ctx.drawImage(self.money_img,bb.x+self.pad/2,bb.y+bb.h-self.pad*0.8-self.font_size,self.font_size,self.font_size);
     }
     gg.ctx.globalAlpha = 1;
+    bb.x = old_x;
   }
 
   self.draw = function()
@@ -341,6 +362,7 @@ var shop = function()
     self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
     self.draw_btn(self.refund_btn,  coin_img,        "Refund",     self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
 
+    gg.ctx.strokeRect(self.tab.x,self.tab.y,self.tab.w,self.tab.h);
     gg.ctx.textAlign = "left";
   }
 }
