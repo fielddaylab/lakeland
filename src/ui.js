@@ -1692,7 +1692,7 @@ var advisors = function()
     self.adv_thread();
     self.triggers.push(function(){
       if(!self.time_passed(100)) return 0;
-      else return self.launch_thread(ADVISOR_TYPE_FARMER,do_the_rest);
+      else return self.launch_thread(ADVISOR_TYPE_FARM,do_the_rest);
       });
     },
   ];
