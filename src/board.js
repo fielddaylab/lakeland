@@ -1286,6 +1286,7 @@ var tile = function()
 
   self.tile = self; //trick that allows all thing.tile to reference a tile
   self.shed = self; //<- set to tile corresponding to direction of flow in rainfall
+  self.shed_d = 999;
   self.directions = [];
   self.directions_dirty = 1;
   self.tx = 0;
@@ -1463,6 +1464,7 @@ var board = function()
 
   self.raining = 0;
   self.nutrition_view = 0;
+  self.shed_view = 1;
   self.spewing_road = 0;
 
   self.walk_speed = min(self.tww,self.twh)/road_walkability; //MUST BE < tile_w/max_walk_modifier
@@ -2038,6 +2040,7 @@ var board = function()
         {
           closest_d = d;
           t.shed = tt;
+          t.shed_d = floor(d);
         }
       }
       var xdir = 0;
@@ -2754,8 +2757,41 @@ var board = function()
         i++;
       }
     }
+    if(self.shed_view)
+    {
+      var i = 0;
+      var a;
+      gg.ctx.fillStyle = "#004400";
+      ny = floor(self.y+self.h-(0*h));
+      for(var ty = 0; ty < self.th; ty++)
+      {
+        y = ny;
+        ny = floor(self.y+self.h-(ty+1)*h);
+        th = y-ny;
+        nx = floor(self.x+(0*w));
+        if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
+        for(var tx = 0; tx < self.tw; tx++)
+        {
+          x = nx;
+          nx = floor(self.x+((tx+1)*w));
+          tw = nx-x;
+          if(x < -tw || x > gg.canvas.width) { i++; continue; }
+          t = self.tiles[i];
+          if(t.type == TILE_TYPE_LAND)
+          {
+            a = min(t.shed_d/100,1);
+            if(a > 0.05)
+            {
+              gg.ctx.globalAlpha = a;
+              gg.ctx.fillRect(x,ny,tw,th);
+            }
+          }
+          i++;
+        }
+      }
+    }
     if(self.nutrition_view)
-    { //nutrition view
+    {
       var i = 0;
       var a;
       gg.ctx.fillStyle = red;
