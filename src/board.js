@@ -1058,6 +1058,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       */
 
       var best = closest_free_farmbit_with_desire(job_object.tile, 1, 0, 0, 0);
+      if(best.fullness > fullness_content) return 0;
       if(best)
       {
         best.job_type = JOB_TYPE_EAT;
@@ -2757,6 +2758,7 @@ var board = function()
         i++;
       }
     }
+    //self.shed_view = 0;
     if(self.shed_view)
     {
       var i = 0;
@@ -2779,7 +2781,7 @@ var board = function()
           t = self.tiles[i];
           if(t.type == TILE_TYPE_LAND)
           {
-            a = min(t.shed_d/100,1);
+            a = 0.2-min(t.shed_d/100,0.2);
             if(a > 0.05)
             {
               gg.ctx.globalAlpha = a;

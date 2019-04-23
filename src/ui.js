@@ -198,7 +198,7 @@ var shop = function()
 
     setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.vbounds_y-self.pad*2);
     btn_y = gg.b.vbounds_y+(gg.b.h/gg.b.th);
-    setBB(self.tab, self.x+self.w,btn_y,btn_w,btn_h);
+    setBB(self.tab, self.x+self.w,btn_y,btn_w/2,btn_h/2);
     setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
@@ -661,9 +661,9 @@ var inspector = function()
         gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,y);
         y += self.pad;
 
-        draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,rg);
+        draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,rg);
         gg.ctx.fillStyle = gg.font_color;
-        y += self.pad*2;
+        y += self.pad;
         y += self.pad;
 
         var x = self.x+self.pad;
@@ -675,12 +675,12 @@ var inspector = function()
         {
           if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
           {
-            draw_bar(x,y,self.pad*3,self.pad*2,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
-            x += self.pad*4;
+            draw_bar(x,y,self.pad*3,self.pad,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
+            x += self.pad*3;
             for(var j = 0; (j+1)*fertilizer_nutrition < gg.items[i].state; j++)
             {
-              draw_bar(x,y,self.pad*3,self.pad*2,1);
-              x += self.pad*4;
+              draw_bar(x,y,self.pad*3,self.pad,1);
+              x += self.pad*3;
             }
             break;
           }
@@ -741,10 +741,10 @@ var inspector = function()
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
     y += self.pad;
 
-    if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,bias1(0.5));
-    draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad*2,bias1(rn/100));
+    if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(0.5));
+    draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(rn/100));
     gg.ctx.fillStyle = gg.font_color;
-    y += self.pad*2;
+    y += self.pad;
     y += self.pad;
 
     return y;
