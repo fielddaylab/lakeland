@@ -2629,7 +2629,10 @@ var board = function()
     var a;
     if(t.type == TILE_TYPE_LAKE)
     {
-      a = bias1(t.nutrition/nutrition_max);
+      if(t.nutrition < water_fouled_threshhold)
+        a = max(0,bias0(bias0(t.nutrition/water_fouled_threshhold))*0.8);
+      else
+        a = min(1,0.8+bias1(bias1((t.nutrition-water_fouled_threshhold)/(nutrition_max-water_fouled_threshhold)))*0.2);
       if(a > 0.05)
       {
         gg.ctx.globalAlpha = a;
@@ -3182,26 +3185,33 @@ var farmbit = function()
   self.die = function()
   {
     self.abandon_job(1);
-    if(self.home) self.home.state = TILE_STATE_HOME_VACANT;
     var t = self.tile;
-    switch(t.type)
+    if(self.home)
     {
-      case  TILE_TYPE_LAND:
-      case  TILE_TYPE_ROCK:
-      case  TILE_TYPE_ROAD:
-      case  TILE_TYPE_FOREST:
-      case  TILE_TYPE_SHORE:
-        break;
-      case  TILE_TYPE_GRAVE:
-      case  TILE_TYPE_SIGN:
-      case  TILE_TYPE_LAKE:
-      case  TILE_TYPE_HOME:
-      case  TILE_TYPE_FARM:
-      case  TILE_TYPE_LIVESTOCK:
-      case  TILE_TYPE_STORAGE:
-      case  TILE_TYPE_PROCESSOR:
-        t = closest_graveable_tile(t);
-        break;
+      self.home.state = TILE_STATE_HOME_VACANT;
+      t = self.home;
+    }
+    else
+    {
+      switch(t.type)
+      {
+        case  TILE_TYPE_LAND:
+        case  TILE_TYPE_ROCK:
+        case  TILE_TYPE_ROAD:
+        case  TILE_TYPE_FOREST:
+        case  TILE_TYPE_SHORE:
+          break;
+        case  TILE_TYPE_GRAVE:
+        case  TILE_TYPE_SIGN:
+        case  TILE_TYPE_LAKE:
+        case  TILE_TYPE_HOME:
+        case  TILE_TYPE_FARM:
+        case  TILE_TYPE_LIVESTOCK:
+        case  TILE_TYPE_STORAGE:
+        case  TILE_TYPE_PROCESSOR:
+          t = closest_graveable_tile(t);
+          break;
+      }
     }
     gg.b.alterTile(t,TILE_TYPE_GRAVE);
     for(var i = 0; i < gg.farmbits.length; i++)
