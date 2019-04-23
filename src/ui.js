@@ -55,17 +55,22 @@ var draw_money_switch = function(x,y,w,h,on)
 
 var draw_bar = function(x,y,w,h,t)
 {
+  draw_custom_bar(x,y,w,h,light_gray,gg.backdrop_color,t);
+}
+
+var draw_custom_bar = function(x,y,w,h,bg,fg,t)
+{
   var r = h/2;
   if(t >= 1)
   {
-    gg.ctx.fillStyle = gg.backdrop_color;
+    gg.ctx.fillStyle = fg;
     fillRRect(x,y,w,h,r,gg.ctx);
     return;
   }
-  gg.ctx.fillStyle = light_gray;
+  gg.ctx.fillStyle = bg;
   fillRRect(x,y,w,h,r,gg.ctx);
   if(t <= 0) return;
-  gg.ctx.fillStyle = gg.backdrop_color;
+  gg.ctx.fillStyle = fg;
 
   var tx = x+r+(w-r*2)*t;
 
@@ -700,7 +705,7 @@ var inspector = function()
         gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,y);
         y += self.pad;
 
-        draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,rg);
+        draw_custom_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
         gg.ctx.fillStyle = gg.font_color;
         y += self.pad;
         y += self.pad;
@@ -716,11 +721,11 @@ var inspector = function()
           if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
           {
             nfertz++;
-            draw_bar(x,y,self.pad*3,self.pad,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
+            draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
             x += self.pad*3;
             for(var j = 0; (j+1)*fertilizer_nutrition < gg.items[i].state; j++)
             {
-              draw_bar(x,y,self.pad*3,self.pad,1);
+              draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
               x += self.pad*3;
             }
             break;
