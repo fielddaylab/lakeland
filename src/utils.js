@@ -112,6 +112,7 @@ var orange  = "#EE682C";
 var gray    = "#888888";
 var dark_gray  = "#444444";
 var light_gray = "#CCCCCC";
+var vlight_gray = "#EEEEEE";
 
 var dark_red    = "#880000";
 var light_red   = "#FFAAAA";

@@ -49,8 +49,8 @@ var draw_money_switch = function(x,y,w,h,on)
   if(on) gg.ctx.fillStyle = "#91B15D";
   else   gg.ctx.fillStyle = light_gray;
   fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
-  if(on) gg.ctx.drawImage(coin_img,x+w-h,y,h,h);
-  else   gg.ctx.drawImage(coin_img,x,    y,h,h);
+  if(on) gg.ctx.drawImage(coin_img,x+w-h,y-h/4,h,h*1.25);
+  else   gg.ctx.drawImage(coin_img,x,    y-h/4,h,h*1.25);
 }
 
 var draw_bar = function(x,y,w,h,t)
@@ -625,20 +625,20 @@ var inspector = function()
 
         self.farm_autosell_y = y;
 
-        var sx = self.x+self.pad;
-        var sy = self.farm_autosell_y;
         var sw = self.w/2-self.pad*2;
         var sh = self.w/2;
+        var sx = self.x+self.pad;
+        var sy = self.farm_autosell_y;
 
-        var tx = sx+self.pad;
-        var ty = sy+sh*3/4;
         var tw = self.w/2-self.pad*4;
-        var th = sh/6;
+        var th = sh/4;
+        var tx = sx+self.pad;
+        var ty = sy+sh-th-self.pad;
 
-        var ix = tx+self.pad;
-        var iy = sy+self.pad;
-        var iw = tw-self.pad*2;;
+        var iw = tw;
         var ih = iw*1.25;
+        var ix = tx;
+        var iy = sy;
 
         if(t.withdraw_lock) gg.ctx.fillStyle = "#CDE1A9";
         else                gg.ctx.fillStyle = "#BAEDE1";
@@ -648,7 +648,7 @@ var inspector = function()
 
         sx = self.x+self.w/2+self.pad/2;
         tx = sx+self.pad;
-        ix = tx+self.pad;
+        ix = tx;
 
         if(t.deposit_lock) gg.ctx.fillStyle = "#CDE1A9";
         else               gg.ctx.fillStyle = "#BAEDE1";
@@ -660,8 +660,6 @@ var inspector = function()
         y += self.w/2;
         y += self.pad;
 
-        self.line(y);
-        y += self.pad;
       }
         break;
       case TILE_TYPE_NULL:
@@ -685,6 +683,11 @@ var inspector = function()
         var rg = t.val/farm_nutrition_req;
         if(t.state == TILE_STATE_FARM_UNPLANTED) rg = 0;
         if(t.state == TILE_STATE_FARM_GROWN)     rg = 1;
+
+        gg.ctx.fillStyle = vlight_gray;
+        fillRRect(self.x,y,self.w,self.h/2,self.pad,gg.ctx);
+        y += self.font_size;
+        gg.ctx.fillStyle = gg.font_color;
 
         gg.ctx.textAlign = "left";
         y += self.font_size;
@@ -776,7 +779,7 @@ var inspector = function()
     y += self.font_size;
     gg.ctx.textAlign = "left";
     gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
+    gg.ctx.fillText("Soil Nutrition:",self.x+self.pad,y);
     gg.ctx.textAlign = "right";
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
     y += self.pad;
