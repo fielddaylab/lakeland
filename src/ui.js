@@ -320,12 +320,12 @@ var shop = function()
   {
     if(self.open)
     {
-      if(self.x < 1) self.x = lerp(self.x,0,0.1);
+      if(self.x < 1) self.x = lerp(self.x,0,0.15);
       else self.x = 0;
     }
     else
     {
-      if(self.x > -self.w) self.x = lerp(self.x,-self.w,0.1);
+      if(self.x > -self.w) self.x = lerp(self.x,-self.w,0.15);
       else self.x = -self.w;
     }
     self.tab.x = self.x+self.w;
@@ -707,10 +707,12 @@ var inspector = function()
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
         y += self.pad;
+        var nfertz = 0;
         for(var i = 0; i < gg.items.length; i++)
         {
           if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
           {
+            nfertz++;
             draw_bar(x,y,self.pad*3,self.pad,(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
             x += self.pad*3;
             for(var j = 0; (j+1)*fertilizer_nutrition < gg.items[i].state; j++)
@@ -721,7 +723,8 @@ var inspector = function()
             break;
           }
         }
-        y += self.pad*2;
+        y += self.pad;
+        if(!nfertz) gg.ctx.fillText("[None]",self.x+self.pad,y);
         y += self.pad;
       }
         break;
@@ -772,6 +775,7 @@ var inspector = function()
 
     y += self.font_size;
     gg.ctx.textAlign = "left";
+    gg.ctx.fillStyle = gg.font_color;
     gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
     gg.ctx.textAlign = "right";
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
