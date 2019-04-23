@@ -196,8 +196,7 @@ var shop = function()
     self.font_size = self.pad*1.5;
     self.img_size = min(btn_w-self.pad*2,btn_h-self.pad*2-self.font_size*2);
 
-    setBB(self.money_display, btn_x,btn_y,btn_w*2+self.pad,gg.b.vbounds_y-self.pad*2);
-    btn_y = gg.b.vbounds_y+(gg.b.h/gg.b.th);
+    setBB(self.money_display, btn_x, btn_y, btn_w*2+self.pad, btn_h*3/4); btn_y += btn_h+self.pad;
     setBB(self.tab, self.x+self.w,btn_y,btn_w/2,btn_h/2);
     setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
@@ -207,6 +206,7 @@ var shop = function()
     setBB(self.sign_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    self.h = btn_y-self.y;
     setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
@@ -232,16 +232,45 @@ var shop = function()
     }
   }
 
+  self.buy_btn = function(buy)
+  {
+    switch(buy)
+    {
+      case BUY_TYPE_HOME:      return self.home_btn; break;
+      case BUY_TYPE_FARM:      return self.farm_btn; break;
+      case BUY_TYPE_LIVESTOCK: return self.livestock_btn; break;
+      case BUY_TYPE_STORAGE:   return self.storage_btn; break;
+      case BUY_TYPE_PROCESSOR: return self.processor_btn; break;
+      case BUY_TYPE_SIGN:      return self.sign_btn; break;
+      case BUY_TYPE_ROAD:      return self.road_btn; break;
+      case BUY_TYPE_DEMOLISH:  return self.demolish_btn; break;
+      default: return 0; break;
+    }
+  }
+
+  self.try_buy = function(buy)
+  {
+    var c = self.buy_cost(buy);
+    if(gg.money < c) return;
+    gg.money -= c;
+    self.selected_buy = buy;
+    var b = self.buy_btn(buy);
+    self.refund_btn.x = b.x;
+    self.refund_btn.y = b.y;
+    self.refund_btn.w = b.w;
+    self.refund_btn.h = b.h;
+  }
+
   self.money_display = new BB();
   self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open;});
-  self.home_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < home_cost)      return; gg.money -= home_cost;      self.selected_buy = BUY_TYPE_HOME;      });
-  self.farm_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < farm_cost)      return; gg.money -= farm_cost;      self.selected_buy = BUY_TYPE_FARM;      });
-  self.livestock_btn = new ButtonBox(0,0,0,0,function(){ if(gg.money < livestock_cost) return; gg.money -= livestock_cost; self.selected_buy = BUY_TYPE_LIVESTOCK; });
-  self.storage_btn   = new ButtonBox(0,0,0,0,function(){ if(gg.money < storage_cost)   return; gg.money -= storage_cost;   self.selected_buy = BUY_TYPE_STORAGE;   });
-  self.processor_btn = new ButtonBox(0,0,0,0,function(){ if(gg.money < processor_cost) return; gg.money -= processor_cost; self.selected_buy = BUY_TYPE_PROCESSOR; });
-  self.sign_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < sign_cost)      return; gg.money -= sign_cost;      self.selected_buy = BUY_TYPE_SIGN;      });
-  self.road_btn      = new ButtonBox(0,0,0,0,function(){ if(gg.money < road_cost)      return; gg.money -= road_cost;      self.selected_buy = BUY_TYPE_ROAD;      });
-  self.demolish_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.money < demolish_cost)  return; gg.money -= demolish_cost;  self.selected_buy = BUY_TYPE_DEMOLISH;  });
+  self.home_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_HOME); });
+  self.farm_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FARM); });
+  self.livestock_btn = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });
+  self.storage_btn   = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_STORAGE); });
+  self.processor_btn = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_PROCESSOR); });
+  self.sign_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });
+  self.road_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_ROAD); });
+  self.demolish_btn  = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_DEMOLISH); });
   self.money_btn     = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; });
   self.abandon_btn   = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); });
   self.refund_btn    = new ButtonBox(0,0,0,0,function(){ gg.money += self.buy_cost(self.selected_buy); self.selected_buy = 0; });
@@ -332,13 +361,21 @@ var shop = function()
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
     gg.ctx.strokeStyle = black;
-    gg.ctx.fillStyle = gray;
-    gg.ctx.textAlign = "left";
 
-    gg.ctx.drawImage(self.money_img, self.money_display.x,self.money_display.y,self.money_display.h,self.money_display.h);
+    //bg
+    gg.ctx.fillStyle = white;
+    fillRRect(self.tab.x-self.pad,self.tab.y,self.tab.w+self.pad,self.tab.h,self.pad,gg.ctx);
+    fillRRect(self.x-self.pad,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
+    gg.ctx.textAlign = "center";
     gg.ctx.fillStyle = gg.font_color;
     var fs = self.money_display.h*0.7;
     gg.ctx.font = fs+"px "+gg.font;
+    if(self.open) gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h);
+    else          gg.ctx.fillText(">",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h);
+
+    gg.ctx.textAlign = "left";
+
+    gg.ctx.drawImage(self.money_img, self.money_display.x,self.money_display.y,self.money_display.h,self.money_display.h);
     gg.ctx.fillText("$"+gg.money,self.money_display.x+self.money_display.h,self.money_display.y+self.money_display.h*4/5);
     gg.ctx.strokeStyle = gg.backdrop_color;
     var x = self.x+self.pad;
@@ -358,11 +395,10 @@ var shop = function()
     self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      !self.selected_buy, road_cost,      gg.money >= road_cost,      0);
     self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
 
-    self.draw_btn(self.money_btn,   coin_img,        "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
-    self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
-    self.draw_btn(self.refund_btn,  coin_img,        "Refund",     self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
+    //self.draw_btn(self.money_btn,   coin_img,        "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
+    //self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
+    if(self.selected_buy) self.draw_btn(self.refund_btn,  coin_img,        "Refund",     self.refund_btn.active,  self.selected_buy,  -self.buy_cost(self.selected_buy), 1, 0);
 
-    gg.ctx.strokeRect(self.tab.x,self.tab.y,self.tab.w,self.tab.h);
     gg.ctx.textAlign = "left";
   }
 }

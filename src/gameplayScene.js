@@ -28,7 +28,7 @@ var GamePlayScene = function()
           s.road_btn.active = 1;
           s.demolish_btn.active = 1;
           s.money_btn.active = 1;
-          s.abandon_btn.active = 1;
+          //s.abandon_btn.active = 1;
           s.refund_btn.active = 1;
 
           gg.nutrition_toggle.toggle_btn.active = 1;
