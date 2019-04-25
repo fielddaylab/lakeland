@@ -1435,114 +1435,133 @@ var advisors = function()
     }
   }
 
-  var cycle_rain = [
+  var tut_cycle_rain = [
     function(){ gg.b.raining = 1; }, //begin
     function(){ return self.time_passed(1000); }, //tick
     noop, //draw
-    noop, //click
-    noop, //end
+    ffunc, //click
+    function(){ //end
+      gg.b.raining = 0;
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_cycle_rain);
+    },
+  ];
 
-    function(){ gg.b.raining = 0; }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 0; }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 0; }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 0; }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 0; }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    function(){ gg.b.raining = 0; }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    /*
+  var tut_rain = [
     noop, //begin
-    function(){ return self.bits_hungry(1); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    self.dotakeover, //begin
     ffunc, //tick
     function(){ //draw
-      self.textat("you've got a hungry boy",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("Looks like it's about to rain!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
       self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
-    */
+
+    noop, //begin
+    function(){ return self.time_passed(1000); }, //tick
+    noop, //draw
+    ffunc, //click
+    noop, //end
+
+    function(){ gg.b.raining = 1; }, //begin
+    function(){ return self.time_passed(200); }, //tick
+    noop, //draw
+    ffunc, //click
+    noop, //end
+
+    noop, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("There it goes-",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    noop, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("Don't worry, it shouldn't last too long.",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    noop, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("It might shift around some nutrients,",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    noop, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("But that's nothing some more manure can't fix!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    noop, //begin
+    function(){ return self.time_passed(400); }, //tick
+    noop, //draw
+    ffunc, //click
+    noop, //end
+
+    function(){ gg.b.raining = 0; }, //begin
+    function(){ return self.time_passed(100); }, //tick
+    noop, //draw
+    ffunc, //click
+    noop, //end
+
+    noop, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("Told you it wouldn't last long!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    noop, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat("Back to work, everybody!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
 
     noop, //begin
     ffunc, //tick
     noop, //draw
-    noop, //click
-    noop, //end
+    ffunc, //click
+    function(){ //end
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_cycle_rain);
+    },
   ];
 
-  var fertilize = [
-    noop, //begin
-    function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
+  var tut_fertilize = [
     noop, //begin
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
@@ -1570,7 +1589,7 @@ var advisors = function()
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       gg.ctx.textAlign = "center";
@@ -1578,26 +1597,15 @@ var advisors = function()
       self.ctc();
     },
     self.delay_adv_thread, //click
-    noop, //end
-
-    function(){ keycatch.key({key:"u"}); }, //begin
-    function(){ return self.time_passed(10000); }, //tick
-    noop, //draw
-    noop, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, cycle_rain);
+      keycatch.key({key:"u"});
+      self.pool_thread(function(){ return self.time_passed(4000); }, tut_rain);
     },
   ];
 
-  var buy_livestock = [
+  var tut_buy_livestock = [
     noop, //begin
-    function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
-    noop, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       gg.ctx.textAlign = "center";
       self.textat("Great Work!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
@@ -1607,7 +1615,7 @@ var advisors = function()
     noop, //end
 
     noop, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       gg.ctx.textAlign = "center";
       self.textat("Your farms might be using up the nutrition in the soil.",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
@@ -1617,7 +1625,7 @@ var advisors = function()
     noop, //end
 
     function(){ gg.shop.livestock_btn.active = 1; }, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       var b = gg.shop.livestock_btn;
       gg.ctx.textAlign = "left";
@@ -1626,17 +1634,11 @@ var advisors = function()
     },
     self.adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, fertilize);
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_fertilize);
     },
   ];
 
-  var next_farm = [
-    noop, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
+  var tut_timewarp = [
     noop, //begin
     function() { return DOUBLETIME; }, //tick
     function() { //draw
@@ -1644,26 +1646,19 @@ var advisors = function()
       var b = gg.playhead.speed_btn;
       gg.ctx.textAlign = "center";
       self.textat("Click here if you want to speed up time",TEXT_TYPE_DIRECT,b.x+b.w/2,b.y+b.h*2);
-    noop, //end
       self.ctc();
     },
     self.delay_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, buy_livestock);
+      self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, tut_buy_livestock);
     },
   ];
 
-  var sell_food = [
-    noop, //begin
-    function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, //tick
-    noop, //draw
-    noop, //click
-    noop, //end
-
+  var tut_sell_food = [
     noop, //begin
     function(){ return self.time_passed(40); }, //tick
     noop, //draw
-    noop, //click
+    ffunc, //click
     noop, //end
 
     function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); }, //begin
@@ -1709,7 +1704,7 @@ var advisors = function()
       gg.ctx.textAlign = "center";
       self.onscreentextat("Next, click an item to select it.",TEXT_TYPE_DIRECT,i.x+i.w/2,i.y-i.h);
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     noop, //begin
@@ -1719,11 +1714,11 @@ var advisors = function()
       gg.ctx.textAlign = "center";
       self.onscreentextat("Toggle this switch to mark it as \"for sale\".",TEXT_TYPE_DIRECT,i.x+i.w/2,i.y-i.h);
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     function(){ self.heap.f = gg.farmbits[0]; self.dotakeover(); }, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       var f = self.heap.f;
@@ -1742,17 +1737,17 @@ var advisors = function()
       gg.ctx.textAlign = "center";
       self.textat("click to resume the game.",TEXT_TYPE_DIRECT,b.x+b.w/2,b.y+b.h*2);
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     noop, //begin
     function(){ return self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
     noop, //draw
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       var f = self.heap.f;
@@ -1764,7 +1759,7 @@ var advisors = function()
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       var f = self.heap.f;
@@ -1778,11 +1773,11 @@ var advisors = function()
     noop, //begin
     function(){ return !self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
     noop, //draw
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       var f = self.heap.f;
@@ -1795,7 +1790,7 @@ var advisors = function()
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       gg.ctx.textAlign = "left";
@@ -1806,7 +1801,7 @@ var advisors = function()
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       gg.ctx.textAlign = "left";
@@ -1815,11 +1810,11 @@ var advisors = function()
     },
     self.adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, next_farm);
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
     },
   ];
 
-  var build_a_farm = [
+  var tut_build_a_farm = [
     self.dotakeover, //begin
     ffunc, //tick
     function(){ //draw
@@ -1841,11 +1836,11 @@ var advisors = function()
       gg.ctx.textAlign = "left";
       self.textat("← Click here to buy a farm.",TEXT_TYPE_DIRECT,b.x+b.w+20,b.y+b.h/2);
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       self.wash();
       gg.ctx.textAlign = "center";
@@ -1864,11 +1859,11 @@ var advisors = function()
       self.textat("Click to toggle nutrition view",TEXT_TYPE_DIRECT,b.x+b.w/2,b.y-b.h);
       gg.nutrition_toggle.draw();
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       gg.ctx.textAlign = "center";
       self.textat("The red represents the fertility of that soil.",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
@@ -1900,7 +1895,7 @@ var advisors = function()
 
     //can't build there
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       gg.ctx.textAlign = "center";
       self.textat("Can't build a farm there!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
@@ -1910,7 +1905,7 @@ var advisors = function()
 
     //find more fertile spot
     self.dotakeover, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       gg.ctx.textAlign = "center";
       self.textat("Not very fertile!",TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
@@ -1919,7 +1914,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.heap.t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); }, //begin
-    noop, //tick
+    ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
       var f = self.heap.f;
@@ -1939,17 +1934,17 @@ var advisors = function()
       self.textat("(Click at anytime to toggle nutrition view)",TEXT_TYPE_DIRECT,b.x+b.w/2,b.y-b.h);
       gg.nutrition_toggle.draw();
     },
-    noop, //click
+    ffunc, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, sell_food);
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
     },
   ];
 
-  var build_a_house = [
+  var tut_build_a_house = [
     function(){ self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
@@ -1969,7 +1964,7 @@ var advisors = function()
       gg.ctx.textAlign = "left";
       self.textat("← Click here to buy",TEXT_TYPE_DIRECT,gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2);
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     self.dotakeover, //begin
@@ -2027,7 +2022,7 @@ var advisors = function()
       else if(self.thread_t%10 > 3) dots = ". ";
       self.textat("Waiting."+dots,TEXT_TYPE_OBSERVE,t.x+t.w/2,t.y-t.h);
     },
-    noop, //click
+    ffunc, //click
     noop, //end
 
     function(){ self.heap.f = gg.farmbits[0]; gg.inspector.select_farmbit(self.heap.f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //begin
@@ -2053,11 +2048,11 @@ var advisors = function()
       self.ctc(); },
     self.adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, build_a_farm);
+      self.pool_thread(function(){ return self.time_passed(100); }, tut_build_a_farm);
     },
   ];
 
-  self.pool_thread(tfunc,build_a_house);
+  self.pool_thread(tfunc,tut_build_a_house);
 
 }
 
