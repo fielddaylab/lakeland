@@ -5,10 +5,11 @@ var BUY_TYPE_HOME      = ENUM; ENUM++;
 var BUY_TYPE_FARM      = ENUM; ENUM++;
 var BUY_TYPE_LIVESTOCK = ENUM; ENUM++;
 var BUY_TYPE_STORAGE   = ENUM; ENUM++;
-var BUY_TYPE_PROCESSOR = ENUM; ENUM++;
 var BUY_TYPE_SIGN      = ENUM; ENUM++;
 var BUY_TYPE_ROAD      = ENUM; ENUM++;
+var BUY_TYPE_PROCESSOR = ENUM; ENUM++;
 var BUY_TYPE_DEMOLISH  = ENUM; ENUM++;
+var BUY_TYPE_FESTIVAL  = ENUM; ENUM++;
 var BUY_TYPE_COUNT     = ENUM; ENUM++;
 
 ENUM = 0;
@@ -195,6 +196,9 @@ var nutrition_toggle = function()
 var shop = function()
 {
   var self = this;
+  self.page_i = 0;
+  self.open = 1;
+
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
@@ -213,21 +217,28 @@ var shop = function()
 
     setBB(self.money_display, btn_x, btn_y, btn_w*2+self.pad, btn_h*3/4); btn_y += btn_h+self.pad;
     setBB(self.tab, self.x+self.w,btn_y,btn_w/2,btn_h/2);
+    setBB(self.page, self.x+self.w,btn_y+btn_h,btn_w/2,btn_h/2);
+
+    //page 0
     setBB(self.home_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.farm_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.livestock_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.storage_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    setBB(self.sign_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.processor_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.sign_btn,      btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.road_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.demolish_btn,  btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     self.h = btn_y-self.y;
     setBB(self.money_btn,     btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.abandon_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.refund_btn,    btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-  }
 
-  self.open = 1;
+    btn_x = self.pad;
+    btn_y = self.pad;
+    btn_y += btn_h+self.pad;
+    //page 1
+    setBB(self.festival_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+  }
 
   self.money_img = GenImg("assets/money.png");
 
@@ -239,10 +250,11 @@ var shop = function()
       case BUY_TYPE_FARM:      return farm_cost; break;
       case BUY_TYPE_LIVESTOCK: return livestock_cost; break;
       case BUY_TYPE_STORAGE:   return storage_cost; break;
-      case BUY_TYPE_PROCESSOR: return processor_cost; break;
       case BUY_TYPE_SIGN:      return sign_cost; break;
       case BUY_TYPE_ROAD:      return road_cost; break;
+      case BUY_TYPE_PROCESSOR: return processor_cost; break;
       case BUY_TYPE_DEMOLISH:  return demolish_cost; break;
+      case BUY_TYPE_FESTIVAL:  return festival_cost; break;
       default: return 0; break;
     }
   }
@@ -255,10 +267,11 @@ var shop = function()
       case BUY_TYPE_FARM:      return self.farm_btn; break;
       case BUY_TYPE_LIVESTOCK: return self.livestock_btn; break;
       case BUY_TYPE_STORAGE:   return self.storage_btn; break;
-      case BUY_TYPE_PROCESSOR: return self.processor_btn; break;
       case BUY_TYPE_SIGN:      return self.sign_btn; break;
       case BUY_TYPE_ROAD:      return self.road_btn; break;
+      case BUY_TYPE_PROCESSOR: return self.processor_btn; break;
       case BUY_TYPE_DEMOLISH:  return self.demolish_btn; break;
+      case BUY_TYPE_FESTIVAL:  return self.festival_btn; break;
       default: return 0; break;
     }
   }
@@ -278,17 +291,19 @@ var shop = function()
 
   self.money_display = new BB();
   self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open;});
+  self.page = new ButtonBox(0,0,0,0,function(){self.page_i = (self.page_i+1)%2;});
   self.home_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_HOME); });
   self.farm_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FARM); });
   self.livestock_btn = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });
   self.storage_btn   = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_STORAGE); });
-  self.processor_btn = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_PROCESSOR); });
   self.sign_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });
   self.road_btn      = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_ROAD); });
+  self.processor_btn = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_PROCESSOR); });
   self.demolish_btn  = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_DEMOLISH); });
   self.money_btn     = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; });
   self.abandon_btn   = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); });
   self.refund_btn    = new ButtonBox(0,0,0,0,function(){ gg.money += self.buy_cost(self.selected_buy); self.selected_buy = 0; });
+  self.festival_btn  = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FESTIVAL); });
   self.resize();
 
   self.selected_buy = 0;
@@ -297,13 +312,15 @@ var shop = function()
   self.farm_btn.active = 0;
   self.livestock_btn.active = 0;
   self.storage_btn.active = 0;
-  self.processor_btn.active = 0;
   self.sign_btn.active = 0;
   self.road_btn.active = 0;
+  self.processor_btn.active = 0;
   self.demolish_btn.active = 0;
   self.money_btn.active = 0;
   self.abandon_btn.active = 0;
   self.refund_btn.active = 1;
+
+  self.festival_btn.active = 0;
 
   self.filter = function(filter)
   {
@@ -312,18 +329,27 @@ var shop = function()
     if(!self.selected_buy)
     {
       if(check) check = !filter.filter(self.tab);
+      if(self.festival_btn.active) if(check) check = !filter.filter(self.page);
       if(self.open)
       {
-        if(check && self.home_btn.active)      check = !filter.filter(self.home_btn);
-        if(check && self.farm_btn.active)      check = !filter.filter(self.farm_btn);
-        if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
-        if(check && self.storage_btn.active)   check = !filter.filter(self.storage_btn);
-        if(check && self.processor_btn.active) check = !filter.filter(self.processor_btn);
-        if(check && self.sign_btn.active)      check = !filter.filter(self.sign_btn);
-        if(check && self.road_btn.active)      check = !filter.filter(self.road_btn);
-        if(check && self.demolish_btn.active)  check = !filter.filter(self.demolish_btn);
-        if(check && self.money_btn.active)     check = !filter.filter(self.money_btn);
-        if(check && self.abandon_btn.active)   check = !filter.filter(self.abandon_btn);
+        switch(self.page_i)
+        {
+          case 0:
+            if(check && self.home_btn.active)      check = !filter.filter(self.home_btn);
+            if(check && self.farm_btn.active)      check = !filter.filter(self.farm_btn);
+            if(check && self.livestock_btn.active) check = !filter.filter(self.livestock_btn);
+            if(check && self.storage_btn.active)   check = !filter.filter(self.storage_btn);
+            if(check && self.sign_btn.active)      check = !filter.filter(self.sign_btn);
+            if(check && self.road_btn.active)      check = !filter.filter(self.road_btn);
+            if(check && self.processor_btn.active) check = !filter.filter(self.processor_btn);
+            if(check && self.demolish_btn.active)  check = !filter.filter(self.demolish_btn);
+            if(check && self.money_btn.active)     check = !filter.filter(self.money_btn);
+            if(check && self.abandon_btn.active)   check = !filter.filter(self.abandon_btn);
+            break;
+          case 1:
+            if(check && self.festival_btn.active) check = !filter.filter(self.festival_btn);
+            break;
+        }
       }
     }
     else
@@ -344,6 +370,7 @@ var shop = function()
       else self.x = -self.w;
     }
     self.tab.x = self.x+self.w;
+    self.page.x = self.x+self.w;
   }
 
   self.draw_btn = function(bb,img,txt,active,tactive,cost,afford,buying)
@@ -380,6 +407,7 @@ var shop = function()
     //bg
     gg.ctx.fillStyle = white;
     fillRRect(self.tab.x-self.pad,self.tab.y,self.tab.w+self.pad,self.tab.h,self.pad,gg.ctx);
+    if(self.festival_btn.active) fillRRect(self.page.x-self.pad,self.page.y,self.page.w+self.pad,self.page.h,self.pad,gg.ctx);
     fillRRect(self.x-self.pad,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
     gg.ctx.textAlign = "center";
     gg.ctx.fillStyle = gg.font_color;
@@ -387,6 +415,15 @@ var shop = function()
     gg.ctx.font = fs+"px "+gg.font;
     if(self.open) gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h);
     else          gg.ctx.fillText(">",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h);
+    if(self.festival_btn.active)
+    {
+      fs = self.money_display.h*0.3;
+      gg.ctx.font = fs+"px "+gg.font;
+      gg.ctx.fillText("Page",self.page.x+self.page.w/2,self.page.y+self.page.h*0.4);
+      gg.ctx.fillText(self.page_i+1,self.page.x+self.page.w/2,self.page.y+self.page.h);
+    }
+    fs = self.money_display.h*0.7;
+    gg.ctx.font = fs+"px "+gg.font;
 
     gg.ctx.textAlign = "left";
 
@@ -401,14 +438,22 @@ var shop = function()
     var fs = self.font_size;
     gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "center";
-    self.draw_btn(self.home_btn,      home_img,      "Home",      self.home_btn.active,      !self.selected_buy, home_cost,      gg.money >= home_cost,      0);
-    self.draw_btn(self.farm_btn,      farm_img,      "Farm",      self.farm_btn.active,      !self.selected_buy, farm_cost,      gg.money >= farm_cost,      0);
-    self.draw_btn(self.livestock_btn, livestock_img, "Livestock", self.livestock_btn.active, !self.selected_buy, livestock_cost, gg.money >= livestock_cost, 0);
-    self.draw_btn(self.storage_btn,   storage_img,   "Storage",   self.storage_btn.active,   !self.selected_buy, storage_cost,   gg.money >= storage_cost,   0);
-    self.draw_btn(self.processor_btn, processor_img, "Processor", self.processor_btn.active, !self.selected_buy, processor_cost, gg.money >= processor_cost, 0);
-    self.draw_btn(self.sign_btn,      sign_img,      "Sign",      self.sign_btn.active,      !self.selected_buy, sign_cost,      gg.money >= sign_cost,      0);
-    self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      !self.selected_buy, road_cost,      gg.money >= road_cost,      0);
-    self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
+    switch(self.page_i)
+    {
+      case 0:
+        self.draw_btn(self.home_btn,      home_img,      "Home",      self.home_btn.active,      !self.selected_buy, home_cost,      gg.money >= home_cost,      0);
+        self.draw_btn(self.farm_btn,      farm_img,      "Farm",      self.farm_btn.active,      !self.selected_buy, farm_cost,      gg.money >= farm_cost,      0);
+        self.draw_btn(self.livestock_btn, livestock_img, "Livestock", self.livestock_btn.active, !self.selected_buy, livestock_cost, gg.money >= livestock_cost, 0);
+        self.draw_btn(self.storage_btn,   storage_img,   "Storage",   self.storage_btn.active,   !self.selected_buy, storage_cost,   gg.money >= storage_cost,   0);
+        self.draw_btn(self.sign_btn,      sign_img,      "Sign",      self.sign_btn.active,      !self.selected_buy, sign_cost,      gg.money >= sign_cost,      0);
+        self.draw_btn(self.road_btn,      road_img,      "Road",      self.road_btn.active,      !self.selected_buy, road_cost,      gg.money >= road_cost,      0);
+        self.draw_btn(self.processor_btn, processor_img, "Processor", self.processor_btn.active, !self.selected_buy, processor_cost, gg.money >= processor_cost, 0);
+        self.draw_btn(self.demolish_btn,  skull_img,     "Demolish",  self.demolish_btn.active,  !self.selected_buy, demolish_cost,  gg.money >= demolish_cost,  0);
+        break;
+      case 1:
+        self.draw_btn(self.festival_btn, festival_img, "Festival", self.festival_btn.active, !self.selected_buy, festival_cost, gg.money >= festival_cost, 0);
+        break;
+    }
 
     //self.draw_btn(self.money_btn,   coin_img,        "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
     //self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
@@ -566,9 +611,9 @@ var inspector = function()
       case TILE_TYPE_FOREST:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_STORAGE:
-      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
+      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_COUNT:
       {
         gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
@@ -620,9 +665,9 @@ var inspector = function()
       case TILE_TYPE_FOREST:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_STORAGE:
-      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
+      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_COUNT:
       case TILE_TYPE_HOME:
         break;
@@ -756,7 +801,6 @@ var inspector = function()
         y += self.pad+self.font_size;
       }
         break;
-      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
       case TILE_TYPE_COUNT:
@@ -768,6 +812,7 @@ var inspector = function()
       case TILE_TYPE_FOREST:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_HOME:
+      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_LIVESTOCK:
         break;
     }

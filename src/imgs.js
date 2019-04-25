@@ -459,6 +459,23 @@ var home_img;
   ctx.fillRect(3,0,4,1);
 }
 
+var festival_img;
+{
+  var ctx;
+  var s = 10;
+  festival_img = GenIcon(s,s*1.25);
+  ctx = festival_img.context;
+  ctx.translate(0,s*0.25);
+  ctx.clearRect(0,0,s,s);
+  ctx.fillStyle = blue;
+  ctx.fillRect(2,3,6,7);
+  ctx.fillStyle = red;
+  ctx.fillRect(1,2,8,1);
+  ctx.fillRect(2,1,6,1);
+  ctx.fillRect(3,0,4,1);
+}
+
+
 var farm_img;
 {
   var ctx;

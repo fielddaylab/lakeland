@@ -30,6 +30,7 @@ var GamePlayScene = function()
           s.money_btn.active = 1;
           //s.abandon_btn.active = 1;
           s.refund_btn.active = 1;
+          s.festival_btn.active = 1;
 
           gg.nutrition_toggle.toggle_btn.active = 1;
           gg.playhead.pause_btn.active = 1;

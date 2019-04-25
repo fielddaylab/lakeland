@@ -2278,6 +2278,8 @@ var board = function()
         return (buildability_check(TILE_TYPE_ROAD,tile.type) || tile.type == TILE_TYPE_ROAD);
       case BUY_TYPE_DEMOLISH:
         return demolishability_check(tile.type);
+      case BUY_TYPE_FESTIVAL:
+        return 1;
     }
     return 0;
   }
@@ -2480,6 +2482,14 @@ var board = function()
               return;
             }
             break;
+
+            case BUY_TYPE_FESTIVAL:
+            {
+              //do something amazing
+              console.log("FESTIVAL");
+            }
+            break;
+
           }
         }
       }
