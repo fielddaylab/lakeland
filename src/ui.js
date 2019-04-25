@@ -538,6 +538,20 @@ var inspector = function()
 
     self.img_vignette(gg.b.tile_img(t.og_type),1);
     self.img_vignette(gg.b.tile_img(t.type),1);
+    if(t.type == TILE_TYPE_LAKE)
+    {
+      var a = 0;
+      if(t.nutrition < water_fouled_threshhold)
+        a = max(0,bias0(bias0(t.nutrition/water_fouled_threshhold))*0.8);
+      else
+        a = min(1,0.8+bias1(bias1((t.nutrition-water_fouled_threshhold)/(nutrition_max-water_fouled_threshhold)))*0.2);
+      if(a > 0.05)
+      {
+        gg.ctx.globalAlpha = a;
+        self.img_vignette(bloom_img,1);
+        gg.ctx.globalAlpha = 1;
+      }
+    }
     y += self.pad;
 
     gg.ctx.fillStyle = gg.font_color;
@@ -845,7 +859,7 @@ var inspector = function()
     y += self.pad;
 
     draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(rn/100));
-    if(t.type == TILE_TYPE_LAKE) mark_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(0.5));
+    if(t.type == TILE_TYPE_LAKE) mark_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
     y += self.pad;
     y += self.pad;
