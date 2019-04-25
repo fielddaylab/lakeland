@@ -53,6 +53,16 @@ var draw_money_switch = function(x,y,w,h,on)
   else   gg.ctx.drawImage(coin_img,x,    y-h/4,h,h*1.25);
 }
 
+var mark_bar = function(x,y,w,h,t)
+{
+  gg.ctx.strokeStyle = red;
+  var r = h/2;
+  var tx = x+r+(w-r*2)*t;
+       if(t >= 1) tx = x+2;
+  else if(t <= 0) tx = x;
+  drawLine(tx,y-r,tx,y+h+r,gg.ctx)
+}
+
 var draw_bar = function(x,y,w,h,t)
 {
   draw_custom_bar(x,y,w,h,light_gray,gg.backdrop_color,t);
@@ -475,7 +485,7 @@ var inspector = function()
     var rn = t.nutrition/nutrition_percent;
     var n = floor(rn);
     var cx = self.x+self.w/2;
-    var y = self.vignette_y+self.vignette_h;;
+    var y = self.vignette_y+self.vignette_h;
 
     //bg
     gg.ctx.fillStyle = white;
@@ -784,13 +794,13 @@ var inspector = function()
     y += self.font_size;
     gg.ctx.textAlign = "left";
     gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.fillText("Soil Nutrition:",self.x+self.pad,y);
+    gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
     gg.ctx.textAlign = "right";
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
     y += self.pad;
 
-    if(t.type == TILE_TYPE_LAKE) draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(0.5));
     draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(rn/100));
+    if(t.type == TILE_TYPE_LAKE) mark_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(0.5));
     gg.ctx.fillStyle = gg.font_color;
     y += self.pad;
     y += self.pad;
