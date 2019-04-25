@@ -1335,6 +1335,7 @@ var advisors = function()
     self.advisor = 0;
     self.takeover = 0;
     self.thread = 0;
+    self.heap = 0;
     self.thread_i = 0;
     self.thread_t = 0;
     self.triggers = [];
@@ -1350,6 +1351,7 @@ var advisors = function()
   self.launch_thread = function(t)
   {
     self.thread = t;
+    self.heap = {};
     self.thread_i = 0;
     self.thread_t = 0;
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_BEGIN]();
@@ -1362,7 +1364,10 @@ var advisors = function()
     self.thread_i++;
     self.thread_t = 0;
     if(self.thread_i*THREADF_TYPE_COUNT >= self.thread.length)
+    {
       self.thread = 0;
+      self.heap = 0;
+    }
     else
       self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_BEGIN]();
   }
@@ -1661,11 +1666,11 @@ var advisors = function()
     noop, //click
     noop, //end
 
-    self.dotakeover, //begin
+    function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
-      var i = self.items_exist(ITEM_TYPE_FOOD,1);
+      var i = self.heap.i;
       gg.ctx.textAlign = "center";
       self.onscreentextat("Your farm has produced some food!",TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h);
       self.ctc();
@@ -1677,7 +1682,7 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.wash();
-      var i = self.items_exist(ITEM_TYPE_FOOD,1);
+      var i = self.heap.i;
       gg.ctx.textAlign = "center";
       self.onscreentextat("Let's sell some.",TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h);
       self.ctc();
@@ -1700,7 +1705,7 @@ var advisors = function()
     noop, //begin
     function(){ return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
     function(){ //draw
-      var i = self.items_exist(ITEM_TYPE_FOOD,1);
+      var i = self.heap.i;
       gg.ctx.textAlign = "center";
       self.onscreentextat("Next, click an item to select it.",TEXT_TYPE_DIRECT,i.x+i.w/2,i.y-i.h);
     },
@@ -1710,18 +1715,18 @@ var advisors = function()
     noop, //begin
     function(){ return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
     function(){ //draw
-      var i = self.items_exist(ITEM_TYPE_FOOD,1);
+      var i = self.heap.i;
       gg.ctx.textAlign = "center";
       self.onscreentextat("Toggle this switch to mark it as \"for sale\".",TEXT_TYPE_DIRECT,i.x+i.w/2,i.y-i.h);
     },
     noop, //click
     noop, //end
 
-    self.dotakeover, //begin
+    function(){ self.heap.f = gg.farmbits[0]; self.dotakeover(); }, //begin
     noop, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      var f = self.heap.f;
       self.hilight(f);
       gg.ctx.textAlign = "center";
       self.textat(f.name+" will eventually export this for sale!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
@@ -1750,7 +1755,7 @@ var advisors = function()
     noop, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      var f = self.heap.f;
       gg.ctx.textAlign = "center";
       self.textat(f.name+" is exporting the marked food",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
       self.ctc();
@@ -1762,7 +1767,7 @@ var advisors = function()
     noop, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      var f = self.heap.f;
       gg.ctx.textAlign = "center";
       self.textat("They'll be back soon with some money!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
       self.ctc();
@@ -1780,7 +1785,7 @@ var advisors = function()
     noop, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      var f = self.heap.f;
       self.hilight(f);
       gg.ctx.textAlign = "left";
       self.textat(f.name+" has returned!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
@@ -1819,7 +1824,8 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      self.heap.f = gg.farmbits[0];
+      var f = self.heap.f;
       self.hilight(f);
       gg.ctx.textAlign = "center";
       self.onscreentextat(f.name+" will eventually need some food...",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
@@ -1912,11 +1918,11 @@ var advisors = function()
     function(){ self.jmp(-2); }, //click
     noop, //end
 
-    noop, //begin
+    function(){ self.heap.t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); }, //begin
     noop, //tick
     function(){ //draw
-      var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]);
-      var f = gg.farmbits[0];
+      var t = self.heap.t;
+      var f = self.heap.f;
       gg.ctx.textAlign = "center";
       self.textat(f.name+" will automatically manage the farm.",TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
       self.ctc();
@@ -2024,11 +2030,11 @@ var advisors = function()
     noop, //click
     noop, //end
 
-    function(){ var f = gg.farmbits[0]; gg.inspector.select_farmbit(f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //begin
+    function(){ self.heap.f = gg.farmbits[0]; gg.inspector.select_farmbit(self.heap.f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      var f = self.heap.f;
       self.hilight(f);
       gg.ctx.textAlign = "center";
       self.onscreentextat(f.name+" moved into your town!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
@@ -2040,7 +2046,7 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.wash();
-      var f = gg.farmbits[0];
+      var f = self.heap.f;
       self.hilight(f);
       gg.ctx.textAlign = "center";
       self.onscreentextat("It's your job to ensure their survival!",TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);

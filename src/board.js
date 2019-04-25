@@ -1298,7 +1298,7 @@ var tile = function()
   self.i = 0;
   self.og_type = TILE_TYPE_LAND;
   self.type = TILE_TYPE_LAND;
-  self.state = TILE_STATE_LAND_D0+randIntBelow(land_detail_levels);
+  self.state = TILE_STATE_LAND_D0+randIntBelowBias0(land_detail_levels);
   self.state_t = 0;
   self.val = 0;
   self.nutrition = 0;
@@ -2626,6 +2626,29 @@ var board = function()
 
   self.draw_tile_root = function(t,x,y,w,h)
   {
+    switch(t.og_type)
+    {
+      case TILE_TYPE_LIVESTOCK:
+      case TILE_TYPE_STORAGE:
+      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_ROAD:
+      case TILE_TYPE_HOME:
+      case TILE_TYPE_GRAVE:
+      case TILE_TYPE_SIGN:
+      case TILE_TYPE_FARM:
+        console.log("BROKEN");
+        break;
+      case TILE_TYPE_LAKE:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_ROCK:
+      case TILE_TYPE_FOREST:
+        gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
+        break;
+      case TILE_TYPE_LAND:
+        gg.ctx.drawImage(land_imgs[0],x,y,w,h);
+        break;
+    }
+
     switch(t.type)
     {
       case TILE_TYPE_LIVESTOCK:
@@ -2636,15 +2659,18 @@ var board = function()
       case TILE_TYPE_GRAVE:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_FARM:
-        gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h); //no break!
+        var yd = psin(gg.t_mod_twelve_pi*10);
+        var xd = bias0(1-yd)*self.min_draw_tw/10;
+        yd *= self.min_draw_th/10;
+
+        gg.ctx.drawImage(self.tile_img(t.type),x-xd/2,y-yd,w+xd,h+yd); //no break!
+        break;
       case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
       case TILE_TYPE_ROCK:
       case TILE_TYPE_FOREST:
-        gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
-        break;
       case TILE_TYPE_LAND:
-        gg.ctx.drawImage(land_imgs[0],x,y,w,h);
+        //already done
         break;
     }
   }
