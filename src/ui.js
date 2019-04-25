@@ -1261,8 +1261,8 @@ var advisors = function()
     var p = h*0.5;
     w += p*2;
     h += p*2;
-    gg.ctx.fillStyle = white;
-    gg.ctx.strokeStyle = black;
+    gg.ctx.fillStyle = light_gray;
+    gg.ctx.strokeStyle = gray;
     var cx = 0;
     var cy = 0;
     var cs = h*1.5;
@@ -1348,7 +1348,7 @@ var advisors = function()
     {
       case ADVISOR_TYPE_MAYOR:    self.mayor_active = 1; break;
       case ADVISOR_TYPE_BUSINESS: self.business_active = 1; break;
-      case ADVISOR_TYPE_FARMER:   self.farm_active = 1; break;
+      case ADVISOR_TYPE_FARMER:   self.farmer_active = 1; break;
     }
   }
 
@@ -1426,11 +1426,11 @@ var advisors = function()
       var w = h;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
-      if(self.mayor_active)    { /*fillRRect(x,y,w,h,h/4,gg.ctx);*/ }
+      if(self.mayor_active)    { gg.clicker.consumeif(x,y,w,h,function(){console.log(self.mayor_history[self.mayor_history.length-1]);}); }
       x += w*1.5;
-      if(self.business_active) { /*fillRRect(x,y,w,h,h/4,gg.ctx);*/ }
+      if(self.business_active) { gg.clicker.consumeif(x,y,w,h,function(){console.log(self.business_history[self.business_history.length-1]);}); }
       x += w*1.5;
-      if(self.farmer_active)   { /*fillRRect(x,y,w,h,h/4,gg.ctx);*/ }
+      if(self.farmer_active)   { gg.clicker.consumeif(x,y,w,h,function(){console.log(self.farmer_history[self.farmer_history.length-1]);}); }
       x += w*1.5;
     }
   }
@@ -1589,7 +1589,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("Back to work,  everybody!"); }, //begin
+    function(){ self.push_blurb("Back to work, everybody!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1676,7 +1676,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("← Next,  save up for some livestock. They might be able to help with that!"); }, //begin
+    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("← Next, save up for some livestock. They might be able to help with that!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var b = gg.shop.livestock_btn;
@@ -1737,7 +1737,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0; self.push_blurb("First,  we'll pause the game.");}, //begin
+    function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0; self.push_blurb("First, we'll pause the game.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1749,7 +1749,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("Next,  click an item to select it."); },//begin
+    function(){ self.push_blurb("Next, click an item to select it."); },//begin
     function(){ return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
     function(){ //draw
       var i = self.heap.i;
@@ -1881,7 +1881,7 @@ var advisors = function()
     noop, //end
 
     function(){ gg.shop.farm_btn.active = 1; self.push_blurb("← Click here to buy a farm."); }, //begin
-    function(){ return self.purchased(BUY_TYPE_FARM); }, //tick
+    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FARM); }, //tick
     function(){ //draw
       var b = gg.shop.farm_btn;
       gg.ctx.textAlign = "left";
@@ -2010,7 +2010,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.push_blurb("← Click here to buy"); },//begin
-    function(){ return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       gg.ctx.textAlign = "left";
       self.textat(TEXT_TYPE_DIRECT,gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2);
