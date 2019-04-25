@@ -237,7 +237,6 @@ function noop(){}
 function ffunc(){return false;}
 function tfunc(){return true;}
 
-
 var bounceup_data = [];
 {
   var n = 100;

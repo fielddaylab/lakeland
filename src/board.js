@@ -29,6 +29,9 @@ ENUM = 0;
 var TILE_STATE_NULL                = ENUM; ENUM++;
 var TILE_STATE_HOME_VACANT         = ENUM; ENUM++;
 var TILE_STATE_HOME_OCCUPIED       = ENUM; ENUM++;
+var TILE_STATE_LAND_D0             = ENUM; ENUM++;
+var TILE_STATE_LAND_D1             = ENUM; ENUM++;
+var TILE_STATE_LAND_D2             = ENUM; ENUM++;
 var TILE_STATE_FARM_UNPLANTED      = ENUM; ENUM++;
 var TILE_STATE_FARM_PLANTED        = ENUM; ENUM++;
 var TILE_STATE_FARM_GROWN          = ENUM; ENUM++;
@@ -1295,7 +1298,7 @@ var tile = function()
   self.i = 0;
   self.og_type = TILE_TYPE_LAND;
   self.type = TILE_TYPE_LAND;
-  self.state = TILE_STATE_NULL;
+  self.state = TILE_STATE_LAND_D0+randIntBelow(land_detail_levels);
   self.state_t = 0;
   self.val = 0;
   self.nutrition = 0;
@@ -1336,8 +1339,20 @@ var board = function()
     var ty = 0;
     var tw = 0;
     var th = 0;
+    var next = function()
+    {
+      self.atlas.nextAtlas();
+      x = 0;
+      y = 0;
+      ctx = self.atlas.context;
+      tx = 0;
+      ty = 0;
+      tw = 0;
+      th = 0;
+    }
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
     {
+      if(i == TILE_TYPE_LAND) continue; //special
       tx = x;
       ty = y;
       tw = self.min_draw_tw;
@@ -1363,6 +1378,37 @@ var board = function()
       ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
       self.atlas.commitSprite();
       x += total_tw;
+    }
+    next();
+
+    for(var i = 0; i < land_imgs.length; i++)
+    {
+      tx = x;
+      ty = y;
+      tw = self.min_draw_tw;
+      th = self.min_draw_th;
+      self.atlas_i[TILE_TYPE_COUNT+i] = self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx += self.min_draw_tw;
+      tw = self.min_draw_tw+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx = x;
+      ty += self.min_draw_th;
+      tw = self.min_draw_tw;
+      th = self.min_draw_th+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx += self.min_draw_tw;
+      tw = self.min_draw_tw+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      x += total_tw;
+      if(x >= self.atlas.w) next();
     }
     self.atlas.commit();
   }
@@ -1667,7 +1713,7 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_TYPE_LAND:      return land_img; break;
+      case TILE_TYPE_LAND:      return land_imgs[0]; break;
       case TILE_TYPE_LAKE:      return lake_img; break;
       case TILE_TYPE_SHORE:     return shore_img; break;
       case TILE_TYPE_LIVESTOCK: return livestock_img; break;
@@ -1681,7 +1727,7 @@ var board = function()
       case TILE_TYPE_HOME:      return home_img; break;
       case TILE_TYPE_FARM:      return farm_img; break;
     }
-    return land_img;
+    return land_imgs[0];
   }
   self.tile_name = function(type)
   {
@@ -2591,12 +2637,14 @@ var board = function()
       case TILE_TYPE_SIGN:
       case TILE_TYPE_FARM:
         gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h); //no break!
-      case TILE_TYPE_LAND:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
       case TILE_TYPE_ROCK:
       case TILE_TYPE_FOREST:
         gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
+        break;
+      case TILE_TYPE_LAND:
+        gg.ctx.drawImage(land_imgs[0],x,y,w,h);
         break;
     }
   }
@@ -2662,6 +2710,47 @@ var board = function()
   self.draw_tile_root_fast = function(t,x,y,w,h,xd,yd)
   {
     if(!self.atlas) return self.draw_tile_root(t,x,y,w,h);
+
+    var off = 0;
+    if(w == self.min_draw_tw)
+    {
+             if(h == self.min_draw_th)     off = 0;
+      else /*if(h == self.min_draw_th+1)*/ off = 2;
+    }
+    else /*if(w == self.min_draw_tw+1)*/
+    {
+             if(h == self.min_draw_th)     off = 1;
+      else /*if(h == self.min_draw_th+1)*/ off = 3;
+    }
+
+    switch(t.og_type)
+    {
+      case TILE_TYPE_LIVESTOCK:
+      case TILE_TYPE_STORAGE:
+      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_ROAD:
+      case TILE_TYPE_HOME:
+      case TILE_TYPE_GRAVE:
+      case TILE_TYPE_SIGN:
+      case TILE_TYPE_FARM:
+        console.log("BROKEN");
+        break;
+      case TILE_TYPE_LAKE:
+      case TILE_TYPE_SHORE:
+      case TILE_TYPE_ROCK:
+      case TILE_TYPE_FOREST:
+        self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+off,x,y,gg.ctx);
+        break;
+      case TILE_TYPE_LAND:
+      {
+        var p = floor(min(0.99,t.shed_d/100)*land_topo_levels);
+        var d = clamp(0,land_detail_levels-1,t.state-TILE_STATE_LAND_D0);
+        var f = floor((gg.t_mod_twelve_pi*10+t.tx*5+t.ty*12)/20)%land_frames;
+        self.atlas.blitWholeSprite(self.atlas_i[TILE_TYPE_COUNT+land_off(p,d,f)]+off,x,y,gg.ctx);
+      }
+        break;
+    }
+
     switch(t.type)
     {
       case TILE_TYPE_LIVESTOCK:
@@ -2672,37 +2761,14 @@ var board = function()
       case TILE_TYPE_GRAVE:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_FARM:
-      {
-        var off = 0;
-        if(w == self.min_draw_tw)
-        {
-                 if(h == self.min_draw_th)     off = 0;
-          else /*if(h == self.min_draw_th+1)*/ off = 2;
-        }
-        else /*if(w == self.min_draw_tw+1)*/
-        {
-                 if(h == self.min_draw_th)     off = 1;
-          else /*if(h == self.min_draw_th+1)*/ off = 3;
-        }
-        self.atlas.blitWholeSprite(self.atlas_i[t.og_type]+off,x,y,gg.ctx);
         self.atlas.drawWholeSprite(self.atlas_i[t.type]+off,x-xd/2,y-yd,w+xd,h+yd,gg.ctx);
-      }
         break;
-      case TILE_TYPE_LAND:
       case TILE_TYPE_LAKE:
       case TILE_TYPE_SHORE:
       case TILE_TYPE_ROCK:
       case TILE_TYPE_FOREST:
-        if(w == self.min_draw_tw)
-        {
-                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.type]+0,x,y,gg.ctx);
-          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.type]+2,x,y,gg.ctx);
-        }
-        else /*if(w == self.min_draw_tw+1)*/
-        {
-                 if(h == self.min_draw_th)     self.atlas.blitWholeSprite(self.atlas_i[t.type]+1,x,y,gg.ctx);
-          else /*if(h == self.min_draw_th+1)*/ self.atlas.blitWholeSprite(self.atlas_i[t.type]+3,x,y,gg.ctx);
-        }
+      case TILE_TYPE_LAND:
+        //already drawn!
         break;
     }
   }
@@ -2761,7 +2827,7 @@ var board = function()
         i++;
       }
     }
-    //self.shed_view = 0;
+    self.shed_view = 0;
     if(self.shed_view)
     {
       var i = 0;

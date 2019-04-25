@@ -127,3 +127,9 @@ var roads_per_buy = 10;
 var debug_pathfinding = 0;
 var debug_jobs = 0;
 
+//don't change
+var land_topo_levels = 4;
+var land_detail_levels = 3;
+var land_frames = 2;
+var land_off = function(topo,detail,frame){return topo*(land_detail_levels*land_frames)+(detail*land_frames)+frame;}
+

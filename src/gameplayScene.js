@@ -43,6 +43,21 @@ var GamePlayScene = function()
           break;
         }
         case "t": gg.advisors.end(); break;
+        case "m":
+        {
+          console.log("hello");
+          if(gg.farmbits.length == gg.b.bounds_n) { gg.b.inc_bounds(); gg.b.bounds_n++; gg.b.resize(); }
+          var t = gg.b.tiles_t(gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw),gg.b.bounds_ty+randIntBelow(gg.b.bounds_th));
+          var b = new farmbit();
+          gg.ticker.nq(b.name+" decided to move in!");
+          b.tile = t;
+          gg.b.tiles_tw(t,b);
+          gg.farmbits.push(b);
+          job_for_b(b);
+          b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
+          if(b.home) b.home.state = TILE_STATE_HOME_OCCUPIED;
+        }
+          break;
       }
     }
   }

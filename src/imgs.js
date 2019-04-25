@@ -518,9 +518,20 @@ tpoop_light_img.src = "assets/poop_light.png";
 var tvaluable_img = new Image();
 tvaluable_img.onload = function(){ valuable_img = tvaluable_img; };
 tvaluable_img.src = "assets/valuable.png";
-var tland_img = new Image();
-tland_img.onload = function(){ land_img = tland_img; };
-tland_img.src = "assets/land.png";
+var land_imgs = [];
+for(var i = 0; i < land_topo_levels*land_detail_levels*land_frames; i++) land_imgs[i] = land_img;
+for(var t = 0; t < land_topo_levels; t++) //topography
+{
+  for(var d = 0; d < land_detail_levels; d++) //detail
+  {
+    for(var f = 0; f < land_frames; f++) //frame
+    {
+      land_img = new Image();
+      land_img.onload = (function(img,i){return function(){ land_imgs[i] = img; };})(land_img,land_off(t,d,f));
+      land_img.src = "assets/grass_t"+t+"_d"+d+"_f"+f+".png";
+    }
+  }
+}
 var tshore_img = new Image();
 tshore_img.onload = function(){ shore_img = tshore_img; };
 tshore_img.src = "assets/shore.png";
