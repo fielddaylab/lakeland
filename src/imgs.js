@@ -575,6 +575,10 @@ var tfarmbit_img = new Image();
 tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/5,farmbit_imgs[i].width,farmbit_imgs[i].width); };
 tfarmbit_img.src = "assets/farmbit.png";
 
+var mayor_img = GenImg("assets/mayor.png");
+var business_img = GenImg("assets/business.png");
+var farmer_img = GenImg("assets/farmer.png");
+
 var clouds_img = GenImg("assets/clouds.png");
 var bloom_img = GenImg("assets/bloom.png");
 var skull_img = GenImg("assets/skull.png");

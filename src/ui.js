@@ -1254,18 +1254,25 @@ var advisors = function()
     var p = h*0.5;
     w += p*2;
     h += p*2;
-    switch(self.advisor)
-    {
-      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillStyle = red;   break;
-      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillStyle = green; break;
-      case ADVISOR_TYPE_FARM:     gg.ctx.fillStyle = blue;  break;
-    }
+    gg.ctx.fillStyle = white;
+    gg.ctx.strokeStyle = black;
+    var cx = 0;
+    var cy = 0;
+    var cs = h*1.5;
     if(self.advisor)
     {
       gg.ctx.beginPath();
-      if(gg.ctx.textAlign == "center") gg.ctx.arc(x-w/2,y-h,h*2,0,twopi);
-      else gg.ctx.arc(x,y-h,h*2,0,twopi);
+      if(gg.ctx.textAlign == "center") { cx = x-w/2-cs/2; cy = y-cs/2; }
+      else                             { cx = x    -cs/2; cy = y-cs/2; }
+      gg.ctx.arc(cx,cy,cs,0,twopi);
       gg.ctx.fill();
+      gg.ctx.stroke();
+    }
+    switch(self.advisor)
+    {
+      case ADVISOR_TYPE_MAYOR:    gg.ctx.drawImage(mayor_img,    cx-cs/2, cy-cs/2, cs, cs); break;
+      case ADVISOR_TYPE_BUSINESS: gg.ctx.drawImage(business_img, cx-cs/2, cy-cs/2, cs, cs); break;
+      case ADVISOR_TYPE_FARM:     gg.ctx.drawImage(farm_img,     cx-cs/2, cy-cs/2, cs, cs); break;
     }
     switch(type)
     {
@@ -1436,11 +1443,22 @@ var advisors = function()
       var w = h;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
-      if(self.mayor_active)    { gg.ctx.fillStyle = blue; fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.fillStyle = black; gg.ctx.fillText("MAYOR",x,y); }
+      var p = w/10;
+      gg.ctx.textAlign = "left";
+      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.fillText("ADVISORS",x,y-p);
+      gg.ctx.textAlign = "center";
+      gg.ctx.fillStyle = white;
+      gg.ctx.strokeStyle = gray;
+      if(self.mayor_active)    { fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(mayor_img,x+p,y+p,w-p*2,h-p*2);    gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("MAYOR",x+w/2,y+h-p); }
+      gg.ctx.fillStyle = white;
+      gg.ctx.strokeStyle = gray;
       x += w*1.5;
-      if(self.business_active) { gg.ctx.fillStyle = blue; fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.fillStyle = black; gg.ctx.fillText("BUSINESS",x,y); }
+      if(self.business_active) { fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(business_img,x+p,y+p,w-p*2,h-p*2); gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("BUSINESS",x+w/2,y+h-p); }
+      gg.ctx.fillStyle = white;
+      gg.ctx.strokeStyle = gray;
       x += w*1.5;
-      if(self.farmer_active)   { gg.ctx.fillStyle = blue; fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.fillStyle = black; gg.ctx.fillText("FARMER",x,y); }
+      if(self.farmer_active)   { fillRRect(x,y,w,h,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(farmer_img,x+p,y+p,w-p*2,h-p*2);   gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
       x += w*1.5;
     }
   }
@@ -1745,7 +1763,7 @@ var advisors = function()
     function(){ //draw
       var b = gg.playhead.play_btn;
       gg.ctx.textAlign = "center";
-      self.textat("click to resume the game.",TEXT_TYPE_DIRECT,b.x+b.w/2,b.y+b.h*2);
+      self.textat("click Play to resume the game.",TEXT_TYPE_DIRECT,b.x+b.w/2,b.y+b.h*2);
     },
     ffunc, //click
     noop, //end
