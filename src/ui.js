@@ -1308,6 +1308,9 @@ var advisors = function()
   }
   self.textat = function(type,x,y)
   {
+    var t = min(1,self.thread_t/100);
+    gg.ctx.globalAlpha = min(1,t*6);
+    y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     var text;
     switch(self.advisor)
     {
@@ -1361,6 +1364,7 @@ var advisors = function()
     gg.ctx.stroke();
     gg.ctx.fillStyle = black;
     gg.ctx.fillText(text,x,y);
+    gg.ctx.globalAlpha = 1;
   }
   self.ctc = function()
   {
@@ -1772,7 +1776,7 @@ var advisors = function()
     ffunc, //click
     noop, //end
 
-    function() { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); self.push_blurb("Your farm has produced some food!"); }, //begin
+    function() { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); self.push_blurb("Your farm has produced more food than is needed!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1784,7 +1788,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Let's sell some."); },//begin
+    function(){ self.dotakeover(); self.push_blurb("Let's sell the surplus."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1809,7 +1813,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.push_blurb("Next, click an item to select it."); },//begin
-    function(){ return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
+    function(){ RESUME_SIM = 0; return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
     function(){ //draw
       var i = self.heap.i;
       gg.ctx.textAlign = "center";
@@ -1819,11 +1823,10 @@ var advisors = function()
     noop, //end
 
     function(){ self.push_blurb("Toggle the switch to mark it as \"for sale\"."); },//begin
-    function(){ return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
+    function(){ var i = self.heap.i; gg.inspector.select_item(i); return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
     function(){ //draw
-      var i = self.heap.i;
       gg.ctx.textAlign = "center";
-      self.onscreentextat(TEXT_TYPE_DIRECT,i.x+i.w/2,i.y-i.h);
+      self.onscreentextat(TEXT_TYPE_DIRECT,gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h);
     },
     ffunc, //click
     noop, //end
@@ -1901,11 +1904,11 @@ var advisors = function()
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("You just made $"+item_worth_food+"!"); },//begin
-    ffunc, //tick
+    function(){ gg.shop.open = 1; }, //tick
     function(){ //draw
       self.wash();
       gg.ctx.textAlign = "left";
-      self.textat(TEXT_TYPE_DISMISS,gg.shop.x+gg.shop.w/2,gg.shop.y+30);
+      self.textat(TEXT_TYPE_DISMISS,gg.shop.x+gg.shop.w,gg.shop.y+40);
       self.ctc();
     },
     self.delay_adv_thread, //click
@@ -1916,7 +1919,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       gg.ctx.textAlign = "left";
-      self.textat(TEXT_TYPE_DISMISS,gg.shop.x+gg.shop.w/2,gg.shop.y+30);
+      self.textat(TEXT_TYPE_DISMISS,gg.shop.x+gg.shop.w,gg.shop.y+40);
       self.ctc();
     },
     self.adv_thread, //click

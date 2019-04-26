@@ -46,7 +46,6 @@ var GamePlayScene = function()
         case "t": gg.advisors.end(); break;
         case "m":
         {
-          console.log("hello");
           if(gg.farmbits.length == gg.b.bounds_n) { gg.b.inc_bounds(); gg.b.bounds_n++; gg.b.resize(); }
           var t = gg.b.tiles_t(gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw),gg.b.bounds_ty+randIntBelow(gg.b.bounds_th));
           var b = new farmbit();
@@ -172,6 +171,19 @@ var GamePlayScene = function()
           gg.ticker.tick();
         }
         times--;
+      }
+    }
+    else //still screenspace to catch up to drag
+    {
+      for(var i = 0; i < gg.items.length; i++)
+      {
+        var o = gg.items[i];
+        screenSpace(gg.cam, gg.canvas, o);
+      }
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        var f = gg.farmbits[i];
+        screenSpace(gg.cam, gg.canvas, f);
       }
     }
     gg.advisors.tick();

@@ -2055,6 +2055,18 @@ var board = function()
         t.nutrition = floor(t.nutrition*nutrition_max);
       }
 
+      //guarantee nutrition
+      for(var i = 0; i < self.tiles.length; i++)
+      {
+        var t = self.tiles[i];
+        if(self.tile_in_bounds(t) && t.type == TILE_TYPE_LAND)
+        {
+          t.nutrition = floor(nutrition_motivated*1.1);
+          break;
+        }
+      }
+
+
     }
 
     //assign og
