@@ -858,8 +858,8 @@ var inspector = function()
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
     y += self.pad;
 
-    draw_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(rn/100));
-    if(t.type == TILE_TYPE_LAKE) mark_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,bias1(water_fouled_threshhold/nutrition_max));
+    draw_custom_bar(self.x+self.pad, y, self.w-self.pad*2, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias1(rn/100));
+    if(t.type == TILE_TYPE_LAKE) mark_bar(self.x+self.pad, y, self.w-self.pad*2, self.pad, bias1(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
     y += self.pad;
     y += self.pad;

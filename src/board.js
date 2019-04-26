@@ -2065,6 +2065,13 @@ var board = function()
         }
       }
 
+      //clear water
+      for(var i = 0; i < self.tiles.length; i++)
+      {
+        var t = self.tiles[i];
+        if(t.type == TILE_TYPE_LAKE) t.nutrition = 0;
+      }
+
 
     }
 
