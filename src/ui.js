@@ -1724,7 +1724,7 @@ var advisors = function()
       for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
       {
         var t = gg.b.tile_groups[TILE_TYPE_LAKE][i];
-        if(t.nutrition > water_fouled_threshhold) { self.heap.t = t; break; }
+        if(gg.b.tile_in_bounds(t) && t.nutrition > water_fouled_threshhold) { self.heap.t = t; break; }
       }
       self.dotakeover();
       self.push_blurb("Uh oh. Looks like there's an algae bloom starting!");
@@ -1873,7 +1873,7 @@ var advisors = function()
         for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
         {
           var t = gg.b.tile_groups[TILE_TYPE_LAKE][i];
-          if(t.nutrition > water_fouled_threshhold) return 1;
+          if(gg.b.tile_in_bounds(t) && t.nutrition > water_fouled_threshhold) return 1;
         }
         return 0;
       }, tut_bloom);
