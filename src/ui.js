@@ -1562,7 +1562,7 @@ var advisors = function()
   ];
 
   var tut_rain = [
-    function(){ self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Looks like it's about to rain!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Looks like it's about to rain!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1669,11 +1669,13 @@ var advisors = function()
     ffunc, //click
     function(){ //end
       self.pool_thread(function(){ return self.time_passed(500); }, tut_cycle_rain);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
     },
   ];
 
   var tut_low_nutrients = [
     function(){ //begin
+      gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'low_nutrients'});
       self.set_advisor(ADVISOR_TYPE_FARMER);
       for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
       {
@@ -1716,11 +1718,13 @@ var advisors = function()
       self.ctc();
     },
     self.adv_thread, //click
-    noop, //end
+    function(){
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'low_nutrients'});
+    }, //end
   ];
 
   var tut_fertilize = [
-    noop, //begin
+    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'fertilize'}); }, //begin
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     ffunc, //click
@@ -1770,11 +1774,12 @@ var advisors = function()
         }
         return 0;
       }, tut_low_nutrients);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'fertilize'});
     },
   ];
 
   var tut_buy_livestock = [
-    function(){ self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Great Work!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_livestock'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Great Work!"); }, //begin
     ffunc, //tick
     function(){ //draw
       gg.ctx.textAlign = "center";
@@ -1805,11 +1810,12 @@ var advisors = function()
     self.adv_thread, //click
     function() { //end
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_fertilize);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_livestock'});
     },
   ];
 
   var tut_timewarp = [
-    function(){ self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Click here if you want to speed up time"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Click here if you want to speed up time"); },//begin
     function() { return DOUBLETIME; }, //tick
     function() { //draw
       self.wash();
@@ -1821,11 +1827,12 @@ var advisors = function()
     self.delay_adv_thread, //click
     function() { //end
       self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, tut_buy_livestock);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
     },
   ];
 
   var tut_sell_food = [
-    noop, //begin
+    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'sell_food'}); }, //begin
     function(){ return self.time_passed(40); }, //tick
     noop, //draw
     ffunc, //click
@@ -2003,12 +2010,13 @@ var advisors = function()
     self.adv_thread, //click
     function() { //end
       self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'sell_food'});
     },
   ];
 
   var tut_build_a_farm = [
 
-    function(){ self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("Hi!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("Hi!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2151,11 +2159,13 @@ var advisors = function()
     ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
     },
   ];
 
   var tut_build_a_house = [
-    function(){ self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
+
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_house'}); self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     ffunc, //click
@@ -2283,6 +2293,7 @@ var advisors = function()
     self.adv_thread, //click
     function() { //end
       self.pool_thread(function(){ return self.time_passed(100); }, tut_build_a_farm);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_house'});
     },
   ];
 
