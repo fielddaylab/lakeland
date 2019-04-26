@@ -1776,7 +1776,30 @@ var advisors = function()
     ffunc, //click
     noop, //end
 
-    function() { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); self.push_blurb("Your farm has produced more food than is needed!"); }, //begin
+    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.dotakeover(); self.push_blurb("Hello!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat(TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("I'll be advising you on matters of business."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat(TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+
+    function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); self.push_blurb("Your farm has produced more food than is needed!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1929,7 +1952,30 @@ var advisors = function()
   ];
 
   var tut_build_a_farm = [
-    function(){ self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will eventually need some food..."); },//begin
+
+    function(){ self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("Hi!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat(TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("I'm your farm advisor."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat(TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will eventually need some food..."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2058,6 +2104,28 @@ var advisors = function()
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     ffunc, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Hi!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat(TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("I'm the Mayor!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.textAlign = "center";
+      self.textat(TEXT_TYPE_DISMISS,gg.canvas.width/2,gg.canvas.height/2);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("Buy your first house."); },//begin
