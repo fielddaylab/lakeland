@@ -1661,12 +1661,6 @@ var advisors = function()
       self.ctc();
     },
     self.delay_adv_thread, //click
-    noop, //end
-
-    noop, //begin
-    ffunc, //tick
-    noop, //draw
-    ffunc, //click
     function(){ //end
       self.pool_thread(function(){ return self.time_passed(500); }, tut_cycle_rain);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
@@ -1679,7 +1673,7 @@ var advisors = function()
       self.set_advisor(ADVISOR_TYPE_FARMER);
       for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
       {
-        var t = gg.b.tile_groups[TILE_TYPE_FARM];
+        var t = gg.b.tile_groups[TILE_TYPE_FARM][i];
         if(t.nutrition < nutrition_desperate) { self.heap.t = t; break; }
       }
       self.dotakeover();
@@ -1729,7 +1723,7 @@ var advisors = function()
       self.set_advisor(ADVISOR_TYPE_MAYOR);
       for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
       {
-        var t = gg.b.tile_groups[TILE_TYPE_LAKE];
+        var t = gg.b.tile_groups[TILE_TYPE_LAKE][i];
         if(t.nutrition > water_fouled_threshhold) { self.heap.t = t; break; }
       }
       self.dotakeover();
@@ -1768,7 +1762,7 @@ var advisors = function()
       var f;
       for(var i = 0; i < gg.farmbits.length; i++)
       {
-        f = gg.farmbits;
+        f = gg.farmbits[i];
         if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
       }
       self.dotakeover();
@@ -1779,7 +1773,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       gg.ctx.textAlign = "center";
-      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
+      self.onscreentextat(TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
       self.ctc();
     },
     self.delay_adv_thread, //click
@@ -1809,7 +1803,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("This will make them sad."); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("That way everyone stays happy and ready to work!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -1866,11 +1860,11 @@ var advisors = function()
     self.delay_adv_thread, //click
     function() { //end
       keycatch.key({key:"u"});
-      self.pool_thread(function(){ return self.time_passed(4000); }, tut_rain);
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_rain);
       self.pool_thread(function(){
         for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
         {
-          var t = gg.b.tile_groups[TILE_TYPE_FARM];
+          var t = gg.b.tile_groups[TILE_TYPE_FARM][i];
           if(t.nutrition < nutrition_desperate) return 1;
         }
         return 0;
@@ -1878,7 +1872,7 @@ var advisors = function()
       self.pool_thread(function(){
         for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
         {
-          var t = gg.b.tile_groups[TILE_TYPE_LAKE];
+          var t = gg.b.tile_groups[TILE_TYPE_LAKE][i];
           if(t.nutrition > water_fouled_threshhold) return 1;
         }
         return 0;
@@ -1886,7 +1880,7 @@ var advisors = function()
       self.pool_thread(function(){
         for(var i = 0; i < gg.farmbits.length; i++)
         {
-          var f = gg.farmbits;
+          var f = gg.farmbits[i];
           if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) return 1;
         }
         return 0;
