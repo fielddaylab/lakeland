@@ -38,7 +38,7 @@ var nutrition_desperate = 10000;
 var nutrition_motivated = 20000;
 var nutrition_content = 50000;
 
-var fullness_depletion_rate    = 0.999;
+var fullness_depletion_rate    = 0.9995;
 var energy_depletion_rate      = 0.999;
 var joy_depletion_rate         = 0.999;
 var fulfillment_depletion_rate = 0.999;
