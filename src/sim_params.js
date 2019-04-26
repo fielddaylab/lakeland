@@ -38,7 +38,7 @@ var nutrition_desperate = 10000;
 var nutrition_motivated = 20000;
 var nutrition_content = 50000;
 
-var fullness_depletion_rate    = 0.9995;
+var fullness_depletion_rate    = 0.9997;
 var energy_depletion_rate      = 0.999;
 var joy_depletion_rate         = 0.999;
 var fulfillment_depletion_rate = 0.999;
@@ -60,7 +60,7 @@ var farm_nutrition_uptake_max = 40; //+v
 var farm_nutrition_uptake_min = 5; //+v //difference created out of thin air!
 var farm_nutrition_req = 100000;
 var farm_nutrition_fertilize_threshhold = nutrition_percent*20;
-var fertilizer_nutrition = farm_nutrition_req*4;
+var fertilizer_nutrition = farm_nutrition_req*2;
 var water_fouled_threshhold = nutrition_percent*10;
 var livestock_poop_t = 8000;
 var livestock_milk_t = 1;
