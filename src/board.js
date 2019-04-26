@@ -1298,7 +1298,7 @@ var tile = function()
   self.i = 0;
   self.og_type = TILE_TYPE_LAND;
   self.type = TILE_TYPE_LAND;
-  self.state = TILE_STATE_LAND_D0+randIntBelowBias0(land_detail_levels);
+  self.state = TILE_STATE_LAND_D0+floor(bias0(bias0(bias0(rand())))*land_detail_levels*0.99);
   self.state_t = 0;
   self.val = 0;
   self.nutrition = 0;
@@ -1511,7 +1511,6 @@ var board = function()
 
   self.raining = 0;
   self.nutrition_view = 0;
-  self.shed_view = 1;
   self.spewing_road = 0;
 
   self.walk_speed = min(self.tww,self.twh)/road_walkability; //MUST BE < tile_w/max_walk_modifier
@@ -2791,7 +2790,7 @@ var board = function()
         break;
       case TILE_TYPE_LAND:
       {
-        var p = floor(min(0.99,t.shed_d/100)*land_topo_levels);
+        var p = floor(clamp(0,0.99,1-(t.shed_d/100))*land_topo_levels);
         var d = clamp(0,land_detail_levels-1,t.state-TILE_STATE_LAND_D0);
         var f = floor((gg.t_mod_twelve_pi*10+t.tx*5+t.ty*12)/20)%land_frames;
         self.atlas.blitWholeSprite(self.atlas_i[TILE_TYPE_COUNT+land_off(p,d,f)]+off,x,y,gg.ctx);
@@ -2873,40 +2872,6 @@ var board = function()
         var t = self.tiles[i];
         self.draw_tile_fast(t,x,dy,tw,dth,xd,yd);
         i++;
-      }
-    }
-    self.shed_view = 0;
-    if(self.shed_view)
-    {
-      var i = 0;
-      var a;
-      gg.ctx.fillStyle = "#004400";
-      ny = floor(self.y+self.h-(0*h));
-      for(var ty = 0; ty < self.th; ty++)
-      {
-        y = ny;
-        ny = floor(self.y+self.h-(ty+1)*h);
-        th = y-ny;
-        nx = floor(self.x+(0*w));
-        if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
-        for(var tx = 0; tx < self.tw; tx++)
-        {
-          x = nx;
-          nx = floor(self.x+((tx+1)*w));
-          tw = nx-x;
-          if(x < -tw || x > gg.canvas.width) { i++; continue; }
-          t = self.tiles[i];
-          if(t.type == TILE_TYPE_LAND)
-          {
-            a = 0.2-min(t.shed_d/100,0.2);
-            if(a > 0.05)
-            {
-              gg.ctx.globalAlpha = a;
-              gg.ctx.fillRect(x,ny,tw,th);
-            }
-          }
-          i++;
-        }
       }
     }
     if(self.nutrition_view)
@@ -3051,8 +3016,14 @@ var board = function()
     }
 
     {
+      /*
       gg.ctx.strokeStyle = red;
-      //gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
+      gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
+      gg.ctx.strokeStyle = green;
+      gg.ctx.strokeRect(self.vbounds_x,self.vbounds_y,self.vbounds_w,self.vbounds_h);
+      gg.ctx.strokeStyle = blue;
+      gg.ctx.strokeRect(self.cbounds_x,self.cbounds_y,self.cbounds_w,self.cbounds_h);
+      //*/
       gg.ctx.drawImage(clouds_img,self.cloud_x,self.cloud_y,self.cloud_w,self.cloud_h);
       gg.ctx.fillStyle = "rgba(255,255,255,0.9)";
       if(self.cloud_x              > 0)                gg.ctx.fillRect(0,0,self.cloud_x,gg.canvas.height);

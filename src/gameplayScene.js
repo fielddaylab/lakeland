@@ -58,6 +58,11 @@ var GamePlayScene = function()
           if(b.home) b.home.state = TILE_STATE_HOME_OCCUPIED;
         }
           break;
+        case "k":
+        {
+          if(gg.farmbits.length) gg.farmbits[0].die();
+        }
+          break;
       }
     }
   }
