@@ -1552,12 +1552,12 @@ var advisors = function()
 
   var tut_cycle_rain = [
     function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
+    function(){ return self.time_passed(400); }, //tick
     noop, //draw
     ffunc, //click
     function(){ //end
       gg.b.raining = 0;
-      self.pool_thread(function(){ return self.time_passed(1000); }, tut_cycle_rain);
+      self.pool_thread(function(){ return self.time_passed(800); }, tut_cycle_rain);
     },
   ];
 
@@ -1574,7 +1574,7 @@ var advisors = function()
     noop, //end
 
     noop, //begin
-    function(){ return self.time_passed(1000); }, //tick
+    function(){ return self.time_passed(400); }, //tick
     noop, //draw
     ffunc, //click
     noop, //end
@@ -1668,8 +1668,55 @@ var advisors = function()
     noop, //draw
     ffunc, //click
     function(){ //end
-      self.pool_thread(function(){ return self.time_passed(1000); }, tut_cycle_rain);
+      self.pool_thread(function(){ return self.time_passed(500); }, tut_cycle_rain);
     },
+  ];
+
+  var tut_low_nutrients = [
+    function(){ //begin
+      self.set_advisor(ADVISOR_TYPE_FARMER);
+      for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
+      {
+        var t = gg.b.tile_groups[TILE_TYPE_FARM];
+        if(t.nutrition < nutrition_desperate) { self.heap.t = t; break; }
+      }
+      self.dotakeover();
+      self.push_blurb("Your farm has used up all the nutrition at its tile!");
+    },
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var t = self.heap.t;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("This farm will grow very slowly"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var t = self.heap.t;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h);
+      self.ctc();
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Maybe you can produce more fertilizer?"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var t = self.heap.t;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h);
+      self.ctc();
+    },
+    self.adv_thread, //click
+    noop, //end
   ];
 
   var tut_fertilize = [
@@ -1715,6 +1762,14 @@ var advisors = function()
     function() { //end
       keycatch.key({key:"u"});
       self.pool_thread(function(){ return self.time_passed(4000); }, tut_rain);
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
+        {
+          var t = gg.b.tile_groups[TILE_TYPE_FARM];
+          if(t.nutrition < nutrition_desperate) return 1;
+        }
+        return 0;
+      }, tut_low_nutrients);
     },
   ];
 
