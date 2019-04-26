@@ -3121,7 +3121,7 @@ var item = function()
         break;
       case ITEM_TYPE_MILK: gg.ctx.drawImage(milk_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(valuable_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_FERTILIZER: gg.ctx.drawImage(fertilizer_img,self.x,y,self.w,h); break;
+      case ITEM_TYPE_FERTILIZER: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
     }
     if(self.sale)
     {
