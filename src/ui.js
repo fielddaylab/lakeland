@@ -1702,7 +1702,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.ctx.textAlign = "center";
-      self.onscreentextat(TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h);
+      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
       self.ctc();
     },
     self.adv_thread, //click
@@ -1714,12 +1714,113 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.ctx.textAlign = "center";
-      self.onscreentextat(TEXT_TYPE_DISMISS,i.x+i.w/2,i.y-i.h);
+      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
       self.ctc();
     },
     self.adv_thread, //click
     function(){
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'low_nutrients'});
+    }, //end
+  ];
+
+  var tut_bloom = [
+    function(){ //begin
+      gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'bloom'});
+      self.set_advisor(ADVISOR_TYPE_MAYOR);
+      for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
+      {
+        var t = gg.b.tile_groups[TILE_TYPE_LAKE];
+        if(t.nutrition > water_fouled_threshhold) { self.heap.t = t; break; }
+      }
+      self.dotakeover();
+      self.push_blurb("Uh oh. Looks like there's an algae bloom starting!");
+    },
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var t = self.heap.t;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Let's be careful to not make this worse!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var t = self.heap.t;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
+      self.ctc();
+    },
+    self.adv_thread, //click
+    function(){
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'bloom'});
+    }, //end
+  ];
+
+  var tut_gross = [
+    function(){ //begin
+      gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'gross'});
+      self.set_advisor(ADVISOR_TYPE_MAYOR);
+      var f;
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        f = gg.farmbits;
+        if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
+      }
+      self.dotakeover();
+      self.push_blurb("Ew- "+f.name+" is swimming in algae bloom.");
+    },
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,t.x+t.w/2,t.y-t.h);
+      self.ctc();
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("This will make them sad."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
+      self.ctc();
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
+      self.ctc();
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("This will make them sad."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      gg.ctx.textAlign = "center";
+      self.onscreentextat(TEXT_TYPE_DISMISS,f.x+f.w/2,f.y-f.h);
+      self.ctc();
+    },
+    self.adv_thread, //click
+    function(){
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross'});
     }, //end
   ];
 
@@ -1774,6 +1875,22 @@ var advisors = function()
         }
         return 0;
       }, tut_low_nutrients);
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
+        {
+          var t = gg.b.tile_groups[TILE_TYPE_LAKE];
+          if(t.nutrition > water_fouled_threshhold) return 1;
+        }
+        return 0;
+      }, tut_bloom);
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits;
+          if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) return 1;
+        }
+        return 0;
+      }, tut_gross);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'fertilize'});
     },
   ];
