@@ -405,7 +405,9 @@ var closest_unlocked_nutrientdeficient_tile_from_list = function(goal, threshhol
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.nutrition >= threshhold || !gg.b.tile_in_bounds(t)) continue;
+    var n = t.nutrition;
+    if(t.fertilizer) n += t.fertilizer.state;
+    if(t.lock || n >= threshhold || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
