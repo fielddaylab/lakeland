@@ -367,7 +367,9 @@ var closest_unlocked_nutrientsufficient_tile_from_list = function(goal, threshho
   for(var i = 0; i < list.length; i++)
   {
     var t = list[i];
-    if(t.lock || t.nutrition < threshhold || !gg.b.tile_in_bounds(t)) continue;
+    var n = t.nutrition;
+    if(t.fertilizer) n += t.fertilizer.state;
+    if(t.lock || n < threshhold || !gg.b.tile_in_bounds(t)) continue;
     d = distsqr(goal.tx,goal.ty,t.tx,t.ty);
     if(d < closest_d)
     {
@@ -1293,6 +1295,7 @@ var tile = function()
   self.shed_d = 999;
   self.directions = [];
   self.directions_dirty = 1;
+  self.fertilizer = 0;
   self.tx = 0;
   self.ty = 0;
   self.i = 0;
@@ -2396,7 +2399,10 @@ var board = function()
   }
   self.dragFinish = function(evt)
   {
-    if(self.dragging_t/(DOUBLETIME*3+1) < 20)
+    var t = 1;
+    if(DOUBLETIME) t *= 4;
+    if(QUADRUPLETIME*DOUBLETIME) t *= 4;
+    if(self.dragging_t/t < 20)
       self.click(evt);
   }
 
@@ -3089,6 +3095,7 @@ var item = function()
     if(abs(self.wvy) < 0.01) self.wvy = 0;
     if(self.wz < 0.01 && abs(self.wvz) < 0.1) { self.wvz = 0; self.wz = 0; }
 
+    var ot = self.tile;
     self.tile = gg.b.tiles_wt(self.wx,self.wy);
     switch(self.type)
     {
@@ -3101,7 +3108,24 @@ var item = function()
           self.wvx += (self.tile.shed.tx-self.tile.tx)*0.01;
           self.wvy += (self.tile.shed.ty-self.tile.ty)*0.01;
         }
-        if(self.state <= 0) break_item(self);
+        if(ot != self.tile)
+        {
+          ot.fertilizer = 0;
+          if(self.tile.fertilizer)
+          {
+            self.tile.fertilizer += self.state;
+            break_item(self);
+            return;
+          }
+          else
+            self.tile.fertilizer = self;
+        }
+        if(self.state <= 0)
+        {
+          self.tile.fertilizer = 0;
+          break_item(self);
+          return;
+        }
         break;
     }
   }
@@ -3908,11 +3932,7 @@ var farmbit = function()
 
             //t.nutrition += farm_nutrition_req;
 
-            var it;
-            for(var i = 0; i < gg.items.length; i++)
-              if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
-               it = gg.items[i];
-
+            var it = t.fertilizer;
             if(!it)
             {
               it = new item();
@@ -3924,6 +3944,7 @@ var farmbit = function()
               gg.items.push(it);
             }
             it.state += fertilizer_nutrition;
+            t.fertilizer = it;
 
             self.fulfillment += fertilize_fulfillment;
             self.calibrate_stats();

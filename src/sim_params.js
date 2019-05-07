@@ -1,5 +1,6 @@
 var RESUME_SIM = 1;
 var DOUBLETIME = 0;
+var QUADRUPLETIME = 0;
 
 var board_w = 50;
 var board_h = 50;

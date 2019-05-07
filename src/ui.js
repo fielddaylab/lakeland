@@ -784,24 +784,20 @@ var inspector = function()
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
         y += self.pad;
-        var nfertz = 0;
-        for(var i = 0; i < gg.items.length; i++)
+        var n_fertz = ceil(t.fertilizer.state/fertilizer_nutrition);
+        if(n_fertz)
         {
-          if(gg.items[i].type == ITEM_TYPE_FERTILIZER && gg.items[i].tile == t)
+          draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
+          x += self.pad*3;
+          for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
           {
-            nfertz++;
-            draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(gg.items[i].state%fertilizer_nutrition)/fertilizer_nutrition);
+            draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
             x += self.pad*3;
-            for(var j = 0; (j+1)*fertilizer_nutrition < gg.items[i].state; j++)
-            {
-              draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-              x += self.pad*3;
-            }
-            break;
           }
+          break;
         }
         y += self.pad;
-        if(!nfertz) gg.ctx.fillText("[None]",self.x+self.pad,y);
+        if(!t.fertilizer) gg.ctx.fillText("[None]",self.x+self.pad,y);
         y += self.pad;
       }
         break;

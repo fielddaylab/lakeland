@@ -9,6 +9,7 @@ var GamePlayScene = function()
     {
       switch(evt.key)
       {
+        case "q": QUADRUPLETIME = !QUADRUPLETIME; break;
         case "d": DOUBLETIME = !DOUBLETIME; break;
         case "p": RESUME_SIM = !RESUME_SIM; break;
         case "n": gg.b.nutrition_view = !gg.b.nutrition_view; break;
@@ -128,7 +129,8 @@ var GamePlayScene = function()
   {
     if(RESUME_SIM && !gg.advisors.takeover)
     {
-    if(DOUBLETIME) times = 4;
+    if(DOUBLETIME) times *= 4;
+    if(QUADRUPLETIME*DOUBLETIME) times *= 4;
     gg.t_mod_twelve_pi += 0.01*times;
     if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
     }
