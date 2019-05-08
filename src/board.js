@@ -3734,35 +3734,43 @@ var farmbit = function()
             var o = self.job_object;
             var t = self.job_object.tile;
 
-            if(o.thing == THING_TYPE_ITEM)
+            if(gg.b.raining)
             {
-              if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
-                self.walk_toward_item(o);
-              else
-              {
-                self.item = o;
-                self.job_state = JOB_STATE_SEEK;
-                self.job_state_t = 0;
-              }
+              self.job_state = JOB_STATE_SEEK;
+              self.job_state_t = 0;
             }
-            else if(self.job_object.thing == THING_TYPE_TILE)
+            else
             {
-              if(self.tile != t.tile)
-                self.walk_toward_tile(t);
-              else
+              if(o.thing == THING_TYPE_ITEM)
               {
-                //pop water
-                var it = new item();
-                it.type = ITEM_TYPE_WATER;
-                it.tile = t;
-                gg.b.tiles_tw(it.tile,it);
-                kick_item(it);
-                gg.items.push(it);
-                self.lock_object(it);
+                if(self.tile != t || abs(o.wvz) > 0.01 || o.wz > 0.01)
+                  self.walk_toward_item(o);
+                else
+                {
+                  self.item = o;
+                  self.job_state = JOB_STATE_SEEK;
+                  self.job_state_t = 0;
+                }
+              }
+              else if(self.job_object.thing == THING_TYPE_TILE)
+              {
+                if(self.tile != t.tile)
+                  self.walk_toward_tile(t);
+                else
+                {
+                  //pop water
+                  var it = new item();
+                  it.type = ITEM_TYPE_WATER;
+                  it.tile = t;
+                  gg.b.tiles_tw(it.tile,it);
+                  kick_item(it);
+                  gg.items.push(it);
+                  self.lock_object(it);
 
-                self.job_object = it;
-                self.job_state = JOB_STATE_GET;
-                self.job_state_t = 0;
+                  self.job_object = it;
+                  self.job_state = JOB_STATE_GET;
+                  self.job_state_t = 0;
+                }
               }
             }
           }
@@ -3770,8 +3778,11 @@ var farmbit = function()
           case JOB_STATE_SEEK:
           {
             var t = self.job_subject;
-            self.item.wvx += (self.wx-self.item.wx)*0.01;
-            self.item.wvy += (self.wy-self.item.wy)*0.01;
+            if(self.item)
+            {
+              self.item.wvx += (self.wx-self.item.wx)*0.01;
+              self.item.wvy += (self.wy-self.item.wy)*0.01;
+            }
             if(self.tile != t)
               self.walk_toward_tile(t);
             else
@@ -3786,7 +3797,7 @@ var farmbit = function()
             self.release_locks();
             var t = self.job_subject;
 
-            break_item(self.item);
+            if(self.item) break_item(self.item); //no item if it was raining
             self.item = 0;
 
             t.state = TILE_STATE_FARM_PLANTED;
