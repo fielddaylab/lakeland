@@ -1236,6 +1236,8 @@ var advisors = function()
     self.popup_w = 200*gg.stage.s_mod;
     self.font_size = gg.font_size;
     self.font = self.font_size+"px "+gg.font;
+    self.title_font_size = self.font_size*1.5;
+    self.title_font = self.title_font_size+"px "+gg.font;
   }
   self.resize();
 
@@ -1250,6 +1252,9 @@ var advisors = function()
   self.mayor_active    = 0;
   self.business_active = 0;
   self.farmer_active   = 0;
+
+  self.popup_h = 0;
+  self.target_popup_h = 0;
 
   self.triggers = [];
   self.trigger_threads = [];
@@ -1312,16 +1317,17 @@ var advisors = function()
   }
   self.arrow = function(x,y)
   {
-    var t = min(1,self.thread_t/100);
-    gg.ctx.globalAlpha = min(1,t*6);
+    var t = (self.thread_t%100)/100;
+    gg.ctx.globalAlpha = min(1,self.thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     drawArrow(x+30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
     gg.ctx.globalAlpha = 1;
   }
   self.popup = function(type)
   {
+    var p = self.font_size;
     var x = gg.canvas.width/2;
-    var y = gg.canvas.height/2;
+    var y = gg.canvas.height-p;
     var t = min(1,self.thread_t/100);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     var txt_fmt;
@@ -1331,48 +1337,63 @@ var advisors = function()
       case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
       case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
     }
-    var h = self.font_size*txt_fmt.length;
-    var w = self.popup_w;
-    var p = self.font_size;
-    w += p*2;
-    h += p*2;
+    var h = self.font_size*txt_fmt.length+self.title_font_size+p*3;
+    if(type == TEXT_TYPE_DISMISS) h += self.font_size+p;
+    self.target_popup_h = h;
+    var w = self.popup_w+p*2;
     x -= w/2;
+    y -= h;
+
+    gg.ctx.fillStyle = light_gray;
+    gg.ctx.strokeStyle = gray;
+    if(self.popup_h < 100) gg.ctx.globalAlpha = min(1,t*6);
+    gg.ctx.textAlign = "left";
+
+    //circle
     var cx = 0;
     var cy = 0;
     var cs = p*3;
-    gg.ctx.fillStyle = light_gray;
-    gg.ctx.strokeStyle = gray;
-    gg.ctx.globalAlpha = min(1,t*6);
-    gg.ctx.textAlign = "left";
-    gg.ctx.font = self.font;
-    if(self.advisor)
-    {
-      gg.ctx.beginPath();
-      cx = x-cs/2;
-      cy = y-cs/2;
-      gg.ctx.arc(cx,cy,cs,0,twopi);
-      gg.ctx.fill();
-      gg.ctx.stroke();
-    }
+    gg.ctx.beginPath();
+    cx = x-cs/2;
+    cy = y-cs/2;
+    gg.ctx.arc(cx,cy,cs,0,twopi);
+    gg.ctx.fill();
+    gg.ctx.stroke();
     switch(self.advisor)
     {
       case ADVISOR_TYPE_MAYOR:    gg.ctx.drawImage(mayor_img,    cx-cs/2, cy-cs/2, cs, cs); break;
       case ADVISOR_TYPE_BUSINESS: gg.ctx.drawImage(business_img, cx-cs/2, cy-cs/2, cs, cs); break;
       case ADVISOR_TYPE_FARMER:   gg.ctx.drawImage(farmer_img,   cx-cs/2, cy-cs/2, cs, cs); break;
     }
-    switch(type)
-    {
-      case TEXT_TYPE_OBSERVE: gg.ctx.fillStyle = gray;  break;
-      case TEXT_TYPE_DISMISS: gg.ctx.fillStyle = white; break;
-      case TEXT_TYPE_DIRECT:  gg.ctx.fillStyle = green; break;
-      default:                gg.ctx.fillStyle = white; break;
-    }
-    gg.ctx.strokeStyle = black;
-    fillRRect(x-p,y-p,w,h,p,gg.ctx);
+
+    //bubble
+    gg.ctx.strokeStyle = "#1A355D";
+    gg.ctx.fillStyle = "#9DE7E5";
+    fillRRect(x-p,y-p+(self.target_popup_h-self.popup_h),w,self.popup_h,p,gg.ctx);
     gg.ctx.stroke();
-    gg.ctx.fillStyle = black;
+    gg.ctx.fillStyle = "#1A355D";
+
+    var ty = y+self.title_font_size;
+    gg.ctx.font = self.title_font;
+    switch(self.advisor)
+    {
+      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x, ty); break;
+      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x, ty); break;
+      case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x, ty); break;
+    }
+
+    ty += p+self.font_size;
+    gg.ctx.font = self.font;
     for(var i = 0; i < txt_fmt.length; i++)
-      gg.ctx.fillText(txt_fmt[i],x,y+self.font_size*(i+1));
+      gg.ctx.fillText(txt_fmt[i],x,ty+self.font_size*i);
+
+    if(type == TEXT_TYPE_DISMISS)
+    {
+      ty += p+self.font_size*txt_fmt.length;
+      gg.ctx.fillStyle = gray;
+      gg.ctx.fillText("(click anywhere to continue)", x, ty);
+    }
+
     gg.ctx.globalAlpha = 1;
   }
   self.ctc = function()
@@ -1502,6 +1523,7 @@ var advisors = function()
   self.draw = function()
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
+    self.target_popup_h = 0; //gets set in thread draw
     if(self.thread)
       self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_DRAW]();
     else
@@ -1528,6 +1550,7 @@ var advisors = function()
       if(self.farmer_active)   { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(farmer_img,x+p,y+p,w-p*2,h-p*4);   gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
       x += w*1.5;
     }
+    self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
   }
 
   var tut_cycle_rain = [
@@ -1547,7 +1570,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1569,7 +1591,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1579,7 +1600,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1589,7 +1609,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1599,7 +1618,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1621,7 +1639,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1631,7 +1648,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     function(){ //end
@@ -1658,7 +1674,6 @@ var advisors = function()
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1670,7 +1685,6 @@ var advisors = function()
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -1682,7 +1696,6 @@ var advisors = function()
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     function(){
@@ -1708,7 +1721,6 @@ var advisors = function()
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1720,7 +1732,6 @@ var advisors = function()
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     function(){
@@ -1747,7 +1758,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1759,7 +1769,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -1771,7 +1780,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -1783,7 +1791,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     function(){
@@ -1805,7 +1812,6 @@ var advisors = function()
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w/2,i.y+i.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1817,7 +1823,6 @@ var advisors = function()
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w/2,i.y+i.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -1827,7 +1832,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     function() { //end
@@ -1866,7 +1870,6 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1875,7 +1878,6 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1886,7 +1888,6 @@ var advisors = function()
       var b = gg.shop.livestock_btn;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(b.x+b.w+20,b.y+b.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     function() { //end
@@ -1903,7 +1904,6 @@ var advisors = function()
       var b = gg.playhead.speed_btn;
       self.popup(TEXT_TYPE_DIRECT);
       self.arrow(b.x+b.w/2,b.y+b.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     function() { //end
@@ -1924,7 +1924,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1934,7 +1933,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1947,7 +1945,6 @@ var advisors = function()
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w/2,i.y+i.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1959,7 +1956,6 @@ var advisors = function()
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w/2,i.y+i.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -1971,7 +1967,6 @@ var advisors = function()
       var b = gg.playhead.play_btn;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(b.x+b.w/2,b.y+b.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -2003,7 +1998,6 @@ var advisors = function()
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2031,7 +2025,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2043,7 +2036,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -2062,7 +2054,6 @@ var advisors = function()
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2073,7 +2064,6 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(gg.shop.x+gg.shop.w,gg.shop.y+40);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2084,7 +2074,6 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(gg.shop.x+gg.shop.w,gg.shop.y+40);
-      self.ctc();
     },
     self.adv_thread, //click
     function() { //end
@@ -2100,7 +2089,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2110,7 +2098,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2123,7 +2110,6 @@ var advisors = function()
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -2143,7 +2129,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -2164,7 +2149,6 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.adv_thread, //click
     noop, //end
@@ -2215,7 +2199,6 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2226,8 +2209,8 @@ var advisors = function()
       self.wash();
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x+b.w/2,b.y+b.h/2);
       gg.nutrition_toggle.draw();
+      self.arrow(b.x+b.w/2,b.y+b.h/2);
     },
     ffunc, //click
     function() { //end
@@ -2249,7 +2232,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2259,7 +2241,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2269,7 +2250,6 @@ var advisors = function()
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2321,7 +2301,6 @@ var advisors = function()
       self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w/2,t.y+t.h/2);
-      self.ctc();
     }, //draw
     self.delay_adv_thread, //click
     noop, //end
@@ -2344,7 +2323,6 @@ var advisors = function()
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc();
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2357,7 +2335,7 @@ var advisors = function()
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w/2,f.y+f.h/2);
-      self.ctc(); },
+    },
     self.adv_thread, //click
     function() { //end
       self.pool_thread(function(){ return self.time_passed(100); }, tut_build_a_farm);
