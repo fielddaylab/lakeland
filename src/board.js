@@ -3223,6 +3223,7 @@ var item = function()
     {
       gg.ctx.fillStyle = black;
       gg.ctx.fillText("4SALE",self.x,self.y+self.h/3);
+      gg.ctx.fillText("$"+worth_for_item(self.type),self.x,self.y+self.h);
     }
   }
 }

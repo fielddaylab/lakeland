@@ -155,10 +155,12 @@ var playhead = function()
     if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
     gg.ctx.globalAlpha = 1;
   }
+
 }
 
 var nutrition_toggle = function()
 {
+
   var self = this;
   self.resize = function()
   {
@@ -194,6 +196,7 @@ var nutrition_toggle = function()
     if(self.toggle_btn.active)
       draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,gg.b.nutrition_view);
   }
+
 }
 
 var shop = function()
@@ -478,6 +481,7 @@ var shop = function()
 
     gg.ctx.textAlign = "left";
   }
+
 }
 
 var inspector = function()
@@ -1640,7 +1644,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.push_blurb("It might shift around some nutrients,"); }, //begin
@@ -1649,7 +1653,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.push_blurb("But that's nothing some more manure can't fix!"); }, //begin
@@ -1658,7 +1662,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     noop, //begin
@@ -1679,7 +1683,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.push_blurb("Back to work, everybody!"); }, //begin
@@ -1688,7 +1692,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     function(){ //end
       self.pool_thread(function(){ return self.time_passed(500); }, tut_cycle_rain);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
@@ -1918,7 +1922,7 @@ var advisors = function()
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock. They might be able to help with that!"); }, //begin
@@ -1973,7 +1977,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
 
@@ -1985,7 +1989,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w/2,i.y+i.h/2);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("Let's sell the surplus."); },//begin
@@ -1996,7 +2000,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w/2,i.y+i.h/2);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0; self.push_blurb("First, we'll pause the game.");}, //begin
@@ -2104,7 +2108,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(gg.shop.x+gg.shop.w,gg.shop.y+40);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("Save up for an additional farm."); },//begin
@@ -2138,7 +2142,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will eventually need some food..."); },//begin
@@ -2270,9 +2274,9 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.wash();
-      self.popup(TEXT_TYPE_CONFIRM);
+      self.popup(TEXT_TYPE_DISMISS);
     },
-    self.confirm_adv_thread, //click
+    self.delay_adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("I'm the Mayor!"); },//begin
@@ -2281,7 +2285,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("Buy your first house."); },//begin
@@ -2290,7 +2294,7 @@ var advisors = function()
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
-    self.delay_adv_thread, //click
+    self.adv_thread, //click
     noop, //end
 
     function(){ self.push_blurb("Click here to buy"); },//begin
