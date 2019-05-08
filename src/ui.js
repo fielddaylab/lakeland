@@ -810,6 +810,7 @@ var inspector = function()
             draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
             x += self.pad*3;
           }
+          y += self.pad*2;
           break;
         }
         y += self.pad;
@@ -2222,7 +2223,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("(Click at anytime to toggle nutrition view)"); },//begin
+    function(){ self.push_blurb("(Click at any time to toggle nutrition view)"); },//begin
     function(){ return !gg.b.nutrition_view; }, //tick
     function(){ //draw
       self.wash();
