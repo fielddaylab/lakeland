@@ -1241,6 +1241,9 @@ var advisors = function()
   }
   self.resize();
 
+  self.bgc = "#9DE7E5";
+  self.fgc = "#1A355D";
+
   var ENUM = 0;
   var THREADF_TYPE_BEGIN = ENUM; ENUM++;
   var THREADF_TYPE_TICK  = ENUM; ENUM++;
@@ -1367,11 +1370,11 @@ var advisors = function()
     }
 
     //bubble
-    gg.ctx.strokeStyle = "#1A355D";
-    gg.ctx.fillStyle = "#9DE7E5";
+    gg.ctx.fillStyle = self.bgc;
+    gg.ctx.strokeStyle = self.fgc;
     fillRRect(x-p,y-p+(self.target_popup_h-self.popup_h),w,self.popup_h,p,gg.ctx);
     gg.ctx.stroke();
-    gg.ctx.fillStyle = "#1A355D";
+    gg.ctx.fillStyle = self.fgc;
 
     var ty = y+self.title_font_size;
     gg.ctx.font = self.title_font;
@@ -1534,20 +1537,20 @@ var advisors = function()
       var y = gg.canvas.height-h;
       var p = w/10;
       gg.ctx.textAlign = "left";
-      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.fillStyle = self.fgc;
       gg.ctx.fillText("ADVISORS",x,y-p);
       gg.ctx.textAlign = "center";
-      gg.ctx.fillStyle = white;
-      gg.ctx.strokeStyle = gray;
-      if(self.mayor_active)    { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(mayor_img,x+p,y+p,w-p*2,h-p*4);    gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("MAYOR",x+w/2,y+h-p); }
-      gg.ctx.fillStyle = white;
-      gg.ctx.strokeStyle = gray;
+      gg.ctx.strokeStyle = self.fgc;
+      gg.ctx.fillStyle = self.bgc;
+      if(self.mayor_active)    { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(mayor_img,x+p,y+p,w-p*2,h-p*4);    gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("MAYOR",x+w/2,y+h-p); }
+      gg.ctx.strokeStyle = self.fgc;
+      gg.ctx.fillStyle = self.bgc;
       x += w*1.5;
-      if(self.business_active) { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(business_img,x+p,y+p,w-p*2,h-p*4); gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("BUSINESS",x+w/2,y+h-p); }
-      gg.ctx.fillStyle = white;
-      gg.ctx.strokeStyle = gray;
+      if(self.business_active) { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(business_img,x+p,y+p,w-p*2,h-p*4); gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("BUSINESS",x+w/2,y+h-p); }
+      gg.ctx.strokeStyle = self.fgc;
+      gg.ctx.fillStyle = self.bgc;
       x += w*1.5;
-      if(self.farmer_active)   { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(farmer_img,x+p,y+p,w-p*2,h-p*4);   gg.ctx.fillStyle = gg.font_color; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
+      if(self.farmer_active)   { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(farmer_img,x+p,y+p,w-p*2,h-p*4);   gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
       x += w*1.5;
     }
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
