@@ -1872,6 +1872,42 @@ var board = function()
     }
   }
 
+  self.ampflow = function(from, to, amp) //"from"/"to" doesn't nec. imply direction: always from surplus to deficit
+  {
+    var d = from.nutrition-to.nutrition;
+    var dd;
+    if(
+      (d < 0 && from.type == TILE_TYPE_LAKE) ||
+      (d > 0 && to.type   == TILE_TYPE_LAKE)
+    )
+    { //destination is water
+      dd = d*watersnk_nutrition_flow_rate*amp;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+    else if(
+      (d > 0 && from.type == TILE_TYPE_LAKE) ||
+      (d < 0 && to.type   == TILE_TYPE_LAKE)
+    )
+    { //src is water
+      dd = d*watersrc_nutrition_flow_rate*amp;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+    else
+    { //anything else
+      dd = d*nutrition_flow_rate*amp;
+      d = floor(dd);
+      if(rand() < dd-d) d++;
+      from.nutrition -= d;
+      to.nutrition   += d;
+    }
+  }
+
   self.rainflow = function(t)
   {
     var dd = t.nutrition*rain_nutrition_flow_rate;
@@ -1883,9 +1919,10 @@ var board = function()
 
   self.init = function()
   {
-    var valid = false;
+    var valid = 0;
     while(!valid)
     {
+      valid = 1;
       for(var ty = 0; ty < self.th; ty++)
         for(var tx = 0; tx < self.tw; tx++)
         {
@@ -2038,46 +2075,57 @@ var board = function()
         var lake_border = grow_fill(t,TILE_TYPE_FOREST,lake_size,TILE_TYPE_LAND,0);
       }
 
+      var nlake = 0;
+      var nland = 0;
+      var ntiles = 0;
       for(var x = self.bounds_tx; x < self.bounds_tx+self.bounds_tw; x++)
       {
         for(var y = self.bounds_ty; y < self.bounds_ty+self.bounds_th; y++)
         {
           var t = self.tiles_t(x,y);
-          if(t.type == TILE_TYPE_LAKE) valid = 1;
+          switch(t.type)
+          {
+            case TILE_TYPE_LAKE: nlake++; break;
+            case TILE_TYPE_LAND: nland++; break;
+          }
+          ntiles++;
         }
       }
+      if(
+        nlake/ntiles < 0.05 || nlake/ntiles > 0.5 ||
+        nland/ntiles < 0.2
+      )
+        valid = 0;
+    }
 
-      //extra nutrition
-      for(var i = 0; i < 50; i++)
+    //extra nutrition
+    for(var i = 0; i < 50; i++)
+    {
+      var t = self.tiles[self.tiles_i(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th))];
+      t.nutrition = rand();
+      t.nutrition *= t.nutrition;
+      t.nutrition *= t.nutrition;
+      t.nutrition *= t.nutrition;
+      t.nutrition *= t.nutrition;
+      t.nutrition = floor(t.nutrition*nutrition_max);
+    }
+
+    //guarantee nutrition
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      var t = self.tiles[i];
+      if(self.tile_in_bounds(t) && t.type == TILE_TYPE_LAND)
       {
-        var t = self.tiles[self.tiles_i(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th))];
-        t.nutrition = rand();
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition *= t.nutrition;
-        t.nutrition = floor(t.nutrition*nutrition_max);
+        t.nutrition = floor(nutrition_motivated*1.1);
+        break;
       }
+    }
 
-      //guarantee nutrition
-      for(var i = 0; i < self.tiles.length; i++)
-      {
-        var t = self.tiles[i];
-        if(self.tile_in_bounds(t) && t.type == TILE_TYPE_LAND)
-        {
-          t.nutrition = floor(nutrition_motivated*1.1);
-          break;
-        }
-      }
-
-      //clear water
-      for(var i = 0; i < self.tiles.length; i++)
-      {
-        var t = self.tiles[i];
-        if(t.type == TILE_TYPE_LAKE) t.nutrition = 0;
-      }
-
-
+    //clear water
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      var t = self.tiles[i];
+      if(t.type == TILE_TYPE_LAKE) t.nutrition = 0;
     }
 
     //assign og
@@ -2144,29 +2192,13 @@ var board = function()
           var t = self.tiles[i];
           var right = self.safe_tiles_t(t.tx+1,t.ty  );
           var top   = self.safe_tiles_t(t.tx  ,t.ty+1);
-          if(right.type != TILE_TYPE_NULL) self.flow(t,right);
-          if(top.type != TILE_TYPE_NULL) self.flow(t,top);
+          if(right.type != TILE_TYPE_NULL) self.ampflow(t,right,4);
+          if(top.type != TILE_TYPE_NULL) self.ampflow(t,top,4);
         }
       }
       nutrition_flow_rate = nutrition_flow_rate_old;
       watersrc_nutrition_flow_rate = watersrc_nutrition_flow_rate_old;
       watersnk_nutrition_flow_rate = watersnk_nutrition_flow_rate_old;
-
-      /*
-      for(var i = 0; i < n; i++)
-      {
-        var t = self.tiles[i];
-        var fn = floor(t.nutrition/nutrition_percent);
-        var d = fn-t.known_nutrition;
-        if(d)
-        {
-          t.known_nutrition_d = d;
-          t.known_nutrition_t = 10;
-        }
-        else if(t.known_nutrition_t) t.known_nutrition_t--;
-        t.known_nutrition = fn;
-      }
-      */
     }
 
     self.inc_bounds();
