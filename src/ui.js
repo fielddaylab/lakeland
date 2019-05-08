@@ -26,6 +26,7 @@ var TEXT_TYPE_NULL    = ENUM; ENUM++;
 var TEXT_TYPE_OBSERVE = ENUM; ENUM++;
 var TEXT_TYPE_DISMISS = ENUM; ENUM++;
 var TEXT_TYPE_DIRECT  = ENUM; ENUM++;
+var TEXT_TYPE_CONFIRM = ENUM; ENUM++;
 var TEXT_TYPE_COUNT   = ENUM; ENUM++;
 
 ENUM = 0;
@@ -1357,8 +1358,9 @@ var advisors = function()
       case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
       case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
     }
-    var h = self.font_size*txt_fmt.length+self.title_font_size+p*3;
+    var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
     if(type == TEXT_TYPE_DISMISS) h += self.font_size+p;
+    if(type == TEXT_TYPE_CONFIRM) h += self.title_font_size+p;
     self.target_popup_h = h;
     var w = self.popup_w+p*2;
     x -= w/2;
@@ -1389,29 +1391,36 @@ var advisors = function()
     //bubble
     gg.ctx.fillStyle = self.bgc;
     gg.ctx.strokeStyle = self.fgc;
-    fillRRect(x-p,y-p+(self.target_popup_h-self.popup_h),w,self.popup_h,p,gg.ctx);
+    fillRRect(x,y+(self.target_popup_h-self.popup_h),w,self.popup_h,p,gg.ctx);
     gg.ctx.stroke();
     gg.ctx.fillStyle = self.fgc;
 
-    var ty = y+self.title_font_size;
+    var ty = y+p+self.title_font_size;
     gg.ctx.font = self.title_font;
     switch(self.advisor)
     {
-      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x, ty); break;
-      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x, ty); break;
-      case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x, ty); break;
+      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x+p, ty); break;
+      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x+p, ty); break;
+      case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x+p, ty); break;
     }
 
     ty += p+self.font_size;
     gg.ctx.font = self.font;
     for(var i = 0; i < txt_fmt.length; i++)
-      gg.ctx.fillText(txt_fmt[i],x,ty+self.font_size*i);
+      gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
 
     if(type == TEXT_TYPE_DISMISS)
     {
       ty += p+self.font_size*txt_fmt.length;
       gg.ctx.fillStyle = gray;
-      gg.ctx.fillText("(click anywhere to continue)", x, ty);
+      gg.ctx.fillText("(click anywhere to continue)", x+p, ty);
+    }
+    if(type == TEXT_TYPE_CONFIRM)
+    {
+      ty += p+self.font_size*(txt_fmt.length-1);
+      ty += self.title_font_size;
+      gg.ctx.font = self.title_font;
+      gg.ctx.fillText("CONFIRM", x+p, ty);
     }
 
     gg.ctx.globalAlpha = 1;
@@ -1499,6 +1508,11 @@ var advisors = function()
   self.delay_adv_thread = function()
   {
     if(self.thread_t > 30) self.adv_thread();
+  }
+  self.confirm_adv_thread = function()
+  {
+    var p = self.font_size;
+    gg.clicker.consumeif(gg.canvas.width/2-self.popup_w/2,gg.canvas.height-p*2-self.title_font_size,self.popup_w,self.title_font_size,self.adv_thread);
   }
 
   self.click = function(evt)
@@ -2251,9 +2265,9 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
+      self.popup(TEXT_TYPE_CONFIRM);
     },
-    self.delay_adv_thread, //click
+    self.confirm_adv_thread, //click
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("I'm the Mayor!"); },//begin
