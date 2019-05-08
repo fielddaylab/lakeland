@@ -2289,6 +2289,8 @@ var board = function()
         return buildability_check(TILE_TYPE_HOME,tile.type);
       case BUY_TYPE_FARM:
         return buildability_check(TILE_TYPE_FARM,tile.type);
+      case BUY_TYPE_FERTILIZER:
+        return tile.type == TILE_TYPE_FARM;
       case BUY_TYPE_LIVESTOCK:
         return buildability_check(TILE_TYPE_LIVESTOCK,tile.type);
       case BUY_TYPE_STORAGE:
@@ -2297,6 +2299,8 @@ var board = function()
         return buildability_check(TILE_TYPE_PROCESSOR,tile.type);
       case BUY_TYPE_SIGN:
         return buildability_check(TILE_TYPE_SIGN,tile.type);
+      case BUY_TYPE_SKIMMER:
+        return tile.type == TILE_TYPE_LAKE;
       case BUY_TYPE_ROAD:
         return (buildability_check(TILE_TYPE_ROAD,tile.type) || tile.type == TILE_TYPE_ROAD);
       case BUY_TYPE_DEMOLISH:
@@ -2442,6 +2446,29 @@ var board = function()
             }
             break;
 
+            case BUY_TYPE_FERTILIZER:
+            {
+              var it = self.hover_t.fertilizer;
+              if(!it)
+              {
+                it = new item();
+                it.type = ITEM_TYPE_FERTILIZER;
+                it.lock = 1; //permalocked
+                it.state = 0;
+                it.tile = self.hover_t;
+                gg.b.tiles_tw(it.tile,it);
+                gg.items.push(it);
+              }
+              it.state += fertilizer_nutrition;
+              self.hover_t.fertilizer = it;
+
+              gg.inspector.select_tile(self.hover_t);
+              gg.shop.selected_buy = 0;
+              self.hover_t_placable = 0;
+              return;
+            }
+            break;
+
             case BUY_TYPE_LIVESTOCK:
             {
               self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
@@ -2475,6 +2502,17 @@ var board = function()
             case BUY_TYPE_SIGN:
             {
               self.alterTile(self.hover_t,TILE_TYPE_SIGN);
+              gg.inspector.select_tile(self.hover_t);
+              gg.shop.selected_buy = 0;
+              self.hover_t_placable = 0;
+              return;
+            }
+            break;
+
+            case BUY_TYPE_SKIMMER:
+            {
+              self.hover_t.nutrition = 0;
+
               gg.inspector.select_tile(self.hover_t);
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;

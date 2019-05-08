@@ -363,6 +363,17 @@ var processor_img;
   ctx.fillRect(0,0,s,s);
 }
 
+var skimmer_img;
+{
+  var ctx;
+  var s = 10;
+  skimmer_img = GenIcon(s,s*1.25);
+  ctx = skimmer_img.context;
+  ctx.translate(0,s*0.25);
+  ctx.fillStyle = orange;
+  ctx.fillRect(0,0,s,s);
+}
+
 var sign_img;
 {
   var ctx;
