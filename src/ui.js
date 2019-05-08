@@ -795,28 +795,6 @@ var inspector = function()
         gg.ctx.fillStyle = gg.font_color;
         y += self.pad;
         y += self.pad;
-
-        var x = self.x+self.pad;
-        y += self.font_size;
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
-        y += self.pad;
-        var n_fertz = ceil(t.fertilizer.state/fertilizer_nutrition);
-        if(n_fertz)
-        {
-          draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
-          x += self.pad*3;
-          for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
-          {
-            draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-            x += self.pad*3;
-          }
-          y += self.pad*2;
-          break;
-        }
-        y += self.pad;
-        if(!t.fertilizer) gg.ctx.fillText("[None]",self.x+self.pad,y);
-        y += self.pad;
       }
         break;
       case TILE_TYPE_STORAGE:
@@ -843,6 +821,32 @@ var inspector = function()
       case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_LIVESTOCK:
         break;
+    }
+
+    if(t.type == TILE_TYPE_FARM || t.fertilizer)
+    {
+      var x = self.x+self.pad;
+      y += self.font_size;
+      gg.ctx.textAlign = "left";
+      gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
+      y += self.pad;
+      if(t.fertilizer)
+      {
+        draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
+        x += self.pad*3;
+        for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
+        {
+          draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
+          x += self.pad*3;
+        }
+        y += self.pad*2;
+      }
+      else
+      {
+        y += self.pad;
+        if(!t.fertilizer) gg.ctx.fillText("[None]",self.x+self.pad,y);
+        y += self.pad;
+      }
     }
 
     if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
@@ -1121,6 +1125,7 @@ var inspector = function()
 
   self.filter_farmbit = function(clicker,b)
   {
+    return 0;
     var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
     //gg.ctx.fillText(b.name,x,y);
     y += self.pad;
