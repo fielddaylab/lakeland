@@ -1790,7 +1790,7 @@ var board = function()
       case TILE_STATE_LIVESTOCK_MILKING:   return "Milking";    break;
       case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
       case TILE_STATE_STORAGE_UNASSIGNED:  return "Unassigned"; break;
-      case TILE_STATE_STORAGE_FOOD:        return "Food";       break;
+      case TILE_STATE_STORAGE_FOOD:        return "Corn";       break;
       case TILE_STATE_STORAGE_POOP:        return "Poop";       break;
       case TILE_STATE_STORAGE_MILK:        return "Milk";       break;
       case TILE_STATE_STORAGE_VALUABLE:    return "Valuable";   break;
@@ -1815,7 +1815,7 @@ var board = function()
     {
       case ITEM_TYPE_NULL:       return "Null";       break;
       case ITEM_TYPE_WATER:      return "Water";      break;
-      case ITEM_TYPE_FOOD:       return "Food";       break;
+      case ITEM_TYPE_FOOD:       return "Corn";       break;
       case ITEM_TYPE_POOP:       return "Poop";       break;
       case ITEM_TYPE_MILK:       return "Milk";       break;
       case ITEM_TYPE_VALUABLE:   return "Valuable";   break;
