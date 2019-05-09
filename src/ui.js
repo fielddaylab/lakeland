@@ -447,6 +447,11 @@ var shop = function()
 
     gg.ctx.drawImage(self.money_img, self.money_display.x,self.money_display.y,self.money_display.h,self.money_display.h);
     gg.ctx.fillText("$"+gg.money,self.money_display.x+self.money_display.h,self.money_display.y+self.money_display.h*4/5);
+    fs = self.money_display.h*0.2;
+    gg.ctx.font = fs+"px "+gg.font;
+    gg.ctx.fillText(gg.farmbits.length+" farmers", self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*2);
+    gg.ctx.fillText(gg.hungry+" hungry",           self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*3);
+    gg.ctx.fillText(gg.food+" available food",     self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*4);
     gg.ctx.strokeStyle = gg.backdrop_color;
     var x = self.x+self.pad;
     var y = self.money_display.y+self.money_display.h+self.pad;

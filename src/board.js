@@ -4478,6 +4478,7 @@ var farmbit = function()
 
       gg.ctx.fillText(self.emotes[i],self.x+self.w/2,self.y-(20-bounceup(t)*20)*gg.stage.s_mod);
     }
+    gg.ctx.globalAlpha = 1;
   }
 }
 

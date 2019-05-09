@@ -108,6 +108,8 @@ var GamePlayScene = function()
     gg.b.zoom_bounds(gg.cam);
     gg.b.resize();
     gg.money = money_start_n;
+    gg.hungry = 0;
+    gg.food = 0;
     gg.items = [];
     gg.farmbits = [];
     for(var i = 0; i < farmbits_start_n; i++)
@@ -158,6 +160,8 @@ var GamePlayScene = function()
     {
       while(times)
       {
+        gg.hungry = 0;
+        gg.food = 0;
         if(!gg.advisors.takeover)
         {
           gg.b.tick();
@@ -165,6 +169,7 @@ var GamePlayScene = function()
           {
             var o = gg.items[i];
             o.tick();
+            if(o.type == ITEM_TYPE_FOOD && !o.sale) gg.food++;
             screenSpace(gg.cam, gg.canvas, o);
             o.y -= o.wz;
           }
@@ -172,6 +177,8 @@ var GamePlayScene = function()
           {
             var f = gg.farmbits[i];
             f.tick();
+            if(f.fullness_state != FARMBIT_STATE_CONTENT) gg.hungry++;
+
             screenSpace(gg.cam, gg.canvas, f);
           }
           gg.playhead.tick();
