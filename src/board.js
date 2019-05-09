@@ -682,9 +682,31 @@ var fullness_job_for_b = function(b)
     gg.ticker.nq(b.name+" is going to get some food.");
     return 1;
   }
+  it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_MILK);
+  if(it)
+  {
+    b.go_idle();
+    b.job_object = it;
+    b.lock_object(b.job_object);
+    b.job_type = JOB_TYPE_EAT;
+    b.job_state = JOB_STATE_GET;
+    gg.ticker.nq(b.name+" is going to get some food.");
+    return 1;
+  }
 
   //eat storage
   t = closest_unlocked_available_state_tile_from_list(b.tile, TILE_STATE_STORAGE_FOOD, gg.b.tile_groups[TILE_TYPE_STORAGE]);
+  if(t)
+  {
+    b.go_idle();
+    b.job_object = t;
+    b.lock_withdraw(b.job_object);
+    b.job_type = JOB_TYPE_EAT;
+    b.job_state = JOB_STATE_GET;
+    gg.ticker.nq(b.name+" is going to get some food from storage.");
+    return 1;
+  }
+  t = closest_unlocked_available_state_tile_from_list(b.tile, TILE_STATE_STORAGE_MILK, gg.b.tile_groups[TILE_TYPE_STORAGE]);
   if(t)
   {
     b.go_idle();
@@ -3295,8 +3317,8 @@ var farmbit = function()
     {
       switch(self.item.type)
       {
-        case ITEM_TYPE_WATER:    mod *= water_carryability; break;
-        case ITEM_TYPE_FOOD:     mod *= food_carryability; break;
+        case ITEM_TYPE_WATER: mod *= water_carryability; break;
+        case ITEM_TYPE_FOOD:  mod *= food_carryability; break;
         case ITEM_TYPE_POOP:
         {
           switch(self.item.state)
@@ -3657,16 +3679,18 @@ var farmbit = function()
               {
                 self.unlock_withdraw();
                 t.val--;
-                if(t.val == 0 && t.deposit_lock == 0) t.state = TILE_STATE_STORAGE_UNASSIGNED;
 
                 //pop item out of storage
                 var it = new item();
-                it.type = ITEM_TYPE_FOOD;
+                if(t.state == TILE_STATE_STORAGE_MILK) it.type = ITEM_TYPE_MILK;
+                else                                   it.type = ITEM_TYPE_FOOD;
                 it.tile = t;
                 gg.b.tiles_tw(it.tile,it);
                 kick_item(it);
                 gg.items.push(it);
                 self.lock_object(it);
+
+                if(t.val == 0 && t.deposit_lock == 0) t.state = TILE_STATE_STORAGE_UNASSIGNED;
 
                 self.job_object = it;
                 self.job_state = JOB_STATE_GET;
