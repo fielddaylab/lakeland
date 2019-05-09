@@ -1,225 +1,3 @@
-var farmbit_imgs = [];
-{
-  var ctx;
-  var s = 10;
-  var i = 0;
-  //idle
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  i++
-
-  //shrug
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-  ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  i++
-
-  //walk- fat arms
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(1,4,2,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(5,7,2,3); //right_leg
-  i++
-
-  //walk- fat legs
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,2,4); //right_arm
-  ctx.fillRect(3,7,2,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  i++
-
-  //idle- water
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //shrug- water
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-  ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //walk- fat arms- water
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(1,4,2,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(5,7,2,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //walk- fat legs- water
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,2,4); //right_arm
-  ctx.fillRect(3,7,2,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //idle- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  i++
-
-  //shrug- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-  ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  i++
-
-  //walk- fat arms- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(1,4,2,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(5,7,2,3); //right_leg
-  i++
-
-  //walk- fat legs- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,2,4); //right_arm
-  ctx.fillRect(3,7,2,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  i++
-
-  //idle- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //shrug- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,3,1,4); //left_arm //shoulder shrugged
-  ctx.fillRect(7,3,1,4); //right_arm //shoulder shrugged
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //walk- fat arms- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(1,4,2,4); //left_arm
-  ctx.fillRect(7,4,1,4); //right_arm
-  ctx.fillRect(3,7,1,3); //left_leg
-  ctx.fillRect(5,7,2,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  //walk- fat legs- water- selected
-  farmbit_imgs[i] = GenIcon(s,s*1.25);
-  ctx = farmbit_imgs[i].context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = green;
-  ctx.fillRect(2,0,6,6);
-  ctx.fillStyle = black;
-  ctx.fillRect(3,1,4,6); //body
-  ctx.fillRect(2,4,1,4); //left_arm
-  ctx.fillRect(7,4,2,4); //right_arm
-  ctx.fillRect(3,7,2,3); //left_leg
-  ctx.fillRect(6,7,1,3); //right_leg
-  ctx.clearRect(0,5,10,5); //clear
-  i++
-
-  for(var i = 0; i < farmbit_imgs.length; i++)
-  {
-    var f = farmbit_imgs[i];
-    var nf = GenIcon(f.width*10,f.height*10);
-    nf.context.drawImage(f,0,0,nf.width,nf.height);
-    farmbit_imgs[i] = nf;
-  }
-}
-
 var food_img;
 {
   var ctx;
@@ -605,9 +383,48 @@ tmilk_img.src = "assets/milk.png";
 var tfertilizer_img = new Image();
 tfertilizer_img.onload = function(){ fertilizer_img = tfertilizer_img; };
 tfertilizer_img.src = "assets/fertilizer.png";
-var tfarmbit_img = new Image();
-tfarmbit_img.onload = function(){ for(var i = 0; i < farmbit_imgs.length; i++) farmbit_imgs[i].context.drawImage(tfarmbit_img,0,farmbit_imgs[i].height/5,farmbit_imgs[i].width,farmbit_imgs[i].width); };
-tfarmbit_img.src = "assets/farmbit.png";
+
+var ENUM;
+
+ENUM = 0;
+var FARMBIT_ANIM_FRONT = ENUM; ENUM++;
+var FARMBIT_ANIM_BACK  = ENUM; ENUM++;
+
+ENUM = 0;
+var FARMBIT_ANIM_IDLE  = ENUM; ENUM++;
+var FARMBIT_ANIM_WALK  = ENUM; ENUM++;
+var FARMBIT_ANIM_SWIM  = ENUM; ENUM++;
+var FARMBIT_ANIM_CARRY = ENUM; ENUM++;
+var FARMBIT_ANIM_SLEEP = ENUM; ENUM++;
+var FARMBIT_ANIM_COUNT = ENUM; ENUM++;
+
+var farmbit_anim_names = [];
+farmbit_anim_names[FARMBIT_ANIM_IDLE] = "idle";
+farmbit_anim_names[FARMBIT_ANIM_WALK] = "walk";
+farmbit_anim_names[FARMBIT_ANIM_SWIM] = "swim";
+farmbit_anim_names[FARMBIT_ANIM_CARRY] = "carry";
+farmbit_anim_names[FARMBIT_ANIM_SLEEP] = "sleep";
+
+var farmbit_anim_nframes = [];
+farmbit_anim_nframes[FARMBIT_ANIM_IDLE] = 2;
+farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 2;
+farmbit_anim_nframes[FARMBIT_ANIM_SWIM] = 2;
+farmbit_anim_nframes[FARMBIT_ANIM_CARRY] = 2;
+farmbit_anim_nframes[FARMBIT_ANIM_SLEEP] = 2;
+
+var farmbit_imgs = [];
+for(var a = 0; a < FARMBIT_ANIM_COUNT; a++)
+{
+  farmbit_imgs[a] = [];
+  var name = farmbit_anim_names[a];
+  for(var s = 0; s < 2; s++)
+  {
+    var side = s ? "back" : "front";
+    farmbit_imgs[a][s] = [];
+    for(var f = 0; f < farmbit_anim_nframes[a]; f++)
+      farmbit_imgs[a][s][f] = GenImg("assets/farmbit_"+name+"_"+side+"_"+f+".png");
+  }
+}
 
 var mayor_img = GenImg("assets/mayor.png");
 var business_img = GenImg("assets/business.png");

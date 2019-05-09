@@ -3249,7 +3249,7 @@ var farmbit = function()
   self.h = 0;
 
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
-  self.last_img = farmbit_imgs[0];
+  self.last_img = farmbit_imgs[FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
   self.job_subject = 0;
@@ -3272,9 +3272,11 @@ var farmbit = function()
   self.joy_state         = FARMBIT_STATE_CONTENT;
   self.fulfillment_state = FARMBIT_STATE_CONTENT;
 
-  self.frame_i = 0;
-  self.frame_l = 10;
-  self.frame_t = randIntBelow(self.frame_l);
+  self.anim_side = FARMBIT_ANIM_FRONT;
+  self.anim_anim = FARMBIT_ANIM_IDLE;
+  self.anim_frame = 0;
+  self.anim_frame_l = 10;
+  self.anim_frame_t = randIntBelow(self.anim_frame_l);
 
   self.walk_mod = function()
   {
@@ -3498,11 +3500,11 @@ var farmbit = function()
 
   self.tick = function()
   {
-    self.frame_t++;
-    if(self.frame_t > self.frame_l)
+    self.anim_frame_t++;
+    if(self.anim_frame_t > self.anim_frame_l)
     {
-      self.frame_i = (self.frame_i+1)%2;
-      self.frame_t = 0;
+      self.anim_frame = (self.anim_frame+1)%farmbit_anim_nframes[self.anim_anim];
+      self.anim_frame_t = 0;
     }
 
     if(self.offscreen)
@@ -4409,36 +4411,30 @@ var farmbit = function()
       return;
     }
 
-    var off = 0;
-    if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE) off += 4;
-         if(gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT && gg.inspector.detailed == self) off += 8;
-    else if(gg.inspector.quick_type    == INSPECTOR_CONTENT_FARMBIT && gg.inspector.quick    == self) off += 8;
-    switch(self.job_state)
-    {
-      case JOB_STATE_ACT:
-        switch(self.job_type)
-        {
-          case JOB_TYPE_SLEEP: gg.ctx.fillText("ZZ",self.x+self.w/2,self.y-10); break;
-          case JOB_TYPE_PLAY:  gg.ctx.fillText(":)",self.x+self.w/2,self.y-10); break;
-        }
-        //break; //don't break!
-      case JOB_STATE_ACT:
-        self.last_img = farmbit_imgs[self.frame_i+off];
-        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
-        break;
-      case JOB_STATE_GET:
-      case JOB_STATE_SEEK:
-        self.last_img = farmbit_imgs[self.frame_i+2+off];
-        gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
-        break;
-    }
+    var anim = self.anim_anim;
+    if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE)    anim = FARMBIT_ANIM_SWIM;
+    else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
+    else if(self.item)                                                           anim = FARMBIT_ANIM_CARRY;
+    else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
+    if(anim != self.anim_anim) self.anim_frame = 0;
 
-         if(self.fullness_state    == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",self.x+self.w/2,self.y);
-    else if(self.energy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",self.x+self.w/2,self.y);
-    else if(self.joy_state         == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SAD",self.x+self.w/2,self.y);
-    else if(self.fullness_state    == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",self.x+self.w/2,self.y);
-    else if(self.energy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",self.x+self.w/2,self.y);
-    else if(self.joy_state         == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",self.x+self.w/2,self.y);
+    if(self.job_state == JOB_STATE_ACT)
+    {
+      switch(self.job_type)
+      {
+        case JOB_TYPE_SLEEP: gg.ctx.fillText("ZZ",self.x+self.w/2,self.y-10); break;
+        case JOB_TYPE_PLAY:  gg.ctx.fillText(":)",self.x+self.w/2,self.y-10); break;
+      }
+    }
+    self.last_img = farmbit_imgs[self.anim_anim][self.anim_side][self.anim_frame];
+    gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
+
+         if(self.fullness_state == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",self.x+self.w/2,self.y);
+    else if(self.energy_state   == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",self.x+self.w/2,self.y);
+    else if(self.joy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SAD",self.x+self.w/2,self.y);
+    else if(self.fullness_state == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",self.x+self.w/2,self.y);
+    else if(self.energy_state   == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",self.x+self.w/2,self.y);
+    else if(self.joy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",self.x+self.w/2,self.y);
   }
 }
 
