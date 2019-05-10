@@ -430,6 +430,10 @@ var mayor_img = GenImg("assets/mayor.png");
 var business_img = GenImg("assets/business.png");
 var farmer_img = GenImg("assets/farmer.png");
 
+var advisor_mayor_img = GenImg("assets/advisor_mayor.png");
+var advisor_business_img = GenImg("assets/advisor_business.png");
+var advisor_farmer_img = GenImg("assets/advisor_farmer.png");
+
 var clouds_img = GenImg("assets/clouds.png");
 var bloom_img = GenImg("assets/bloom.png");
 var skull_img = GenImg("assets/skull.png");

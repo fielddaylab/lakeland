@@ -1385,29 +1385,21 @@ var advisors = function()
     if(self.popup_h < 100) gg.ctx.globalAlpha = min(1,t*6);
     gg.ctx.textAlign = "left";
 
-    //circle
-    var cx = 0;
-    var cy = 0;
-    var cs = p*3;
-    gg.ctx.beginPath();
-    cx = x-cs/2;
-    cy = y-cs/2;
-    gg.ctx.arc(cx,cy,cs,0,twopi);
-    gg.ctx.fill();
-    gg.ctx.stroke();
-    switch(self.advisor)
-    {
-      case ADVISOR_TYPE_MAYOR:    gg.ctx.drawImage(mayor_img,    cx-cs/2, cy-cs/2, cs, cs); break;
-      case ADVISOR_TYPE_BUSINESS: gg.ctx.drawImage(business_img, cx-cs/2, cy-cs/2, cs, cs); break;
-      case ADVISOR_TYPE_FARMER:   gg.ctx.drawImage(farmer_img,   cx-cs/2, cy-cs/2, cs, cs); break;
-    }
-
     //bubble
     gg.ctx.fillStyle = self.bgc;
     gg.ctx.strokeStyle = self.fgc;
-    fillRRect(x,y+(self.target_popup_h-self.popup_h),w,self.popup_h,p,gg.ctx);
+    fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,p,gg.ctx);
     gg.ctx.stroke();
     gg.ctx.fillStyle = self.fgc;
+
+    var aimg = 0;
+    switch(self.advisor)
+    {
+      case ADVISOR_TYPE_MAYOR:    aimg = advisor_mayor_img;    break;
+      case ADVISOR_TYPE_BUSINESS: aimg = advisor_business_img; break;
+      case ADVISOR_TYPE_FARMER:   aimg = advisor_farmer_img;   break;
+    }
+    gg.ctx.drawImage(aimg, x-w/4, y+self.target_popup_h-w/2, w/4, w/2);
 
     var ty = y+p+self.title_font_size;
     gg.ctx.font = self.title_font;
