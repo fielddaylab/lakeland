@@ -1838,6 +1838,84 @@ var advisors = function()
     }, //end
   ];
 
+  var tut_death = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("death"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'death'});
+    },
+  ];
+
+  var tut_unattended_farm = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("unattended_farm"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'unattended_farm'});
+    },
+  ];
+
+  var tut_unused_fertilizer = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("unused_fertilizer"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'unused_fertilizer'});
+    },
+  ];
+
+  var tut_flooded_fertilizer = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("flooded_fertilizer"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'flooded_fertilizer'});
+    },
+  ];
+
+  var tut_mass_sadness = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("mass_sadness"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'mass_sadness'});
+    },
+  ];
+
+  var tut_long_travel = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'long_travel'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("long_travel"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'long_travel'});
+    },
+  ];
+
   var tut_fertilize = [
     function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'fertilize'}); }, //begin
     function(){ return self.time_passed(100); }, //tick
@@ -1901,6 +1979,44 @@ var advisors = function()
         }
         return 0;
       }, tut_gross);
+      self.pool_thread(function(){
+        return gg.b.tile_groups[TILE_TYPE_GRAVE].length;
+      }, tut_death);
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
+          if(gg.b.tile_groups[TILE_TYPE_FARM][i].state == TILE_STATE_FARM_GROWN && gg.b.tile_groups[TILE_TYPE_FARM][i].state_t > 500) return 1;
+        return 0;
+      }, tut_unattended_farm);
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.items.length; i++)
+          if(gg.items[i].type == ITEM_TYPE_POOP && gg.items[i].t > 500) return 1;
+        return 0;
+      }, tut_unused_fertilizer);
+      self.pool_thread(function(){
+        if(!gg.b.raining) return;
+        for(var i = 0; i < gg.items.length; i++)
+          if(gg.items[i].type == ITEM_TYPE_FERTILIZER) return 1;
+        return 0;
+      }, tut_flooded_fertilizer);
+      self.pool_thread(function(){
+        if(gg.farmbits.length < 4) return 0;
+        var sad = 0;
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
+          if(f.joy_state == FARMBIT_STATE_DESPERATE) sad++;
+        }
+        if(sad/gg.farmbits.length > 0.95) return 1;
+        return 0;
+      }, tut_mass_sadness);
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
+          switch(f.job_state == JOB_STATE_GET || f.job_state == JOB_STATE_ACT && f.job_state_t > 500)
+            return 1;
+        return 0;
+      }, tut_long_travel);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'fertilize'});
     },
   ];
@@ -1976,7 +2092,6 @@ var advisors = function()
     },
     self.adv_thread, //click
     noop, //end
-
 
     function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.dotakeover(); self.push_blurb("Your farm has produced more food than is needed!"); }, //begin
     ffunc, //tick

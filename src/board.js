@@ -3165,6 +3165,8 @@ var item = function()
   self.w = 0;
   self.h = 0;
 
+  self.t = 0;
+
   self.tile;
   self.type = ITEM_TYPE_NULL;
   self.state = ITEM_STATE_NULL;
