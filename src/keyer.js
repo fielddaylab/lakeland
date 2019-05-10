@@ -54,6 +54,23 @@ var Keyer = function(init)
       return false;
     }
   }
+  self.filterkey = function(callback)
+  {
+    var hit = false;
+    for(var i = 0; i < evts.length; i++)
+    {
+      switch(evt_types[i])
+      {
+        case KEY_EVT_PRESS: callback(evts[i]); hit = true;
+        break;
+        case KEY_EVT_DOWN:
+        break;
+        case KEY_EVT_UP:
+        break;
+      }
+    }
+    return hit;
+  }
   self.filter = function(keyable)
   {
     var hit = false;

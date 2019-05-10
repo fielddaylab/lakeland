@@ -12,7 +12,7 @@ var Game = function(init)
   gg.canvas = gg.stage.canvas;
   gg.ctx = gg.stage.context;
 
-  var scenes = [new LoadingScene(), new GamePlayScene()];
+  var scenes = [new LoadingScene(), new IntroScene(), new GamePlayScene()];
   var scene_i = 0;
 
   self.resize_requested = 0;
@@ -42,7 +42,11 @@ var Game = function(init)
   var prev_t;
   self.begin = function()
   {
-    scenes[scene_i].ready();
+    //scenes[scene_i].ready(); //hack for this game that readys every scene at once!
+
+    for(var i = 0; i < scenes.length; i++)
+      scenes[i].ready();
+
     prev_t = performance.now();
     tick(prev_t);
   };
@@ -77,7 +81,7 @@ var Game = function(init)
   {
     scenes[scene_i].cleanup();
     scene_i = i;
-    scenes[scene_i].ready();
+    //scenes[scene_i].ready(); //hack for this game that readys every scene at once!
   }
 
 };
