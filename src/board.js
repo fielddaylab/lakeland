@@ -3178,6 +3178,7 @@ var item = function()
   self.tick = function()
   {
     if(self.offscreen) return;
+    self.t++;
     self.wvz -= 0.1;
     self.wx += self.wvx;
     self.wy += self.wvy;

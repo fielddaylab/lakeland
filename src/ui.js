@@ -1839,78 +1839,187 @@ var advisors = function()
   ];
 
   var tut_death = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("death"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Oh no! One of your townspeople have died!"); },//begin
     noop, //tick
     function() { //draw
       self.wash();
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.push_blurb("It's your responsibility to make sure there is enough food to go around"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.push_blurb("Maybe you need more farms? Or more fertilizer?"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'death'});
     },
+
   ];
 
   var tut_unattended_farm = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("unattended_farm"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("One of your farms is ready for harvest."); },//begin
     noop, //tick
     function() { //draw
       self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("An field unharvested is a field that isn't producing more food!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Consider finding more townspeople to increase your town's efficiency."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'unattended_farm'});
     },
   ];
 
   var tut_unused_fertilizer = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("unused_fertilizer"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("There's some unused poop laying around."); },//begin
     noop, //tick
     function() { //draw
       self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("That will slowly leech nutrients into the soil-"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("See if you can free up some people to fertilize your farms, so those nutrients get put to good use!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'unused_fertilizer'});
     },
   ];
 
   var tut_flooded_fertilizer = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("flooded_fertilizer"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.dotakeover(); self.push_blurb("Oh no, it's raining and there's still fresh fertilizer on your farms!"); },//begin
     noop, //tick
     function() { //draw
       self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("The rain might wash that fertilizer away."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Sadly, there's not much you can do to prevent it..."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'flooded_fertilizer'});
     },
   ];
 
   var tut_mass_sadness = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("mass_sadness"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Your townspeople are very sad!"); },//begin
     noop, //tick
     function() { //draw
       self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("I'm sure they'd like to play in the water,"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("but maybe your lakes are overrun with disgusting algae?"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Find a way to keep them happy!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'mass_sadness'});
     },
   ];
 
   var tut_long_travel = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'long_travel'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("long_travel"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'long_travel'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Some of your townspeople are taking a long time to deliver goods."); },//begin
     noop, //tick
     function() { //draw
       self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("Consider building some roads to cut down on travel time!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'long_travel'});
     },
@@ -2006,15 +2115,16 @@ var advisors = function()
           var f = gg.farmbits[i];
           if(f.joy_state == FARMBIT_STATE_DESPERATE) sad++;
         }
-        if(sad/gg.farmbits.length > 0.95) return 1;
+        if(sad/gg.farmbits.length > 0.9) return 1;
         return 0;
       }, tut_mass_sadness);
       self.pool_thread(function(){
         for(var i = 0; i < gg.farmbits.length; i++)
         {
           var f = gg.farmbits[i];
-          switch(f.job_state == JOB_STATE_GET || f.job_state == JOB_STATE_ACT && f.job_state_t > 500)
+          if(f.job_state == JOB_STATE_GET || f.job_state == JOB_STATE_ACT && f.job_state_t > 500)
             return 1;
+        }
         return 0;
       }, tut_long_travel);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'fertilize'});
