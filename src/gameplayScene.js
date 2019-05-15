@@ -36,9 +36,9 @@ var GamePlayScene = function()
           s.festival_btn.active = 1;
 
           gg.nutrition_toggle.toggle_btn.active = 1;
-          gg.playhead.pause_btn.active = 1;
-          gg.playhead.play_btn.active = 1;
-          gg.playhead.speed_btn.active = 1;
+          gg.bar.pause_btn.active = 1;
+          gg.bar.play_btn.active = 1;
+          gg.bar.speed_btn.active = 1;
 
           gg.advisors.mayor_active = 1;
           gg.advisors.business_active = 1;
@@ -82,7 +82,7 @@ var GamePlayScene = function()
       screenSpace(gg.cam, gg.canvas, gg.b);
       gg.b.zoom_bounds(gg.cam);
       gg.b.resize();
-      gg.playhead.resize();
+      gg.bar.resize();
       gg.nutrition_toggle.resize();
       gg.shop.resize();
       gg.inspector.resize();
@@ -119,7 +119,7 @@ var GamePlayScene = function()
       gg.farmbits[i].wy = gg.b.wy+rand0()*gg.b.ww/2;
     }
     gg.jobs = [];
-    gg.playhead = new playhead();
+    gg.bar = new bar();
     gg.nutrition_toggle = new nutrition_toggle();
     gg.shop = new shop();
     gg.inspector = new inspector();
@@ -144,7 +144,7 @@ var GamePlayScene = function()
     var check = true;
     if(!gg.advisors.takeover)
     {
-      if(check) check = !gg.playhead.filter(gg.clicker);
+      if(check) check = !gg.bar.filter(gg.clicker);
       if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
       if(check) check = !gg.shop.filter(gg.clicker);
       if(check) check = !gg.inspector.filter(gg.clicker);
@@ -181,7 +181,7 @@ var GamePlayScene = function()
 
             screenSpace(gg.cam, gg.canvas, f);
           }
-          gg.playhead.tick();
+          gg.bar.tick();
           gg.nutrition_toggle.tick();
           gg.shop.tick();
           gg.ticker.tick();
@@ -225,7 +225,7 @@ var GamePlayScene = function()
     gg.ctx.textAlign = "left";
     for(var i = 0; i < gg.items.length; i++)
       gg.items[i].draw();
-    gg.playhead.draw();
+    gg.bar.draw();
     gg.nutrition_toggle.draw();
     gg.shop.draw();
     gg.inspector.draw();

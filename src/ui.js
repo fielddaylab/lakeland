@@ -57,7 +57,7 @@ var draw_money_switch = function(x,y,w,h,on)
   else   gg.ctx.drawImage(coin_img,x,    y-h/4,h,h*1.25);
 }
 
-var mark_bar = function(x,y,w,h,t)
+var mark_pbar = function(x,y,w,h,t)
 {
   gg.ctx.strokeStyle = red;
   var r = h/2;
@@ -67,12 +67,12 @@ var mark_bar = function(x,y,w,h,t)
   drawLine(tx,y-r,tx,y+h+r,gg.ctx)
 }
 
-var draw_bar = function(x,y,w,h,t)
+var draw_pbar = function(x,y,w,h,t)
 {
-  draw_custom_bar(x,y,w,h,light_gray,gg.backdrop_color,t);
+  draw_custom_pbar(x,y,w,h,light_gray,gg.backdrop_color,t);
 }
 
-var draw_custom_bar = function(x,y,w,h,bg,fg,t)
+var draw_custom_pbar = function(x,y,w,h,bg,fg,t)
 {
   var r = h/2;
   if(t >= 1)
@@ -98,7 +98,7 @@ var draw_custom_bar = function(x,y,w,h,bg,fg,t)
   gg.ctx.fill();
 }
 
-var playhead = function()
+var bar = function()
 {
   var self = this;
   self.resize = function()
@@ -108,12 +108,12 @@ var playhead = function()
     var btnh = gg.b.cbounds_y-self.pad*2;
     var btnw = btnh;
 
-    self.w = btnw*9+self.pad*8;
+    self.w = gg.canvas.width/2;
     self.h = btnh;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = self.pad;
 
-    var btnx = self.x+btnw*3+self.pad*3;
+    var btnx = gg.canvas.width/2-btnw/2-self.pad-btnw;
     var btny = self.y;
 
     setBB(self.pause_btn, btnx,btny,btnw,btnh); btnx += btnw+self.pad;
@@ -134,13 +134,21 @@ var playhead = function()
   self.play_btn.active = 0;
   self.speed_btn.active = 0;
 
+  self.drawer = 0;
+
   self.filter = function(filter)
   {
     var check = true;
     if(check && self.pause_btn.active) check = !filter.filter(self.pause_btn);
     if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
     if(check && self.speed_btn.active) check = !filter.filter(self.speed_btn);
+    if(check) check = !filter.filter(self);
     return !check;
+  }
+
+  self.click = function()
+  {
+    self.drawer = !self.drawer;
   }
 
   self.tick = function()
@@ -150,11 +158,70 @@ var playhead = function()
 
   self.draw = function()
   {
+    var fs = gg.font_size;
+    gg.ctx.font = fs+"px "+gg.font;
+
+    if(self.drawer)
+    {
+      gg.ctx.fillStyle = white;
+      fillRRect(self.x,self.y+self.h-self.pad,self.w,self.h+self.pad*4,self.pad,gg.ctx);
+      var x = self.x+self.pad;
+      var y = self.y+self.h+self.pad*2;
+      var r = self.h/2;
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        var f = gg.farmbits[i];
+
+        gg.ctx.fillStyle = gg.backdrop_color;
+        gg.ctx.strokeStyle = gg.font_color;
+        gg.ctx.beginPath();
+        gg.ctx.arc(x+r,y+r,r,0,twopi);
+        gg.ctx.fill();
+        gg.ctx.stroke();
+        gg.ctx.fillStyle = black;
+        gg.ctx.fillText(f.name,x,y+self.h);
+
+             if(f.fullness_state == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",x,y+fs);
+        else if(f.energy_state   == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",x,y+fs);
+        else if(f.joy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SAD",x,y+fs);
+        else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",x,y+fs);
+        else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",x,y+fs);
+        else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",x,y+fs);
+        else                                                 gg.ctx.fillText("Content",x,y+fs);
+      }
+    }
+
     gg.ctx.fillStyle = white;
     fillRRect(self.x,-self.pad,self.w,self.h+self.pad*3,self.pad,gg.ctx);
     if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
     if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn,gg.ctx); }
     if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
+    gg.ctx.fillStyle = gg.font_color;
+    var x = self.x+self.pad;
+    var y = self.y+self.pad+fs;
+    var w = 150;
+
+    //money
+    gg.ctx.fillText("$"+gg.money, x,y);
+    x += w;
+    //food
+    gg.ctx.fillText(gg.food+" available food",     x,y);
+    x += w;
+
+    x = self.x+self.w-self.pad;
+    //population
+    x -= w;
+    gg.ctx.fillText(gg.farmbits.length+" farmers", x,y);
+    //joy
+    x -= w;
+    if(gg.farmbits.length)
+    {
+      var sad = 0;
+      for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].joy_state == FARMBIT_STATE_DESPERATE) sad++;
+      gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad", x,y);
+    }
+    else gg.ctx.fillText("0% sad", x,y);
+
     gg.ctx.globalAlpha = 1;
   }
 
@@ -451,9 +518,9 @@ var shop = function()
     gg.ctx.fillText("$"+gg.money,self.money_display.x+self.money_display.h,self.money_display.y+self.money_display.h*4/5);
     fs = self.money_display.h*0.2;
     gg.ctx.font = fs+"px "+gg.font;
-    gg.ctx.fillText(gg.farmbits.length+" farmers", self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*2);
-    gg.ctx.fillText(gg.hungry+" hungry",           self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*3);
-    gg.ctx.fillText(gg.food+" available food",     self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*4);
+    //gg.ctx.fillText(gg.farmbits.length+" farmers", self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*2);
+    //gg.ctx.fillText(gg.hungry+" hungry",           self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*3);
+    //gg.ctx.fillText(gg.food+" available food",     self.money_display.x+self.money_display.w*1.3,self.money_display.y+fs*4);
     gg.ctx.strokeStyle = gg.backdrop_color;
     var x = self.x+self.pad;
     var y = self.money_display.y+self.money_display.h+self.pad;
@@ -802,7 +869,7 @@ var inspector = function()
         gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,y);
         y += self.pad;
 
-        draw_custom_bar(self.x+self.pad,y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
+        draw_custom_pbar(self.x+self.pad,y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
         gg.ctx.fillStyle = gg.font_color;
         y += self.pad;
         y += self.pad;
@@ -843,11 +910,11 @@ var inspector = function()
       y += self.pad;
       if(t.fertilizer)
       {
-        draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
+        draw_custom_pbar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
         x += self.pad*3;
         for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
         {
-          draw_custom_bar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
+          draw_custom_pbar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
           x += self.pad*3;
         }
         y += self.pad*2;
@@ -887,8 +954,8 @@ var inspector = function()
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
     y += self.pad;
 
-    draw_custom_bar(self.x+self.pad, y, self.w-self.pad*2, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias1(rn/100));
-    if(t.type == TILE_TYPE_LAKE) mark_bar(self.x+self.pad, y, self.w-self.pad*2, self.pad, bias1(water_fouled_threshhold/nutrition_max));
+    draw_custom_pbar(self.x+self.pad, y, self.w-self.pad*2, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias1(rn/100));
+    if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, y, self.w-self.pad*2, self.pad, bias1(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
     y += self.pad;
     y += self.pad;
@@ -1402,6 +1469,7 @@ var advisors = function()
       case ADVISOR_TYPE_FARMER:   aimg = advisor_farmer_img;   break;
     }
     gg.ctx.drawImage(aimg, x-w/4, y+self.target_popup_h-w/2, w/4, w/2);
+    drawLine(x-w/3+p,y+self.target_popup_h,x+w-p,y+self.target_popup_h,gg.ctx);
 
     var ty = y+p+self.title_font_size;
     gg.ctx.font = self.title_font;
@@ -2277,7 +2345,7 @@ var advisors = function()
     function() { return DOUBLETIME; }, //tick
     function() { //draw
       self.wash();
-      var b = gg.playhead.speed_btn;
+      var b = gg.bar.speed_btn;
       self.popup(TEXT_TYPE_DIRECT);
       self.arrow(b.x+b.w/2,b.y+b.h/2);
     },
@@ -2335,11 +2403,11 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){self.dotakeover(); gg.playhead.pause_btn.active = 1; gg.playhead.play_btn.active = 1; gg.playhead.speed_btn.active = 1; RESUME_SIM = 0; self.push_blurb("First, we'll pause the game.");}, //begin
+    function(){self.dotakeover(); gg.bar.pause_btn.active = 1; gg.bar.play_btn.active = 1; gg.bar.speed_btn.active = 1; RESUME_SIM = 0; self.push_blurb("First, we'll pause the game.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
-      var b = gg.playhead.play_btn;
+      var b = gg.bar.play_btn;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(b.x+b.w/2,b.y+b.h/2);
     },
@@ -2380,7 +2448,7 @@ var advisors = function()
     function(){ self.push_blurb("click Play to resume the game."); },//begin
     function(){ return RESUME_SIM; }, //tick
     function(){ //draw
-      var b = gg.playhead.play_btn;
+      var b = gg.bar.play_btn;
       self.popup(TEXT_TYPE_DIRECT);
       self.arrow(b.x+b.w/2,b.y+b.h/2);
     },
