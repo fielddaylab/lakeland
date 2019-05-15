@@ -1376,6 +1376,8 @@ var advisors = function()
   self.thread_i = 0;
   self.thread_t = 0;
 
+  self.previewing = 0;
+
   //queries
   self.time_passed      = function(t) { return self.thread_t >= t; }
   self.bits_exist       = function(n) { return gg.farmbits.length >= n; }
@@ -1600,12 +1602,14 @@ var advisors = function()
       var w = h;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
-      if(self.mayor_active)    { gg.clicker.consumeif(x,y,w,h,function(){console.log(self.mayor_history[self.mayor_history.length-1]);}); }
+      var previewed = 0;
+      if(self.mayor_active)    { gg.clicker.consumeif(x,y,w,h,function(){if(!self.preview || self.advisor != ADVISOR_TYPE_MAYOR)    { self.set_advisor(ADVISOR_TYPE_MAYOR);    self.preview = 1; previewed = 1; } else self.preview = 0; }); }
       x += w*1.5;
-      if(self.business_active) { gg.clicker.consumeif(x,y,w,h,function(){console.log(self.business_history[self.business_history.length-1]);}); }
+      if(self.business_active) { gg.clicker.consumeif(x,y,w,h,function(){if(!self.preview || self.advisor != ADVISOR_TYPE_BUSINESS) { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.preview = 1; previewed = 1; } else self.preview = 0; }); }
       x += w*1.5;
-      if(self.farmer_active)   { gg.clicker.consumeif(x,y,w,h,function(){console.log(self.farmer_history[self.farmer_history.length-1]);}); }
+      if(self.farmer_active)   { gg.clicker.consumeif(x,y,w,h,function(){if(!self.preview || self.advisor != ADVISOR_TYPE_FARMER)   { self.set_advisor(ADVISOR_TYPE_FARMER);   self.preview = 1; previewed = 1; } else self.preview = 0; }); }
       x += w*1.5;
+      if(!previewed) self.preview = 0;
     }
   }
 
@@ -1618,6 +1622,7 @@ var advisors = function()
       {
         if(self.triggers[i]())
         {
+          self.preview = 0;
           var thread = self.trigger_threads[i];
           self.triggers.splice(i,1);
           self.trigger_threads.splice(i,1);
@@ -1633,7 +1638,7 @@ var advisors = function()
   self.draw = function()
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    self.target_popup_h = 0; //gets set in thread draw
+    if(!self.preview) self.target_popup_h = 0; //gets set in thread draw
     if(self.thread)
       self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_DRAW]();
     else
@@ -1661,6 +1666,11 @@ var advisors = function()
       x += w*1.5;
     }
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
+
+    if(self.preview)
+    {
+      self.popup(TEXT_TYPE_DISMISS);
+    }
   }
 
   var tut_mayor_leave = [
