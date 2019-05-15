@@ -108,12 +108,12 @@ var playhead = function()
     var btnh = gg.b.cbounds_y-self.pad*2;
     var btnw = btnh;
 
-    self.w = btnw*3+self.pad*2;
+    self.w = btnw*9+self.pad*8;
     self.h = btnh;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = self.pad;
 
-    var btnx = self.x;
+    var btnx = self.x+btnw*3+self.pad*3;
     var btny = self.y;
 
     setBB(self.pause_btn, btnx,btny,btnw,btnh); btnx += btnw+self.pad;
@@ -150,6 +150,8 @@ var playhead = function()
 
   self.draw = function()
   {
+    gg.ctx.fillStyle = white;
+    fillRRect(self.x,-self.pad,self.w,self.h+self.pad*3,self.pad,gg.ctx);
     if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
     if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn,gg.ctx); }
     if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
