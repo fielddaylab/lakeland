@@ -1595,6 +1595,105 @@ var advisors = function()
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
   }
 
+  var tut_mayor_leave = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mayor_leave'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Too many people have died."); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.push_blurb("I have failed as your mayor."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+      self.mayor_active = 0;
+    },
+    self.adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'mayor_leave'});
+    },
+
+  ];
+
+  var tut_farmer_leave = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'farmer_leave'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Too many people have died."); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.push_blurb("I have failed as your farm advisor."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+      self.farmer_active = 0;
+    },
+    self.adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'farmer_leave'});
+    },
+
+  ];
+
+  var tut_business_leave = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'business_leave'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Too many people have died."); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.push_blurb("I have failed as your business advisor."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+      self.mayor_active = 0;
+    },
+    self.adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'business_leave'});
+    },
+
+  ];
+
   var tut_cycle_rain = [
     function(){ gg.b.raining = 1; }, //begin
     function(){ return self.time_passed(400); }, //tick
@@ -2129,6 +2228,15 @@ var advisors = function()
         }
         return 0;
       }, tut_long_travel);
+      self.pool_thread(function(){
+        return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
+      }, tut_mayor_leave);
+      self.pool_thread(function(){
+        return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
+      }, tut_farmer_leave);
+      self.pool_thread(function(){
+        return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
+      }, tut_business_leave);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'fertilize'});
     },
   ];
