@@ -36,6 +36,12 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
+ENUM = 0;
+var DRAWER_NULL    = ENUM; ENUM++;
+var DRAWER_ACTIONS = ENUM; ENUM++;
+var DRAWER_STATES  = ENUM; ENUM++;
+var DRAWER_COUNT   = ENUM; ENUM++;
+
 var draw_switch = function(x,y,w,h,on)
 {
   gg.ctx.strokeStyle = gg.font_color;
@@ -134,7 +140,7 @@ var bar = function()
   self.play_btn.active = 0;
   self.speed_btn.active = 0;
 
-  self.drawer = 0;
+  self.drawer = DRAWER_NULL;
 
   self.filter = function(filter)
   {
@@ -148,7 +154,7 @@ var bar = function()
 
   self.click = function()
   {
-    self.drawer = !self.drawer;
+    self.drawer = (self.drawer+1)%DRAWER_COUNT;
   }
 
   self.tick = function()
@@ -164,9 +170,9 @@ var bar = function()
     if(self.drawer)
     {
       gg.ctx.fillStyle = white;
-      fillRRect(self.x,self.y+self.h-self.pad,self.w,self.h+self.pad*4,self.pad,gg.ctx);
+      fillRRect(self.x,self.y+self.h-self.pad,self.w,self.h*2+self.pad*3,self.pad,gg.ctx);
       var x = self.x+self.pad;
-      var y = self.y+self.h+self.pad*2;
+      var y = self.y+self.h+self.pad*4;
       var r = self.h/2;
       for(var i = 0; i < gg.farmbits.length; i++)
       {
@@ -181,13 +187,45 @@ var bar = function()
         gg.ctx.fillStyle = black;
         gg.ctx.fillText(f.name,x,y+self.h);
 
-             if(f.fullness_state == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",x,y+fs);
-        else if(f.energy_state   == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",x,y+fs);
-        else if(f.joy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SAD",x,y+fs);
-        else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",x,y+fs);
-        else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",x,y+fs);
-        else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",x,y+fs);
-        else                                                 gg.ctx.fillText("Content",x,y+fs);
+        var str = "";
+        switch(self.drawer)
+        {
+          case DRAWER_ACTIONS:
+          {
+            switch(f.job_type)
+            {
+              case JOB_TYPE_NULL: str = "Nothing"; break;
+              case JOB_TYPE_IDLE: str = "Idle"; break;
+              case JOB_TYPE_WAIT: str = "Waiting"; break;
+              case JOB_TYPE_EAT: str = "Eating"; break;
+              case JOB_TYPE_SLEEP: str = "Sleeping"; break;
+              case JOB_TYPE_PLAY: str = "Playing"; break;
+              case JOB_TYPE_PLANT: str = "Planting"; break;
+              case JOB_TYPE_HARVEST: str = "Harvesting"; break;
+              case JOB_TYPE_FEED: str = "Feeding"; break;
+              case JOB_TYPE_FERTILIZE: str = "Fertilizing"; break;
+              case JOB_TYPE_MILK: str = "Milking"; break;
+              case JOB_TYPE_STORE: str = "Storing"; break;
+              case JOB_TYPE_PROCESS: str = "Processing"; break;
+              case JOB_TYPE_KICK: str = "Kicking"; break;
+              case JOB_TYPE_EXPORT: str = "Exporting"; break;
+              case JOB_TYPE_COUNT: str = "BROKEN"; break;
+            }
+          }
+            break;
+          case DRAWER_STATES:
+          {
+                 if(f.fullness_state == FARMBIT_STATE_DESPERATE) str = "HUNGRY";
+            else if(f.energy_state   == FARMBIT_STATE_DESPERATE) str = "SLEEPY";
+            else if(f.joy_state      == FARMBIT_STATE_DESPERATE) str = "SAD";
+            else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str = "hungry";
+            else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str = "sleepy";
+            else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str = "sad";
+            else                                                 str = "Content";
+          }
+            break;
+        }
+        gg.ctx.fillText(str,x,y+fs);
       }
     }
 
