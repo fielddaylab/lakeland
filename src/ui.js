@@ -1389,6 +1389,96 @@ var ticker = function()
   }
 }
 
+var achievements = function()
+{
+  var self = this;
+  self.open = 0;
+  self.resize = function()
+  {
+    self.pad = 10*gg.stage.s_mod;
+
+    self.w = gg.canvas.width/2;
+    self.h = self.w;
+    self.x = gg.canvas.width/2-self.w/2;
+    self.y = gg.canvas.height/2-self.h/2;
+
+    self.open_btn.w = 100;
+    self.open_btn.h = 100;
+    self.open_btn.x = self.pad;
+    self.open_btn.y = gg.canvas.height-self.pad-self.open_btn.h;
+  }
+  self.open_btn = new ButtonBox(0,0,0,0,function(){ self.open = !self.open; });
+  self.resize();
+
+  self.triggers = [];
+  self.nullt = {name:"null",local:0,global:0,trigger:ffunc};
+  self.pushtrigger = function(name,fn)
+  {
+    self.triggers.push({name:name,global:0,local:0,trigger:fn});
+  }
+
+  self.pushtrigger("test",function(){return 0;});
+
+  self.filter = function(filter)
+  {
+    var check = true;
+    if(check) check = !filter.filter(self.open_btn);
+    if(!self.open) return;
+    if(check) check = !filter.filter(self);
+    return !check;
+  }
+
+  self.click = function()
+  {
+  }
+
+  self.tick = function()
+  {
+    var t;
+    for(var i = 0; i < self.triggers.length; i++)
+    {
+      t = self.triggers[i];
+      if(!t.local && t.trigger()) { t.local = 1; t.global = 1; }
+    }
+  }
+
+  self.draw = function()
+  {
+    gg.ctx.fillStyle = white;
+    fillRBB(self.open_btn,self.pad,gg.ctx);
+    if(self.open)
+    {
+      fillRBB(self,self.pad,gg.ctx);
+      var rows = 5;
+      var cols = 5;
+      var s = ((self.w-self.pad)/5)-self.pad;
+      var x = self.x+self.pad;
+      var y = self.y+self.pad;
+      gg.ctx.fillStyle = gray;
+      var t = self.nullt;
+      var fs = gg.font_size;
+      gg.ctx.font = fs+"px "+gg.font;
+      for(var i = 0; i < rows; i++)
+      {
+        x = self.x+self.pad;
+        for(var j = 0; j < cols; j++)
+        {
+          t = self.triggers[i*cols+j];
+          if(!t) t = self.nullt;
+          if(t.local) gg.ctx.fillStyle = red;
+          else        gg.ctx.fillStyle = gray;
+          fillRRect(x,y,s,s,self.pad,gg.ctx);
+          gg.ctx.fillStyle = black;
+          gg.ctx.fillText(t.name,x+s/2,y+s+fs);
+          x += s+self.pad;
+        }
+        y += s+self.pad;
+      }
+    }
+  }
+
+}
+
 var advisors = function()
 {
   var self = this;
@@ -1686,6 +1776,7 @@ var advisors = function()
       {
         if(self.triggers[i]())
         {
+          gg.achievements.open = 0;
           self.preview = 0;
           var thread = self.trigger_threads[i];
           self.triggers.splice(i,1);

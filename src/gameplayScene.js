@@ -87,6 +87,7 @@ var GamePlayScene = function()
       gg.shop.resize();
       gg.inspector.resize();
       gg.ticker.resize();
+      gg.achievements.resize();
       gg.advisors.resize();
     }
 
@@ -124,6 +125,7 @@ var GamePlayScene = function()
     gg.shop = new shop();
     gg.inspector = new inspector();
     gg.ticker = new ticker();
+    gg.achievements = new achievements();
     gg.advisors = new advisors();
     self.readied = 1;
   };
@@ -144,6 +146,7 @@ var GamePlayScene = function()
     var check = true;
     if(!gg.advisors.takeover)
     {
+      if(check) check = !gg.achievements.filter(gg.clicker);
       if(check) check = !gg.bar.filter(gg.clicker);
       if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
       if(check) check = !gg.shop.filter(gg.clicker);
@@ -202,6 +205,7 @@ var GamePlayScene = function()
         screenSpace(gg.cam, gg.canvas, f);
       }
     }
+    gg.achievements.tick();
     gg.advisors.tick();
 
     gg.clicker.flush();
@@ -244,6 +248,7 @@ var GamePlayScene = function()
     gg.ctx.fillText("j- debug jobs",    x,y); y += h;
     */
 
+    gg.achievements.draw();
     gg.advisors.draw();
   };
 
