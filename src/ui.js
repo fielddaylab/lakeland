@@ -107,24 +107,29 @@ var draw_custom_pbar = function(x,y,w,h,bg,fg,t)
 var bar = function()
 {
   var self = this;
+  self.btnh = 0;
+  self.btnw = 0;
+  self.drawery = 0;
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    var btnh = gg.b.cbounds_y-self.pad*2;
-    var btnw = btnh;
+    self.btnh = gg.b.cbounds_y-self.pad*2;
+    self.btnw = self.btnh;
 
     self.w = gg.canvas.width/2;
-    self.h = btnh;
+    self.h = (self.btnh+self.pad)*3+self.pad;
     self.x = gg.canvas.width/2-self.w/2;
-    self.y = self.pad;
+    self.y = 0;
 
-    var btnx = gg.canvas.width/2-btnw/2-self.pad-btnw;
-    var btny = self.y;
+    self.drawery = self.y+self.btnh+self.pad*2;
 
-    setBB(self.pause_btn, btnx,btny,btnw,btnh); btnx += btnw+self.pad;
-    setBB(self.play_btn,  btnx,btny,btnw,btnh); btnx += btnw+self.pad;
-    setBB(self.speed_btn, btnx,btny,btnw,btnh); btnx += btnw+self.pad;
+    var btnx = gg.canvas.width/2-self.btnw/2-self.pad-self.btnw;
+    var btny = self.y+self.pad;
+
+    setBB(self.pause_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
+    setBB(self.play_btn,  btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
+    setBB(self.speed_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
   }
 
   self.pause_img = GenImg("assets/pause.png");
@@ -148,7 +153,26 @@ var bar = function()
     if(check && self.pause_btn.active) check = !filter.filter(self.pause_btn);
     if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
     if(check && self.speed_btn.active) check = !filter.filter(self.speed_btn);
-    if(check) check = !filter.filter(self);
+    if(check)
+    {
+      if(!self.drawer) check = !filter.consumeif(self.x,self.y,self.w,self.drawery-self.y,self.click);
+      else
+      {
+        var x = self.x+self.pad;
+        var y = self.drawery+self.pad;
+        for(var i = 0; check && i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
+          if(filter.check(x,y,self.btnh,self.btnh))
+          {
+            check = 0;
+            gg.inspector.select_farmbit(f);
+          }
+          x += self.btnh+self.pad;
+        }
+        if(check) check = !filter.filter(self);
+      }
+    }
     return !check;
   }
 
@@ -170,10 +194,10 @@ var bar = function()
     if(self.drawer)
     {
       gg.ctx.fillStyle = white;
-      fillRRect(self.x,self.y+self.h-self.pad,self.w,self.h*2+self.pad*3,self.pad,gg.ctx);
+      fillRRect(self.x,self.drawery-self.pad,self.w,self.pad+self.btnh+self.pad*2,self.pad,gg.ctx);
       var x = self.x+self.pad;
-      var y = self.y+self.h+self.pad*4;
-      var r = self.h/2;
+      var y = self.drawery+self.pad;
+      var r = self.btnh/2;
       for(var i = 0; i < gg.farmbits.length; i++)
       {
         var f = gg.farmbits[i];
@@ -185,7 +209,7 @@ var bar = function()
         gg.ctx.fill();
         gg.ctx.stroke();
         gg.ctx.fillStyle = black;
-        gg.ctx.fillText(f.name,x,y+self.h);
+        gg.ctx.fillText(f.name,x,y+fs*2);
 
         var str = "";
         switch(self.drawer)
@@ -226,13 +250,15 @@ var bar = function()
             break;
         }
         gg.ctx.fillText(str,x,y+fs);
+
+        x += r*2+self.pad;
       }
     }
 
     gg.ctx.fillStyle = white;
-    fillRRect(self.x,-self.pad,self.w,self.h+self.pad*3,self.pad,gg.ctx);
+    fillRRect(self.x,-self.pad,self.w,self.pad+self.btnh+self.pad*2,self.pad,gg.ctx);
     if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
-    if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn,gg.ctx); }
+    if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn, gg.ctx); }
     if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
     gg.ctx.fillStyle = gg.font_color;
     var x = self.x+self.pad;

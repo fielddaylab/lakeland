@@ -65,6 +65,16 @@ var Clicker = function(init)
     }
     return hit;
   }
+  self.check = function(x,y,w,h)
+  {
+    var evt;
+    for(var i = 0; i < evts.length; i++)
+    {
+      evt = evts[i];
+      if(doEvtWithin(evt, x,y,w,h)) return 1;
+    }
+    return 0;
+  }
   self.flush = function()
   {
     evts = [];
