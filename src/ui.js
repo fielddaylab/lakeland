@@ -251,7 +251,7 @@ var bar = function()
         gg.ctx.stroke();
         gg.ctx.fillStyle = black;
         gg.ctx.fillText(f.name,x,y+fs*2);
-        if(self.drawer == DRAWER_ACTIONS && f.job_type == JOB_TYPE_EXPORT && f.job_state == JOB_STATE_ACT) gg.ctx.fillText(str,x,y+fs);
+        if(self.drawer == DRAWER_STATES || (f.job_type == JOB_TYPE_EXPORT && f.job_state == JOB_STATE_ACT)) gg.ctx.fillText(str,x,y+fs);
 
         x += r*2+self.pad;
       }
