@@ -203,15 +203,10 @@ var bar = function()
         var f = gg.farmbits[i];
 
         gg.ctx.fillStyle = gg.backdrop_color;
-        gg.ctx.strokeStyle = gg.font_color;
         gg.ctx.beginPath();
-        gg.ctx.arc(x+r,y+r,r,0,twopi);
-        gg.ctx.fill();
-        gg.ctx.stroke();
-        gg.ctx.fillStyle = black;
-        gg.ctx.fillText(f.name,x,y+fs*2);
 
         var str = "";
+        var stroke = gg.font_color;
         switch(self.drawer)
         {
           case DRAWER_ACTIONS:
@@ -239,9 +234,9 @@ var bar = function()
             break;
           case DRAWER_STATES:
           {
-                 if(f.fullness_state == FARMBIT_STATE_DESPERATE) str = "HUNGRY";
-            else if(f.energy_state   == FARMBIT_STATE_DESPERATE) str = "SLEEPY";
-            else if(f.joy_state      == FARMBIT_STATE_DESPERATE) str = "SAD";
+                 if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str = "HUNGRY"; stroke = red; }
+            else if(f.energy_state   == FARMBIT_STATE_DESPERATE) { str = "SLEEPY"; stroke = red; }
+            else if(f.joy_state      == FARMBIT_STATE_DESPERATE) { str = "SAD"; stroke = red; }
             else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str = "hungry";
             else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str = "sleepy";
             else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str = "sad";
@@ -249,7 +244,14 @@ var bar = function()
           }
             break;
         }
-        gg.ctx.fillText(str,x,y+fs);
+        gg.ctx.strokeStyle = stroke;
+
+        gg.ctx.arc(x+r,y+r,r,0,twopi);
+        gg.ctx.fill();
+        gg.ctx.stroke();
+        gg.ctx.fillStyle = black;
+        gg.ctx.fillText(f.name,x,y+fs*2);
+        if(self.drawer == DRAWER_ACTIONS && f.job_type == JOB_TYPE_EXPORT && f.job_state == JOB_STATE_ACT) gg.ctx.fillText(str,x,y+fs);
 
         x += r*2+self.pad;
       }
