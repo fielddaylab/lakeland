@@ -3483,7 +3483,7 @@ var farmbit = function()
           break;
       }
     }
-    if(gg.b.tile_groups(TILE_TYPE_GRAVE).length)
+    if(gg.b.tile_groups[TILE_TYPE_GRAVE].length)
       gg.advisors.another_death();
     gg.b.alterTile(t,TILE_TYPE_GRAVE);
     for(var i = 0; i < gg.farmbits.length; i++)
