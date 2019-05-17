@@ -2481,9 +2481,6 @@ var advisors = function()
         return 0;
       }, tut_gross);
       self.pool_thread(function(){
-        return gg.b.tile_groups[TILE_TYPE_GRAVE].length;
-      }, tut_death);
-      self.pool_thread(function(){
         for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
           if(gg.b.tile_groups[TILE_TYPE_FARM][i].state == TILE_STATE_FARM_GROWN && gg.b.tile_groups[TILE_TYPE_FARM][i].state_t > 500) return 1;
         return 0;
@@ -3010,6 +3007,7 @@ var advisors = function()
   ];
 
   self.pool_thread(tfunc,tut_build_a_house);
+  self.pool_thread(function(){ return gg.b.tile_groups[TILE_TYPE_GRAVE].length; }, tut_death);
 
 }
 
