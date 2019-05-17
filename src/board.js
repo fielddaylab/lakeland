@@ -116,6 +116,21 @@ var DIRECTION_U     = ENUM; ENUM++;
 var DIRECTION_UR    = ENUM; ENUM++;
 var DIRECTION_COUNT = ENUM; ENUM++;
 
+var buy_to_tile = function(buy)
+{
+  switch(buy)
+  {
+    case BUY_TYPE_HOME:      return TILE_TYPE_HOME;
+    case BUY_TYPE_FARM:      return TILE_TYPE_FARM;
+    case BUY_TYPE_LIVESTOCK: return TILE_TYPE_LIVESTOCK;
+    case BUY_TYPE_STORAGE:   return TILE_TYPE_STORAGE;
+    case BUY_TYPE_SIGN:      return TILE_TYPE_SIGN;
+    case BUY_TYPE_ROAD:      return TILE_TYPE_ROAD;
+    case BUY_TYPE_PROCESSOR: return TILE_TYPE_PROCESSOR;
+  }
+  return TIE_TYPE_LAND;
+}
+
 var walkability_check = function(type,state)
 {
   switch(type)
@@ -1459,6 +1474,7 @@ var board = function()
   self.twh = self.wh/self.th;
 
   self.null_tile = new tile();
+  self.scratch_tile = new tile();
   self.tiles = [];
   self.tile_groups = [];
   self.tiles_i = function(tx,ty)
@@ -3016,12 +3032,30 @@ var board = function()
 
     var t;
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE) { t = gg.inspector.detailed; gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
-    if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
+    //if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(self.hover_t && gg.shop.selected_buy)
     {
       t = self.hover_t;
       if(self.hover_t_placable)
+      {
+        var o = self.scratch_tile;
+        o.type = buy_to_tile(gg.shop.selected_buy);
+        if(o.type != TILE_TYPE_NULL)
+        {
+          o.tx = t.tx;
+          o.ty = t.ty;
+          o.og_type = t.og_type;
+
+          var w = self.w/self.tw;
+          var h = self.h/self.th;
+          var ny = round(self.y+self.h-((o.ty+1)*h));
+          var  x = round(self.x+       ((o.tx  )*w));
+          gg.ctx.globalAlpha = 0.5;
+          self.draw_tile(o,x,ny,w,h);
+          gg.ctx.globalAlpha = 1;
+        }
         gg.ctx.strokeStyle = green;
+      }
       else
         gg.ctx.strokeStyle = red;
       gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
