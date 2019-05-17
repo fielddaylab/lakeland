@@ -198,65 +198,89 @@ var bar = function()
     {
       gg.ctx.fillStyle = white;
       fillRRect(self.x,self.drawery-self.pad,self.w,self.pad+self.pad+self.vignette_s+self.pad,self.pad,gg.ctx);
+      var bigx = self.x;
       var x = self.x+self.pad;
       var y = self.drawery+self.pad;
-      var r = self.vignette_s/2;;
-      for(var i = 0; i < gg.farmbits.length; i++)
+      var r = self.vignette_s/2;
+      for(var j = 0; j < 4; j++)
       {
-        var f = gg.farmbits[i];
-
-        gg.ctx.fillStyle = gg.backdrop_color;
-        gg.ctx.beginPath();
-
-        var str = "";
-        var stroke = gg.font_color;
-        switch(self.drawer)
+        var test = 0;
+        switch(j)
         {
-          case DRAWER_ACTIONS:
-          {
-            switch(f.job_type)
-            {
-              case JOB_TYPE_NULL: str = "Nothing"; break;
-              case JOB_TYPE_IDLE: str = "Idle"; break;
-              case JOB_TYPE_WAIT: str = "Waiting"; break;
-              case JOB_TYPE_EAT: str = "Eating"; break;
-              case JOB_TYPE_SLEEP: str = "Sleeping"; break;
-              case JOB_TYPE_PLAY: str = "Playing"; break;
-              case JOB_TYPE_PLANT: str = "Planting"; break;
-              case JOB_TYPE_HARVEST: str = "Harvesting"; break;
-              case JOB_TYPE_FEED: str = "Feeding"; break;
-              case JOB_TYPE_FERTILIZE: str = "Fertilizing"; break;
-              case JOB_TYPE_MILK: str = "Milking"; break;
-              case JOB_TYPE_STORE: str = "Storing"; break;
-              case JOB_TYPE_PROCESS: str = "Processing"; break;
-              case JOB_TYPE_KICK: str = "Kicking"; break;
-              case JOB_TYPE_EXPORT: str = "Exporting"; break;
-              case JOB_TYPE_COUNT: str = "BROKEN"; break;
-            }
-          }
-            break;
-          case DRAWER_STATES:
-          {
-                 if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str = "HUNGRY"; stroke = red; }
-            else if(f.energy_state   == FARMBIT_STATE_DESPERATE) { str = "SLEEPY"; stroke = red; }
-            else if(f.joy_state      == FARMBIT_STATE_DESPERATE) { str = "SAD"; stroke = red; }
-            else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str = "hungry";
-            else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str = "sleepy";
-            else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str = "sad";
-            else                                                 str = "Content";
-          }
-            break;
+          case 0: bigx = self.x;            break;
+          case 1: bigx = self.x+self.w/4;   break;
+          case 2: bigx = self.x+self.w/2;   break;
+          case 3: bigx = self.x+self.w*3/4; break;
         }
-        gg.ctx.strokeStyle = stroke;
+        x = bigx+self.pad;
+        y = self.drawery+self.pad;
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
 
-        gg.ctx.arc(x+r,y+r,r,0,twopi);
-        gg.ctx.fill();
-        gg.ctx.stroke();
-        gg.ctx.fillStyle = black;
-        gg.ctx.fillText(f.name,x,y+fs*2);
-        if(self.drawer == DRAWER_STATES || (f.job_type == JOB_TYPE_EXPORT && f.job_state == JOB_STATE_ACT)) gg.ctx.fillText(str,x,y+fs);
+          var pass = 1;
+          switch(j)
+          {
+            case 0: if(f.fullness_state != FARMBIT_STATE_DESPERATE) pass = 0; break;
+            case 1: if(f.energy_state   != FARMBIT_STATE_DESPERATE) pass = 0; break;
+            case 2: if(f.joy_state      != FARMBIT_STATE_DESPERATE) pass = 0; break;
+            case 3: if(f.fullness_state == FARMBIT_STATE_DESPERATE || f.energy_state == FARMBIT_STATE_DESPERATE || f.joy_state == FARMBIT_STATE_DESPERATE) pass = 0; break;
+          }
+          if(!pass) continue;
 
-        x += r*2+self.pad;
+          gg.ctx.fillStyle = gg.backdrop_color;
+          gg.ctx.beginPath();
+
+          var str = "";
+          var stroke = gg.font_color;
+          switch(self.drawer)
+          {
+            case DRAWER_ACTIONS:
+            {
+              switch(f.job_type)
+              {
+                case JOB_TYPE_NULL: str = "Nothing"; break;
+                case JOB_TYPE_IDLE: str = "Idle"; break;
+                case JOB_TYPE_WAIT: str = "Waiting"; break;
+                case JOB_TYPE_EAT: str = "Eating"; break;
+                case JOB_TYPE_SLEEP: str = "Sleeping"; break;
+                case JOB_TYPE_PLAY: str = "Playing"; break;
+                case JOB_TYPE_PLANT: str = "Planting"; break;
+                case JOB_TYPE_HARVEST: str = "Harvesting"; break;
+                case JOB_TYPE_FEED: str = "Feeding"; break;
+                case JOB_TYPE_FERTILIZE: str = "Fertilizing"; break;
+                case JOB_TYPE_MILK: str = "Milking"; break;
+                case JOB_TYPE_STORE: str = "Storing"; break;
+                case JOB_TYPE_PROCESS: str = "Processing"; break;
+                case JOB_TYPE_KICK: str = "Kicking"; break;
+                case JOB_TYPE_EXPORT: str = "Exporting"; break;
+                case JOB_TYPE_COUNT: str = "BROKEN"; break;
+              }
+            }
+              break;
+            case DRAWER_STATES:
+            {
+                   if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str = "HUNGRY"; stroke = red; }
+              else if(f.energy_state   == FARMBIT_STATE_DESPERATE) { str = "SLEEPY"; stroke = red; }
+              else if(f.joy_state      == FARMBIT_STATE_DESPERATE) { str = "SAD"; stroke = red; }
+              else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str = "hungry";
+              else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str = "sleepy";
+              else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str = "sad";
+              else                                                 str = "Content";
+            }
+              break;
+          }
+          gg.ctx.strokeStyle = stroke;
+
+          gg.ctx.arc(x+r,y+r,r,0,twopi);
+          gg.ctx.fill();
+          gg.ctx.stroke();
+          gg.ctx.fillStyle = black;
+          gg.ctx.fillText(f.name,x,y+fs*2);
+          if(self.drawer == DRAWER_STATES || (f.job_type == JOB_TYPE_EXPORT && f.job_state == JOB_STATE_ACT)) gg.ctx.fillText(str,x,y+fs);
+
+          x += r*2+self.pad;
+        }
       }
     }
 

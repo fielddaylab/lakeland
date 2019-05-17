@@ -128,7 +128,7 @@ var buy_to_tile = function(buy)
     case BUY_TYPE_ROAD:      return TILE_TYPE_ROAD;
     case BUY_TYPE_PROCESSOR: return TILE_TYPE_PROCESSOR;
   }
-  return TIE_TYPE_LAND;
+  return TILE_TYPE_NULL;
 }
 
 var walkability_check = function(type,state)
