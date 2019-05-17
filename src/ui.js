@@ -110,15 +110,17 @@ var bar = function()
   self.btnh = 0;
   self.btnw = 0;
   self.drawery = 0;
+  self.vignette_s = 0;
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
     self.btnh = gg.b.cbounds_y-self.pad*2;
     self.btnw = self.btnh;
+    self.vignette_s = self.btnh*1.5;
 
     self.w = gg.canvas.width/2;
-    self.h = (self.btnh+self.pad)*3+self.pad;
+    self.h = (self.pad+self.btnh+self.pad)+self.pad+self.vignette_s+self.pad;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = 0;
 
@@ -163,12 +165,12 @@ var bar = function()
         for(var i = 0; check && i < gg.farmbits.length; i++)
         {
           var f = gg.farmbits[i];
-          if(filter.check(x,y,self.btnh,self.btnh))
+          if(filter.check(x,y,self.vignette_s,self.vignette_s))
           {
             check = 0;
             gg.inspector.select_farmbit(f);
           }
-          x += self.btnh+self.pad;
+          x += self.vignette_s+self.pad;
         }
         if(check) check = !filter.filter(self);
       }
@@ -190,14 +192,15 @@ var bar = function()
   {
     var fs = gg.font_size;
     gg.ctx.font = fs+"px "+gg.font;
+    gg.ctx.textAlign = "left";
 
     if(self.drawer)
     {
       gg.ctx.fillStyle = white;
-      fillRRect(self.x,self.drawery-self.pad,self.w,self.pad+self.btnh+self.pad*2,self.pad,gg.ctx);
+      fillRRect(self.x,self.drawery-self.pad,self.w,self.pad+self.pad+self.vignette_s+self.pad,self.pad,gg.ctx);
       var x = self.x+self.pad;
       var y = self.drawery+self.pad;
-      var r = self.btnh/2;
+      var r = self.vignette_s/2;;
       for(var i = 0; i < gg.farmbits.length; i++)
       {
         var f = gg.farmbits[i];
@@ -271,7 +274,7 @@ var bar = function()
     gg.ctx.fillText("$"+gg.money, x,y);
     x += w;
     //food
-    gg.ctx.fillText(gg.food+" available food",     x,y);
+    gg.ctx.fillText(gg.food+" food",     x,y);
     x += w;
 
     x = self.x+self.w-self.pad;

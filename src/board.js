@@ -3265,8 +3265,8 @@ var farmbit = function()
 
   self.wx = 0;
   self.wy = 0;
-  self.ww = gg.b.tww;
-  self.wh = gg.b.twh;
+  self.ww = gg.b.tww*2/3;
+  self.wh = gg.b.twh*2/3;
 
   self.x = 0;
   self.y = 0;
@@ -3403,7 +3403,7 @@ var farmbit = function()
     else if(self.energy > energy_motivated) self.energy_state = FARMBIT_STATE_MOTIVATED;
     else                                    self.energy_state = FARMBIT_STATE_DESPERATE;
          if(old_energy - self.energy_state > 0) self.emote("😴");
-    else if(old_energy - self.energy_state > 0) self.emote("😴");
+    else if(old_energy - self.energy_state < 0) self.emote("😴");
 
     var old_joy = self.joy_state;
          if(self.joy > joy_content)   self.joy_state = FARMBIT_STATE_CONTENT;
@@ -3779,6 +3779,7 @@ var farmbit = function()
             {
               self.joy = 1;
               self.joy_state = FARMBIT_STATE_CONTENT;
+              self.emote("🙂");
               self.go_idle();
               gg.ticker.nq(self.name+" played in the lake.");
               job_for_b(self);
@@ -4480,30 +4481,34 @@ var farmbit = function()
 
     if(self.job_state == JOB_STATE_ACT)
     {
+      /*
       switch(self.job_type)
       {
         case JOB_TYPE_SLEEP: gg.ctx.fillText("ZZ",self.x+self.w/2,self.y-10); break;
         case JOB_TYPE_PLAY:  gg.ctx.fillText(":)",self.x+self.w/2,self.y-10); break;
       }
+      */
     }
     self.last_img = farmbit_imgs[self.anim_anim][self.anim_side][self.anim_frame];
     gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
 
+    /*
          if(self.fullness_state == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("HUNGRY",self.x+self.w/2,self.y);
     else if(self.energy_state   == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SLEEPY",self.x+self.w/2,self.y);
     else if(self.joy_state      == FARMBIT_STATE_DESPERATE) gg.ctx.fillText("SAD",self.x+self.w/2,self.y);
     else if(self.fullness_state == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("hungry",self.x+self.w/2,self.y);
     else if(self.energy_state   == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sleepy",self.x+self.w/2,self.y);
     else if(self.joy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",self.x+self.w/2,self.y);
+    */
 
     for(var i = 0; i < self.emotes.length; i++)
     {
       var t = self.emote_ts[i]/self.emote_l;
            if(t < 0.01) gg.ctx.globalAlpha = t*100;
-      else if(t > 0.7) gg.ctx.globalAlpha = 1-((t-0.7)/0.3);
+      else if(t > 0.7) gg.ctx.globalAlpha = clamp(0,1,1-((t-0.7)/0.3));
       else             gg.ctx.globalAlpha = 1;
 
-      gg.ctx.fillText(self.emotes[i],self.x+self.w/2,self.y-(20-bounceup(t)*20)*gg.stage.s_mod);
+      gg.ctx.fillText(self.emotes[i],self.x+self.w/2,self.y-(30-bounceup(t)*30)*gg.stage.s_mod);
     }
     gg.ctx.globalAlpha = 1;
   }
