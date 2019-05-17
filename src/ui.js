@@ -1752,6 +1752,15 @@ var advisors = function()
     gg.clicker.consumeif(gg.canvas.width/2-self.popup_w/2,gg.canvas.height-p*2-self.title_font_size,self.popup_w,self.title_font_size,self.adv_thread);
   }
 
+  self.another_member = function()
+  {
+    self.pool_thread(function(){ return 1; }, tut_another_member);
+  }
+  self.another_death = function()
+  {
+    self.pool_thread(function(){ return 1; }, tut_another_death);
+  }
+
   self.click = function(evt)
   {
     if(self.thread) self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_CLICK](evt);
@@ -2361,6 +2370,50 @@ var advisors = function()
     self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'long_travel'});
+    },
+  ];
+
+  var tut_another_death = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Oh no, you've lost another one!"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("A gravestone will remember them forever"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_death'});
+    },
+  ];
+
+  var tut_another_member = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_member'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Someone else has moved in!"); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.dotakeover(); self.push_blurb("Your town continues to grow!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_member'});
     },
   ];
 
