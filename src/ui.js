@@ -205,15 +205,16 @@ var bar = function()
       for(var j = 0; j < 4; j++)
       {
         var test = 0;
+        y = self.drawery+self.pad;
+        gg.ctx.fillStyle = black;
         switch(j)
         {
-          case 0: bigx = self.x;            break;
-          case 1: bigx = self.x+self.w/4;   break;
-          case 2: bigx = self.x+self.w/2;   break;
-          case 3: bigx = self.x+self.w*3/4; break;
+          case 0: bigx = self.x;            gg.ctx.fillText("HUNGRY",bigx,y); break;
+          case 1: bigx = self.x+self.w/4;   gg.ctx.fillText("SLEEPY",bigx,y); break;
+          case 2: bigx = self.x+self.w/2;   gg.ctx.fillText("SAD",bigx,y); break;
+          case 3: bigx = self.x+self.w*3/4; gg.ctx.fillText("CONTENT",bigx,y); break;
         }
         x = bigx+self.pad;
-        y = self.drawery+self.pad;
         for(var i = 0; i < gg.farmbits.length; i++)
         {
           var f = gg.farmbits[i];
