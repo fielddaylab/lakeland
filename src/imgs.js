@@ -75,6 +75,70 @@ var up_img;
   drawArrow(s/2,s*3/4,s/2,0,s/8,ctx)
 }
 
+var cursor_img;
+{
+  var ctx;
+  var s = 100;
+  var l = s/4;
+  cursor_img = GenIcon(s,s);
+  ctx = cursor_img.context;
+
+  ctx.lineWidth = s/5;
+  ctx.strokeStyle = green;
+
+  ctx.beginPath();
+
+  ctx.moveTo(0,l);
+  ctx.lineTo(0,0);
+  ctx.lineTo(l,0);
+
+  ctx.moveTo(s-l,0);
+  ctx.lineTo(s,0);
+  ctx.lineTo(s,l);
+
+  ctx.moveTo(s,s-l);
+  ctx.lineTo(s,s);
+  ctx.lineTo(s-l,s);
+
+  ctx.moveTo(l,s);
+  ctx.lineTo(0,s);
+  ctx.lineTo(0,s-l);
+
+  ctx.stroke();
+}
+
+var ncursor_img;
+{
+  var ctx;
+  var s = 100;
+  var l = s/4;
+  ncursor_img = GenIcon(s,s);
+  ctx = ncursor_img.context;
+
+  ctx.lineWidth = s/5;
+  ctx.strokeStyle = red;
+
+  ctx.beginPath();
+
+  ctx.moveTo(0,l);
+  ctx.lineTo(0,0);
+  ctx.lineTo(l,0);
+
+  ctx.moveTo(s-l,0);
+  ctx.lineTo(s,0);
+  ctx.lineTo(s,l);
+
+  ctx.moveTo(s,s-l);
+  ctx.lineTo(s,s);
+  ctx.lineTo(s-l,s);
+
+  ctx.moveTo(l,s);
+  ctx.lineTo(0,s);
+  ctx.lineTo(0,s-l);
+
+  ctx.stroke();
+}
+
 //var farmbit_imgs = [];
 
 var land_img = GenImg("assets/grass_t"+0+"_d"+0+"_f"+0+".png");
