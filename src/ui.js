@@ -1805,10 +1805,15 @@ var advisors = function()
   }
   self.another_death = function()
   {
+    if(!gg.farmbits.length) { self.pool_thread(function(){ return 1; }, tut_final_death); return; }
+
     if(self.thread == tut_another_death) return;
     for(var i = 0; i < self.trigger_threads.length; i++)
       if(self.trigger_threads[i] == tut_another_death) return;
-    self.pool_thread(function(){ return 1; }, tut_another_death);
+
+    if(!self.a_death) self.pool_thread(function(){ return 1; }, tut_death);
+    else              self.pool_thread(function(){ return 1; }, tut_another_death);
+    self.a_death = 1;
   }
 
   self.click = function(evt)
@@ -2433,7 +2438,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop,
 
-    function(){ self.dotakeover(); self.push_blurb("A gravestone will remember them forever"); }, //begin
+    function(){ self.push_blurb("A gravestone will remember them forever"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2455,7 +2460,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop,
 
-    function(){ self.dotakeover(); self.push_blurb("Your town continues to grow!"); }, //begin
+    function(){ self.push_blurb("Your town continues to grow!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2464,6 +2469,37 @@ var advisors = function()
     self.adv_thread, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_member'});
+    },
+  ];
+
+  var tut_final_death = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Everyone in your town has died."); },//begin
+    noop, //tick
+    function() { //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    self.delay_adv_thread, //click
+    noop,
+
+    function(){ self.push_blurb("This adventure has failed."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.push_blurb("Better luck next time!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.adv_thread, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_death'});
     },
   ];
 
@@ -3057,7 +3093,6 @@ var advisors = function()
   ];
 
   self.pool_thread(tfunc,tut_build_a_house);
-  self.pool_thread(function(){ return gg.b.tile_groups[TILE_TYPE_GRAVE].length; }, tut_death);
 
 }
 
