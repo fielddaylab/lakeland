@@ -36,12 +36,6 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
-ENUM = 0;
-var DRAWER_NULL    = ENUM; ENUM++;
-var DRAWER_ACTIONS = ENUM; ENUM++;
-var DRAWER_STATES  = ENUM; ENUM++;
-var DRAWER_COUNT   = ENUM; ENUM++;
-
 var draw_switch = function(x,y,w,h,on)
 {
   gg.ctx.strokeStyle = gg.font_color;
@@ -147,7 +141,7 @@ var bar = function()
   self.play_btn.active = 0;
   self.speed_btn.active = 0;
 
-  self.drawer = DRAWER_NULL;
+  self.drawer = 0;
 
   self.filter = function(filter)
   {
@@ -180,7 +174,7 @@ var bar = function()
 
   self.click = function()
   {
-    self.drawer = (self.drawer+1)%DRAWER_COUNT;
+    self.drawer = !self.drawer;
   }
 
   self.tick = function()
@@ -232,45 +226,36 @@ var bar = function()
           gg.ctx.fillStyle = gg.backdrop_color;
           gg.ctx.beginPath();
 
-          var str = "";
+          var str0 = "";
+          var str1 = "";
           var stroke = gg.font_color;
-          switch(self.drawer)
+          switch(f.job_type)
           {
-            case DRAWER_ACTIONS:
-            {
-              switch(f.job_type)
-              {
-                case JOB_TYPE_NULL: str = "Nothing"; break;
-                case JOB_TYPE_IDLE: str = "Idle"; break;
-                case JOB_TYPE_WAIT: str = "Waiting"; break;
-                case JOB_TYPE_EAT: str = "Eating"; break;
-                case JOB_TYPE_SLEEP: str = "Sleeping"; break;
-                case JOB_TYPE_PLAY: str = "Playing"; break;
-                case JOB_TYPE_PLANT: str = "Planting"; break;
-                case JOB_TYPE_HARVEST: str = "Harvesting"; break;
-                case JOB_TYPE_FEED: str = "Feeding"; break;
-                case JOB_TYPE_FERTILIZE: str = "Fertilizing"; break;
-                case JOB_TYPE_MILK: str = "Milking"; break;
-                case JOB_TYPE_STORE: str = "Storing"; break;
-                case JOB_TYPE_PROCESS: str = "Processing"; break;
-                case JOB_TYPE_KICK: str = "Kicking"; break;
-                case JOB_TYPE_EXPORT: str = "Exporting"; break;
-                case JOB_TYPE_COUNT: str = "BROKEN"; break;
-              }
-            }
-              break;
-            case DRAWER_STATES:
-            {
-                   if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str = "HUNGRY"; stroke = red; }
-              else if(f.energy_state   == FARMBIT_STATE_DESPERATE) { str = "SLEEPY"; stroke = red; }
-              else if(f.joy_state      == FARMBIT_STATE_DESPERATE) { str = "SAD"; stroke = red; }
-              else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str = "hungry";
-              else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str = "sleepy";
-              else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str = "sad";
-              else                                                 str = "Content";
-            }
-              break;
+            case JOB_TYPE_NULL: str0 = "Nothing"; break;
+            case JOB_TYPE_IDLE: str0 = "Idle"; break;
+            case JOB_TYPE_WAIT: str0 = "Waiting"; break;
+            case JOB_TYPE_EAT: str0 = "Eating"; break;
+            case JOB_TYPE_SLEEP: str0 = "Sleeping"; break;
+            case JOB_TYPE_PLAY: str0 = "Playing"; break;
+            case JOB_TYPE_PLANT: str0 = "Planting"; break;
+            case JOB_TYPE_HARVEST: str0 = "Harvesting"; break;
+            case JOB_TYPE_FEED: str0 = "Feeding"; break;
+            case JOB_TYPE_FERTILIZE: str0 = "Fertilizing"; break;
+            case JOB_TYPE_MILK: str0 = "Milking"; break;
+            case JOB_TYPE_STORE: str0 = "Storing"; break;
+            case JOB_TYPE_PROCESS: str0 = "Processing"; break;
+            case JOB_TYPE_KICK: str0 = "Kicking"; break;
+            case JOB_TYPE_EXPORT: str0 = "Exporting"; break;
+            case JOB_TYPE_COUNT: str0 = "BROKEN"; break;
           }
+
+               if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str1 = "HUNGRY"; stroke = red; }
+          else if(f.energy_state   == FARMBIT_STATE_DESPERATE) { str1 = "SLEEPY"; stroke = red; }
+          else if(f.joy_state      == FARMBIT_STATE_DESPERATE) { str1 = "SAD"; stroke = red; }
+          else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str1 = "hungry";
+          else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str1 = "sleepy";
+          else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str1 = "sad";
+          else                                                 str1 = "Content";
           gg.ctx.strokeStyle = stroke;
 
           gg.ctx.arc(x+r,y+r,r,0,twopi);
@@ -278,9 +263,9 @@ var bar = function()
           gg.ctx.stroke();
           gg.ctx.fillStyle = black;
           gg.ctx.fillText(f.name,x,y+fs*2);
-          if(self.drawer == DRAWER_STATES || (f.job_type == JOB_TYPE_EXPORT && f.job_state == JOB_STATE_ACT)) gg.ctx.fillText(str,x,y+fs);
+          gg.ctx.fillText(str1,x,y+fs);
 
-          x += r*2+self.pad;
+          y += r*2+self.pad;
         }
       }
     }
@@ -949,7 +934,7 @@ var inspector = function()
         if(t.state == TILE_STATE_FARM_GROWN)     rg = 1;
 
         gg.ctx.fillStyle = vlight_gray;
-        fillRRect(self.x,y,self.w,self.h/2,self.pad,gg.ctx);
+        fillRRect(self.x,y,self.w,self.y+self.h-y,self.pad,gg.ctx);
         y += self.font_size;
         gg.ctx.fillStyle = gg.font_color;
 
