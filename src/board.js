@@ -3183,8 +3183,8 @@ var item = function()
 
   self.wx = 0;
   self.wy = 0;
-  self.ww = gg.b.tww;
-  self.wh = gg.b.twh;
+  self.ww = gg.b.tww*3/4;
+  self.wh = gg.b.twh*3/4;
   self.wz = 0;
   self.wvx = 0;
   self.wvy = 0;
@@ -3295,8 +3295,8 @@ var farmbit = function()
 
   self.wx = 0;
   self.wy = 0;
-  self.ww = gg.b.tww*2/3;
-  self.wh = gg.b.twh*2/3;
+  self.ww = gg.b.tww*3/4;
+  self.wh = gg.b.twh*3/4;
 
   self.x = 0;
   self.y = 0;

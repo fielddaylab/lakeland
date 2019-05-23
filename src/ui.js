@@ -331,8 +331,8 @@ var nutrition_toggle = function()
 
     self.w = 40*gg.stage.s_mod;
     self.h = self.w;
-    self.x = gg.b.vbounds_x+gg.b.vbounds_w-self.w-self.pad;
-    self.y = gg.b.vbounds_y+gg.b.vbounds_h-self.h-self.pad;
+    self.x = gg.canvas.width-self.w-self.pad;//gg.b.vbounds_x+gg.b.vbounds_w-self.w-self.pad;
+    self.y = self.pad;//gg.b.vbounds_y+gg.b.vbounds_h-self.h-self.pad;
 
     setBB(self.toggle_btn, self.x,self.y,self.w,self.h);
   }
@@ -662,9 +662,9 @@ var inspector = function()
     self.title_font_size = self.pad*2;
     self.subtitle_font_size = self.pad*1;
     self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2;
-    self.y = self.pad;
     self.w = gg.canvas.width-self.x;
-    self.h = gg.canvas.height-self.pad*4;
+    self.y = self.pad+gg.stage.s_mod*100;
+    self.h = gg.canvas.height-self.y-self.pad;
 
     self.vignette_x = self.x+self.pad*2;
     self.vignette_y = self.y+self.pad*2;
