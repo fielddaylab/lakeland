@@ -3328,12 +3328,15 @@ var farmbit = function()
   self.fulfillment_state = FARMBIT_STATE_CONTENT;
 
   self.emotes = [];
+  self.emote_ws = [];
   self.emote_ts = [];
   self.emote_l = 500;
 
   self.emote = function(e)
   {
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     self.emotes.push(e);
+    self.emote_ws.push(gg.ctx.measureText(e).width)
     self.emote_ts.push(0);
   }
 
@@ -3426,21 +3429,21 @@ var farmbit = function()
     else if(self.fullness > fullness_motivated) self.fullness_state = FARMBIT_STATE_MOTIVATED;
     else                                        self.fullness_state = FARMBIT_STATE_DESPERATE;
          if(old_fullness - self.fullness_state > 0) self.emote("😋");
-    else if(old_fullness - self.fullness_state < 0) self.emote("🤤");
+    else if(old_fullness - self.fullness_state < 0) self.emote("I'm hungry!");
 
     var old_energy = self.energy_state;
          if(self.energy > energy_content)   self.energy_state = FARMBIT_STATE_CONTENT;
     else if(self.energy > energy_motivated) self.energy_state = FARMBIT_STATE_MOTIVATED;
     else                                    self.energy_state = FARMBIT_STATE_DESPERATE;
          if(old_energy - self.energy_state > 0) self.emote("😴");
-    else if(old_energy - self.energy_state < 0) self.emote("😴");
+    else if(old_energy - self.energy_state < 0) self.emote("Getting pretty tired...");
 
     var old_joy = self.joy_state;
          if(self.joy > joy_content)   self.joy_state = FARMBIT_STATE_CONTENT;
     else if(self.joy > joy_motivated) self.joy_state = FARMBIT_STATE_MOTIVATED;
     else                              self.joy_state = FARMBIT_STATE_DESPERATE;
          if(old_joy - self.joy_state > 0) self.emote("🙂");
-    else if(old_joy - self.joy_state < 0) self.emote("🙁");
+    else if(old_joy - self.joy_state < 0) self.emote("SO BORED");
 
          if(self.fulfillment > fulfillment_content)   self.fulfillment_state = FARMBIT_STATE_CONTENT;
     else if(self.fulfillment > fulfillment_motivated) self.fulfillment_state = FARMBIT_STATE_MOTIVATED;
@@ -3589,6 +3592,7 @@ var farmbit = function()
       if(self.emote_ts[i] > self.emote_l)
       {
         self.emotes.splice(i,1);
+        self.emote_ws.splice(i,1);
         self.emote_ts.splice(i,1);
         i--;
       }
@@ -3618,21 +3622,21 @@ var farmbit = function()
     var dirty = false;
     switch(self.fullness_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; self.emote("🤤"); gg.ticker.nq(self.name+" is hungry.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; self.emote("🤤"); gg.ticker.nq(self.name+" is VERY hungry!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULLNESS, self.job_type)) { self.abandon_job(1); } } break;
+      case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; self.emote("I NEED FOOD!"); gg.ticker.nq(self.name+" is hungry.");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; self.emote("I'm hungry"); gg.ticker.nq(self.name+" is VERY hungry!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULLNESS, self.job_type)) { self.abandon_job(1); } } break;
       case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; self.die(); return; } break;
       default: break;
     }
     switch(self.energy_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.energy < energy_content)   { self.energy_state = FARMBIT_STATE_MOTIVATED; self.emote("😴"); gg.ticker.nq(self.name+" is sleepy.");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.energy < energy_motivated) { self.energy_state = FARMBIT_STATE_DESPERATE; self.emote("😴"); gg.ticker.nq(self.name+" is VERY sleepy!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_ENERGY, self.job_type)) { self.abandon_job(1); } } break;
+      case FARMBIT_STATE_CONTENT:   if(self.energy < energy_content)   { self.energy_state = FARMBIT_STATE_MOTIVATED; self.emote("I need a nap!"); gg.ticker.nq(self.name+" is sleepy.");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.energy < energy_motivated) { self.energy_state = FARMBIT_STATE_DESPERATE; self.emote("Getting sleepy..."); gg.ticker.nq(self.name+" is VERY sleepy!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_ENERGY, self.job_type)) { self.abandon_job(1); } } break;
       default: break;
     }
     switch(self.joy_state)
     {
-      case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; self.emote("🙁"); gg.ticker.nq(self.name+" is sad");      dirty = 1; } break;
-      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; self.emote("🙁"); gg.ticker.nq(self.name+" is VERY sad!"); dirty = 1;  if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_JOY, self.job_type)) { self.abandon_job(1); } } break;
+      case FARMBIT_STATE_CONTENT:   if(self.joy < joy_content)   { self.joy_state = FARMBIT_STATE_MOTIVATED; self.emote("I'M SO SAD"); gg.ticker.nq(self.name+" is sad");      dirty = 1; } break;
+      case FARMBIT_STATE_MOTIVATED: if(self.joy < joy_motivated) { self.joy_state = FARMBIT_STATE_DESPERATE; self.emote("I want to play in the water"); gg.ticker.nq(self.name+" is VERY sad!"); dirty = 1;  if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_JOY, self.job_type)) { self.abandon_job(1); } } break;
       default: break;
     }
     switch(self.fulfillment_state)
@@ -4533,6 +4537,8 @@ var farmbit = function()
     else if(self.joy_state      == FARMBIT_STATE_MOTIVATED) gg.ctx.fillText("sad",self.x+self.w/2,self.y);
     */
 
+    self.pad = gg.stage.s_mod*10;
+    gg.ctx.font = gg.font_size+"px "+gg.font;
     for(var i = 0; i < self.emotes.length; i++)
     {
       var t = self.emote_ts[i]/self.emote_l;
@@ -4540,7 +4546,11 @@ var farmbit = function()
       else if(t > 0.7) gg.ctx.globalAlpha = clamp(0,1,1-((t-0.7)/0.3));
       else             gg.ctx.globalAlpha = 1;
 
-      gg.ctx.fillText(self.emotes[i],self.x+self.w/2,self.y-(30-bounceup(t)*30)*gg.stage.s_mod);
+      var y = self.y-(30-bounceup(t)*30)*gg.stage.s_mod;
+      gg.ctx.fillStyle = white;
+      fillRRect(self.x+self.w/2-self.emote_ws[i]/2-self.pad,y-gg.font_size-self.pad,self.emote_ws[i]+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
+      gg.ctx.fillStyle = black;
+      gg.ctx.fillText(self.emotes[i],self.x+self.w/2,y);
     }
     gg.ctx.globalAlpha = 1;
   }
