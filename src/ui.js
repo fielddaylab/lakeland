@@ -1447,7 +1447,15 @@ var achievements = function()
     self.triggers.push({name:name,global:0,local:0,trigger:fn});
   }
 
-  self.pushtrigger("test",function(){return 0;});
+  self.pushtrigger("Exist",function(){return gg.farmbits.length;});
+  self.pushtrigger("Group",function(){return gg.farmbits.length > 3;});
+  self.pushtrigger("Town",function(){return gg.farmbits.length > 5;});
+  self.pushtrigger("City",function(){return gg.farmbits.length > 10;});
+
+  self.pushtrigger("Farmer",function(){return gg.b.tile_groups[TILE_TYPE_FARM];});
+  self.pushtrigger("Farmers",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length > 3;});
+  self.pushtrigger("Farmtown",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length > 5;});
+  self.pushtrigger("MegaFarm",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length > 10;});
 
   self.filter = function(filter)
   {

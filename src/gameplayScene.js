@@ -97,6 +97,14 @@ var GamePlayScene = function()
     gg.backdrop_color = "#A0DEDB";
   }
 
+  self.killinput = function()
+  {
+    if(gg.hoverer) gg.hoverer.flush();
+    if(gg.clicker) gg.clicker.flush();
+    if(gg.dragger) gg.dragger.flush();
+    if(gg.keyer)   gg.keyer.flush();
+  }
+
   self.readied = 0;
   self.ready = function()
   {

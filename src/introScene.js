@@ -4,9 +4,14 @@ var IntroScene = function()
 
   self.resize = function()
   {
-    if(gg.keyer)   gg.keyer.detach();   gg.keyer   = new Keyer({source:gg.canvas});
+    if(self.keyer) self.keyer.detach(); self.keyer = new Keyer({source:gg.canvas});
   }
   self.resize();
+
+  self.killinput = function()
+  {
+    if(self.keyer) self.keyer.flush();
+  }
 
   self.ready = function()
   {
@@ -25,8 +30,8 @@ var IntroScene = function()
   {
     t++;
     if(t > txts.length*txt_len) gg.game.nextScene();
-    else gg.keyer.filterkey(function(evt){ if(evt.keyCode == 32) gg.game.nextScene(); });
-    gg.keyer.flush();
+    else self.keyer.filterkey(function(evt){ if(evt.keyCode == 32) gg.game.nextScene(); });
+    if(self.keyer) self.keyer.flush();
   };
 
   self.draw = function()
@@ -47,7 +52,7 @@ var IntroScene = function()
 
   self.cleanup = function()
   {
-
+    if(self.keyer) self.keyer.detach(); self.keyer = null;
   };
 };
 
