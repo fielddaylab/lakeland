@@ -1798,10 +1798,16 @@ var advisors = function()
 
   self.another_member = function()
   {
+    if(self.thread == tut_another_member) return;
+    for(var i = 0; i < self.trigger_threads.length; i++)
+      if(self.trigger_threads[i] == tut_another_member) return;
     self.pool_thread(function(){ return 1; }, tut_another_member);
   }
   self.another_death = function()
   {
+    if(self.thread == tut_another_death) return;
+    for(var i = 0; i < self.trigger_threads.length; i++)
+      if(self.trigger_threads[i] == tut_another_death) return;
     self.pool_thread(function(){ return 1; }, tut_another_death);
   }
 
