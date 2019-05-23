@@ -3155,7 +3155,7 @@ var board = function()
     }
 
     {
-      //*
+      /*
       gg.ctx.strokeStyle = red;
       gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
       gg.ctx.strokeStyle = blue;
