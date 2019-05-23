@@ -1621,12 +1621,6 @@ var board = function()
     self.bounds_x = self.x+       (self.bounds_tx/self.tw)*self.w;
     self.bounds_y = self.y+self.h-(self.bounds_ty/self.th)*self.h-self.bounds_h;
 
-    //if bounds_* == vbounds_*, then these should be identical
-    self.vbounds_w = (self.vbounds_tw/self.tw)*self.w;
-    self.vbounds_h = (self.vbounds_th/self.th)*self.h;
-    self.vbounds_x = self.x+       (self.vbounds_tx/self.tw)*self.w;
-    self.vbounds_y = self.y+self.h-(self.vbounds_ty/self.th)*self.h-self.vbounds_h;
-
     self.cbounds_w = ((self.bounds_tw+1)/self.tw)*self.w;
     self.cbounds_h = ((self.bounds_th+1)/self.th)*self.h;
     self.cbounds_x = self.x+       ((self.bounds_tx-0.5)/self.tw)*self.w;
@@ -1643,6 +1637,38 @@ var board = function()
     self.cloud_y = round(self.cloud_y);
     self.cloud_w = round(self.cloud_w);
     self.cloud_h = round(self.cloud_h);
+    self.set_cam();
+  }
+  self.set_cam = function()
+  {
+      var rbwx = self.wx-self.ww/2+((self.bounds_tx+self.bounds_tw+8)/self.tw)*self.ww;
+      var lbwx = self.wx-self.ww/2+((self.bounds_tx               -8)/self.tw)*self.ww;
+      var bww = rbwx-lbwx;
+      var tbwy = self.wy-self.wh/2+((self.bounds_ty+self.bounds_th+4)/self.th)*self.wh;
+      var bbwy = self.wy-self.wh/2+((self.bounds_ty               -3)/self.th)*self.wh;
+      var bwh = tbwy-bbwy;
+
+      if(bww > gg.cam.ww)
+      {
+        if(gg.cam.wx+gg.cam.ww/2 > rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
+        if(gg.cam.wx-gg.cam.ww/2 < lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
+      }
+      else
+      {
+        if(gg.cam.wx+gg.cam.ww/2 < rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
+        if(gg.cam.wx-gg.cam.ww/2 > lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
+      }
+
+      if(bwh > gg.cam.wh)
+      {
+        if(gg.cam.wy+gg.cam.wh/2 > tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
+        if(gg.cam.wy-gg.cam.wh/2 < bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+      }
+      else
+      {
+        if(gg.cam.wy+gg.cam.wh/2 < tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
+        if(gg.cam.wy-gg.cam.wh/2 > bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+      }
   }
 
   self.x = 0;
@@ -2441,36 +2467,7 @@ var board = function()
     {
       gg.cam.wx = self.cam_sx + (self.dragging_x-evt.doX)/gg.canvas.width*gg.cam.ww;
       gg.cam.wy = self.cam_sy - (self.dragging_y-evt.doY)/gg.canvas.height*gg.cam.wh;
-
-      var rbwx = self.wx-self.ww/2+((self.bounds_tx-4+self.bounds_tw+8)/self.tw)*self.ww;
-      var lbwx = self.wx-self.ww/2+((self.bounds_tx-4                 )/self.tw)*self.ww;
-      var bww = rbwx-lbwx;
-      var tbwy = self.wy-self.wh/2+((self.bounds_ty-1+self.bounds_th+3)/self.th)*self.wh;
-      var bbwy = self.wy-self.wh/2+((self.bounds_ty-1                 )/self.th)*self.wh;
-      var bwh = tbwy-bbwy;
-
-      if(bww > gg.cam.ww)
-      {
-        if(gg.cam.wx+gg.cam.ww/2 > rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
-        if(gg.cam.wx-gg.cam.ww/2 < lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
-      }
-      else
-      {
-        if(gg.cam.wx+gg.cam.ww/2 < rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
-        if(gg.cam.wx-gg.cam.ww/2 > lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
-      }
-
-      if(bwh > gg.cam.wh)
-      {
-        if(gg.cam.wy+gg.cam.wh/2 > tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
-        if(gg.cam.wy-gg.cam.wh/2 < bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
-      }
-      else
-      {
-        if(gg.cam.wy+gg.cam.wh/2 < tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
-        if(gg.cam.wy-gg.cam.wh/2 > bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
-      }
-
+      self.set_cam();
     }
   }
   self.dragFinish = function(evt)
@@ -3158,11 +3155,9 @@ var board = function()
     }
 
     {
-      /*
+      //*
       gg.ctx.strokeStyle = red;
       gg.ctx.strokeRect(self.bounds_x,self.bounds_y,self.bounds_w,self.bounds_h);
-      gg.ctx.strokeStyle = green;
-      gg.ctx.strokeRect(self.vbounds_x,self.vbounds_y,self.vbounds_w,self.vbounds_h);
       gg.ctx.strokeStyle = blue;
       gg.ctx.strokeRect(self.cbounds_x,self.cbounds_y,self.cbounds_w,self.cbounds_h);
       //*/
