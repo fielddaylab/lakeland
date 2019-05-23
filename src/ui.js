@@ -1433,15 +1433,18 @@ var achievements = function()
     self.triggers.push({name:name,global:0,local:0,trigger:fn});
   }
 
-  self.pushtrigger("Exist",function(){return gg.farmbits.length;});
-  self.pushtrigger("Group",function(){return gg.farmbits.length > 3;});
-  self.pushtrigger("Town",function(){return gg.farmbits.length > 5;});
-  self.pushtrigger("City",function(){return gg.farmbits.length > 10;});
+  self.notifs = [];
+  self.notif_ts = [];
 
-  self.pushtrigger("Farmer",function(){return gg.b.tile_groups[TILE_TYPE_FARM];});
-  self.pushtrigger("Farmers",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length > 3;});
-  self.pushtrigger("Farmtown",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length > 5;});
-  self.pushtrigger("MegaFarm",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length > 10;});
+  self.pushtrigger("Exist",function(){return gg.farmbits.length;});
+  self.pushtrigger("Group",function(){return gg.farmbits.length >= 3;});
+  self.pushtrigger("Town",function(){return gg.farmbits.length >= 5;});
+  self.pushtrigger("City",function(){return gg.farmbits.length >= 10;});
+
+  self.pushtrigger("Farmer",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;});
+  self.pushtrigger("Farmers",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;});
+  self.pushtrigger("Farmtown",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;});
+  self.pushtrigger("MegaFarm",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;});
 
   self.filter = function(filter)
   {
@@ -1462,7 +1465,23 @@ var achievements = function()
     for(var i = 0; i < self.triggers.length; i++)
     {
       t = self.triggers[i];
-      if(!t.local && t.trigger()) { t.local = 1; t.global = 1; }
+      if(!t.local && t.trigger())
+      {
+        t.local = 1;
+        t.global = 1;
+        self.notifs.push(t);
+        self.notif_ts.push(0);
+      }
+    }
+    for(var i = 0; i < self.notif_ts.length; i++)
+    {
+      self.notif_ts[i]++;
+      if(self.notif_ts[i] > 200)
+      {
+        self.notifs.splice(i,1);
+        self.notif_ts.splice(i,1);
+        i--;
+      }
     }
   }
 
@@ -1498,6 +1517,12 @@ var achievements = function()
         }
         y += s+self.pad;
       }
+    }
+    for(var i = 0; i < self.notifs.length; i++)
+    {
+      gg.ctx.fillStyle = black;
+      gg.ctx.fillText("Achievement get!",gg.canvas.width/2,gg.canvas.height/2-gg.font_size);
+      gg.ctx.fillText(self.notifs[i].name,gg.canvas.width/2,gg.canvas.height/2);
     }
   }
 
