@@ -1823,8 +1823,9 @@ var advisors = function()
     if(self.thread) self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_CLICK](evt);
     else
     {
+      //copied from draw!
       var h = gg.stage.s_mod*50;
-      var w = h;
+      var w = h*1.5;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
       var previewed = 0;
@@ -1870,7 +1871,7 @@ var advisors = function()
     else
     {
       var h = gg.stage.s_mod*50;
-      var w = h;
+      var w = h*1.5;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
       var p = w/10;
@@ -1880,15 +1881,15 @@ var advisors = function()
       gg.ctx.textAlign = "center";
       gg.ctx.strokeStyle = self.fgc;
       gg.ctx.fillStyle = self.bgc;
-      if(self.mayor_active)    { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(mayor_img,x+p,y+p,w-p*2,h-p*4);    gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("MAYOR",x+w/2,y+h-p); }
+      if(self.mayor_active)    { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(mayor_img,x+w/2-h/2+p*2,y+p,h-p*4,h-p*4);    gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("MAYOR",x+w/2,y+h-p); }
       gg.ctx.strokeStyle = self.fgc;
       gg.ctx.fillStyle = self.bgc;
       x += w*1.5;
-      if(self.business_active) { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(business_img,x+p,y+p,w-p*2,h-p*4); gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("BUSINESS",x+w/2,y+h-p); }
+      if(self.business_active) { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(business_img,x+w/2-h/2+p*2,y+p,h-p*4,h-p*4); gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("BUSINESS",x+w/2,y+h-p); }
       gg.ctx.strokeStyle = self.fgc;
       gg.ctx.fillStyle = self.bgc;
       x += w*1.5;
-      if(self.farmer_active)   { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(farmer_img,x+p,y+p,w-p*2,h-p*4);   gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
+      if(self.farmer_active)   { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(farmer_img,x+w/2-h/2+p*2,y+p,h-p*4,h-p*4);   gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
       x += w*1.5;
     }
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
