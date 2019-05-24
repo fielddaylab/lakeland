@@ -1896,7 +1896,82 @@ var advisors = function()
 
     if(self.preview)
     {
-      self.popup(TEXT_TYPE_DISMISS);
+      var p = self.font_size;
+      var x = gg.canvas.width/2;
+      var y = gg.canvas.height-p;
+      var t = min(1,self.thread_t/100);
+      y = y-(10-10*bounceup(t)+100)*gg.stage.s_mod;
+      var txt_fmt;
+      var fmt_history;
+      switch(self.advisor)
+      {
+        case ADVISOR_TYPE_MAYOR:    fmt_history = self.mayor_fmt_history;    break;
+        case ADVISOR_TYPE_BUSINESS: fmt_history = self.business_fmt_history; break;
+        case ADVISOR_TYPE_FARMER:   fmt_history = self.farmer_fmt_history;   break;
+      }
+      txt_fmt = fmt_history[fmt_history.length-1];
+      var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
+      h += self.font_size+p;
+      h += 100;
+      self.target_popup_h = h;
+      var w = self.popup_w+p*2;
+      x -= w/2;
+      y -= h;
+
+      gg.ctx.fillStyle = light_gray;
+      gg.ctx.strokeStyle = gray;
+      if(self.popup_h < 100) gg.ctx.globalAlpha = min(1,t*6);
+      gg.ctx.textAlign = "left";
+
+      //bubble
+      gg.ctx.fillStyle = self.bgc;
+      gg.ctx.strokeStyle = self.fgc;
+      fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,p,gg.ctx);
+      gg.ctx.stroke();
+      gg.ctx.fillStyle = self.fgc;
+
+      var aimg = 0;
+      switch(self.advisor)
+      {
+        case ADVISOR_TYPE_MAYOR:    aimg = advisor_mayor_img;    break;
+        case ADVISOR_TYPE_BUSINESS: aimg = advisor_business_img; break;
+        case ADVISOR_TYPE_FARMER:   aimg = advisor_farmer_img;   break;
+      }
+      gg.ctx.drawImage(aimg, x-w/4, y+self.target_popup_h-w/2, w/4, w/2);
+      drawLine(x-w/3+p,y+self.target_popup_h,x+w-p,y+self.target_popup_h,gg.ctx);
+
+      var ty = y+p+self.title_font_size;
+      gg.ctx.font = self.title_font;
+      switch(self.advisor)
+      {
+        case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x+p, ty); break;
+        case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x+p, ty); break;
+        case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x+p, ty); break;
+      }
+
+      ty += p+self.font_size;
+      gg.ctx.font = self.font;
+      for(var i = 0; i < txt_fmt.length; i++)
+        gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
+
+      ty += p+self.font_size*txt_fmt.length;
+      gg.ctx.fillStyle = gray;
+      gg.ctx.fillText("(click anywhere to continue)", x+p, ty);
+
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillRect(x,ty+p,w,100);
+      ty += p+self.font_size;
+      gg.ctx.fillStyle = self.fgc;
+      for(var j = 1; j < fmt_history.length; j++)
+      {
+        txt_fmt = fmt_history[fmt_history.length-1-j];
+        for(var i = 0; i < txt_fmt.length; i++)
+          gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
+        ty += (p+self.font_size)*txt_fmt.length;
+        if(ty > y+h) break;
+      }
+
+      gg.ctx.globalAlpha = 1;
     }
   }
 

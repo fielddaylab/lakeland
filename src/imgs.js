@@ -199,6 +199,7 @@ for(var a = 0; a < FARMBIT_ANIM_COUNT; a++)
   }
 }
 
+cursor_img = GenImg("assets/selector.png");
 var food_img = GenImg("assets/food.png");
 var poop_img = GenImg("assets/poop.png");
 var land_img = GenImg("assets/land.png");
