@@ -1581,7 +1581,8 @@ var advisors = function()
   self.thread_i = 0;
   self.thread_t = 0;
 
-  self.previewing = 0;
+  self.preview = 0;
+  self.preview_off_y = 0;
 
   //queries
   self.time_passed      = function(t) { return self.thread_t >= t; }
@@ -1829,14 +1830,52 @@ var advisors = function()
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
       var previewed = 0;
-      if(self.mayor_active)    { gg.clicker.consumeif(x,y,w,h,function(){if(!self.preview || self.advisor != ADVISOR_TYPE_MAYOR)    { self.set_advisor(ADVISOR_TYPE_MAYOR);    self.preview = 1; previewed = 1; } else self.preview = 0; }); }
+      if(self.mayor_active    && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_MAYOR)    { self.set_advisor(ADVISOR_TYPE_MAYOR);    self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
       x += w*1.5;
-      if(self.business_active) { gg.clicker.consumeif(x,y,w,h,function(){if(!self.preview || self.advisor != ADVISOR_TYPE_BUSINESS) { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.preview = 1; previewed = 1; } else self.preview = 0; }); }
+      if(self.business_active && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_BUSINESS) { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
       x += w*1.5;
-      if(self.farmer_active)   { gg.clicker.consumeif(x,y,w,h,function(){if(!self.preview || self.advisor != ADVISOR_TYPE_FARMER)   { self.set_advisor(ADVISOR_TYPE_FARMER);   self.preview = 1; previewed = 1; } else self.preview = 0; }); }
+      if(self.farmer_active   && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_FARMER)   { self.set_advisor(ADVISOR_TYPE_FARMER);   self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
       x += w*1.5;
       if(!previewed) self.preview = 0;
     }
+  }
+
+  self.drag_start_y = 0;
+  self.drag_cur_y = 0;
+  self.dragStart = function(evt)
+  {
+    if(self.preview)
+    {
+      //copied from draw!
+      x = gg.canvas.width/2;
+      y = gg.canvas.height-p;
+      y = y-(100*gg.stage.s_mod);
+      h = p+self.title_font_size+p+self.font_size+p;
+      h += self.font_size+p;
+      h += 100*gg.stage.s_mod;
+      w = self.popup_w+p*2;
+      x -= w/2;
+      y -= h;
+      if(doEvtWithin(evt,x,y,w,h))
+      {
+        self.drag_start_y = evt.doY;
+        self.drag_cur_y = self.drag_start_y;
+        self.dragging = 1;
+        return;
+      }
+    }
+
+    self.dragging = 0;
+    self.click(evt);
+  }
+  self.drag = function(evt)
+  {
+    self.drag_cur_y = evt.doY;
+  }
+  self.dragFinish = function(evt)
+  {
+    self.preview_off_y += self.drag_cur_y-self.drag_start_y;
+    self.drag_start_y = self.drag_cur_y;
   }
 
   self.tick = function()
@@ -1912,7 +1951,7 @@ var advisors = function()
       txt_fmt = fmt_history[fmt_history.length-1];
       var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
       h += self.font_size+p;
-      h += 100;
+      h += 100*gg.stage.s_mod;
       self.target_popup_h = h;
       var w = self.popup_w+p*2;
       x -= w/2;
@@ -1959,8 +1998,12 @@ var advisors = function()
       gg.ctx.fillText("(click anywhere to continue)", x+p, ty);
 
       gg.ctx.fillStyle = white;
-      gg.ctx.fillRect(x,ty+p,w,100);
+      gg.ctx.fillRect(x,ty+p,w,100*gg.stage.s_mod);
+      gg.ctx.rect(x,ty+p,w,100*gg.stage.s_mod);
+      gg.ctx.save();
+      gg.ctx.clip();
       ty += p+self.font_size;
+      ty += self.preview_off_y+(self.drag_cur_y-self.drag_start_y);
       gg.ctx.fillStyle = self.fgc;
       for(var j = 1; j < fmt_history.length; j++)
       {
@@ -1970,6 +2013,7 @@ var advisors = function()
         ty += (p+self.font_size)*txt_fmt.length;
         if(ty > y+h) break;
       }
+      gg.ctx.restore();
 
       gg.ctx.globalAlpha = 1;
     }

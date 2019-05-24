@@ -161,7 +161,7 @@ var GamePlayScene = function()
       if(check) check = !gg.inspector.filter(gg.clicker);
       if(check) check = !gg.dragger.filter(gg.b);
     }
-    gg.clicker.filter(gg.advisors);
+    gg.dragger.filter(gg.advisors);
 
     gg.keyer.filter(keycatch);
 
