@@ -1842,7 +1842,7 @@ var advisors = function()
 
   self.drag_start_y = 0;
   self.drag_cur_y = 0;
-  self.dragStart = function(evt)
+  self.shouldDrag = function(evt)
   {
     if(self.preview)
     {
@@ -1861,12 +1861,16 @@ var advisors = function()
         self.drag_start_y = evt.doY;
         self.drag_cur_y = self.drag_start_y;
         self.dragging = 1;
-        return;
+        return 1;
       }
     }
 
     self.dragging = 0;
     self.click(evt);
+    return 0;
+  }
+  self.dragStart = function(evt)
+  {
   }
   self.drag = function(evt)
   {
@@ -2011,7 +2015,7 @@ var advisors = function()
         for(var i = 0; i < txt_fmt.length; i++)
           gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
         ty += (p+self.font_size)*txt_fmt.length;
-        if(ty > y+h) break;
+        if(ty > y+h+self.font_size) break;
       }
       gg.ctx.restore();
 

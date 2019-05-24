@@ -159,9 +159,10 @@ var GamePlayScene = function()
       if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
       if(check) check = !gg.shop.filter(gg.clicker);
       if(check) check = !gg.inspector.filter(gg.clicker);
+      if(check) check = !gg.dragger.filter(gg.advisors);
       if(check) check = !gg.dragger.filter(gg.b);
     }
-    gg.dragger.filter(gg.advisors);
+    else gg.dragger.filter(gg.advisors);
 
     gg.keyer.filter(keycatch);
 
