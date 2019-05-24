@@ -4551,7 +4551,7 @@ var farmbit = function()
       else if(t > 0.7) gg.ctx.globalAlpha = clamp(0,1,1-((t-0.7)/0.3));
       else             gg.ctx.globalAlpha = 1;
 
-      var y = self.y-(30-bounceup(t)*30)*gg.stage.s_mod;
+      var y = self.y-(20-(30-bounceup(t)*30))*gg.stage.s_mod;
       gg.ctx.fillStyle = white;
       fillRRect(self.x+self.w/2-self.emote_ws[i]/2-self.pad,y-gg.font_size-self.pad,self.emote_ws[i]+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
       gg.ctx.fillStyle = black;
