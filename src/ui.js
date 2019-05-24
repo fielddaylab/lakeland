@@ -1428,23 +1428,23 @@ var achievements = function()
 
   self.triggers = [];
   self.nullt = {name:"null",local:0,global:0,trigger:ffunc};
-  self.pushtrigger = function(name,fn)
+  self.pushtrigger = function(name,offimg,onimg,fn)
   {
-    self.triggers.push({name:name,global:0,local:0,trigger:fn});
+    self.triggers.push({name:name,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn});
   }
 
   self.notifs = [];
   self.notif_ts = [];
 
-  self.pushtrigger("Exist",function(){return gg.farmbits.length;});
-  self.pushtrigger("Group",function(){return gg.farmbits.length >= 3;});
-  self.pushtrigger("Town",function(){return gg.farmbits.length >= 5;});
-  self.pushtrigger("City",function(){return gg.farmbits.length >= 10;});
+  self.pushtrigger("Exist",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length;});
+  self.pushtrigger("Group",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 3;});
+  self.pushtrigger("Town",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 5;});
+  self.pushtrigger("City",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 10;});
 
-  self.pushtrigger("Farmer",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;});
-  self.pushtrigger("Farmers",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;});
-  self.pushtrigger("Farmtown",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;});
-  self.pushtrigger("MegaFarm",function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;});
+  self.pushtrigger("Farmer",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;});
+  self.pushtrigger("Farmers",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;});
+  self.pushtrigger("Farmtown",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;});
+  self.pushtrigger("MegaFarm",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;});
 
   self.filter = function(filter)
   {
@@ -1511,6 +1511,8 @@ var achievements = function()
           if(t.local) gg.ctx.fillStyle = red;
           else        gg.ctx.fillStyle = gray;
           fillRRect(x,y,s,s,self.pad,gg.ctx);
+          if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
+          else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
           gg.ctx.fillStyle = black;
           gg.ctx.fillText(t.name,x+s/2,y+s+fs);
           x += s+self.pad;
