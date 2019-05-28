@@ -2129,7 +2129,7 @@ var advisors = function()
     ffunc, //click
     function(){ //end
       gg.b.raining = 0;
-      self.pool_thread(function(){ return self.time_passed(800); }, tut_cycle_rain);
+      self.pool_thread(function(){ return self.time_passed(4000); }, tut_cycle_rain);
     },
   ];
 
