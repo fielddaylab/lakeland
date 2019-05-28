@@ -3246,7 +3246,7 @@ var item = function()
           ot.fertilizer = 0;
           if(self.tile.fertilizer)
           {
-            self.tile.fertilizer += self.state;
+            self.tile.fertilizer.state += self.state;
             break_item(self);
             return;
           }
