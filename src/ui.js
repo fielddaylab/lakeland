@@ -2251,7 +2251,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2262,7 +2262,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2273,7 +2273,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.adv_thread, //click
     function(){
@@ -2298,7 +2298,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2309,7 +2309,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.adv_thread, //click
     function(){
@@ -2335,7 +2335,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2346,7 +2346,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2357,7 +2357,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2368,7 +2368,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //click
     function(){
@@ -2651,7 +2651,7 @@ var advisors = function()
       self.wash();
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w/2,i.y+i.h/2);
+      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2662,7 +2662,7 @@ var advisors = function()
       self.wash();
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w/2,i.y+i.h/2);
+      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2788,7 +2788,7 @@ var advisors = function()
       self.wash();
       var b = gg.bar.speed_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x+b.w/2,b.y+b.h/2);
+      self.arrow(b.x+b.w,b.y+b.h/2);
     },
     self.delay_adv_thread, //click
     function() { //end
@@ -2828,7 +2828,7 @@ var advisors = function()
       self.wash();
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w/2,i.y+i.h/2);
+      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2839,7 +2839,7 @@ var advisors = function()
       self.wash();
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w/2,i.y+i.h/2);
+      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2850,7 +2850,7 @@ var advisors = function()
       self.wash();
       var b = gg.bar.play_btn;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(b.x+b.w/2,b.y+b.h/2);
+      self.arrow(b.x+b.w,b.y+b.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2860,7 +2860,7 @@ var advisors = function()
     function(){ //draw
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(i.x+i.w/2,i.y+i.h/2);
+      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     ffunc, //click
     noop, //end
@@ -2881,7 +2881,7 @@ var advisors = function()
       var f = self.heap.f;
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2891,7 +2891,7 @@ var advisors = function()
     function(){ //draw
       var b = gg.bar.play_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x+b.w/2,b.y+b.h/2);
+      self.arrow(b.x+b.w,b.y+b.h/2);
     },
     ffunc, //click
     noop, //end
@@ -2908,7 +2908,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2919,7 +2919,7 @@ var advisors = function()
       self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -2937,7 +2937,7 @@ var advisors = function()
       var f = self.heap.f;
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -2993,7 +2993,7 @@ var advisors = function()
       var f = self.heap.f;
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //click
     noop, //end
@@ -3023,7 +3023,7 @@ var advisors = function()
       self.wash();
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x+b.w/2,b.y+b.h/2);
+      self.arrow(b.x+b.w,b.y+b.h/2);
       gg.nutrition_toggle.draw();
     },
     ffunc, //click
@@ -3082,7 +3082,7 @@ var advisors = function()
       var t = self.heap.t;
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -3094,7 +3094,7 @@ var advisors = function()
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
       gg.nutrition_toggle.draw();
-      self.arrow(b.x+b.w/2,b.y+b.h/2);
+      self.arrow(b.x+b.w,b.y+b.h/2);
     },
     ffunc, //click
     function() { //end
@@ -3184,7 +3184,7 @@ var advisors = function()
       var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]);
       self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     }, //draw
     self.delay_adv_thread, //click
     noop, //end
@@ -3194,7 +3194,7 @@ var advisors = function()
     function(){ //draw
       var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]);
       self.popup(TEXT_TYPE_OBSERVE);
-      self.arrow(t.x+t.w/2,t.y+t.h/2);
+      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     ffunc, //click
     noop, //end
@@ -3206,7 +3206,7 @@ var advisors = function()
       var f = self.heap.f;
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.delay_adv_thread, //click
     noop, //end
@@ -3218,7 +3218,7 @@ var advisors = function()
       var f = self.heap.f;
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w/2,f.y+f.h/2);
+      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //click
     function() { //end
