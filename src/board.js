@@ -2416,7 +2416,10 @@ var board = function()
     self.hover_y = evt.doY;
     if(self.hover_t && !self.tile_in_bounds(self.hover_t)) { self.unhover(evt); return; }
     if(self.hover_t != old_hover_t && gg.shop.selected_buy)
+    {
+      gg.inspector.select_tile(self.hover_t);
       self.hover_t_placable = self.placement_valid(self.hover_t,gg.shop.selected_buy);
+    }
 
     var hovered;
     for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBB(b,evt.doX,evt.doY)) hovered = b; }
