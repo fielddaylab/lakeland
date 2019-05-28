@@ -3761,6 +3761,7 @@ var farmbit = function()
             {
               self.job_state = JOB_STATE_ACT;
               self.job_state_t = 0;
+              self.emote("😴");
             }
           }
             break;
