@@ -3333,7 +3333,7 @@ var farmbit = function()
   self.joy_state         = FARMBIT_STATE_CONTENT;
   self.fulfillment_state = FARMBIT_STATE_CONTENT;
 
-  self.emote = 0;
+  self.emote_c = 0;
   self.emote_w = 0;
   self.emote_t = 0;
   self.emote_l = 500;
@@ -3341,7 +3341,7 @@ var farmbit = function()
   self.emote = function(e)
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    self.emote = e;
+    self.emote_c = e;
     self.emote_w = gg.ctx.measureText(e).width;
     self.emote_t = 0;
   }
@@ -3591,12 +3591,12 @@ var farmbit = function()
       self.anim_frame_t = 0;
     }
 
-    if(self.emote)
+    if(self.emote_c)
     {
       self.emote_t++;
       if(self.emote_t > self.emote_l)
       {
-        self.emote = 0;
+        self.emote_c = 0;
         self.emote_w = 0;
         self.emote_t = 0;
       }
@@ -4543,7 +4543,7 @@ var farmbit = function()
 
     self.pad = gg.stage.s_mod*10;
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    if(self.emote)
+    if(self.emote_c)
     {
       var t = self.emote_t/self.emote_l;
            if(t < 0.01) gg.ctx.globalAlpha = t*100;
@@ -4554,7 +4554,7 @@ var farmbit = function()
       gg.ctx.fillStyle = white;
       fillRRect(self.x+self.w/2-self.emote_w/2-self.pad,y-gg.font_size-self.pad,self.emote_w+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
       gg.ctx.fillStyle = black;
-      gg.ctx.fillText(self.emote,self.x+self.w/2,y);
+      gg.ctx.fillText(self.emote_c,self.x+self.w/2,y);
     }
     gg.ctx.globalAlpha = 1;
   }
