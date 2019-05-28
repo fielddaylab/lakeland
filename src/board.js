@@ -3333,17 +3333,17 @@ var farmbit = function()
   self.joy_state         = FARMBIT_STATE_CONTENT;
   self.fulfillment_state = FARMBIT_STATE_CONTENT;
 
-  self.emotes = [];
-  self.emote_ws = [];
-  self.emote_ts = [];
+  self.emote = 0;
+  self.emote_w = 0;
+  self.emote_t = 0;
   self.emote_l = 500;
 
   self.emote = function(e)
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    self.emotes.push(e);
-    self.emote_ws.push(gg.ctx.measureText(e).width)
-    self.emote_ts.push(0);
+    self.emote = e;
+    self.emote_w = gg.ctx.measureText(e).width;
+    self.emote_t = 0;
   }
 
   self.anim_side = FARMBIT_ANIM_FRONT;
@@ -3591,15 +3591,14 @@ var farmbit = function()
       self.anim_frame_t = 0;
     }
 
-    for(var i = 0; i < self.emotes.length; i++)
+    if(self.emote)
     {
-      self.emote_ts[i]++;
-      if(self.emote_ts[i] > self.emote_l)
+      self.emote_t++;
+      if(self.emote_t > self.emote_l)
       {
-        self.emotes.splice(i,1);
-        self.emote_ws.splice(i,1);
-        self.emote_ts.splice(i,1);
-        i--;
+        self.emote = 0;
+        self.emote_w = 0;
+        self.emote_t = 0;
       }
     }
 
@@ -4544,18 +4543,18 @@ var farmbit = function()
 
     self.pad = gg.stage.s_mod*10;
     gg.ctx.font = gg.font_size+"px "+gg.font;
-    for(var i = 0; i < self.emotes.length; i++)
+    if(self.emote)
     {
-      var t = self.emote_ts[i]/self.emote_l;
+      var t = self.emote_t/self.emote_l;
            if(t < 0.01) gg.ctx.globalAlpha = t*100;
       else if(t > 0.7) gg.ctx.globalAlpha = clamp(0,1,1-((t-0.7)/0.3));
       else             gg.ctx.globalAlpha = 1;
 
       var y = self.y-(20-(30-bounceup(t)*30))*gg.stage.s_mod;
       gg.ctx.fillStyle = white;
-      fillRRect(self.x+self.w/2-self.emote_ws[i]/2-self.pad,y-gg.font_size-self.pad,self.emote_ws[i]+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
+      fillRRect(self.x+self.w/2-self.emote_w/2-self.pad,y-gg.font_size-self.pad,self.emote_w+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
       gg.ctx.fillStyle = black;
-      gg.ctx.fillText(self.emotes[i],self.x+self.w/2,y);
+      gg.ctx.fillText(self.emote,self.x+self.w/2,y);
     }
     gg.ctx.globalAlpha = 1;
   }
