@@ -24,7 +24,6 @@ var forest_size_min = floor(100*board_w*board_h/2500);
 var forest_size_max = floor(100*board_w*board_h/2500);
 
 var farmbits_start_n = 0;
-var money_start_n = 300;
 
 //in order of priority
 var fullness_desperate    = 0.015; //death
@@ -57,7 +56,7 @@ var nutrition_max = 1000000;
 var nutrition_percent = nutrition_max/100;
 var presim_nutrition_flow_rate_mul = 100; //*%
 var nutrition_flow_rate = 0.00001; //*%
-var rain_nutrition_flow_rate = 0.001; //*%
+var rain_nutrition_flow_rate = 0.0005; //*%
 var watersrc_nutrition_flow_rate = 0.00001; //*%
 var watersnk_nutrition_flow_rate = 0.001; //*%
 var poop_nutrition_leak = 1; //+v
@@ -113,17 +112,19 @@ var max_dist = 9999999;
 
 var farmbit_cost = 500;
 var home_cost = 200;
-var farm_cost = 100;
+var farm_cost = 150;
 var livestock_cost = 200;
 var fertilizer_cost = 100;
 var storage_cost = 10;
 var processor_cost = 5000;
 var sign_cost = 10;
-var skimmer_cost = 10;
-var road_cost = 1000;
+var skimmer_cost = 100;
+var road_cost = 500;
 var demolish_cost = 10;
 var free_money = 1000;
 var festival_cost = 2000;
+
+var money_start_n = home_cost + farm_cost;
 
 var harvest_profit = 0;
 
