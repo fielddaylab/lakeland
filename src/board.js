@@ -3289,11 +3289,6 @@ var item = function()
   }
 }
 
-var farmbit_names = [
-"Peter",
-"Paul",
-"Mary",
-];
 var farmbit = function()
 {
   var self = this;
@@ -3340,6 +3335,7 @@ var farmbit = function()
 
   self.emote = function(e)
   {
+    if(e == self.emote_c) return;
     gg.ctx.font = gg.font_size+"px "+gg.font;
     self.emote_c = e;
     self.emote_w = gg.ctx.measureText(e).width;

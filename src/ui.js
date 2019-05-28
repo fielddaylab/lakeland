@@ -375,16 +375,25 @@ var shop = function()
     setBB(self.page, self.x+self.w,btn_y+btn_h,btn_w/2,btn_h/2);
 
     //page 0
-    setBB(self.home_btn,       btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.farm_btn,       btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.fertilizer_btn, btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.livestock_btn,  btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.storage_btn,    btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.sign_btn,       btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.skimmer_btn,    btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.road_btn,       btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.processor_btn,  btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.demolish_btn,   btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    var p0btns = [
+      self.home_btn,
+      self.farm_btn,
+      self.fertilizer_btn,
+      self.livestock_btn,
+      self.storage_btn,
+      self.sign_btn,
+      self.skimmer_btn,
+      self.road_btn,
+      self.processor_btn,
+      self.demolish_btn,
+    ];
+    for(var i = 0; i < p0btns.length; i+=2)
+    {
+                              setBB(p0btns[i],   btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+      if(i+1 < p0btns.length) setBB(p0btns[i+1], btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+    }
+
+    //others
     self.h = btn_y-self.y;
     setBB(self.money_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.abandon_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
