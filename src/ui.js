@@ -1559,10 +1559,16 @@ var advisors = function()
 
   self.mayor_history        = [];
   self.mayor_fmt_history    = [];
+  self.mayor_records = [];
+  self.mayor_fmt_records = [];
   self.business_history     = [];
   self.business_fmt_history = [];
+  self.business_records = [];
+  self.business_fmt_records = [];
   self.farmer_history       = [];
   self.farmer_fmt_history   = [];
+  self.farmer_records = [];
+  self.farmer_fmt_records = [];
 
   self.takeover = 0;
   self.advisor = ADVISOR_TYPE_NULL;
@@ -1727,6 +1733,18 @@ var advisors = function()
       case ADVISOR_TYPE_FARMER:   self.farmer_history.push(txt);   self.farmer_fmt_history.push(fmt);   break;
     }
   }
+
+  self.push_record = function(txt)
+  {
+    var fmt = textToLines(self.font, self.popup_w, txt, gg.ctx);
+    switch(self.advisor)
+    {
+      case ADVISOR_TYPE_MAYOR:    self.mayor_records.push(txt);    self.mayor_fmt_records.push(fmt);    break;
+      case ADVISOR_TYPE_BUSINESS: self.business_records.push(txt); self.business_fmt_records.push(fmt); break;
+      case ADVISOR_TYPE_FARMER:   self.farmer_records.push(txt);   self.farmer_fmt_records.push(fmt);   break;
+    }
+  }
+
 
   self.jmp = function(i)
   {
@@ -1935,11 +1953,12 @@ var advisors = function()
       y = y-(10-10*bounceup(t)+100)*gg.stage.s_mod;
       var txt_fmt;
       var fmt_history;
+      var fmt_records;
       switch(self.advisor)
       {
-        case ADVISOR_TYPE_MAYOR:    fmt_history = self.mayor_fmt_history;    break;
-        case ADVISOR_TYPE_BUSINESS: fmt_history = self.business_fmt_history; break;
-        case ADVISOR_TYPE_FARMER:   fmt_history = self.farmer_fmt_history;   break;
+        case ADVISOR_TYPE_MAYOR:    fmt_records = self.mayor_fmt_records;    fmt_history = self.mayor_fmt_history;   break;
+        case ADVISOR_TYPE_BUSINESS: fmt_records = self.business_fmt_records; fmt_history = self.business_fmt_history; break;
+        case ADVISOR_TYPE_FARMER:   fmt_records = self.farmer_fmt_records;   fmt_history = self.farmer_fmt_history;  break;
       }
       txt_fmt = fmt_history[fmt_history.length-1];
       var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
@@ -1998,9 +2017,9 @@ var advisors = function()
       ty += p+self.font_size;
       ty += self.preview_off_y+(self.drag_cur_y-self.drag_start_y);
       gg.ctx.fillStyle = self.fgc;
-      for(var j = 1; j < fmt_history.length; j++)
+      for(var j = 0; j < fmt_records.length; j++)
       {
-        txt_fmt = fmt_history[fmt_history.length-1-j];
+        txt_fmt = fmt_records[fmt_records.length-1-j];
         for(var i = 0; i < txt_fmt.length; i++)
           gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
         ty += (p+self.font_size)*txt_fmt.length;
@@ -2031,7 +2050,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); self.push_record("I'm out! You've killed too many.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2064,7 +2083,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); self.push_record("I'm out! You've killed too many.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2097,7 +2116,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); self.push_record("I'm out! You've killed too many.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2201,7 +2220,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("Back to work, everybody!"); }, //begin
+    function(){ self.push_blurb("Back to work, everybody!"); self.push_record("Rain will shift around fertilizer and nutrients in the soil- You'll have to add more fertilizer to get it back!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2247,7 +2266,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Maybe you can produce more fertilizer?"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("Maybe you can produce more fertilizer?"); self.push_record("When farm nutrients get low, they will produce crop very slowly. Add fertilizer to give them a boost.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2283,7 +2302,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Let's be careful to not make this worse!"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("Let's be careful to not make this worse!"); self.push_record("Your lake is so nutrient rich, it's causing an algae bloom! Yuck!");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2342,7 +2361,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("That way everyone stays happy and ready to work!"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("That way everyone stays happy and ready to work!"); self.push_record("You can use signs to keep your townspeople away from gross water.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2375,7 +2394,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("Maybe you need more farms? Or more fertilizer?"); }, //begin
+    function(){ self.push_blurb("Maybe you need more farms? Or more fertilizer?"); self.push_record("A townsperson has died of hunger. Make sure you're producing enough food!");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2407,7 +2426,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Consider finding more townspeople to increase your town's efficiency."); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("Consider finding more townspeople to increase your town's efficiency."); self.push_record("If your farms aren't being harvested, consider building more housing to encourage population growth!");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2438,7 +2457,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("See if you can free up some people to fertilize your farms, so those nutrients get put to good use!"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("See if you can free up some people to fertilize your farms, so those nutrients get put to good use!"); self.push_record("Unused fertilizer will leech nutrients into the surrounding soil, even if that soil isn't farmland!");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2469,7 +2488,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Sadly, there's not much you can do to prevent it..."); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("Sadly, there's not much you can do to prevent it..."); self.push_record("Rain pushes fertilizer off of your farms. It's an unfortunate waste of nutrients...");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2509,7 +2528,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Find a way to keep them happy!"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("Find a way to keep them happy!"); self.push_record("The people of Lakeland need to swim to maintain morale! If your lake is gross, they won't work."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2531,7 +2550,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop,
 
-    function(){ self.dotakeover(); self.push_blurb("Consider building some roads to cut down on travel time!"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("Consider building some roads to cut down on travel time!"); self.push_record("Roads make for MUCH faster transportation. It could be the difference that makes for an efficient farming pipeline!");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2606,7 +2625,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("Better luck next time!"); }, //begin
+    function(){ self.push_blurb("Better luck next time!"); self.push_record("You have no more townmembers! Your town has failed.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2647,7 +2666,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.dotakeover();  self.push_blurb("Buy more houses to grow your town!"); }, //begin
+    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.dotakeover();  self.push_blurb("Buy more houses to grow your town!");self.push_record("Your townspeople will automatically use free poop to fertilize their farms. This is key to a profitable crop cycle!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2747,7 +2766,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock. They might be able to help with that!"); }, //begin
+    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock. They might be able to help with that!"); self.push_record("Livestock create poop, which does wonders for soil nutrition.");}, //begin
     ffunc, //tick
     function(){ //draw
       var b = gg.shop.livestock_btn;
@@ -2762,7 +2781,7 @@ var advisors = function()
   ];
 
   var tut_timewarp = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Click here if you want to speed up time"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Click here if you want to speed up time"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
     function() { return DOUBLETIME; }, //tick
     function() { //draw
       self.wash();
@@ -2932,7 +2951,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Save up for an additional farm."); },//begin
+    function(){ self.dotakeover(); self.push_blurb("Save up for an additional farm."); self.push_record("Click on items and mark them as 'FOR SALE' to signal your townspeople to take those items to the market.");},//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3067,7 +3086,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("(Click at any time to toggle nutrition view)"); },//begin
+    function(){ self.push_blurb("(Click at any time to toggle nutrition view)"); self.push_record("Buy farms to produce food for your people!"); self.push_record("Use the nutrition toggle to get a birds-eye-view of the landscape of nutrition.");},//begin
     function(){ return !gg.b.nutrition_view; }, //tick
     function(){ //draw
       self.wash();
@@ -3191,7 +3210,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("It's your job to ensure their survival!"); },//begin
+    function(){ self.dotakeover(); self.push_blurb("It's your job to ensure their survival!"); self.push_record("Build houses to get more townspeople!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
