@@ -20,20 +20,9 @@ var GamePlayScene = function()
         case "u":
         {
           var s = gg.shop;
-          s.home_btn.active = 1;
-          s.farm_btn.active = 1;
-          s.fertilizer_btn.active = 1;
-          s.livestock_btn.active = 1;
-          s.storage_btn.active = 1;
-          s.processor_btn.active = 1;
-          s.sign_btn.active = 1;
-          s.skimmer_btn.active = 1;
-          s.road_btn.active = 1;
-          s.demolish_btn.active = 1;
-          s.money_btn.active = 1;
-          //s.abandon_btn.active = 1;
-          s.refund_btn.active = 1;
-          s.festival_btn.active = 1;
+          for(var i = 0; i < s.btns.length; i++)
+            for(var j = 0; j < s.btns[i].length; j++)
+              s.btns[i][j].active = 1;
 
           gg.nutrition_toggle.toggle_btn.active = 1;
           gg.bar.pause_btn.active = 1;
