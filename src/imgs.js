@@ -24,17 +24,6 @@ var processor_img;
   ctx.fillRect(0,0,s,s);
 }
 
-var skimmer_img;
-{
-  var ctx;
-  var s = 10;
-  skimmer_img = GenIcon(s,s*1.25);
-  ctx = skimmer_img.context;
-  ctx.translate(0,s*0.25);
-  ctx.fillStyle = orange;
-  ctx.fillRect(0,0,s,s);
-}
-
 var festival_img;
 {
   var ctx;
@@ -218,6 +207,7 @@ var farm_img = GenImg("assets/farm.png");
 var grave_img = GenImg("assets/grave.png");
 var milk_img = GenImg("assets/milk.png");
 var fertilizer_img = GenImg("assets/fertilizer.png");
+var skimmer_img = GenImg("assets/bloom.png");
 
 var mayor_img = GenImg("assets/mayor.png");
 var business_img = GenImg("assets/business.png");
