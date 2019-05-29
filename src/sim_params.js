@@ -25,29 +25,29 @@ var forest_size_max = floor(100*board_w*board_h/2500);
 
 var farmbits_start_n = 0;
 
+var max_fullness    = 14000;
+var max_energy      = 10000;
+var max_joy         = 10000;
+var max_fulfillment = 10000;
+
 //in order of priority
-var fullness_desperate    = 0.015; //death
-var energy_desperate      = 0.01; //sleep on spot
-var joy_desperate         = 0.01; //refuse any other work
-var fulfillment_desperate = 0.01; //n/a
-var fullness_motivated    = 0.2;
-var energy_motivated      = 0.2;
-var joy_motivated         = 0.2;
-var fulfillment_motivated = 0.2;
-var fullness_content      = 0.4;
-var energy_content        = 0.4;
-var joy_content           = 0.4;
-var fulfillment_content   = 0.4;
+var fullness_desperate    = floor(0.015*max_fullness); //death
+var energy_desperate      = floor(0.01 *max_energy); //sleep on spot
+var joy_desperate         = floor(0.01 *max_joy); //refuse any other work
+var fulfillment_desperate = floor(0.01 *max_fulfillment); //n/a
+var fullness_motivated    = floor(0.2  *max_fullness);
+var energy_motivated      = floor(0.2  *max_energy);
+var joy_motivated         = floor(0.2  *max_joy);
+var fulfillment_motivated = floor(0.2  *max_fulfillment);
+var fullness_content      = floor(0.4  *max_fullness);
+var energy_content        = floor(0.4  *max_energy);
+var joy_content           = floor(0.4  *max_joy);
+var fulfillment_content   = floor(0.4  *max_fulfillment);
 
 //applies to farm
 var nutrition_desperate = 10000;
 var nutrition_motivated = 20000;
 var nutrition_content = 50000;
-
-var fullness_depletion_rate    = 0.9997;
-var energy_depletion_rate      = 0.999;
-var joy_depletion_rate         = 0.999;
-var fulfillment_depletion_rate = 0.999;
 
 var wait_t = 100;
 var export_t = 2000;
@@ -70,9 +70,8 @@ var fertilizer_nutrition = farm_nutrition_req*2;
 var water_fouled_threshhold = nutrition_percent*10;
 var livestock_poop_t = 8000;
 var livestock_milk_t = 1;
-var livestock_feed_threshhold = 0.2;
-var livestock_food_val = 1;
-var livestock_fullness_depletion_rate = 0.999;
+var livestock_max_fullness = 10000;
+var livestock_feed_threshhold = floor(0.2*livestock_max_fullness);
 var storage_max = 10;
 
 var water_carryability = 0.2;
@@ -98,15 +97,16 @@ var processor_walkability = 0.9;
 var road_walkability      = 4;
 var export_walkability    = 1;
 
-var plant_fulfillment     = 0.1;
-var harvest_fulfillment   = 0.1;
-var fertilize_fulfillment = 0.1;
-var milking_fulfillment   = 0.1;
-var feed_fulfillment      = 0.1;
-var store_fulfillment     = 0.1;
-var process_fulfillment   = 0.1;
-var kick_fulfillment      = 0.1;
-var swim_joy = 0.02; //per frame
+var sleep_energy          = floor(0.05*max_energy);
+var plant_fulfillment     = floor(0.1*max_fulfillment);
+var harvest_fulfillment   = floor(0.1*max_fulfillment);
+var fertilize_fulfillment = floor(0.1*max_fulfillment);
+var milking_fulfillment   = floor(0.1*max_fulfillment);
+var feed_fulfillment      = floor(0.1*max_fulfillment);
+var store_fulfillment     = floor(0.1*max_fulfillment);
+var process_fulfillment   = floor(0.1*max_fulfillment);
+var kick_fulfillment      = floor(0.1*max_fulfillment);
+var swim_joy              = floor(0.02*max_joy); //per frame
 
 var max_dist = 9999999;
 

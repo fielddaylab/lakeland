@@ -2710,7 +2710,7 @@ var board = function()
           break;
         case TILE_TYPE_LIVESTOCK:
         {
-          t.val *= livestock_fullness_depletion_rate;
+          t.val--; //livestock fullness
           if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t > livestock_poop_t)
           {
             t.state = TILE_STATE_LIVESTOCK_MILKING;
@@ -3322,10 +3322,11 @@ var farmbit = function()
   self.locked_deposit = 0;
   self.tile;
 
-  self.fullness    = 1;
-  self.energy      = 1;
-  self.joy         = 1;
-  self.fulfillment = 1;
+  self.lifetime = 0;
+  self.fullness    = max_fullness;
+  self.energy      = max_energy;
+  self.joy         = max_joy;
+  self.fulfillment = max_fulfillment;
   self.fullness_state    = FARMBIT_STATE_CONTENT;
   self.energy_state      = FARMBIT_STATE_CONTENT;
   self.joy_state         = FARMBIT_STATE_CONTENT;
@@ -3595,20 +3596,21 @@ var farmbit = function()
       }
     }
 
+    self.lifetime++;
     if(self.offscreen)
       ; //don't lose motivation! otherwise, every bit will come back dead
     else
     {
-      self.fullness    *= fullness_depletion_rate;
-      self.energy      *= energy_depletion_rate;
-      self.joy         *= joy_depletion_rate;
-      self.fulfillment *= fulfillment_depletion_rate;
+      self.fullness--;
+      self.energy--;
+      self.joy--;
+      self.fulfillment--;
     }
 
     if(self.tile && self.tile.type == TILE_TYPE_LAKE)
     {
       if(self.tile.nutrition < water_fouled_threshhold)
-        self.joy = min(1,self.joy+swim_joy);
+        self.joy = min(max_joy,self.joy+swim_joy);
       else
       {
         self.emote("🤮");
@@ -3621,7 +3623,7 @@ var farmbit = function()
     {
       case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; self.emote("I'm hungry"); gg.ticker.nq(self.name+" is hungry.");      dirty = 1; } break;
       case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; self.emote("I NEED FOOD!"); gg.ticker.nq(self.name+" is VERY hungry!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULLNESS, self.job_type)) { self.abandon_job(1); } } break;
-      case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; self.die(); return; } break;
+      case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; console.log(self.lifetime); self.die(); return; } break;
       default: break;
     }
     switch(self.energy_state)
@@ -3737,7 +3739,7 @@ var farmbit = function()
           case JOB_STATE_ACT:
             break_item(self.item);
             self.item = 0;
-            self.fullness = 1;
+            self.fullness = max_fullness;
             self.fullness_state = FARMBIT_STATE_CONTENT;
             self.go_idle();
             gg.ticker.nq(self.name+" ate some food.");
@@ -3764,10 +3766,10 @@ var farmbit = function()
             break;
           case JOB_STATE_ACT:
           {
-            self.energy += 0.01;
-            if(self.energy > 1)
+            self.energy += sleep_energy;
+            if(self.energy > max_energy)
             {
-              self.energy = 1;
+              self.energy = max_energy;
               self.energy_state = FARMBIT_STATE_CONTENT;
               self.go_idle();
               gg.ticker.nq(self.name+" took a nap.");
@@ -3809,9 +3811,9 @@ var farmbit = function()
                 self.abandon_job(0);
             }
             self.joy += swim_joy;
-            if(self.joy > 1)
+            if(self.joy > max_joy)
             {
-              self.joy = 1;
+              self.joy = max_joy;
               self.joy_state = FARMBIT_STATE_CONTENT;
               self.emote("🙂");
               self.go_idle();
@@ -4030,7 +4032,7 @@ var farmbit = function()
             break_item(self.item);
             self.item = 0;
 
-            t.val += livestock_food_val;
+            t.val = livestock_max_fullness;
 
             self.fulfillment += feed_fulfillment;
             self.calibrate_stats();

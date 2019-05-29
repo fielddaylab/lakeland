@@ -1207,7 +1207,7 @@ var inspector = function()
       case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
       case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(floor(b.fullness*10)+"/10",x,y);
+    gg.ctx.fillText(floor(b.fullness/max_fullness*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
     switch(b.energy_state)
@@ -1216,7 +1216,7 @@ var inspector = function()
       case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
       case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(floor(b.energy*10)+"/10",x,y);
+    gg.ctx.fillText(floor(b.energy/max_energy*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
     switch(b.joy_state)
@@ -1225,7 +1225,7 @@ var inspector = function()
       case FARMBIT_STATE_MOTIVATED: gg.ctx.fillStyle = yellow; break;
       case FARMBIT_STATE_DESPERATE: gg.ctx.fillStyle = red;    break;
     }
-    gg.ctx.fillText(floor(b.joy*10)+"/10",x,y);
+    gg.ctx.fillText(floor(b.joy/max_joy*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
 /*
