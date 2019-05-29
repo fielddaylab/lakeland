@@ -3286,6 +3286,7 @@ var item = function()
     if(self.sale)
     {
       gg.ctx.fillStyle = black;
+      gg.ctx.font = gg.font_size+"px "+gg.font;
       gg.ctx.fillText("4SALE",self.x,self.y+self.h/3);
       gg.ctx.fillText("$"+worth_for_item(self.type),self.x,self.y+self.h);
     }

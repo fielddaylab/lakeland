@@ -98,14 +98,14 @@ var road_walkability      = 4;
 var export_walkability    = 1;
 
 var sleep_energy          = floor(0.05*max_energy);
-var plant_fulfillment     = floor(0.1*max_fulfillment);
-var harvest_fulfillment   = floor(0.1*max_fulfillment);
-var fertilize_fulfillment = floor(0.1*max_fulfillment);
-var milking_fulfillment   = floor(0.1*max_fulfillment);
-var feed_fulfillment      = floor(0.1*max_fulfillment);
-var store_fulfillment     = floor(0.1*max_fulfillment);
-var process_fulfillment   = floor(0.1*max_fulfillment);
-var kick_fulfillment      = floor(0.1*max_fulfillment);
+var plant_fulfillment     = floor(0.01*max_fulfillment);
+var harvest_fulfillment   = floor(0.01*max_fulfillment);
+var fertilize_fulfillment = floor(0.01*max_fulfillment);
+var milking_fulfillment   = floor(0.01*max_fulfillment);
+var feed_fulfillment      = floor(0.01*max_fulfillment);
+var store_fulfillment     = floor(0.01*max_fulfillment);
+var process_fulfillment   = floor(0.01*max_fulfillment);
+var kick_fulfillment      = floor(0.01*max_fulfillment);
 var swim_joy              = floor(0.02*max_joy); //per frame
 
 var max_dist = 9999999;

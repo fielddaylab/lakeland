@@ -198,9 +198,12 @@ var bar = function()
       var r = self.vignette_s/2;
       for(var j = 0; j < 4; j++)
       {
+        j = 3;
         var test = 0;
         y = self.drawery+self.pad;
         gg.ctx.fillStyle = black;
+        bigx = self.x;
+        /*
         switch(j)
         {
           case 0: bigx = self.x;            gg.ctx.fillText("HUNGRY",bigx,y); break;
@@ -208,6 +211,7 @@ var bar = function()
           case 2: bigx = self.x+self.w/2;   gg.ctx.fillText("SAD",bigx,y); break;
           case 3: bigx = self.x+self.w*3/4; gg.ctx.fillText("CONTENT",bigx,y); break;
         }
+        */
         x = bigx+self.pad;
         for(var i = 0; i < gg.farmbits.length; i++)
         {
@@ -221,6 +225,7 @@ var bar = function()
             case 2: if(f.joy_state      != FARMBIT_STATE_DESPERATE) pass = 0; break;
             case 3: if(f.fullness_state == FARMBIT_STATE_DESPERATE || f.energy_state == FARMBIT_STATE_DESPERATE || f.joy_state == FARMBIT_STATE_DESPERATE) pass = 0; break;
           }
+          pass = 1;
           if(!pass) continue;
 
           gg.ctx.fillStyle = gg.backdrop_color;
@@ -263,9 +268,11 @@ var bar = function()
           gg.ctx.stroke();
           gg.ctx.fillStyle = black;
           gg.ctx.fillText(f.name,x,y+fs*2);
-          gg.ctx.fillText(str1,x,y+fs);
+          gg.ctx.fillText(str0,x,y+fs*1);
+          gg.ctx.fillText(str1,x,y+fs*0);
 
-          y += r*2+self.pad;
+          x += r*2+self.pad;
+          //y += r*2+self.pad;
         }
       }
     }
@@ -2771,7 +2778,7 @@ var advisors = function()
         for(var i = 0; i < gg.farmbits.length; i++)
         {
           var f = gg.farmbits[i];
-          if(f.job_state == JOB_STATE_GET || f.job_state == JOB_STATE_ACT && f.job_state_t > 500)
+          if((f.job_state == JOB_STATE_GET || f.job_state == JOB_STATE_ACT) && f.job_state_t > 500)
             return 1;
         }
         return 0;
@@ -3126,7 +3133,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("(Click at any time to toggle nutrition view)"); self.push_record("Buy farms to produce food for your people!"); self.push_record("Use the nutrition toggle to get a birds-eye-view of the landscape of nutrition.");},//begin
+    function(){ self.push_blurb("Click toggle at any time to disable nutrition view"); self.push_record("Buy farms to produce food for your people!"); self.push_record("Use the nutrition toggle to get a birds-eye-view of the landscape of nutrition.");},//begin
     function(){ return !gg.b.nutrition_view; }, //tick
     function(){ //draw
       self.wash();
