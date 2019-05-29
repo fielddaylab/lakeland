@@ -2200,7 +2200,7 @@ var board = function()
         var t = self.tile_groups[TILE_TYPE_LAND][randIntBelow(self.tile_groups[TILE_TYPE_LAND].length)];
         if(self.tile_in_bounds(t))
         {
-          t.nutrition = max(floor(nutrition_motivated*(10+rand()*2)),t.nutrition);
+          t.nutrition = nutrition_max;//max(floor(nutrition_motivated*(10+rand()*2)),t.nutrition);
           n--;
         }
       }

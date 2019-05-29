@@ -661,7 +661,7 @@ var inspector = function()
     self.subtitle_font_size = self.pad*1;
     self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2;
     self.w = gg.canvas.width-self.x;
-    self.y = self.pad+gg.stage.s_mod*100;
+    self.y = self.pad+gg.stage.s_mod*50;
     self.h = gg.canvas.height-self.y-self.pad;
 
     self.vignette_x = self.x+self.pad*2;
@@ -1644,6 +1644,14 @@ var advisors = function()
         o.draw();
         break;
     }
+  }
+  self.larrow = function(x,y)
+  {
+    var t = (self.thread_t%100)/100;
+    gg.ctx.globalAlpha = min(1,self.thread_t/30);
+    y = y-(10-10*bounceup(t))*gg.stage.s_mod;
+    drawArrow(x-30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
+    gg.ctx.globalAlpha = 1;
   }
   self.arrow = function(x,y)
   {
@@ -2891,7 +2899,7 @@ var advisors = function()
     function(){ var i = self.heap.i; gg.inspector.select_item(i); return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h/2);
+      self.larrow(gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h);
     },
     ffunc, //click
     noop, //end
@@ -3045,7 +3053,7 @@ var advisors = function()
       self.wash();
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x+b.w,b.y+b.h/2);
+      self.larrow(b.x,b.y+b.h/2);
       gg.nutrition_toggle.draw();
     },
     ffunc, //click
@@ -3116,7 +3124,7 @@ var advisors = function()
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
       gg.nutrition_toggle.draw();
-      self.arrow(b.x+b.w,b.y+b.h/2);
+      self.larrow(b.x,b.y+b.h/2);
     },
     ffunc, //click
     function() { //end
