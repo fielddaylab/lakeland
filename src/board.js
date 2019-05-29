@@ -1460,7 +1460,7 @@ var board = function()
   self.bounds_tx = floor(self.tw*3/8);
   self.bounds_ty = floor(self.th*3/8);
   self.bounds_tw = floor(self.tw*1/4);
-  self.bounds_th = floor(self.th*1/4);
+  self.bounds_th = floor(self.th*1/4)+1;
   self.vbounds_tx = self.bounds_tx;
   self.vbounds_ty = self.bounds_ty;
   self.vbounds_tw = self.bounds_tw;
@@ -1569,9 +1569,11 @@ var board = function()
 
   self.inc_bounds = function()
   {
-    if(self.bounds_tx > 0 && self.bounds_tw%2) self.bounds_tx--;
+    if(self.bounds_tx > 0)       self.bounds_tx--;
     if(self.bounds_tw < self.tw) self.bounds_tw++;
-    if(self.bounds_ty > 0 && self.bounds_th%2) self.bounds_ty--;
+    if(self.bounds_tw < self.tw) self.bounds_tw++;
+    if(self.bounds_ty > 0) self.bounds_ty--;
+    if(self.bounds_th < self.th) self.bounds_th++;
     if(self.bounds_th < self.th) self.bounds_th++;
   }
   self.zoom_bounds = function(cam)
