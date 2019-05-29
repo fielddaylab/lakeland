@@ -3033,10 +3033,9 @@ var board = function()
     gg.ctx.imageSmoothingEnabled = 1;
 
     var t;
-    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
+    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE && !gg.shop.selected_buy)
     {
       t = gg.inspector.detailed;
-      gg.ctx.strokeStyle = green;
       gg.ctx.drawImage(cursor_img,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
     }
     //if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
