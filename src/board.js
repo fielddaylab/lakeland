@@ -1460,11 +1460,7 @@ var board = function()
   self.bounds_tx = floor(self.tw*3/8);
   self.bounds_ty = floor(self.th*3/8);
   self.bounds_tw = floor(self.tw*1/4);
-  self.bounds_th = floor(self.th*1/4)+1;
-  self.vbounds_tx = self.bounds_tx;
-  self.vbounds_ty = self.bounds_ty;
-  self.vbounds_tw = self.bounds_tw;
-  self.vbounds_th = self.bounds_th;
+  self.bounds_th = floor(self.th*1/4);
   self.bounds_n = 1;
   self.wx = 0;
   self.wy = 0;
@@ -1601,8 +1597,8 @@ var board = function()
       cam.ww *= wh/cam.wh;
       cam.wh *= wh/cam.wh;
     }
-    cam.wx = self.wx-self.ww/2+(self.vbounds_tx+self.vbounds_tw/2)*self.tww;
-    cam.wy = self.wy-self.wh/2+(self.vbounds_ty+self.vbounds_tw/2)*self.twh+(cam.wh-self.vbounds_th*self.twh)/3;
+    cam.wx = self.wx-self.ww/2+(self.bounds_tx+self.bounds_tw/2)*self.tww;
+    cam.wy = self.wy-self.wh/2+(self.bounds_ty+self.bounds_tw/2)*self.twh+(cam.wh-self.bounds_th*self.twh)/3;
 
     screenSpace(cam, gg.canvas, self);
     self.screen_bounds(cam);
@@ -2164,29 +2160,6 @@ var board = function()
         valid = 0;
     }
 
-    //extra nutrition
-    for(var i = 0; i < 50; i++)
-    {
-      var t = self.tiles[self.tiles_i(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th))];
-      t.nutrition = rand();
-      t.nutrition *= t.nutrition;
-      t.nutrition *= t.nutrition;
-      t.nutrition *= t.nutrition;
-      t.nutrition *= t.nutrition;
-      t.nutrition = floor(t.nutrition*nutrition_max);
-    }
-
-    //guarantee nutrition
-    for(var i = 0; i < self.tiles.length; i++)
-    {
-      var t = self.tiles[i];
-      if(self.tile_in_bounds(t) && t.type == TILE_TYPE_LAND)
-      {
-        t.nutrition = floor(nutrition_motivated*1.1);
-        break;
-      }
-    }
-
     //clear water
     for(var i = 0; i < self.tiles.length; i++)
     {
@@ -2205,6 +2178,32 @@ var board = function()
     {
       var t = self.tiles[i];
       self.tile_groups[t.type].push(t);
+    }
+
+    //extra nutrition
+    for(var i = 0; i < 50; i++)
+    {
+      var t = self.tiles[self.tiles_i(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th))];
+      t.nutrition = rand();
+      t.nutrition *= t.nutrition;
+      t.nutrition *= t.nutrition;
+      t.nutrition *= t.nutrition;
+      t.nutrition *= t.nutrition;
+      t.nutrition = floor(t.nutrition*nutrition_max);
+    }
+
+    //guarantee land nutrition
+    {
+      var n = 5;
+      while(n)
+      {
+        var t = self.tile_groups[TILE_TYPE_LAND][randIntBelow(self.tile_groups[TILE_TYPE_LAND].length)];
+        if(self.tile_in_bounds(t))
+        {
+          t.nutrition = max(floor(nutrition_motivated*(10+rand()*2)),t.nutrition);
+          n--;
+        }
+      }
     }
 
     //find sheds
@@ -2251,7 +2250,7 @@ var board = function()
       nutrition_flow_rate          *= presim_nutrition_flow_rate_mul;
       watersrc_nutrition_flow_rate *= presim_nutrition_flow_rate_mul;
       watersnk_nutrition_flow_rate *= presim_nutrition_flow_rate_mul;
-      for(var k = 0; k < 100; k++)
+      for(var k = 0; k < 200; k++)
       {
         for(var i = 0; i < n; i++)
         {

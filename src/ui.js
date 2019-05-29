@@ -231,22 +231,22 @@ var bar = function()
           var stroke = gg.font_color;
           switch(f.job_type)
           {
-            case JOB_TYPE_NULL: str0 = "Nothing"; break;
-            case JOB_TYPE_IDLE: str0 = "Idle"; break;
-            case JOB_TYPE_WAIT: str0 = "Waiting"; break;
-            case JOB_TYPE_EAT: str0 = "Eating"; break;
-            case JOB_TYPE_SLEEP: str0 = "Sleeping"; break;
-            case JOB_TYPE_PLAY: str0 = "Playing"; break;
-            case JOB_TYPE_PLANT: str0 = "Planting"; break;
-            case JOB_TYPE_HARVEST: str0 = "Harvesting"; break;
-            case JOB_TYPE_FEED: str0 = "Feeding"; break;
+            case JOB_TYPE_NULL:      str0 = "Nothing";     break;
+            case JOB_TYPE_IDLE:      str0 = "Idle";        break;
+            case JOB_TYPE_WAIT:      str0 = "Waiting";     break;
+            case JOB_TYPE_EAT:       str0 = "Eating";      break;
+            case JOB_TYPE_SLEEP:     str0 = "Sleeping";    break;
+            case JOB_TYPE_PLAY:      str0 = "Playing";     break;
+            case JOB_TYPE_PLANT:     str0 = "Planting";    break;
+            case JOB_TYPE_HARVEST:   str0 = "Harvesting";  break;
+            case JOB_TYPE_FEED:      str0 = "Feeding";     break;
             case JOB_TYPE_FERTILIZE: str0 = "Fertilizing"; break;
-            case JOB_TYPE_MILK: str0 = "Milking"; break;
-            case JOB_TYPE_STORE: str0 = "Storing"; break;
-            case JOB_TYPE_PROCESS: str0 = "Processing"; break;
-            case JOB_TYPE_KICK: str0 = "Kicking"; break;
-            case JOB_TYPE_EXPORT: str0 = "Exporting"; break;
-            case JOB_TYPE_COUNT: str0 = "BROKEN"; break;
+            case JOB_TYPE_MILK:      str0 = "Milking";     break;
+            case JOB_TYPE_STORE:     str0 = "Storing";     break;
+            case JOB_TYPE_PROCESS:   str0 = "Processing";  break;
+            case JOB_TYPE_KICK:      str0 = "Kicking";     break;
+            case JOB_TYPE_EXPORT:    str0 = "Exporting";   break;
+            case JOB_TYPE_COUNT:     str0 = "BROKEN";      break;
           }
 
                if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str1 = "HUNGRY"; stroke = red; }
@@ -285,13 +285,36 @@ var bar = function()
     gg.ctx.fillText("$"+gg.money, x,y);
     x += w;
     //food
-    gg.ctx.fillText(gg.food+" food",     x,y);
+    var potential_rate = 0;
+    var production_rate = 0;
+    var edible_rate = 0;
+    for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
+    {
+      var t = gg.b.tile_groups[TILE_TYPE_FARM][i];
+      var t_rate = clamp(farm_nutrition_uptake_min,farm_nutrition_uptake_max,t.nutrition*farm_nutrition_uptake_p)/farm_nutrition_req;
+      potential_rate += t_rate*2;
+      if(t.state == TILE_STATE_FARM_PLANTED)
+      {
+        production_rate += t_rate*2;
+        var mul = 2-(t.withdraw_lock+t.deposit_lock);
+        if(mul) edible_rate += (t_rate)*mul;
+      }
+    }
+    var permin = 60*60;
+    potential_rate  *= permin;
+    production_rate *= permin;
+    edible_rate     *= permin;
+    gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
+    gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
+    gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
+    //gg.ctx.fillText(gg.food+" food", x,y);
     x += w;
 
     x = self.x+self.w-self.pad;
     //population
     x -= w;
-    gg.ctx.fillText(gg.farmbits.length+" farmers", x,y);
+    gg.ctx.fillText(gg.farmbits.length+" farmers", x,y+fs*0);
+    gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
     //joy
     x -= w;
     if(gg.farmbits.length)
@@ -317,8 +340,8 @@ var nutrition_toggle = function()
 
     self.w = 40*gg.stage.s_mod;
     self.h = self.w;
-    self.x = gg.canvas.width-self.w-self.pad;//gg.b.vbounds_x+gg.b.vbounds_w-self.w-self.pad;
-    self.y = self.pad;//gg.b.vbounds_y+gg.b.vbounds_h-self.h-self.pad;
+    self.x = gg.canvas.width-self.w-self.pad;
+    self.y = self.pad;
 
     setBB(self.toggle_btn, self.x,self.y,self.w,self.h);
   }
