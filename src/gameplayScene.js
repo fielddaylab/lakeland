@@ -23,6 +23,7 @@ var GamePlayScene = function()
           for(var i = 0; i < s.btns.length; i++)
             for(var j = 0; j < s.btns[i].length; j++)
               s.btns[i][j].active = 1;
+          s.festival_btn.active = 0;
 
           gg.nutrition_toggle.toggle_btn.active = 1;
           gg.bar.pause_btn.active = 1;

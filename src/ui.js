@@ -267,9 +267,9 @@ var bar = function()
           gg.ctx.fill();
           gg.ctx.stroke();
           gg.ctx.fillStyle = black;
-          gg.ctx.fillText(f.name,x,y+fs*2);
-          gg.ctx.fillText(str0,x,y+fs*1);
-          gg.ctx.fillText(str1,x,y+fs*0);
+          gg.ctx.fillText(f.name,x,y+fs*3);
+          gg.ctx.fillText(str0,x,y+fs*2);
+          gg.ctx.fillText(str1,x,y+fs*1);
 
           x += r*2+self.pad;
           //y += r*2+self.pad;
@@ -1550,7 +1550,7 @@ var achievements = function()
     for(var i = 0; i < self.notifs.length; i++)
     {
       gg.ctx.fillStyle = black;
-      var offy = bounceup(self.notif_ts[i]/200)*100*gg.stage.s_mod;
+      var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
       gg.ctx.fillText("Achievement!",gg.canvas.width/2,gg.canvas.height/2-gg.font_size-offy);
       gg.ctx.fillText(self.notifs[i].name,gg.canvas.width/2,gg.canvas.height/2-offy);
     }
