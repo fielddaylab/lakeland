@@ -906,6 +906,7 @@ var inspector = function()
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
         draw_money_switch(tx,ty,tw,th,t.withdraw_lock);
         gg.ctx.drawImage(food_img,ix,iy,iw,ih);
+        if(t.withdraw_lock) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
 
         sx = self.x+self.w/2+self.pad/2;
         tx = sx+self.pad;
@@ -916,6 +917,7 @@ var inspector = function()
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
         draw_money_switch(tx,ty,tw,th,t.deposit_lock);
         gg.ctx.drawImage(food_img,ix,iy,iw,ih);
+        if(t.deposit_lock) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
 
         gg.ctx.fillStyle = gg.font_color;
         y += self.w/2;
