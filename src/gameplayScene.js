@@ -1,4 +1,5 @@
 var keycatch;
+var debug = 0;
 var GamePlayScene = function()
 {
   var self = this;
@@ -154,7 +155,7 @@ var GamePlayScene = function()
     }
     else gg.dragger.filter(gg.advisors);
 
-    gg.keyer.filter(keycatch);
+    if(debug) gg.keyer.filter(keycatch);
 
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.screen_bounds(gg.cam);

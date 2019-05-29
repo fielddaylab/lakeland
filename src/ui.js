@@ -511,12 +511,12 @@ var shop = function()
       self.road_btn,
       //self.processor_btn,
       //self.demolish_btn,
-      //self.money_btn,
     ],
     [
       self.festival_btn,
     ],
   ];
+  if(debug) self.btns[0].push(self.money_btn);
 
   self.resize();
 
@@ -960,9 +960,9 @@ var inspector = function()
         gg.ctx.fillStyle = gg.font_color;
 
         gg.ctx.textAlign = "left";
-        y += self.font_size;
-        gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
-        y += self.pad;
+        //y += self.font_size;
+        //gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
+        //y += self.pad;
 
         y += self.font_size;
         gg.ctx.fillText("Growth:",self.x+self.pad,y);
@@ -2296,6 +2296,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
+      self.screen_tile(t)
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2307,6 +2308,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
+      self.screen_tile(t)
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2318,6 +2320,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
+      self.screen_tile(t)
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2343,6 +2346,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
+      self.screen_tile(t)
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2354,6 +2358,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
+      self.screen_tile(t)
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2464,7 +2469,7 @@ var advisors = function()
     self.delay_adv_thread, //click
     noop,
 
-    function(){ self.dotakeover(); self.push_blurb("An field unharvested is a field that isn't producing more food!"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("A field unharvested is a field that isn't producing more food!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2754,7 +2759,7 @@ var advisors = function()
       }, tut_unattended_farm);
       self.pool_thread(function(){
         for(var i = 0; i < gg.items.length; i++)
-          if(gg.items[i].type == ITEM_TYPE_POOP && gg.items[i].t > 500) return 1;
+          if(gg.items[i].type == ITEM_TYPE_POOP && gg.items[i].t > 1000) return 1;
         return 0;
       }, tut_unused_fertilizer);
       self.pool_thread(function(){
@@ -2778,7 +2783,7 @@ var advisors = function()
         for(var i = 0; i < gg.farmbits.length; i++)
         {
           var f = gg.farmbits[i];
-          if((f.job_state == JOB_STATE_GET || f.job_state == JOB_STATE_ACT) && f.job_state_t > 500)
+          if(f.job_state == JOB_STATE_GET && f.job_state_t > 500)
             return 1;
         }
         return 0;
@@ -3126,6 +3131,7 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
+      self.screen_tile(t)
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);

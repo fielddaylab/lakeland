@@ -3673,9 +3673,19 @@ var farmbit = function()
             {
               self.job_state = JOB_STATE_SEEK;
               self.job_state_t = 0;
-              var stx = gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw);
-              var sty = gg.b.bounds_ty+randIntBelow(gg.b.bounds_th);
-              self.job_subject = gg.b.bounded_tiles_t(stx,sty);
+              for(var i = 0; i < 100; i++)
+              {
+                var stx = gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw);
+                var sty = gg.b.bounds_ty+randIntBelow(gg.b.bounds_th);
+                self.job_subject = gg.b.bounded_tiles_t(stx,sty);
+                var good = 1;
+                for(var j = 0; j < gg.b.tile_groups[TILE_TYPE_SIGN].length; j++)
+                {
+                  var st = gg.b.tile_groups[TILE_TYPE_SIGN][j];
+                  if(abs(st.tx-self.job_subject.tx)+abs(st.ty-self.job_subject.ty) < 6) { good = 0; break; }
+                }
+                if(good) break;
+              }
             }
           }
             break;
