@@ -281,9 +281,6 @@ var bar = function()
     var y = self.y+self.pad+fs;
     var w = 150;
 
-    //money
-    gg.ctx.fillText("$"+gg.money, x,y);
-    x += w;
     //food
     var potential_rate = 0;
     var production_rate = 0;
@@ -313,9 +310,11 @@ var bar = function()
     x = self.x+self.w-self.pad;
     //population
     x -= w;
+    x -= w;
     gg.ctx.fillText(gg.farmbits.length+" farmers", x,y+fs*0);
     gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
     //joy
+    /*
     x -= w;
     if(gg.farmbits.length)
     {
@@ -324,6 +323,7 @@ var bar = function()
       gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad", x,y);
     }
     else gg.ctx.fillText("0% sad", x,y);
+    */
 
     gg.ctx.globalAlpha = 1;
   }
@@ -488,7 +488,7 @@ var shop = function()
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_DEMOLISH); });   self.demolish_btn   = b; b.img = skull_img;      b.name = "Demolish";   b.cost = demolish_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FESTIVAL); });   self.festival_btn   = b; b.img = festival_img;   b.name = "Festival";   b.cost = festival_cost;
 
-  b = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; });             self.money_btn = b; self.refund_btn = b; b.img = coin_img; b.name = "Free"; b.cost = -free_money;
+  b = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; }); self.money_btn = b; b.img = coin_img; b.name = "Free"; b.cost = -free_money;
   b = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); self.abandon_btn = b;
   b = new ButtonBox(0,0,0,0,function(){ gg.money += self.buy_cost(self.selected_buy); self.selected_buy = 0; }); self.refund_btn = b; b.img = coin_img; b.name = "Refund"; b.cost = 0;
 
@@ -504,7 +504,7 @@ var shop = function()
       self.road_btn,
       //self.processor_btn,
       //self.demolish_btn,
-      self.money_btn,
+      //self.money_btn,
     ],
     [
       self.festival_btn,
@@ -1206,7 +1206,7 @@ var inspector = function()
     y += self.pad+self.font_size;
 
     var sy = y;
-    x = self.x;
+    x = self.x+self.pad;
     gg.ctx.textAlign = "left";
 
     gg.ctx.fillText("Fullness:",x,y);
@@ -1469,6 +1469,7 @@ var achievements = function()
 
   self.click = function()
   {
+    self.open = 0;
   }
 
   self.tick = function()
@@ -1501,8 +1502,13 @@ var achievements = function()
   {
     gg.ctx.fillStyle = white;
     fillRBB(self.open_btn,self.pad,gg.ctx);
+    gg.ctx.fillStyle = black;
+    gg.ctx.textAlign = "left";
+    gg.ctx.fillText("Achievements",self.open_btn.x,self.open_btn.y+self.open_btn.h);
+    gg.ctx.textAlign = "center";
     if(self.open)
     {
+      gg.ctx.fillStyle = white;
       fillRBB(self,self.pad,gg.ctx);
       var rows = 5;
       var cols = 5;
@@ -1526,7 +1532,7 @@ var achievements = function()
           if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
           gg.ctx.fillStyle = black;
-          gg.ctx.fillText(t.name,x+s/2,y+s+fs);
+          gg.ctx.fillText(t.name,x+s/2,y+s);
           x += s+self.pad;
         }
         y += s+self.pad;
@@ -1535,8 +1541,9 @@ var achievements = function()
     for(var i = 0; i < self.notifs.length; i++)
     {
       gg.ctx.fillStyle = black;
-      gg.ctx.fillText("Achievement get!",gg.canvas.width/2,gg.canvas.height/2-gg.font_size);
-      gg.ctx.fillText(self.notifs[i].name,gg.canvas.width/2,gg.canvas.height/2);
+      var offy = bounceup(self.notif_ts[i]/200)*100*gg.stage.s_mod;
+      gg.ctx.fillText("Achievement!",gg.canvas.width/2,gg.canvas.height/2-gg.font_size-offy);
+      gg.ctx.fillText(self.notifs[i].name,gg.canvas.width/2,gg.canvas.height/2-offy);
     }
   }
 
@@ -3028,7 +3035,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.farm_btn.active = 1; self.push_blurb("Click here to buy a farm."); }, //begin
+    function(){ gg.shop.farm_btn.active = 1; self.push_blurb("Buy a farm."); }, //begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FARM); }, //tick
     function(){ //draw
       var b = gg.shop.farm_btn;
@@ -3159,16 +3166,7 @@ var advisors = function()
     self.adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Buy your first house."); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.adv_thread, //click
-    noop, //end
-
-    function(){ self.push_blurb("Click here to buy"); },//begin
+    function(){ self.push_blurb("Buy your first house."); },//begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);

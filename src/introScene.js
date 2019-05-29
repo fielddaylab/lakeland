@@ -19,11 +19,11 @@ var IntroScene = function()
   };
 
   var t = 0;
-  var txt_len = 100;
+  var txt_len = 200;
   var txts = [
-    "Hey this is a test",
-    "That's pretty cool",
-    "hooray",
+    "You set out to form a new town.",
+    "You will be responsible for its inhabitants.",
+    "Grow to 20 townmembers.",
   ];
 
   self.tick = function()
