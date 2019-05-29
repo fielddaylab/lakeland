@@ -286,7 +286,7 @@ var bar = function()
     gg.ctx.fillStyle = gg.font_color;
     var x = self.x+self.pad;
     var y = self.y+self.pad+fs;
-    var w = 150;
+    var w = 50*gg.stage.s_mod;
 
     //food
     var potential_rate = 0;
@@ -308,9 +308,10 @@ var bar = function()
     potential_rate  *= permin;
     production_rate *= permin;
     edible_rate     *= permin;
-    gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
-    gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
-    gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
+    //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
+    //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
+    //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
+    gg.ctx.fillText(fdisp(edible_rate/((1/(max_fullness-fullness_content))*permin))+" food", x,y);
     //gg.ctx.fillText(gg.food+" food", x,y);
     x += w;
 
@@ -318,8 +319,8 @@ var bar = function()
     //population
     x -= w;
     x -= w;
-    gg.ctx.fillText(gg.farmbits.length+" farmers", x,y+fs*0);
-    gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
+    gg.ctx.fillText(gg.farmbits.length+" townspeople", x,y+fs*0);
+    //gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
     //joy
     /*
     x -= w;
@@ -1466,6 +1467,11 @@ var achievements = function()
   self.pushtrigger("Farmers",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;});
   self.pushtrigger("Farmtown",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;});
   self.pushtrigger("MegaFarm",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;});
+
+  self.pushtrigger("Paycheck",coin_img,coin_img,function(){return gg.money > 350;});
+  self.pushtrigger("Thousandair",coin_img,coin_img,function(){return gg.money > 1000;});
+  self.pushtrigger("Stability",coin_img,coin_img,function(){return gg.money > 5000;});
+  self.pushtrigger("Riches",coin_img,coin_img,function(){return gg.money > 10000;});
 
   self.filter = function(filter)
   {
