@@ -1473,6 +1473,24 @@ var achievements = function()
   self.pushtrigger("Stability",coin_img,coin_img,function(){return gg.money > 5000;});
   self.pushtrigger("Riches",coin_img,coin_img,function(){return gg.money > 10000;});
 
+  var n_bloomed = function(n)
+  {
+    var found = 0;
+    for(var x = self.bounds_tx; x < self.bounds_tx+self.bounds_tw; x++)
+    {
+      for(var y = self.bounds_ty; y < self.bounds_ty+self.bounds_th; y++)
+      {
+        var t = self.tiles_t(x,y);
+        if(t.type == TILE_TYPE_LAKE && t.nutrition > water_fouled_threshhold) { found++; if(found > n) return 1; }
+      }
+    }
+    return 0;
+  }
+  self.pushtrigger("Bloom",bloom_img,bloom_img,function(){ return n_bloomed(1); });
+  self.pushtrigger("BigBloom",bloom_img,bloom_img,function(){ return n_bloomed(3); });
+  self.pushtrigger("HugeBloom",bloom_img,bloom_img,function(){ return n_bloomed(10); });
+  self.pushtrigger("MassiveBloom",bloom_img,bloom_img,function(){ return n_bloomed(30); });
+
   self.filter = function(filter)
   {
     var check = true;
