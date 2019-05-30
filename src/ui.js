@@ -3234,6 +3234,24 @@ var advisors = function()
     function(){ self.popup(TEXT_TYPE_DIRECT); }, //draw
     function(evt) //click
     {
+
+      var p = self.font_size;
+      var x = gg.canvas.width/2;
+      var y = gg.canvas.height-p;
+      var txt_fmt;
+      switch(self.advisor)
+      {
+        case ADVISOR_TYPE_MAYOR:    txt_fmt = self.mayor_fmt_history[self.mayor_history.length-1];       break;
+        case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
+        case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
+      }
+      var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
+      h += self.font_size+p;
+      var w = self.popup_w+p*2;
+      x -= w/2;
+      y -= h;
+      if(doEvtWithin(evt,x,y,w,h)) return;
+
       var b = gg.b;
       if(b.hover_t)
       {
