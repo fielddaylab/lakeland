@@ -943,7 +943,7 @@ var fulfillment_job_for_b = function(b)
       b.lock_object(b.job_object);
       b.job_type = JOB_TYPE_PROCESS;
       b.job_state = JOB_STATE_GET;
-      gg.ticker.nq(b.name+" is going to process some poop.");
+      gg.ticker.nq(b.name+" is going to process some manure.");
       return 1;
     }
   }
@@ -1014,7 +1014,7 @@ var fulfillment_job_for_b = function(b)
       switch(it.type)
       {
       case ITEM_TYPE_FOOD:     gg.ticker.nq(b.name+" is going to store some food for later."); break;
-      case ITEM_TYPE_POOP:     gg.ticker.nq(b.name+" is going to store some poop for later."); break;
+      case ITEM_TYPE_POOP:     gg.ticker.nq(b.name+" is going to store some manure for later."); break;
       case ITEM_TYPE_MILK:     gg.ticker.nq(b.name+" is going to store some milk for later."); break;
       case ITEM_TYPE_VALUABLE: gg.ticker.nq(b.name+" is going to store some valuables for later."); break;
       case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
@@ -1036,7 +1036,7 @@ var fulfillment_job_for_b = function(b)
     switch(it.type)
     {
     case ITEM_TYPE_FOOD:     gg.ticker.nq(b.name+" is going to export some food- safe travels!"); break;
-    case ITEM_TYPE_POOP:     gg.ticker.nq(b.name+" is going to export some poop- safe travels!"); break;
+    case ITEM_TYPE_POOP:     gg.ticker.nq(b.name+" is going to export some manure- safe travels!"); break;
     case ITEM_TYPE_MILK:     gg.ticker.nq(b.name+" is going to export some milk- safe travels!"); break;
     case ITEM_TYPE_VALUABLE: gg.ticker.nq(b.name+" is going to export some valuables- safe travels!"); break;
     case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
@@ -1056,7 +1056,7 @@ var fulfillment_job_for_b = function(b)
     switch(it.type)
     {
     case ITEM_TYPE_FOOD:     gg.ticker.nq(b.name+" is going to kick around some food."); break;
-    case ITEM_TYPE_POOP:     gg.ticker.nq(b.name+" is going to kick around some poop."); break;
+    case ITEM_TYPE_POOP:     gg.ticker.nq(b.name+" is going to kick around some manure."); break;
     case ITEM_TYPE_MILK:     gg.ticker.nq(b.name+" is going to kick around some milk."); break;
     case ITEM_TYPE_VALUABLE: gg.ticker.nq(b.name+" is going to kick around some valuables."); break;
     case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
@@ -1258,7 +1258,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         switch(job_object.type)
         {
         case ITEM_TYPE_FOOD:     gg.ticker.nq(best.name+" is going to store some food for later."); break;
-        case ITEM_TYPE_POOP:     gg.ticker.nq(best.name+" is going to store some poop for later."); break;
+        case ITEM_TYPE_POOP:     gg.ticker.nq(best.name+" is going to store some manure for later."); break;
         case ITEM_TYPE_MILK:     gg.ticker.nq(best.name+" is going to store some milk for later."); break;
         case ITEM_TYPE_VALUABLE: gg.ticker.nq(best.name+" is going to store some valuables for later."); break;
         case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
@@ -1286,7 +1286,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         best.job_object = job_object;
         best.job_state = JOB_STATE_GET;
         best.lock_object(best.job_object);
-        gg.ticker.nq(best.name+" is going to process some poop.");
+        gg.ticker.nq(best.name+" is going to process some manure.");
         return 1;
       }
     }
@@ -1840,7 +1840,7 @@ var board = function()
       case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
       case TILE_STATE_STORAGE_UNASSIGNED:  return "Unassigned"; break;
       case TILE_STATE_STORAGE_FOOD:        return "Corn";       break;
-      case TILE_STATE_STORAGE_POOP:        return "Poop";       break;
+      case TILE_STATE_STORAGE_POOP:        return "Manure";     break;
       case TILE_STATE_STORAGE_MILK:        return "Milk";       break;
       case TILE_STATE_STORAGE_VALUABLE:    return "Valuable";   break;
       case TILE_STATE_COUNT:               return "Null";       break;
@@ -1865,7 +1865,7 @@ var board = function()
       case ITEM_TYPE_NULL:       return "Null";       break;
       case ITEM_TYPE_WATER:      return "Water";      break;
       case ITEM_TYPE_FOOD:       return "Corn";       break;
-      case ITEM_TYPE_POOP:       return "Poop";       break;
+      case ITEM_TYPE_POOP:       return "Manure";     break;
       case ITEM_TYPE_MILK:       return "Milk";       break;
       case ITEM_TYPE_VALUABLE:   return "Valuable";   break;
       case ITEM_TYPE_FERTILIZER: return "Fertilizer"; break;
@@ -4301,7 +4301,7 @@ var farmbit = function()
 
             self.fulfillment += process_fulfillment;
             self.calibrate_stats();
-            gg.ticker.nq(self.name+" processed some poop.");
+            gg.ticker.nq(self.name+" processed some manure.");
             self.go_idle();
 
             var it;

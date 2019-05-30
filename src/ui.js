@@ -859,7 +859,7 @@ var inspector = function()
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Produces:",self.x+self.pad,y);
         gg.ctx.textAlign = "right";
-        gg.ctx.fillText("Milk,Poop",self.x+self.w-self.pad,y);
+        gg.ctx.fillText("Milk,Manure",self.x+self.w-self.pad,y);
         gg.ctx.textAlign = "center";
         y += self.pad;
         self.line(y);
@@ -2627,7 +2627,7 @@ var advisors = function()
   ];
 
   var tut_unused_fertilizer = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("There's some unused poop laying around."); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("There's some unused manure laying around."); },//begin
     noop, //tick
     function() { //draw
       self.wash();
@@ -2854,7 +2854,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.dotakeover();  self.push_blurb("Buy more houses to grow your town!");self.push_record("Your townspeople will automatically use free poop to fertilize their farms. This is key to a profitable crop cycle!"); }, //begin
+    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.dotakeover();  self.push_blurb("Buy more houses to grow your town!");self.push_record("Your townspeople will automatically use free manure to fertilize their farms. This is key to a profitable crop cycle!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2954,7 +2954,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock. They might be able to help with that!"); self.push_record("Livestock create poop, which does wonders for soil nutrition.");}, //begin
+    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock. They might be able to help with that!"); self.push_record("Livestock create manure, which does wonders for soil nutrition.");}, //begin
     ffunc, //tick
     function(){ //draw
       var b = gg.shop.livestock_btn;
