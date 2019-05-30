@@ -1576,8 +1576,11 @@ var achievements = function()
     }
     for(var i = 0; i < self.notifs.length; i++)
     {
-      gg.ctx.fillStyle = black;
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
+      gg.ctx.fillStyle = white;
+      var w = 150*gg.stage.s_mod;
+      fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-gg.font_size*3-offy,w,gg.font_size*4,gg.font_size,gg.ctx);
+      gg.ctx.fillStyle = black;
       gg.ctx.fillText("Achievement!",gg.canvas.width/2,gg.canvas.height/2-gg.font_size-offy);
       gg.ctx.fillText(self.notifs[i].name,gg.canvas.width/2,gg.canvas.height/2-offy);
     }
