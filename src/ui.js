@@ -2405,6 +2405,83 @@ var advisors = function()
     }, //end
   ];
 
+  var tut_delay_gross_again = [
+    noop, //begin
+    ffunc, //tick
+    noop, //draw
+    ffunc, //click
+    function(){
+      self.pool_thread(function(){
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
+          if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) return 1;
+        }
+        return 0;
+      }, tut_gross_again);
+    }, //end
+  ];
+
+  var tut_gross_again = [
+    function(){ //begin
+      gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'gross'});
+      self.set_advisor(ADVISOR_TYPE_MAYOR);
+      var f;
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        f = gg.farmbits[i];
+        if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
+      }
+      self.dotakeover();
+      self.push_blurb("Ew- now "+f.name+" is swimming in algae bloom.");
+    },
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("This will make them sad."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("That way everyone stays happy and ready to work!"); self.push_record("You can use signs to keep your townspeople away from gross water.");}, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.adv_thread, //click
+    function(){
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross'});
+      self.pool_thread(function(){ return self.time_passed(3000); }, tut_delay_gross_again);
+    }, //end
+  ];
+
   var tut_gross = [
     function(){ //begin
       gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'gross'});
@@ -2461,6 +2538,7 @@ var advisors = function()
     self.adv_thread, //click
     function(){
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross'});
+      self.pool_thread(function(){ return self.time_passed(3000); }, tut_delay_gross_again);
     }, //end
   ];
 
@@ -3131,7 +3209,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.dotakeover(); self.push_blurb("Place your farm on fertile grassland"); },//begin
-    function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
+    function(){ self.camtotile(gg.b.center_tile); return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
     function(){ self.popup(TEXT_TYPE_DIRECT); }, //draw
     function(evt) //click
     {

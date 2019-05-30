@@ -1474,6 +1474,7 @@ var board = function()
   self.null_tile = new tile();
   self.scratch_tile = new tile();
   self.tiles = [];
+  self.center_tile = 0;
   self.tile_groups = [];
   self.tiles_i = function(tx,ty)
   {
@@ -2168,6 +2169,7 @@ var board = function()
       )
         valid = 0;
     }
+    self.center_tile = self.tiles_t(floor(self.tw/2),floor(self.th/2));
 
     //clear water
     for(var i = 0; i < self.tiles.length; i++)

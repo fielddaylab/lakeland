@@ -1,5 +1,5 @@
 var keycatch;
-var debug = 0;
+var debug = 1;
 var GamePlayScene = function()
 {
   var self = this;
