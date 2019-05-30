@@ -1704,6 +1704,11 @@ var advisors = function()
     drawArrow(x+30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
     gg.ctx.globalAlpha = 1;
   }
+  self.camtotile = function(t)
+  {
+    gg.cam.wx = lerp(gg.cam.wx,t.wx,0.05);
+    gg.cam.wy = lerp(gg.cam.wy,t.wy,0.05);
+  }
   self.popup = function(type)
   {
     var p = self.font_size;
@@ -2324,6 +2329,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
+      self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2336,6 +2342,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
+      self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2348,6 +2355,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
+      self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2374,6 +2382,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
+      self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2386,6 +2395,7 @@ var advisors = function()
       self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
+      self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2957,6 +2967,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -2985,6 +2996,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
@@ -2996,6 +3008,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
@@ -3013,6 +3026,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3069,6 +3083,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3159,6 +3174,7 @@ var advisors = function()
     function(){ //draw
       var t = self.heap.t;
       gg.b.screen_tile(t);
+      self.camtotile(t);
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
@@ -3253,6 +3269,7 @@ var advisors = function()
       self.wash();
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
+      self.camtotile(t);
       self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
@@ -3276,6 +3293,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3288,6 +3306,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var f = self.heap.f;
+      self.camtotile(f.tile);
       self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);

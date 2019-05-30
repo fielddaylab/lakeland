@@ -1350,6 +1350,8 @@ var tile = function()
   self.withdraw_lock = 0; //repurposed for farms as produce toggle :O
   self.deposit_lock = 0; //repurposed for farms as produce toggle :O
   self.lock = 0;
+  self.wx = 0;
+  self.wy = 0;
   //only calc'd/updated on 'screen_tile'
   self.x = 0;
   self.y = 0;
@@ -1516,6 +1518,12 @@ var board = function()
     w.wy = self.wy-self.wh/2+((t.ty+0.5)*self.wh/self.th);
   }
 
+  self.world_tile = function(t)
+  {
+    t.wx = self.wx-self.ww/2+((t.tx+0.5)*self.tww);
+    t.wy = self.wy-self.wh/2+((t.ty+0.5)*self.twh);
+    return t;
+  }
   self.screen_tile = function(t)
   {
     t.w = self.w/self.tw;
@@ -1992,6 +2000,7 @@ var board = function()
           var t = new tile();
           t.tx = tx;
           t.ty = ty;
+          self.world_tile(t);
           t.i = i;
           t.nutrition = rand();
           t.nutrition *= t.nutrition;

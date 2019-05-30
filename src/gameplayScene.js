@@ -173,16 +173,12 @@ var GamePlayScene = function()
             var o = gg.items[i];
             o.tick();
             if(o.type == ITEM_TYPE_FOOD && !o.sale) gg.food++;
-            screenSpace(gg.cam, gg.canvas, o);
-            o.y -= o.wz;
           }
           for(var i = 0; i < gg.farmbits.length; i++)
           {
             var f = gg.farmbits[i];
             f.tick();
             if(f.fullness_state != FARMBIT_STATE_CONTENT) gg.hungry++;
-
-            screenSpace(gg.cam, gg.canvas, f);
           }
           gg.bar.tick();
           gg.nutrition_toggle.tick();
@@ -192,12 +188,14 @@ var GamePlayScene = function()
         times--;
       }
     }
-    else //still screenspace to catch up to drag
+
+    //screen space
     {
       for(var i = 0; i < gg.items.length; i++)
       {
         var o = gg.items[i];
         screenSpace(gg.cam, gg.canvas, o);
+        o.y -= o.wz;
       }
       for(var i = 0; i < gg.farmbits.length; i++)
       {
