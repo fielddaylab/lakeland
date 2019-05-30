@@ -1450,28 +1450,31 @@ var achievements = function()
 
   self.triggers = [];
   self.nullt = {name:"null",local:0,global:0,trigger:ffunc};
-  self.pushtrigger = function(name,offimg,onimg,fn)
+  self.pushtrigger = function(name,offimg,onimg,fn,dep)
   {
-    self.triggers.push({name:name,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn});
+    var t = {name:name,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
+    self.triggers.push(t);
+    return t;
   }
 
   self.notifs = [];
   self.notif_ts = [];
 
-  self.pushtrigger("Exist",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length;});
-  self.pushtrigger("Group",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 3;});
-  self.pushtrigger("Town",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 5;});
-  self.pushtrigger("City",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 10;});
+  var t;
+  t = self.pushtrigger("Exist",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length;},0);
+  t = self.pushtrigger("Group",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 3;},t);
+  t = self.pushtrigger("Town",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 5;},t);
+  t = self.pushtrigger("City",farmbit_imgs[0][0][0],farmbit_imgs[0][0][0],function(){return gg.farmbits.length >= 10;},t);
 
-  self.pushtrigger("Farmer",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;});
-  self.pushtrigger("Farmers",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;});
-  self.pushtrigger("Farmtown",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;});
-  self.pushtrigger("MegaFarm",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;});
+  t = self.pushtrigger("Farmer",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;},0);
+  t = self.pushtrigger("Farmers",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;},t);
+  t = self.pushtrigger("Farmtown",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;},t);
+  t = self.pushtrigger("MegaFarm",farm_img,farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;},t);
 
-  self.pushtrigger("Paycheck",coin_img,coin_img,function(){return gg.money > 350;});
-  self.pushtrigger("Thousandair",coin_img,coin_img,function(){return gg.money > 1000;});
-  self.pushtrigger("Stability",coin_img,coin_img,function(){return gg.money > 5000;});
-  self.pushtrigger("Riches",coin_img,coin_img,function(){return gg.money > 10000;});
+  t = self.pushtrigger("Paycheck",coin_img,coin_img,function(){return gg.money > 350;},0);
+  t = self.pushtrigger("Thousandair",coin_img,coin_img,function(){return gg.money > 1000;},t);
+  t = self.pushtrigger("Stability",coin_img,coin_img,function(){return gg.money > 5000;},t);
+  t = self.pushtrigger("Riches",coin_img,coin_img,function(){return gg.money > 10000;},t);
 
   var n_bloomed = function(n)
   {
@@ -1486,10 +1489,10 @@ var achievements = function()
     }
     return 0;
   }
-  self.pushtrigger("Bloom",bloom_img,bloom_img,function(){ return n_bloomed(1); });
-  self.pushtrigger("BigBloom",bloom_img,bloom_img,function(){ return n_bloomed(3); });
-  self.pushtrigger("HugeBloom",bloom_img,bloom_img,function(){ return n_bloomed(10); });
-  self.pushtrigger("MassiveBloom",bloom_img,bloom_img,function(){ return n_bloomed(30); });
+  t = self.pushtrigger("Bloom",bloom_img,bloom_img,function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom",bloom_img,bloom_img,function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom",bloom_img,bloom_img,function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom",bloom_img,bloom_img,function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -1511,7 +1514,7 @@ var achievements = function()
     for(var i = 0; i < self.triggers.length; i++)
     {
       t = self.triggers[i];
-      if(!t.local && t.trigger())
+      if(!t.local && (!t.dep || t.dep.local) && t.trigger())
       {
         t.local = 1;
         t.global = 1;
@@ -2320,7 +2323,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
-      self.screen_tile(t)
+      gg.b.screen_tile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2332,7 +2335,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
-      self.screen_tile(t)
+      gg.b.screen_tile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2344,7 +2347,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
-      self.screen_tile(t)
+      gg.b.screen_tile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2370,7 +2373,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
-      self.screen_tile(t)
+      gg.b.screen_tile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -2382,7 +2385,7 @@ var advisors = function()
     function(){ //draw
       self.wash();
       var t = self.heap.t;
-      self.screen_tile(t)
+      gg.b.screen_tile(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
@@ -3151,11 +3154,11 @@ var advisors = function()
     function(){ self.jmp(-2); }, //click
     noop, //end
 
-    function(){ self.heap.t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_FARM][0]); var f = self.heap.f; self.push_blurb(f.name+" will automatically manage the farm."); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically manage the farm."); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
-      self.screen_tile(t)
+      gg.b.screen_tile(t);
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
@@ -3248,7 +3251,8 @@ var advisors = function()
     function(){ return self.bits_exist(1); }, //tick
     function(){
       self.wash();
-      var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]);
+      var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
+      gg.b.screen_tile(t);
       self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
@@ -3259,7 +3263,8 @@ var advisors = function()
     function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; self.push_blurb("Waiting..."); }, //begin
     function(){ return self.bits_exist(1); }, //tick
     function(){ //draw
-      var t = gg.b.screen_tile(gg.b.tile_groups[TILE_TYPE_HOME][0]);
+      var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
+      gg.b.screen_tile(t);
       self.popup(TEXT_TYPE_OBSERVE);
       self.arrow(t.x+t.w,t.y+t.h/2);
     },

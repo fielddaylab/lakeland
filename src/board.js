@@ -2835,12 +2835,12 @@ var board = function()
           else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
           else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
           gg.ctx.beginPath();
-          gg.ctx.arc(x,y+h/3,r,0,twopi);
+          gg.ctx.arc(x+w/2,y+h/2,r,0,twopi);
           gg.ctx.fill();
           gg.ctx.strokeStyle = black;
           gg.ctx.stroke();
           p = (t.val/farm_nutrition_req*twopi)-halfpi;
-          drawLine(x,y+h/3,x+cos(p)*r,y+h/3+sin(p)*r,gg.ctx);
+          drawLine(x+w/2,y+h/2,x+w/2+cos(p)*r,y+h/2+sin(p)*r,gg.ctx);
           break;
         case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
