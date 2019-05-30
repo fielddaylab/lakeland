@@ -1,13 +1,26 @@
 var keycatch;
-var debug = 1;
+var debug = 0;
 var GamePlayScene = function()
 {
   var self = this;
 
   keycatch =
   {
+    secretprogress:0,
+    key_down:function(evt)
+    {
+      keycatch.last_key = evt.keyCode;
+      if(!debug)
+      {
+        var secret = "spyparty";
+        if(secret[keycatch.secretprogress] == String.fromCharCode(evt.keyCode).toLowerCase()) keycatch.secretprogress++;
+        else                                                                                        keycatch.secretprogress = 0;
+        if(keycatch.secretprogress == secret.length) debug = 1;
+      }
+    },
     key:function(evt)
     {
+      if(!debug) return;
       switch(evt.key)
       {
         case "q": QUADRUPLETIME = !QUADRUPLETIME; break;
@@ -155,7 +168,7 @@ var GamePlayScene = function()
     }
     else gg.dragger.filter(gg.advisors);
 
-    if(debug) gg.keyer.filter(keycatch);
+    gg.keyer.filter(keycatch);
 
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.screen_bounds(gg.cam);
