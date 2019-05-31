@@ -300,7 +300,9 @@ var bar = function()
       if(t.state == TILE_STATE_FARM_PLANTED)
       {
         production_rate += t_rate*2;
-        var mul = 2-(t.withdraw_lock+t.deposit_lock);
+        var mul = 2;
+        if(t.marks[0] == MARK_SELL) mul--;
+        if(t.marks[1]  == MARK_SELL) mul--;
         if(mul) edible_rate += (t_rate)*mul;
       }
     }
@@ -422,7 +424,7 @@ var shop = function()
     //others
     self.h = biggest_y-self.y;
     btn_y = biggest_y;
-    setBB(self.money_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    if(debug) setBB(self.money_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
     setBB(self.abandon_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.refund_btn,     btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
   }
@@ -649,7 +651,7 @@ var shop = function()
     for(var i = 0; i < self.btns[self.page_i].length; i++)
       self.draw_btn(self.btns[self.page_i][i],0);
 
-    //self.draw_btn(self.money_btn,   coin_img,        "Free Money", self.money_btn.active,   !self.selected_buy, -free_money, 1, 0);
+    if(debug) self.draw_btn(self.money_btn, coin_img, "Free Money", self.money_btn.active, !self.selected_buy, -free_money, 1, 0);
     //self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
     if(self.selected_buy) { self.refund_btn.cost = self.buy_cost(self.selected_buy); self.draw_btn(self.refund_btn, 1); }
 
@@ -909,23 +911,23 @@ var inspector = function()
         var ix = tx;
         var iy = sy;
 
-        if(t.withdraw_lock) gg.ctx.fillStyle = "#CDE1A9";
-        else                gg.ctx.fillStyle = "#BAEDE1";
+        if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = "#CDE1A9";
+        else                        gg.ctx.fillStyle = "#BAEDE1";
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_money_switch(tx,ty,tw,th,t.withdraw_lock);
+        draw_money_switch(tx,ty,tw,th,t.marks[0] == MARK_SELL);
         gg.ctx.drawImage(food_img,ix,iy,iw,ih);
-        if(t.withdraw_lock) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
+        if(t.marks[0] == MARK_SELL) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
 
         sx = self.x+self.w/2+self.pad/2;
         tx = sx+self.pad;
         ix = tx;
 
-        if(t.deposit_lock) gg.ctx.fillStyle = "#CDE1A9";
-        else               gg.ctx.fillStyle = "#BAEDE1";
+        if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = "#CDE1A9";
+        else                        gg.ctx.fillStyle = "#BAEDE1";
         fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_money_switch(tx,ty,tw,th,t.deposit_lock);
+        draw_money_switch(tx,ty,tw,th,t.marks[1] == MARK_SELL);
         gg.ctx.drawImage(food_img,ix,iy,iw,ih);
-        if(t.deposit_lock) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
+        if(t.marks[1] == MARK_SELL) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
 
         gg.ctx.fillStyle = gg.font_color;
         y += self.w/2;
@@ -1101,8 +1103,8 @@ var inspector = function()
   {
     if(t.type == TILE_TYPE_FARM)
     {
-      if(clicker.consumeif(self.x,         self.farm_autosell_y,self.w/2,self.w/2,function(){t.withdraw_lock = !t.withdraw_lock;})) return 1;
-      if(clicker.consumeif(self.x+self.w/2,self.farm_autosell_y,self.w/2,self.w/2,function(){t.deposit_lock  = !t.deposit_lock; })) return 1;
+      if(clicker.consumeif(self.x,         self.farm_autosell_y,self.w/2,self.w/2,function(){if(t.marks[0] == MARK_SELL) t.marks[0] = MARK_USE; else t.marks[0] = MARK_SELL;})) return 1;
+      if(clicker.consumeif(self.x+self.w/2,self.farm_autosell_y,self.w/2,self.w/2,function(){if(t.marks[1] == MARK_SELL) t.marks[1] = MARK_USE; else t.marks[1] = MARK_SELL;})) return 1;
     }
 
     return 0;

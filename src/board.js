@@ -1336,8 +1336,10 @@ var tile = function()
   //self.known_nutrition = 0;
   //self.known_nutrition_d = 0;
   //self.known_nutrition_t = 0;
-  self.withdraw_lock = 0; //repurposed for farms as produce toggle :O
-  self.deposit_lock = 0; //repurposed for farms as produce toggle :O
+  self.withdraw_lock = 0;
+  self.deposit_lock = 0;
+  self.marks = [];
+  for(var i = 0; i < 4; i++) self.marks[i] = MARK_USE;
   self.lock = 0;
   self.wx = 0;
   self.wy = 0;
@@ -2298,7 +2300,7 @@ var board = function()
         break;
       case TILE_TYPE_LIVESTOCK:
         t.state = TILE_STATE_LIVESTOCK_DIGESTING;
-        t.withdraw_lock = 1; //set for sale
+        t.marks[0] = MARK_SELL;
         t.val = 1; //fullness
         break;
       case TILE_TYPE_STORAGE:
@@ -2366,8 +2368,8 @@ var board = function()
     }
     if(t.type == TILE_TYPE_FARM || t.type == TILE_TYPE_LIVESTOCK)
     {
-      t.withdraw_lock = 0; //undo auto-set-sell
-      t.deposit_lock = 0; //undo auto-set-sell
+      t.marks[0] = MARK_USE;
+      t.marks[1] = MARK_USE;
     }
   }
 
@@ -3959,8 +3961,7 @@ var farmbit = function()
               it = new item();
               it.type = ITEM_TYPE_FOOD;
               it.tile = t;
-              if(!i && t.withdraw_lock) it.mark = MARK_SELL;
-              if( i && t.deposit_lock)  it.mark = MARK_SELL;
+              it.mark = t.marks[i];
               gg.b.tiles_tw(it.tile,it);
               kick_item(it);
               gg.items.push(it);
@@ -4182,7 +4183,7 @@ var farmbit = function()
             it = new item();
             it.type = ITEM_TYPE_MILK;
             it.tile = t;
-            if(t.withdraw_lock) it.mark = MARK_SELL;
+            it.mark = t.marks[0];
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);

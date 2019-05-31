@@ -15,7 +15,7 @@ var GamePlayScene = function()
         var secret = "spyparty";
         if(secret[keycatch.secretprogress] == String.fromCharCode(evt.keyCode).toLowerCase()) keycatch.secretprogress++;
         else                                                                                        keycatch.secretprogress = 0;
-        if(keycatch.secretprogress == secret.length) debug = 1;
+        if(keycatch.secretprogress == secret.length) { debug = 1; gg.shop.btns[0].push(gg.shop.money_btn); gg.shop.resize();}
       }
     },
     key:function(evt)
