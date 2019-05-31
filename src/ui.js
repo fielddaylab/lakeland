@@ -302,7 +302,7 @@ var bar = function()
         production_rate += t_rate*2;
         var mul = 2;
         if(t.marks[0] == MARK_SELL) mul--;
-        if(t.marks[1]  == MARK_SELL) mul--;
+        if(t.marks[1] == MARK_SELL) mul--;
         if(mul) edible_rate += (t_rate)*mul;
       }
     }
