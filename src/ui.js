@@ -674,10 +674,147 @@ var inspector = function()
     self.y = self.pad+gg.stage.s_mod*50;
     self.h = gg.canvas.height-self.y-self.pad;
 
+    var y = self.y;
+    y += self.pad*2;
+
     self.vignette_x = self.x+self.pad*2;
-    self.vignette_y = self.y+self.pad*2;
+    self.vignette_y = y;
     self.vignette_w = self.w-self.pad*4;
     self.vignette_h = self.vignette_w;
+
+    y += self.vignette_h;
+    y += self.pad;
+
+    y += self.title_font_size;
+    self.title_y = y;
+    y += self.pad;
+
+    y += self.subtitle_font_size;
+    self.subtitle_y = y;
+    y += self.pad;
+
+    self.title_line_y = y;
+    y += self.pad;
+
+    var start_y = y;
+    self.tile_ui = [];
+    var u;
+
+    {
+      u = {};
+      self.tile_ui[TILE_TYPE_LAND]   = u;
+      self.tile_ui[TILE_TYPE_SHORE]  = u;
+      self.tile_ui[TILE_TYPE_ROCK]   = u;
+      self.tile_ui[TILE_TYPE_FOREST] = u;
+      self.tile_ui[TILE_TYPE_LAKE]   = u;
+      self.tile_ui[TILE_TYPE_HOME]   = u;
+      self.tile_ui[TILE_TYPE_SIGN]   = u;
+      self.tile_ui[TILE_TYPE_ROAD]   = u;
+      y = start_y;
+
+      y += self.font_size;
+      u.nutrition_y = y;
+      y += self.pad;
+      u.nutrition_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.fertilizer_y = y;
+      y += self.pad;
+      u.fertilizer_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+    }
+
+    {
+      u = {};
+      self.tile_ui[TILE_TYPE_FARM] = u;
+      y = start_y;
+
+      y += self.font_size;
+      u.produce_y = y;
+      y += self.pad;
+
+      u.produce_line_y = y;
+      y += self.pad;
+
+      y += self.font_size;
+      u.export_y = y;
+      y += self.pad;
+
+      u.autosell_h = self.pad*3;
+      u.autosell_0_y = y;
+      y += u.autosell_h;
+      y += self.pad;
+      u.autosell_1_y = y;
+      y += u.autosell_h;
+      y += self.pad;
+
+      u.nutrition_border_y = y;
+      y += self.pad;
+
+      y += self.font_size;
+      u.growth_y = y;
+      y += self.pad;
+      u.growth_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.fertilizer_y = y;
+      y += self.pad;
+      u.fertilizer_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.nutrition_y = y;
+      y += self.pad;
+      u.nutrition_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+    }
+
+    {
+      u = {};
+      self.tile_ui[TILE_TYPE_LIVESTOCK] = u;
+      y = start_y;
+
+      y += self.font_size;
+      u.produce_y = y;
+      y += self.pad;
+
+      u.produce_line_y = y;
+      y += self.pad;
+
+      y += self.font_size;
+      u.export_y = y;
+      y += self.pad;
+
+      u.autosell_h = self.pad*3;
+      u.autosell_0_y = y;
+      y += u.autosell_h;
+      y += self.pad;
+      u.autosell_1_y = y;
+      y += u.autosell_h;
+      y += self.pad;
+
+      y += self.font_size;
+      u.nutrition_y = y;
+      y += self.pad;
+      u.nutrition_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.fertilizer_y = y;
+      y += self.pad;
+      u.fertilizer_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+    }
+
   }
   self.resize();
 
@@ -727,7 +864,6 @@ var inspector = function()
     var rn = t.nutrition/nutrition_percent;
     var n = floor(rn);
     var cx = self.x+self.w/2;
-    var y = self.vignette_y+self.vignette_h;
 
     //bg
     gg.ctx.fillStyle = white;
@@ -749,16 +885,15 @@ var inspector = function()
         gg.ctx.globalAlpha = 1;
       }
     }
-    y += self.pad;
 
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.textAlign = "center";
 
     //title
     gg.ctx.font = self.title_font_size+"px "+gg.font;
-    y += self.title_font_size;
-    gg.ctx.fillText(gg.b.tile_name(t.type),cx,y);
-    y += self.pad;
+    gg.ctx.fillText(gg.b.tile_name(t.type),cx,self.title_y);
+
+    var u = self.tile_ui[t.type];
 
     //subtitle
     switch(t.type)
@@ -766,52 +901,43 @@ var inspector = function()
       case TILE_TYPE_HOME:
       {
         gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        y += self.subtitle_font_size;
         switch(t.state)
         {
-          case TILE_STATE_HOME_VACANT:   gg.ctx.fillText("VACANT",cx,y); break;
+          case TILE_STATE_HOME_VACANT:   gg.ctx.fillText("VACANT",cx,self.subtitle_y); break;
           case TILE_STATE_HOME_OCCUPIED:
           {
             var b = 0;
             for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].home == t) b = gg.farmbits[i];
-            if(b) gg.ctx.fillText("Owner: "+b.name,cx,y);
-            else  gg.ctx.fillText("Owner: unknown",cx,y);
+            if(b) gg.ctx.fillText("Owner: "+b.name,cx,self.subtitle_y);
+            else  gg.ctx.fillText("Owner: unknown",cx,self.subtitle_y);
           }
           break;
         }
-        y += self.pad;
-        self.line(y);
-        y += self.pad;
+        self.line(self.title_line_y);
       }
         break;
       case TILE_TYPE_FARM:
       {
         gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        y += self.subtitle_font_size;
         switch(t.state)
         {
-          case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",cx,y);        break;
-          case TILE_STATE_FARM_PLANTED:   gg.ctx.fillText("Growing",cx,y);            break;
-          case TILE_STATE_FARM_GROWN:     gg.ctx.fillText("Ready for Harvest!",cx,y); break;
+          case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",cx,self.subtitle_y);        break;
+          case TILE_STATE_FARM_PLANTED:   gg.ctx.fillText("Growing",cx,self.subtitle_y);            break;
+          case TILE_STATE_FARM_GROWN:     gg.ctx.fillText("Ready for Harvest!",cx,self.subtitle_y); break;
         }
-        y += self.pad;
-        self.line(y);
-        y += self.pad;
+        self.line(self.title_line_y);
       }
         break;
       case TILE_TYPE_LIVESTOCK:
       {
         gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        y += self.subtitle_font_size;
         switch(t.state)
         {
-          case TILE_STATE_LIVESTOCK_DIGESTING: gg.ctx.fillText("Digesting",cx,y);          break;
-          case TILE_STATE_LIVESTOCK_MILKING:   gg.ctx.fillText("Producing Milk",cx,y);     break;
-          case TILE_STATE_LIVESTOCK_MILKABLE:  gg.ctx.fillText("Ready For Milking!",cx,y); break;
+          case TILE_STATE_LIVESTOCK_DIGESTING: gg.ctx.fillText("Digesting",cx,self.subtitle_y);          break;
+          case TILE_STATE_LIVESTOCK_MILKING:   gg.ctx.fillText("Producing Milk",cx,self.subtitle_y);     break;
+          case TILE_STATE_LIVESTOCK_MILKABLE:  gg.ctx.fillText("Ready For Milking!",cx,self.subtitle_y); break;
         }
-        y += self.pad;
-        self.line(y);
-        y += self.pad;
+        self.line(self.title_line_y);
       }
         break;
       case TILE_TYPE_NULL:
@@ -828,207 +954,129 @@ var inspector = function()
       case TILE_TYPE_COUNT:
       {
         gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        y += self.subtitle_font_size;
-        gg.ctx.fillText(gg.b.tile_name(t.type),cx,y);
-        y += self.pad;
-        self.line(y);
-        y += self.pad;
+        gg.ctx.fillText(gg.b.tile_name(t.type),cx,self.subtitle_y);
+        self.line(self.title_line_y);
       }
         break;
     }
 
     gg.ctx.font = self.font_size+"px "+gg.font;
+    var x = self.x+self.pad;
+    var w = self.w-self.pad*2;
 
     //production
     switch(t.type)
     {
       case TILE_TYPE_FARM:
       {
-        y += self.font_size;
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Produces:",self.x+self.pad,y);
+        gg.ctx.fillText("Produces:",self.x+self.pad,u.produce_y);
         gg.ctx.textAlign = "right";
-        gg.ctx.fillText("2 Corn",self.x+self.w-self.pad,y);
+        gg.ctx.fillText("2 Corn",self.x+self.w-self.pad,u.produce_y);
         gg.ctx.textAlign = "center";
-        y += self.pad;
-        self.line(y);
-        y += self.pad;
-      }
-        break;
-      case TILE_TYPE_LIVESTOCK:
-      {
-        y += self.font_size;
+        self.line(u.produce_line_y);
+
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Produces:",self.x+self.pad,y);
-        gg.ctx.textAlign = "right";
-        gg.ctx.fillText("Milk,Manure",self.x+self.w-self.pad,y);
-        gg.ctx.textAlign = "center";
-        y += self.pad;
-        self.line(y);
-        y += self.pad;
-      }
-        break;
-      case TILE_TYPE_NULL:
-      case TILE_TYPE_LAND:
-      case TILE_TYPE_ROCK:
-      case TILE_TYPE_GRAVE:
-      case TILE_TYPE_SHORE:
-      case TILE_TYPE_FOREST:
-      case TILE_TYPE_LAKE:
-      case TILE_TYPE_STORAGE:
-      case TILE_TYPE_SIGN:
-      case TILE_TYPE_ROAD:
-      case TILE_TYPE_PROCESSOR:
-      case TILE_TYPE_COUNT:
-      case TILE_TYPE_HOME:
-        break;
-    }
+        gg.ctx.fillText("Export Options:",self.x+self.pad,u.export_y);
 
-    //special
-    switch(t.type)
-    {
-      case TILE_TYPE_FARM:
-      {
-        gg.ctx.textAlign = "left";
-        y += self.font_size;
-        gg.ctx.fillText("Export Options:",self.x+self.pad,y);
-        y += self.pad;
+        switch(t.marks[0])
+        {
+          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+        }
+        fillRRect(x,u.autosell_0_y,w,u.autosell_h,self.pad,gg.ctx);
+        gg.ctx.drawImage(food_img,x,u.autosell_0_y,u.autosell_h,u.autosell_h);
+        gg.ctx.fillStyle = black;
+        switch(t.marks[0])
+        {
+          case MARK_USE:  gg.ctx.fillText("Eat", x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
+          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
+          case MARK_FEED: gg.ctx.fillText("Feed",x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
+        }
 
-        self.farm_autosell_y = y;
+        switch(t.marks[1])
+        {
+          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+        }
+        fillRRect(x,u.autosell_1_y,w,u.autosell_h,self.pad,gg.ctx);
+        gg.ctx.drawImage(food_img,x,u.autosell_1_y,u.autosell_h,u.autosell_h);
+        gg.ctx.fillStyle = black;
+        switch(t.marks[1])
+        {
+          case MARK_USE:  gg.ctx.fillText("Eat", x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
+          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
+          case MARK_FEED: gg.ctx.fillText("Feed",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
+        }
 
-        var sw = self.w/2-self.pad*2;
-        var sh = self.w/2;
-        var sx = self.x+self.pad;
-        var sy = self.farm_autosell_y;
-
-        var tw = self.w/2-self.pad*4;
-        var th = sh/4;
-        var tx = sx+self.pad;
-        var ty = sy+sh-th-self.pad;
-
-        var iw = tw;
-        var ih = iw*1.25;
-        var ix = tx;
-        var iy = sy;
-
-        if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = "#CDE1A9";
-        else                        gg.ctx.fillStyle = "#BAEDE1";
-        fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_money_switch(tx,ty,tw,th,t.marks[0] == MARK_SELL);
-        gg.ctx.drawImage(food_img,ix,iy,iw,ih);
-        if(t.marks[0] == MARK_SELL) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
-
-        sx = self.x+self.w/2+self.pad/2;
-        tx = sx+self.pad;
-        ix = tx;
-
-        if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = "#CDE1A9";
-        else                        gg.ctx.fillStyle = "#BAEDE1";
-        fillRRect(sx,sy,sw,sh,self.pad,gg.ctx);
-        draw_money_switch(tx,ty,tw,th,t.marks[1] == MARK_SELL);
-        gg.ctx.drawImage(food_img,ix,iy,iw,ih);
-        if(t.marks[1] == MARK_SELL) { gg.ctx.fillStyle = black; gg.ctx.fillText("4 SALE",tx,ty); }
-
-        gg.ctx.fillStyle = gg.font_color;
-        y += self.w/2;
-        y += self.pad;
-
-      }
-        break;
-      case TILE_TYPE_NULL:
-      case TILE_TYPE_LAND:
-      case TILE_TYPE_ROCK:
-      case TILE_TYPE_GRAVE:
-      case TILE_TYPE_SHORE:
-      case TILE_TYPE_FOREST:
-      case TILE_TYPE_LAKE:
-      case TILE_TYPE_HOME:
-      case TILE_TYPE_LIVESTOCK:
-      case TILE_TYPE_STORAGE:
-        break;
-    }
-
-    //nutrition
-    switch(t.type)
-    {
-      case TILE_TYPE_FARM:
-      {
         var rg = t.val/farm_nutrition_req;
         if(t.state == TILE_STATE_FARM_UNPLANTED) rg = 0;
         if(t.state == TILE_STATE_FARM_GROWN)     rg = 1;
 
         gg.ctx.fillStyle = vlight_gray;
-        fillRRect(self.x,y,self.w,self.y+self.h-y,self.pad,gg.ctx);
-        y += self.font_size;
+        fillRRect(self.x,u.nutrition_border_y,self.w,self.y+self.h-u.nutrition_border_y,self.pad,gg.ctx);
         gg.ctx.fillStyle = gg.font_color;
 
         gg.ctx.textAlign = "left";
-        //y += self.font_size;
-        //gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
-        //y += self.pad;
 
-        y += self.font_size;
-        gg.ctx.fillText("Growth:",self.x+self.pad,y);
+        gg.ctx.fillText("Growth:",x,u.growth_y);
         gg.ctx.textAlign = "right";
-        gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,y);
-        y += self.pad;
+        gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,u.growth_y);
 
-        draw_custom_pbar(self.x+self.pad,y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
+        draw_custom_pbar(x,u.growth_bar_y,w,self.pad,"#B5D87A","#83AE43",rg);
         gg.ctx.fillStyle = gg.font_color;
-        y += self.pad;
-        y += self.pad;
-      }
-        break;
-      case TILE_TYPE_STORAGE:
-      {
-        gg.ctx.fillText("val: "+t.val,x,y);
-        y += self.pad+self.font_size;
-        gg.ctx.fillText("withdraw_lock: "+t.withdraw_lock,x,y);
-        y += self.pad+self.font_size;
-        gg.ctx.fillText("deposit_lock: "+t.deposit_lock,x,y);
-        y += self.pad+self.font_size;
-      }
-        break;
-      case TILE_TYPE_SIGN:
-      case TILE_TYPE_ROAD:
-      case TILE_TYPE_COUNT:
-      case TILE_TYPE_NULL:
-      case TILE_TYPE_LAND:
-      case TILE_TYPE_ROCK:
-      case TILE_TYPE_GRAVE:
-      case TILE_TYPE_SHORE:
-      case TILE_TYPE_FOREST:
-      case TILE_TYPE_LAKE:
-      case TILE_TYPE_HOME:
-      case TILE_TYPE_PROCESSOR:
-      case TILE_TYPE_LIVESTOCK:
-        break;
-    }
 
-    if(t.type == TILE_TYPE_FARM || t.fertilizer)
-    {
-      var x = self.x+self.pad;
-      y += self.font_size;
-      gg.ctx.textAlign = "left";
-      gg.ctx.fillText("Applied Fertilizer:",self.x+self.pad,y);
-      y += self.pad;
-      if(t.fertilizer)
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
+        if(!t.fertilizer) gg.ctx.fillText("[None]",x,u.fertilizer_bar_y+self.pad);
+      }
+        break;
+      case TILE_TYPE_LIVESTOCK:
       {
-        draw_custom_pbar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
-        x += self.pad*3;
-        for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Produces:",self.x+self.pad,u.produce_y);
+        gg.ctx.textAlign = "right";
+        gg.ctx.fillText("Milk,Manure",self.x+self.w-self.pad,u.produce_y);
+        gg.ctx.textAlign = "center";
+        self.line(u.produce_line_y);
+
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Export Options:",self.x+self.pad,u.export_y);
+
+        switch(t.marks[0])
         {
-          draw_custom_pbar(x,y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-          x += self.pad*3;
+          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
         }
-        y += self.pad*2;
+        fillRRect(x,u.autosell_0_y,w,u.autosell_h,self.pad,gg.ctx);
+        gg.ctx.drawImage(milk_img,x,u.autosell_0_y,u.autosell_h,u.autosell_h);
+        gg.ctx.fillStyle = black;
+        switch(t.marks[0])
+        {
+          case MARK_USE:  gg.ctx.fillText("Eat", x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
+          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
+        }
+
+        switch(t.marks[1])
+        {
+          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+        }
+        fillRRect(x,u.autosell_1_y,w,u.autosell_h,self.pad,gg.ctx);
+        gg.ctx.drawImage(poop_img,x,u.autosell_1_y,u.autosell_h,u.autosell_h);
+        gg.ctx.fillStyle = black;
+        switch(t.marks[1])
+        {
+          case MARK_USE:  gg.ctx.fillText("Use", x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
+          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
+        }
+
       }
-      else
-      {
-        y += self.pad;
-        if(!t.fertilizer) gg.ctx.fillText("[None]",self.x+self.pad,y);
-        y += self.pad;
-      }
+        break;
     }
 
     if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
@@ -1040,31 +1088,41 @@ var inspector = function()
       if(self.nutrition_delta_d < 0)
       {
         gg.ctx.fillStyle = red;
-        gg.ctx.drawImage(down_img,x-as/2,y-self.nutrition_delta_t-as/2,as,as);
+        gg.ctx.drawImage(down_img,x-as/2,u.nutrition_y-self.nutrition_delta_t-as/2,as,as);
       }
       else if(self.nutrition_delta_d > 0)
       {
         gg.ctx.fillStyle = green;
-        gg.ctx.drawImage(up_img,x-as/2,y+self.nutrition_delta_t-as/2,as,as);
+        gg.ctx.drawImage(up_img,x-as/2,u.nutrition_y+self.nutrition_delta_t-as/2,as,as);
       }
     }
     self.known_nutrition = n;
 
-    y += self.font_size;
     gg.ctx.textAlign = "left";
     gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.fillText("Nutrition:",self.x+self.pad,y);
+    gg.ctx.fillText("Nutrition:",x,u.nutrition_y);
     gg.ctx.textAlign = "right";
-    gg.ctx.fillText(n+"%",self.x+self.w-self.pad,y);
-    y += self.pad;
+    gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
 
-    draw_custom_pbar(self.x+self.pad, y, self.w-self.pad*2, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias1(rn/100));
-    if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, y, self.w-self.pad*2, self.pad, bias1(water_fouled_threshhold/nutrition_max));
+    draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias1(rn/100));
+    if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, u.nutrition_bar_y, w, self.pad, bias1(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
-    y += self.pad;
-    y += self.pad;
 
-    return y;
+    if(t.fertilizer)
+    {
+      gg.ctx.textAlign = "left";
+      gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
+      if(t.fertilizer)
+      {
+        draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
+        x += self.pad*3;
+        for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
+        {
+          draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
+          x += self.pad*3;
+        }
+      }
+    }
   }
 
   self.tick_tile = function(t)
@@ -1101,10 +1159,16 @@ var inspector = function()
 
   self.filter_tile = function(clicker,t)
   {
+    var u = self.tile_ui[t.type];
     if(t.type == TILE_TYPE_FARM)
     {
-      if(clicker.consumeif(self.x,         self.farm_autosell_y,self.w/2,self.w/2,function(){if(t.marks[0] == MARK_SELL) t.marks[0] = MARK_USE; else t.marks[0] = MARK_SELL;})) return 1;
-      if(clicker.consumeif(self.x+self.w/2,self.farm_autosell_y,self.w/2,self.w/2,function(){if(t.marks[1] == MARK_SELL) t.marks[1] = MARK_USE; else t.marks[1] = MARK_SELL;})) return 1;
+      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(){ t.marks[0]++; if(t.marks[0] == MARK_COUNT) t.marks[0] = MARK_USE; })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(){ t.marks[1]++; if(t.marks[1] == MARK_COUNT) t.marks[1] = MARK_USE; })) return 1;
+    }
+    if(t.type == TILE_TYPE_LIVESTOCK)
+    {
+      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(){ t.marks[0]++; if(t.marks[0] == MARK_FEED) t.marks[0] = MARK_USE; })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(){ t.marks[1]++; if(t.marks[1] == MARK_FEED) t.marks[1] = MARK_USE; })) return 1;
     }
 
     return 0;
