@@ -1143,7 +1143,7 @@ var inspector = function()
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.fillText("For Sale:",self.x+self.pad,y);
     self.item_sell_y = y;
-    draw_switch(self.x+self.w/2,self.item_sell_y,self.w/2-self.pad,self.w/6,it.sale);
+    draw_switch(self.x+self.w/2,self.item_sell_y,self.w/2-self.pad,self.w/6,it.mark == MARK_SELL);
     gg.ctx.fillStyle = gg.font_color;
     y += self.w/4+self.pad;
     return y;
@@ -1157,29 +1157,25 @@ var inspector = function()
 
     y += self.pad+self.font_size;
 
-    if(it.sale)
-    {
-    //gg.ctx.fillText("Marked for Sale",x,y);
-    y += self.pad+self.font_size;
-    }
-
     return y;
   }
 
   self.filter_item = function(clicker,it)
   {
-    if(clicker.consumeif(self.x+self.w/2,self.item_sell_y,self.w/2,self.w/4,function(){
-      it.sale = !it.sale;
+    if(clicker.consumeif(self.x+self.w/2,self.item_sell_y,self.w/2,self.w/4,function()
+    {
+      if(it.mark == MARK_SELL) it.mark = MARK_USE;
+      else                     it.mark = MARK_SELL;
       if(it.lock)
       {
         var f = farmbit_with_item(it);
         if(f)
         {
-               if(f.job_type == JOB_TYPE_EXPORT && !it.sale) f.abandon_job(0);
-          else if(f.job_type != JOB_TYPE_EXPORT &&  it.sale) f.abandon_job(0);
+               if(f.job_type == JOB_TYPE_EXPORT && it.mark != MARK_SELL) f.abandon_job(0);
+          else if(f.job_type != JOB_TYPE_EXPORT && it.mark == MARK_SELL) f.abandon_job(0);
         }
       }
-      if(!it.lock && it.sale)
+      if(!it.lock && it.mark == MARK_SELL)
         b_for_job(JOB_TYPE_EXPORT, 0, it);
     })) return 1;
 
@@ -1649,14 +1645,14 @@ var advisors = function()
   self.preview_off_y = 0;
 
   //queries
-  self.time_passed      = function(t) { return self.thread_t >= t; }
-  self.bits_exist       = function(n) { return gg.farmbits.length >= n; }
-  self.bits_hungry      = function(n) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].fullness_state < FARMBIT_STATE_MOTIVATED) n--; return n <= 0; }
-  self.bits_job         = function(type,state) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].job_type == type && gg.farmbits[i].job_state == state) return 1; return 0; }
-  self.tiles_exist      = function(type,n) { return gg.b.tile_groups[type].length >= n; }
-  self.items_exist      = function(type,n) { for(var i = 0; i < gg.items.length; i++) if(gg.items[i].type == type) { n--; if(n <= 0) return gg.items[i]; } return n <= 0; }
-  self.sale_items_exist = function(type,n) { for(var i = 0; i < gg.items.length; i++) if(gg.items[i].type == type && gg.items[i].sale) { n--; if(n <= 0) return gg.items[i]; } return n <= 0; }
-  self.purchased        = function(type) { return gg.shop.selected_buy == type; }
+  self.time_passed        = function(t) { return self.thread_t >= t; }
+  self.bits_exist         = function(n) { return gg.farmbits.length >= n; }
+  self.bits_hungry        = function(n) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].fullness_state < FARMBIT_STATE_MOTIVATED) n--; return n <= 0; }
+  self.bits_job           = function(type,state) { for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].job_type == type && gg.farmbits[i].job_state == state) return 1; return 0; }
+  self.tiles_exist        = function(type,n) { return gg.b.tile_groups[type].length >= n; }
+  self.items_exist        = function(type,n) { for(var i = 0; i < gg.items.length; i++) if(gg.items[i].type == type) { n--; if(n <= 0) return gg.items[i]; } return n <= 0; }
+  self.marked_items_exist = function(type,mark,n) { for(var i = 0; i < gg.items.length; i++) if(gg.items[i].type == type && gg.items[i].mark == mark) { n--; if(n <= 0) return gg.items[i]; } return n <= 0; }
+  self.purchased          = function(type) { return gg.shop.selected_buy == type; }
 
   //transitions
   self.dotakeover = function(){self.takeover = 1;}
@@ -3053,7 +3049,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.push_blurb("Toggle the switch to mark it as \"for sale\"."); },//begin
-    function(){ var i = self.heap.i; gg.inspector.select_item(i); return self.sale_items_exist(ITEM_TYPE_FOOD,1); }, //tick
+    function(){ var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
       self.larrow(gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h);

@@ -116,6 +116,13 @@ var DIRECTION_U     = ENUM; ENUM++;
 var DIRECTION_UR    = ENUM; ENUM++;
 var DIRECTION_COUNT = ENUM; ENUM++;
 
+ENUM = 0;
+var MARK_NULL  = ENUM; ENUM++;
+var MARK_USE   = ENUM; ENUM++;
+var MARK_SELL  = ENUM; ENUM++;
+var MARK_FEED  = ENUM; ENUM++;
+var MARK_COUNT = ENUM; ENUM++;
+
 var buy_to_tile = function(buy)
 {
   switch(buy)
@@ -558,7 +565,7 @@ var closest_unlocked_state_item_of_type = function(goal, type, state)
   }
   return closest;
 }
-var closest_unlocked_sale_item = function(goal)
+var closest_unlocked_marked_item = function(goal,mark)
 {
   var closest_d = max_dist;
   var d;
@@ -566,7 +573,7 @@ var closest_unlocked_sale_item = function(goal)
   for(var i = 0; i < gg.items.length; i++)
   {
     var it = gg.items[i];
-    if(it.lock || !it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    if(it.lock || it.mark != mark || !gg.b.tile_in_bounds(it.tile)) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -576,7 +583,7 @@ var closest_unlocked_sale_item = function(goal)
   }
   return closest;
 }
-var closest_unlocked_nosale_item = function(goal)
+var closest_unlocked_marked_item_of_type = function(goal,type,mark)
 {
   var closest_d = max_dist;
   var d;
@@ -584,7 +591,7 @@ var closest_unlocked_nosale_item = function(goal)
   for(var i = 0; i < gg.items.length; i++)
   {
     var it = gg.items[i];
-    if(it.lock || it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    if(it.type != type || it.lock || it.mark != mark || !gg.b.tile_in_bounds(it.tile)) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -594,7 +601,7 @@ var closest_unlocked_nosale_item = function(goal)
   }
   return closest;
 }
-var closest_unlocked_nosale_item_of_type = function(goal, type)
+var closest_unlocked_marked_state_item_of_type = function(goal, type, state, mark)
 {
   var closest_d = max_dist;
   var d;
@@ -602,25 +609,7 @@ var closest_unlocked_nosale_item_of_type = function(goal, type)
   for(var i = 0; i < gg.items.length; i++)
   {
     var it = gg.items[i];
-    if(it.type != type || it.lock || it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
-    d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
-    if(d < closest_d)
-    {
-      closest_d = d;
-      closest = it;
-    }
-  }
-  return closest;
-}
-var closest_unlocked_nosale_state_item_of_type = function(goal, type, state)
-{
-  var closest_d = max_dist;
-  var d;
-  var closest = 0;
-  for(var i = 0; i < gg.items.length; i++)
-  {
-    var it = gg.items[i];
-    if(it.type != type || it.state != state || it.lock || it.sale || !gg.b.tile_in_bounds(it.tile)) continue;
+    if(it.type != type || it.state != state || it.lock || it.mark != mark || !gg.b.tile_in_bounds(it.tile)) continue;
     d = distsqr(goal.tx,goal.ty,it.tile.tx,it.tile.ty);
     if(d < closest_d)
     {
@@ -686,7 +675,7 @@ var fullness_job_for_b = function(b)
   var itp;
 
   //eat item
-  it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_FOOD);
+  it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_FOOD,MARK_USE);
   if(it)
   {
     b.go_idle();
@@ -697,7 +686,7 @@ var fullness_job_for_b = function(b)
     gg.ticker.nq(b.name+" is going to get some food.");
     return 1;
   }
-  it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_MILK);
+  it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_MILK,MARK_FEED);
   if(it)
   {
     b.go_idle();
@@ -750,7 +739,7 @@ var fullness_job_for_b = function(b)
   t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_WATER);
+    it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_WATER,MARK_USE);
     if(it)
     { //found item
       b.go_idle();
@@ -785,7 +774,7 @@ var fullness_job_for_b = function(b)
   t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_nosale_item_of_type(t,ITEM_TYPE_POOP);
+    it = closest_unlocked_marked_item_of_type(t,ITEM_TYPE_POOP,MARK_USE);
     if(it)
     { //found item
       b.go_idle();
@@ -853,7 +842,7 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_valdeficient_tile_from_list(b.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
   if(t)
   {
-    it = closest_unlocked_nosale_item_of_type(t,ITEM_TYPE_FOOD);
+    it = closest_unlocked_marked_item_of_type(t,ITEM_TYPE_FOOD,MARK_FEED);
     if(it)
     { //found item
       b.go_idle();
@@ -899,7 +888,7 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_FARM_UNPLANTED, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_nosale_item_of_type(b.tile,ITEM_TYPE_WATER);
+    it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_WATER,MARK_USE);
     if(it)
     { //found item
       b.go_idle();
@@ -931,7 +920,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //process
-  it = closest_unlocked_nosale_state_item_of_type(b.tile,ITEM_TYPE_POOP,ITEM_STATE_POOP_RAW);
+  it = closest_unlocked_marked_state_item_of_type(b.tile,ITEM_TYPE_POOP,ITEM_STATE_POOP_RAW,MARK_USE);
   if(it)
   { //found item
     t = closest_unlocked_tile_from_list(it.tile, gg.b.tile_groups[TILE_TYPE_PROCESSOR]);
@@ -952,7 +941,7 @@ var fulfillment_job_for_b = function(b)
   t = closest_unlocked_nutrientdeficient_tile_from_list(b.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
   if(t)
   {
-    it = closest_unlocked_nosale_item_of_type(t,ITEM_TYPE_POOP);
+    it = closest_unlocked_marked_item_of_type(t,ITEM_TYPE_POOP,MARK_USE);
     if(it)
     { //found item
       b.go_idle();
@@ -995,7 +984,7 @@ var fulfillment_job_for_b = function(b)
   }
 
   //store
-  it = closest_unlocked_nosale_item(b.tile);
+  it = closest_unlocked_marked_item(b.tile,MARK_USE);
   if(it)
   { //found item
     var search_type = storage_for_item(it.type);
@@ -1024,8 +1013,8 @@ var fulfillment_job_for_b = function(b)
   }
 
   //export
-  it = closest_unlocked_sale_item(b.tile);
-  if(it && !gg.b.tiles[0].lock && it.sale)
+  it = closest_unlocked_marked_item(b.tile,MARK_SELL);
+  if(it)
   { //found item
     b.go_idle();
     b.job_object = it;
@@ -1134,7 +1123,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       {
         if(job_type == JOB_TYPE_PLANT && !job_object)
         { //get water
-          job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_WATER);
+          job_object = closest_unlocked_marked_item_of_type(job_subject,ITEM_TYPE_WATER,MARK_USE);
           if(!job_object) job_object = closest_unlocked_nutrientdeficient_tile_from_list(job_subject, water_fouled_threshhold, gg.b.tile_groups[TILE_TYPE_LAKE]);
           if(!job_object) return 0;
         }
@@ -1166,7 +1155,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject) job_subject = closest_unlocked_valdeficient_tile_from_list(job_object.tile, livestock_feed_threshhold, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
       if(!job_subject) return 0;
 
-      if(!job_object) job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_FOOD);
+      if(!job_object) job_object = closest_unlocked_marked_item_of_type(job_subject,ITEM_TYPE_FOOD,MARK_USE);
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_FOOD]);
       if(!job_object) return 0;
 
@@ -1192,7 +1181,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
       if(!job_subject) return 0;
 
-      if(!job_object) job_object = closest_unlocked_nosale_item_of_type(job_subject,ITEM_TYPE_POOP);
+      if(!job_object) job_object = closest_unlocked_marked_item_of_type(job_subject,ITEM_TYPE_POOP,MARK_USE);
       if(!job_object) job_object = closest_unlocked_tile_from_list(job_subject, gg.b.tile_groups[TILE_TYPE_POOP]);
       if(!job_object) return 0;
 
@@ -3220,7 +3209,7 @@ var item = function()
   self.tile;
   self.type = ITEM_TYPE_NULL;
   self.state = ITEM_STATE_NULL;
-  self.sale = 0;
+  self.mark = MARK_USE;
   self.lock = 0;
 
   self.offscreen = 0;
@@ -3294,7 +3283,7 @@ var item = function()
       case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(valuable_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_FERTILIZER: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
     }
-    if(self.sale)
+    if(self.mark == MARK_SELL)
     {
       gg.ctx.fillStyle = black;
       gg.ctx.font = gg.font_size+"px "+gg.font;
@@ -3970,12 +3959,12 @@ var farmbit = function()
               it = new item();
               it.type = ITEM_TYPE_FOOD;
               it.tile = t;
-              if(!i && t.withdraw_lock) it.sale = 1;
-              if( i && t.deposit_lock)  it.sale = 1;
+              if(!i && t.withdraw_lock) it.mark = MARK_SELL;
+              if( i && t.deposit_lock)  it.mark = MARK_SELL;
               gg.b.tiles_tw(it.tile,it);
               kick_item(it);
               gg.items.push(it);
-              if(it.sale) b_for_job(JOB_TYPE_EXPORT, 0, it);
+              if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
               else if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
             }
 
@@ -4193,11 +4182,11 @@ var farmbit = function()
             it = new item();
             it.type = ITEM_TYPE_MILK;
             it.tile = t;
-            if(t.withdraw_lock) it.sale = 1;
+            if(t.withdraw_lock) it.mark = MARK_SELL;
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
-            if(it.sale) b_for_job(JOB_TYPE_EXPORT, 0, it);
+            if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
             else if(b_for_job(JOB_TYPE_STORE, 0, it)) ;
 
             if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
@@ -4315,7 +4304,7 @@ var farmbit = function()
             gg.items.push(it);
 
             if(
-              !(it.sale && b_for_job(JOB_TYPE_EXPORT, 0, it)) &&
+              !(it.mark == MARK_SELL && b_for_job(JOB_TYPE_EXPORT, 0, it)) &&
               !b_for_job(JOB_TYPE_STORE, 0, it)
             )
               ; //do nothing

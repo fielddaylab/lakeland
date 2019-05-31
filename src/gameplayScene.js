@@ -185,7 +185,7 @@ var GamePlayScene = function()
           {
             var o = gg.items[i];
             o.tick();
-            if(o.type == ITEM_TYPE_FOOD && !o.sale) gg.food++;
+            if(o.type == ITEM_TYPE_FOOD && (o.mark == MARK_USE)) gg.food++;
           }
           for(var i = 0; i < gg.farmbits.length; i++)
           {
