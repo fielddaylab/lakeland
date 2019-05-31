@@ -36,7 +36,6 @@ var TILE_STATE_FARM_UNPLANTED      = ENUM; ENUM++;
 var TILE_STATE_FARM_PLANTED        = ENUM; ENUM++;
 var TILE_STATE_FARM_GROWN          = ENUM; ENUM++;
 var TILE_STATE_LIVESTOCK_DIGESTING = ENUM; ENUM++;
-var TILE_STATE_LIVESTOCK_MILKING   = ENUM; ENUM++;
 var TILE_STATE_LIVESTOCK_MILKABLE  = ENUM; ENUM++;
 var TILE_STATE_STORAGE_UNASSIGNED  = ENUM; ENUM++;
 var TILE_STATE_STORAGE_FOOD        = ENUM; ENUM++;
@@ -51,6 +50,7 @@ var ITEM_TYPE_WATER      = ENUM; ENUM++;
 var ITEM_TYPE_FOOD       = ENUM; ENUM++;
 var ITEM_TYPE_POOP       = ENUM; ENUM++;
 var ITEM_TYPE_FERTILIZER = ENUM; ENUM++;
+var ITEM_TYPE_FEED       = ENUM; ENUM++;
 var ITEM_TYPE_MILK       = ENUM; ENUM++;
 var ITEM_TYPE_VALUABLE   = ENUM; ENUM++;
 var ITEM_TYPE_COUNT      = ENUM; ENUM++;
@@ -237,6 +237,7 @@ var storage_for_item = function(item_type)
     case ITEM_TYPE_MILK:     return TILE_STATE_STORAGE_MILK;
     case ITEM_TYPE_VALUABLE: return TILE_STATE_STORAGE_VALUABLE;
     case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); return TILE_STATE_STORAGE_UNASSIGNED;
+    case ITEM_TYPE_FEED: console.log("BROKEN"); return TILE_STATE_STORAGE_UNASSIGNED;
     default: return TILE_STATE_STORAGE_UNASSIGNED;
   }
 }
@@ -250,6 +251,7 @@ var worth_for_item = function(item_type)
     case ITEM_TYPE_MILK:     return item_worth_milk;
     case ITEM_TYPE_VALUABLE: return item_worth_valuable;
     case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); return 0;
+    case ITEM_TYPE_FEED: console.log("BROKEN"); return 0;
     default: return 0;
   }
 }
@@ -1007,6 +1009,7 @@ var fulfillment_job_for_b = function(b)
       case ITEM_TYPE_MILK:     gg.ticker.nq(b.name+" is going to store some milk for later."); break;
       case ITEM_TYPE_VALUABLE: gg.ticker.nq(b.name+" is going to store some valuables for later."); break;
       case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
+      case ITEM_TYPE_FEED: console.log("BROKEN"); break;
       }
       return 1;
     }
@@ -1029,6 +1032,7 @@ var fulfillment_job_for_b = function(b)
     case ITEM_TYPE_MILK:     gg.ticker.nq(b.name+" is going to export some milk- safe travels!"); break;
     case ITEM_TYPE_VALUABLE: gg.ticker.nq(b.name+" is going to export some valuables- safe travels!"); break;
     case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
+    case ITEM_TYPE_FEED: console.log("BROKEN"); break;
     }
     return 1;
   }
@@ -1049,6 +1053,7 @@ var fulfillment_job_for_b = function(b)
     case ITEM_TYPE_MILK:     gg.ticker.nq(b.name+" is going to kick around some milk."); break;
     case ITEM_TYPE_VALUABLE: gg.ticker.nq(b.name+" is going to kick around some valuables."); break;
     case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
+    case ITEM_TYPE_FEED: console.log("BROKEN"); break;
     }
     return 1;
   }
@@ -1251,6 +1256,7 @@ var b_for_job = function(job_type, job_subject, job_object)
         case ITEM_TYPE_MILK:     gg.ticker.nq(best.name+" is going to store some milk for later."); break;
         case ITEM_TYPE_VALUABLE: gg.ticker.nq(best.name+" is going to store some valuables for later."); break;
         case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
+        case ITEM_TYPE_FEED: console.log("BROKEN"); break;
         }
         return 1;
       }
@@ -1324,6 +1330,7 @@ var tile = function()
   self.directions = [];
   self.directions_dirty = 1;
   self.fertilizer = 0;
+  self.feed = 0;
   self.tx = 0;
   self.ty = 0;
   self.i = 0;
@@ -1827,7 +1834,6 @@ var board = function()
       case TILE_STATE_FARM_PLANTED:        return "Planted";    break;
       case TILE_STATE_FARM_GROWN:          return "Grown";      break;
       case TILE_STATE_LIVESTOCK_DIGESTING: return "Digesting";  break;
-      case TILE_STATE_LIVESTOCK_MILKING:   return "Milking";    break;
       case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
       case TILE_STATE_STORAGE_UNASSIGNED:  return "Unassigned"; break;
       case TILE_STATE_STORAGE_FOOD:        return "Corn";       break;
@@ -1847,6 +1853,7 @@ var board = function()
       case ITEM_TYPE_MILK:       return milk_img;       break;
       case ITEM_TYPE_VALUABLE:   return valuable_img;   break;
       case ITEM_TYPE_FERTILIZER: return fertilizer_img; break;
+      case ITEM_TYPE_FEED:       return feed_img; break;
     }
   }
   self.item_name = function(type)
@@ -1860,6 +1867,7 @@ var board = function()
       case ITEM_TYPE_MILK:       return "Milk";       break;
       case ITEM_TYPE_VALUABLE:   return "Valuable";   break;
       case ITEM_TYPE_FERTILIZER: return "Fertilizer"; break;
+      case ITEM_TYPE_FEED:       return "Feed";       break;
       case ITEM_TYPE_COUNT:      return "Count";      break;
     }
   }
@@ -2301,7 +2309,6 @@ var board = function()
       case TILE_TYPE_LIVESTOCK:
         t.state = TILE_STATE_LIVESTOCK_DIGESTING;
         t.marks[0] = MARK_SELL;
-        t.val = 1; //fullness
         break;
       case TILE_TYPE_STORAGE:
         t.state = TILE_STATE_STORAGE_UNASSIGNED;
@@ -2713,10 +2720,9 @@ var board = function()
           break;
         case TILE_TYPE_LIVESTOCK:
         {
-          t.val--; //livestock fullness
-          if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t > livestock_poop_t)
+          if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t > livestock_produce_t)
           {
-            t.state = TILE_STATE_LIVESTOCK_MILKING;
+            t.state = TILE_STATE_LIVESTOCK_MILKABLE;
             t.state_t = 0;
 
             //gen poop
@@ -2734,11 +2740,6 @@ var board = function()
               !b_for_job(JOB_TYPE_STORE, 0, it)
               )
               ; //do nothing- all atempts present in if
-          }
-          else if(t.state == TILE_STATE_LIVESTOCK_MILKING && t.state_t > livestock_milk_t)
-          {
-            t.state = TILE_STATE_LIVESTOCK_MILKABLE;
-            t.state_t = 0;
 
             if(
               !b_for_job(JOB_TYPE_MILK, t, 0)
@@ -3265,6 +3266,16 @@ var item = function()
           return;
         }
         break;
+      case ITEM_TYPE_FEED:
+        self.state -= feed_nutrition_leak;
+        self.tile.val += feed_nutrition_leak;
+        if(self.state <= 0)
+        {
+          self.tile.feed = 0;
+          break_item(self);
+          return;
+        }
+        break;
     }
   }
 
@@ -3284,6 +3295,7 @@ var item = function()
       case ITEM_TYPE_MILK: gg.ctx.drawImage(milk_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(valuable_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_FERTILIZER: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
+      case ITEM_TYPE_FEED: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
     }
     if(self.mark == MARK_SELL)
     {
@@ -3377,6 +3389,7 @@ var farmbit = function()
         case ITEM_TYPE_MILK:     mod *= milk_carryability; break;
         case ITEM_TYPE_VALUABLE: mod *= valuable_carryability; break;
         case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
+        case ITEM_TYPE_FEED: console.log("BROKEN"); break;
       }
     }
     if(self.tile) mod *= walkability_check(self.tile.type);
@@ -4044,6 +4057,20 @@ var farmbit = function()
             break_item(self.item);
             self.item = 0;
 
+            var it = t.feed;
+            if(!it)
+            {
+              it = new item();
+              it.type = ITEM_TYPE_FEED;
+              it.lock = 1; //permalocked
+              it.state = 0;
+              it.tile = t;
+              gg.b.tiles_tw(it.tile,it);
+              gg.items.push(it);
+            }
+            it.state += feed_nutrition;
+            t.feed = it;
+
             t.val = livestock_max_fullness;
 
             self.fulfillment += feed_fulfillment;
@@ -4429,6 +4456,7 @@ var farmbit = function()
               case ITEM_TYPE_POOP: if(!b_for_job(JOB_TYPE_FERTILIZE, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it); break;
               case ITEM_TYPE_MILK: if(b_for_job(JOB_TYPE_STORE, 0, it)) ; break;
               case ITEM_TYPE_FERTILIZER: console.log("BROKEN"); break;
+              case ITEM_TYPE_FEED: console.log("BROKEN"); break;
             }
             job_for_b(self);
           }

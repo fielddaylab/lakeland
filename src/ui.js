@@ -813,6 +813,13 @@ var inspector = function()
       u.fertilizer_bar_y = y;
       y += self.pad;
       y += self.pad;
+
+      y += self.font_size;
+      u.feed_y = y;
+      y += self.pad;
+      u.feed_bar_y = y;
+      y += self.pad;
+      y += self.pad;
     }
 
   }
@@ -934,7 +941,6 @@ var inspector = function()
         switch(t.state)
         {
           case TILE_STATE_LIVESTOCK_DIGESTING: gg.ctx.fillText("Digesting",cx,self.subtitle_y);          break;
-          case TILE_STATE_LIVESTOCK_MILKING:   gg.ctx.fillText("Producing Milk",cx,self.subtitle_y);     break;
           case TILE_STATE_LIVESTOCK_MILKABLE:  gg.ctx.fillText("Ready For Milking!",cx,self.subtitle_y); break;
         }
         self.line(self.title_line_y);
@@ -1049,7 +1055,6 @@ var inspector = function()
         {
           case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
           case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
         }
         fillRRect(x,u.autosell_0_y,w,u.autosell_h,self.pad,gg.ctx);
         gg.ctx.drawImage(milk_img,x,u.autosell_0_y,u.autosell_h,u.autosell_h);
@@ -1064,7 +1069,6 @@ var inspector = function()
         {
           case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
           case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
         }
         fillRRect(x,u.autosell_1_y,w,u.autosell_h,self.pad,gg.ctx);
         gg.ctx.drawImage(poop_img,x,u.autosell_1_y,u.autosell_h,u.autosell_h);
@@ -1073,6 +1077,19 @@ var inspector = function()
         {
           case MARK_USE:  gg.ctx.fillText("Use", x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
           case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
+        }
+
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Feed:",x,u.feed_y);
+        if(t.val)
+        {
+          draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.feed.state%feed_nutrition)/feed_nutrition);
+          x += self.pad*3;
+          for(var j = 0; (j+1)*feed_nutrition < t.feed.state; j++)
+          {
+            draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
+            x += self.pad*3;
+          }
         }
 
       }
