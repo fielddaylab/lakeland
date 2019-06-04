@@ -1460,9 +1460,9 @@ var board = function()
 
     if(self.timer_atlas) self.timer_atlas.destroy();
     self.timer_atlas = new atlas();
-    var timer_s = self.min_draw_tw*0.6;
-    var timer_c = timer_s/2;
-    var timer_r = timer_c*0.8;
+    var timer_s = floor(self.min_draw_tw*0.6);
+    var timer_c = floor(timer_s/2);
+    var timer_r = floor(timer_c*0.8);
     self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*self.timer_colors);
     ctx = self.timer_atlas.context;
 
@@ -1475,6 +1475,8 @@ var board = function()
     var ca = red;
     var cb = red;
     var ct = 0;
+    ctx.strokeStyle = black;
+    ctx.lineWidth = timer_r*0.1;
     for(var i = 0; i < self.timer_colors; i++)
     {
       ct = i/(self.timer_colors-1);
@@ -1499,6 +1501,9 @@ var board = function()
       for(var j = 0; j < self.timer_progressions; j++)
       {
         self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
+        ctx.beginPath();
+        ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+        ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(x+timer_c,y+timer_c);
         ctx.lineTo(x+timer_c,y+timer_c-timer_r);
