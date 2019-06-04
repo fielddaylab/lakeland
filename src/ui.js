@@ -1221,7 +1221,7 @@ var inspector = function()
 
   self.select_item = function(it)
   {
-    if(it.type == ITEM_TYPE_FERTILIZER)
+    if(it.type == ITEM_TYPE_FERTILIZER || it.type == ITEM_TYPE_FEED)
     {
       self.select_tile(it.tile);
       return;
