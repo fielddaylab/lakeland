@@ -379,7 +379,7 @@ var HSV2RGB = function(hsv, rgb)
 
 var RGB2Hex = function(rgb)
 {
-  return "#"+dec2Hex(Math.floor(rgb.r*255))+dec2Hex(Math.floor(rgb.g*255))+dec2Hex(Math.floor(rgb.b*255));
+  return "#"+decToHex(Math.floor(rgb.r*255),2)+decToHex(Math.floor(rgb.g*255),2)+decToHex(Math.floor(rgb.b*255),2);
 }
 var dec2Hex = function(n)
 {

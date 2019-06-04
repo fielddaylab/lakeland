@@ -1363,6 +1363,10 @@ var board = function()
 
   self.atlas;
   self.atlas_i = [];
+  self.timer_atlas;
+  self.timer_progressions = 50;
+  self.timer_colors = 20;
+  self.timer_atlas_i = function(progress,color) { return floor((self.timer_colors-1)*color)*self.timer_progressions+floor((self.timer_progressions-1)*progress); };
 
   self.resize = function()
   {
@@ -1453,6 +1457,59 @@ var board = function()
       if(x >= self.atlas.w) next();
     }
     self.atlas.commit();
+
+    if(self.timer_atlas) self.timer_atlas.destroy();
+    self.timer_atlas = new atlas();
+    var timer_s = self.min_draw_tw*0.6;
+    var timer_c = timer_s/2;
+    var timer_r = timer_c*0.8;
+    self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*self.timer_colors);
+    ctx = self.timer_atlas.context;
+
+    x = 0;
+    y = 0;
+    var red    = {r:1,g:0,b:0};
+    var yellow = {r:1,g:1,b:0};
+    var green  = {r:0,g:1,b:0};
+    var color  = {r:0,g:0,b:0};
+    var ca = red;
+    var cb = red;
+    var ct = 0;
+    for(var i = 0; i < self.timer_colors; i++)
+    {
+      ct = i/(self.timer_colors-1);
+      if(ct < 0.5)
+      {
+        ca = red;
+        cb = yellow;
+        ct *= 2;
+      }
+      else
+      {
+        ct -= 0.5;
+        ca = yellow;
+        cb = green;
+        ct *= 2;
+      }
+      color.r = lerp(ca.r,cb.r,ct);
+      color.g = lerp(ca.g,cb.g,ct);
+      color.b = lerp(ca.b,cb.b,ct);
+      x = 0;
+      ctx.fillStyle = RGB2Hex(color);
+      for(var j = 0; j < self.timer_progressions; j++)
+      {
+        self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
+        ctx.beginPath();
+        ctx.moveTo(x+timer_c,y+timer_c);
+        ctx.lineTo(x+timer_c,y+timer_c-timer_r);
+        ctx.arc(x+timer_c,y+timer_c,timer_r,0-halfpi,twopi*((j+1)/self.timer_progressions)-halfpi);
+        ctx.lineTo(x+timer_c,y+timer_c);
+        ctx.fill();
+        self.timer_atlas.commitSprite();
+        x += timer_s;
+      }
+      y += timer_s;
+    }
   }
 
   self.tw = board_w;
@@ -2838,6 +2895,7 @@ var board = function()
                if(t.nutrition > nutrition_motivated) gg.ctx.fillStyle = green;
           else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
           else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
+          /*
           gg.ctx.beginPath();
           gg.ctx.arc(x+w/2,y+h/2,r,0,twopi);
           gg.ctx.fill();
@@ -2845,6 +2903,8 @@ var board = function()
           gg.ctx.stroke();
           p = (t.val/farm_nutrition_req*twopi)-halfpi;
           drawLine(x+w/2,y+h/2,x+w/2+cos(p)*r,y+h/2+sin(p)*r,gg.ctx);
+          */
+          self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x,y,gg.ctx);
           break;
         case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
