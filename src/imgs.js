@@ -207,6 +207,7 @@ var farm_img = GenImg("assets/farm.png");
 var grave_img = GenImg("assets/grave.png");
 var milk_img = GenImg("assets/milk.png");
 var fertilizer_img = GenImg("assets/fertilizer.png");
+var feed_img = GenImg("assets/fertilizer.png");
 var skimmer_img = GenImg("assets/bloom.png");
 
 var mayor_img = GenImg("assets/mayor.png");

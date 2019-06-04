@@ -820,6 +820,13 @@ var inspector = function()
       u.feed_bar_y = y;
       y += self.pad;
       y += self.pad;
+
+      y += self.font_size;
+      u.fed_y = y;
+      y += self.pad;
+      u.fed_bar_y = y;
+      y += self.pad;
+      y += self.pad;
     }
 
   }
@@ -1079,9 +1086,10 @@ var inspector = function()
           case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
         }
 
+        x = self.x+self.pad;
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Feed:",x,u.feed_y);
-        if(t.val)
+        if(t.feed)
         {
           draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.feed.state%feed_nutrition)/feed_nutrition);
           x += self.pad*3;
@@ -1092,10 +1100,30 @@ var inspector = function()
           }
         }
 
+        x = self.x+self.pad;
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Fed:",x,u.fed_y);
+        if(t.val)
+        {
+          var drawn = 0;
+          while(drawn < t.val-feed_nutrition)
+          {
+            draw_custom_pbar(x,u.fed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
+            x += self.pad*3;
+            drawn += feed_nutrition;
+          }
+          if(drawn < t.val)
+          {
+            draw_custom_pbar(x,u.fed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.val-drawn)/feed_nutrition);
+            x += self.pad*3;
+          }
+        }
+
       }
         break;
     }
 
+    x = self.x+self.pad;
     if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
     if(self.known_nutrition < n) { self.nutrition_delta_d =  1; self.nutrition_delta_t = 10; }
     if(self.nutrition_delta_t)
