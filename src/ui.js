@@ -698,6 +698,7 @@ var inspector = function()
 
     var start_y = y;
     self.tile_ui = [];
+    self.item_ui = [];
     var u;
 
     {
@@ -829,6 +830,24 @@ var inspector = function()
       y += self.pad;
     }
 
+    {
+      u = {};
+      self.item_ui[ITEM_TYPE_WATER]    = u;
+      self.item_ui[ITEM_TYPE_FOOD]     = u;
+      self.item_ui[ITEM_TYPE_POOP]     = u;
+      self.item_ui[ITEM_TYPE_MILK]     = u;
+      self.item_ui[ITEM_TYPE_VALUABLE] = u;
+      y = start_y;
+
+      y += self.font_size;
+      u.switch_y = y;
+      y += self.pad;
+      u.switch_bar_y = y;
+      u.switch_bar_h = self.pad*3;
+      y += u.switch_bar_h;
+      y += self.pad;
+    }
+
   }
   self.resize();
 
@@ -839,9 +858,6 @@ var inspector = function()
   self.nutrition_delta_d = 0;
   self.quick = 0;
   self.quick_type = INSPECTOR_CONTENT_NULL;
-
-  self.item_sell_y = 0;
-  self.farm_autosell_y = 0;
 
   self.line = function(y)
   {
@@ -1232,6 +1248,8 @@ var inspector = function()
 
   self.draw_item = function(it)
   {
+    var cx = self.x+self.w/2;
+
     //bg
     gg.ctx.fillStyle = white;
     fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
@@ -1241,42 +1259,51 @@ var inspector = function()
 
     gg.ctx.textAlign = "center";
     gg.ctx.fillStyle = gg.font_color;
+
     gg.ctx.font = self.font_size+"px "+gg.font;
-    var x = self.x+self.w/2;
-    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
-    gg.ctx.fillText(gg.b.item_name(it.type),x,y);
-    y += self.pad;
+    gg.ctx.fillText(gg.b.item_name(it.type),cx,self.title_y);
 
-    self.line(y);
-    y += self.pad+self.font_size;
+    self.line(self.title_line_y);
 
-    gg.ctx.textAlign = "left";
-    gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.fillText("For Sale:",self.x+self.pad,y);
-    self.item_sell_y = y;
-    draw_switch(self.x+self.w/2,self.item_sell_y,self.w/2-self.pad,self.w/6,it.mark == MARK_SELL);
-    gg.ctx.fillStyle = gg.font_color;
-    y += self.w/4+self.pad;
-    return y;
+    var u = self.item_ui[it.type];
+    if(u)
+    {
+      var x = self.x+self.pad;
+      var w = self.w-self.pad*2;
+      gg.ctx.textAlign = "left";
+      gg.ctx.fillText("Use:",x,self.switch_y);
+      switch(it.mark)
+      {
+        case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+        case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+        case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+      }
+      fillRRect(x,u.switch_bar_y,w,u.switch_bar_h,self.pad,gg.ctx);
+      gg.ctx.drawImage(gg.b.item_img(it.type),x,u.switch_bar_y,u.switch_bar_h,u.switch_bar_h);
+      gg.ctx.fillStyle = black;
+      switch(it.mark)
+      {
+        case MARK_USE:  gg.ctx.fillText("Eat", x+u.switch_bar_h+self.pad,u.switch_bar_y+self.font_size+self.pad); break;
+        case MARK_SELL: gg.ctx.fillText("Sell",x+u.switch_bar_h+self.pad,u.switch_bar_y+self.font_size+self.pad); break;
+        case MARK_FEED: gg.ctx.fillText("Feed",x+u.switch_bar_h+self.pad,u.switch_bar_y+self.font_size+self.pad); break;
+      }
+
+    }
   }
 
   self.tick_item = function(it)
   {
-    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
-    //gg.ctx.fillText(gg.b.item_name(it.type),x,y);
-    y += self.pad;
-
-    y += self.pad+self.font_size;
-
-    return y;
   }
 
   self.filter_item = function(clicker,it)
   {
-    if(clicker.consumeif(self.x+self.w/2,self.item_sell_y,self.w/2,self.w/4,function()
+    var u = self.item_ui[it.type];
+    if(!u) return 0;
+
+    if(clicker.consumeif(self.x,u.switch_bar_y,self.w,u.switch_bar_h,function()
     {
-      if(it.mark == MARK_SELL) it.mark = MARK_USE;
-      else                     it.mark = MARK_SELL;
+      it.mark++;
+      if(it.mark == MARK_COUNT || (it.mark == MARK_FEED && it.type != ITEM_TYPE_FOOD)) it.mark = MARK_USE;
       if(it.lock)
       {
         var f = farmbit_with_item(it);
