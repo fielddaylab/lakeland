@@ -3484,7 +3484,7 @@ var advisors = function()
     ffunc, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Place it somewhere on the map"); },//begin
+    function(){ self.dotakeover(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Place it somewhere on the map"); },//begin
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -3498,6 +3498,8 @@ var advisors = function()
           self.jmp(1);
         else
         {
+          for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 0;
+          b.hover_t.owned = 1;
           gg.b.click(evt);
           self.jmp(2);
         }

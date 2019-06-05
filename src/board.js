@@ -1336,6 +1336,7 @@ var tile = function()
   self.i = 0;
   self.og_type = TILE_TYPE_LAND;
   self.type = TILE_TYPE_LAND;
+  self.owned = 0;
   self.state = TILE_STATE_LAND_D0+floor(bias0(bias0(bias0(rand())))*land_detail_levels*0.99);
   self.state_t = 0;
   self.val = 0;
@@ -2343,6 +2344,13 @@ var board = function()
   }
   self.init();
 
+  self.own_tiles = function(t, own_d)
+  {
+    for(var xd = -own_d; xd <= own_d; xd++)
+      for(var yd = -own_d; yd <= own_d; yd++)
+        self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd)).owned = 1;
+  }
+
   self.alterTile = function(t, type)
   {
     for(var i = 0; i < self.tile_groups[t.type].length; i++)
@@ -2364,16 +2372,20 @@ var board = function()
             break;
           }
         }
+        self.own_tiles(t,2);
         break;
       case TILE_TYPE_FARM:
         t.state = TILE_STATE_FARM_UNPLANTED;
+        self.own_tiles(t,2);
         break;
       case TILE_TYPE_LIVESTOCK:
         t.state = TILE_STATE_LIVESTOCK_DIGESTING;
         t.marks[0] = MARK_SELL;
+        self.own_tiles(t,2);
         break;
       case TILE_TYPE_STORAGE:
         t.state = TILE_STATE_STORAGE_UNASSIGNED;
+        self.own_tiles(t,2);
         break;
       case TILE_TYPE_SIGN:
         //TODO
@@ -2454,17 +2466,17 @@ var board = function()
     switch(buy)
     {
       case BUY_TYPE_HOME:
-        return buildability_check(TILE_TYPE_HOME,tile.type);
+        return tile.owned && buildability_check(TILE_TYPE_HOME,tile.type);
       case BUY_TYPE_FARM:
-        return buildability_check(TILE_TYPE_FARM,tile.type);
+        return tile.owned && buildability_check(TILE_TYPE_FARM,tile.type);
       case BUY_TYPE_FERTILIZER:
         return tile.type == TILE_TYPE_FARM;
       case BUY_TYPE_LIVESTOCK:
-        return buildability_check(TILE_TYPE_LIVESTOCK,tile.type);
+        return tile.owned && buildability_check(TILE_TYPE_LIVESTOCK,tile.type);
       case BUY_TYPE_STORAGE:
-        return buildability_check(TILE_TYPE_STORAGE,tile.type);
+        return tile.owned && buildability_check(TILE_TYPE_STORAGE,tile.type);
       case BUY_TYPE_PROCESSOR:
-        return buildability_check(TILE_TYPE_PROCESSOR,tile.type);
+        return tile.owned && buildability_check(TILE_TYPE_PROCESSOR,tile.type);
       case BUY_TYPE_SIGN:
         return buildability_check(TILE_TYPE_SIGN,tile.type);
       case BUY_TYPE_SKIMMER:
@@ -3098,10 +3110,59 @@ var board = function()
         }
       }
     }
+
+    var t;
+    switch(gg.shop.selected_buy)
+    {
+      case BUY_TYPE_HOME:
+      case BUY_TYPE_FARM:
+      case BUY_TYPE_LIVESTOCK:
+      case BUY_TYPE_STORAGE:
+      case BUY_TYPE_PROCESSOR:
+      {
+        var i = 0;
+        var a;
+        gg.ctx.fillStyle = blue;
+        gg.ctx.globalAlpha = 0.25;
+        ny = floor(self.y+self.h-(0*h));
+        for(var ty = 0; ty < self.th; ty++)
+        {
+          y = ny;
+          ny = floor(self.y+self.h-(ty+1)*h);
+          th = y-ny;
+          nx = floor(self.x+(0*w));
+          if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
+          for(var tx = 0; tx < self.tw; tx++)
+          {
+            x = nx;
+            nx = floor(self.x+((tx+1)*w));
+            tw = nx-x;
+            if(x < -tw || x > gg.canvas.width) { i++; continue; }
+            t = self.tiles[i];
+            if(t.owned)
+              gg.ctx.fillRect(x,ny,tw,th);
+            i++;
+          }
+        }
+        if(self.hover_t && self.hover_t_placable)
+        {
+          t = self.hover_t;
+          var own_d = 2;
+          for(var xd = -own_d; xd <= own_d; xd++)
+            for(var yd = -own_d; yd <= own_d; yd++)
+            {
+              var ot = self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd));
+              self.screen_tile(ot);
+              gg.ctx.fillRect(ot.x,ot.y,ot.w,ot.h);
+            }
+        }
+      }
+      break;
+    }
+
     gg.ctx.globalAlpha = 1;
     gg.ctx.imageSmoothingEnabled = 1;
 
-    var t;
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE && !gg.shop.selected_buy)
     {
       t = gg.inspector.detailed;
