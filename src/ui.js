@@ -289,32 +289,44 @@ var bar = function()
     var y = self.y+self.pad+fs;
     var w = 50*gg.stage.s_mod;
 
-    //food
+    //food (# corn per tick)
     var potential_rate = 0;
     var production_rate = 0;
     var edible_rate = 0;
+    var sell_rate = 0;
+    var feed_rate = 0;
     for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
     {
       var t = gg.b.tile_groups[TILE_TYPE_FARM][i];
-      var t_rate = clamp(farm_nutrition_uptake_min,farm_nutrition_uptake_max,t.nutrition*farm_nutrition_uptake_p)/farm_nutrition_req;
+      var t_rate = clamp(farm_nutrition_uptake_min,farm_nutrition_uptake_max,t.nutrition*farm_nutrition_uptake_p)/farm_nutrition_req; //% growth per tick
       potential_rate += t_rate*2;
       if(t.state == TILE_STATE_FARM_PLANTED)
       {
         production_rate += t_rate*2;
-        var mul = 2;
-        if(t.marks[0] == MARK_SELL) mul--;
-        if(t.marks[1] == MARK_SELL) mul--;
-        if(mul) edible_rate += (t_rate)*mul;
+        for(var j = 0; j < 2; j++)
+        {
+          switch(t.marks[j])
+          {
+            case MARK_USE:  edible_rate += t_rate; break;
+            case MARK_SELL: sell_rate   += t_rate; break;
+            case MARK_FEED: feed_rate   += t_rate; break;
+          }
+        }
       }
     }
+    var ticks_before_hungry = max_fullness-fullness_content
+    gg.ctx.fillText(fdisp(edible_rate*ticks_before_hungry  ,1)+" people",      x,y+fs*0);
+    gg.ctx.fillText(fdisp(feed_rate/3*feed_nutrition       ,1)+" livestock",   x,y+fs*1);
     var permin = 60*60;
+    gg.ctx.fillText(fdisp(sell_rate*item_worth_food*permin ,1)+" dollars/min", x,y+fs*2);
     potential_rate  *= permin;
     production_rate *= permin;
     edible_rate     *= permin;
+    sell_rate       *= permin;
+    feed_rate       *= permin;
     //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
     //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
     //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
-    gg.ctx.fillText(fdisp(edible_rate/((1/(max_fullness-fullness_content))*permin))+" food", x,y);
     //gg.ctx.fillText(gg.food+" food", x,y);
     x += w;
 
