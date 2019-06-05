@@ -115,6 +115,7 @@ var home_cost = 200;
 var farm_cost = 150;
 var livestock_cost = 200;
 var fertilizer_cost = 200;
+var food_cost = 200;
 var storage_cost = 10;
 var processor_cost = 5000;
 var sign_cost = 10;

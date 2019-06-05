@@ -4,6 +4,7 @@ var BUY_TYPE_NULL       = ENUM; ENUM++;
 var BUY_TYPE_HOME       = ENUM; ENUM++;
 var BUY_TYPE_FARM       = ENUM; ENUM++;
 var BUY_TYPE_FERTILIZER = ENUM; ENUM++;
+var BUY_TYPE_FOOD       = ENUM; ENUM++;
 var BUY_TYPE_LIVESTOCK  = ENUM; ENUM++;
 var BUY_TYPE_STORAGE    = ENUM; ENUM++;
 var BUY_TYPE_SIGN       = ENUM; ENUM++;
@@ -438,6 +439,7 @@ var shop = function()
       case BUY_TYPE_HOME:       return home_cost; break;
       case BUY_TYPE_FARM:       return farm_cost; break;
       case BUY_TYPE_FERTILIZER: return fertilizer_cost; break;
+      case BUY_TYPE_FOOD:       return food_cost; break;
       case BUY_TYPE_LIVESTOCK:  return livestock_cost; break;
       case BUY_TYPE_STORAGE:    return storage_cost; break;
       case BUY_TYPE_SIGN:       return sign_cost; break;
@@ -457,6 +459,7 @@ var shop = function()
       case BUY_TYPE_HOME:       return self.home_btn; break;
       case BUY_TYPE_FARM:       return self.farm_btn; break;
       case BUY_TYPE_FERTILIZER: return self.fertilizer_btn; break;
+      case BUY_TYPE_FOOD:       return self.food_btn; break;
       case BUY_TYPE_LIVESTOCK:  return self.livestock_btn; break;
       case BUY_TYPE_STORAGE:    return self.storage_btn; break;
       case BUY_TYPE_SIGN:       return self.sign_btn; break;
@@ -489,6 +492,7 @@ var shop = function()
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_HOME); });       self.home_btn       = b; b.img = home_img;       b.name = "Home";       b.cost = home_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FARM); });       self.farm_btn       = b; b.img = farm_img;       b.name = "Farm";       b.cost = farm_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FERTILIZER); }); self.fertilizer_btn = b; b.img = fertilizer_img; b.name = "Fertilizer"; b.cost = fertilizer_cost;
+  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FOOD); });       self.food_btn       = b; b.img = food_img;       b.name = "Food";       b.cost = food_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });  self.livestock_btn  = b; b.img = livestock_img;  b.name = "Livestock";  b.cost = livestock_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_STORAGE); });    self.storage_btn    = b; b.img = storage_img;    b.name = "Storage";    b.cost = storage_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });       self.sign_btn       = b; b.img = sign_img;       b.name = "Sign";       b.cost = sign_cost;
@@ -508,6 +512,7 @@ var shop = function()
       self.farm_btn,
       self.livestock_btn,
       self.fertilizer_btn,
+      self.food_btn,
       //self.storage_btn,
       self.skimmer_btn,
       self.sign_btn,
@@ -528,6 +533,7 @@ var shop = function()
   self.home_btn.active = 1;
   self.farm_btn.active = 0;
   self.fertilizer_btn.active = 0;
+  self.food_btn.active = 0;
   self.livestock_btn.active = 0;
   self.storage_btn.active = 0;
   self.sign_btn.active = 0;

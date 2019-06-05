@@ -2471,6 +2471,8 @@ var board = function()
         return tile.owned && buildability_check(TILE_TYPE_FARM,tile.type);
       case BUY_TYPE_FERTILIZER:
         return tile.type == TILE_TYPE_FARM;
+      case BUY_TYPE_FOOD:
+        return 1;
       case BUY_TYPE_LIVESTOCK:
         return tile.owned && buildability_check(TILE_TYPE_LIVESTOCK,tile.type);
       case BUY_TYPE_STORAGE:
@@ -2617,6 +2619,41 @@ var board = function()
               self.hover_t.fertilizer = it;
 
               gg.inspector.select_tile(self.hover_t);
+              gg.shop.selected_buy = 0;
+              self.hover_t_placable = 0;
+              return;
+            }
+            break;
+
+            case BUY_TYPE_FOOD:
+            {
+              if(self.hover_t.type == TILE_TYPE_LIVESTOCK)
+              {
+                var it = self.hover_t.feed;
+                if(!it)
+                {
+                  it = new item();
+                  it.type = ITEM_TYPE_FEED;
+                  it.lock = 1; //permalocked
+                  it.state = 0;
+                  it.tile = self.hover_t;
+                  gg.b.tiles_tw(it.tile,it);
+                  gg.items.push(it);
+                }
+                it.state += feed_nutrition;
+                self.hover_t.feed = it;
+                gg.inspector.select_tile(self.hover_t);
+              }
+              else
+              {
+                var it = new item();
+                it.type = ITEM_TYPE_FOOD;
+                it.tile = self.hover_t;
+                gg.b.tiles_tw(it.tile,it);
+                gg.items.push(it);
+                gg.inspector.select_item(it);
+              }
+
               gg.shop.selected_buy = 0;
               self.hover_t_placable = 0;
               return;
