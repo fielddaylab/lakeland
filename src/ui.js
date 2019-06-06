@@ -325,7 +325,7 @@ var bar = function()
     }
     var ticks_before_hungry = max_fullness-fullness_content
     gg.ctx.fillText(fdisp(edible_rate*ticks_before_hungry  ,1)+" people",      x,y+fs*0);
-    gg.ctx.fillText(fdisp(feed_rate*feed_nutrition         ,1)+" livestock",   x,y+fs*1);
+    gg.ctx.fillText(fdisp(feed_rate*(feed_nutrition/feed_nutrition_leak), 1)+" livestock",   x,y+fs*1);
     var permin = 60*60;
     gg.ctx.fillText(fdisp(sell_rate*item_worth_food*permin ,1)+" $/min", x,y+fs*2);
     potential_rate  *= permin;
