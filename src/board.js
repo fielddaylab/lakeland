@@ -2237,7 +2237,7 @@ var board = function()
     for(var i = 0; i < self.tiles.length; i++)
     {
       var t = self.tiles[i];
-      if(t.type == TILE_TYPE_LAKE) t.nutrition = 0;
+      if(t.type == TILE_TYPE_LAKE || t.type == TILE_TYPE_SHORE) t.nutrition = 0;
     }
 
     //assign og
@@ -2337,6 +2337,14 @@ var board = function()
       nutrition_flow_rate = nutrition_flow_rate_old;
       watersrc_nutrition_flow_rate = watersrc_nutrition_flow_rate_old;
       watersnk_nutrition_flow_rate = watersnk_nutrition_flow_rate_old;
+    }
+
+    //set min nutrition
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      var t = self.tiles[i];
+      if(t.type != TILE_TYPE_LAKE && t.type != TILE_TYPE_SHORE)
+        t.nutrition = max(t.nutrition,nutrition_content);
     }
 
     self.inc_bounds();
