@@ -37,6 +37,15 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
+var bias_nutrition = function(t)
+{
+  t = 1-t;
+  t *= t;
+  t *= t;
+  t *= t;
+  return 1-t;
+}
+
 var draw_switch = function(x,y,w,h,on)
 {
   gg.ctx.strokeStyle = gg.font_color;
@@ -1183,8 +1192,8 @@ var inspector = function()
     gg.ctx.textAlign = "right";
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
 
-    draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias1(rn/100));
-    if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, u.nutrition_bar_y, w, self.pad, bias1(water_fouled_threshhold/nutrition_max));
+    draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias_nutrition(rn/100));
+    if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, u.nutrition_bar_y, w, self.pad, bias_nutrition(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
 
     if(t.fertilizer)
@@ -1726,6 +1735,7 @@ var achievements = function()
         y += s+self.pad;
       }
     }
+    gg.ctx.font = fs+"px "+gg.font;
     for(var i = 0; i < self.notifs.length; i++)
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
