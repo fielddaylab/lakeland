@@ -1337,6 +1337,7 @@ var tile = function()
   self.og_type = TILE_TYPE_LAND;
   self.type = TILE_TYPE_LAND;
   self.owned = 0;
+  self.shoreline = 0;
   self.state = TILE_STATE_LAND_D0+floor(bias0(bias0(bias0(rand())))*land_detail_levels*0.99);
   self.state_t = 0;
   self.val = 0;
@@ -2347,6 +2348,20 @@ var board = function()
         t.nutrition = max(t.nutrition,nutrition_content);
     }
 
+    //shoreline
+    for(var i = 0; i < self.tile_groups[TILE_TYPE_SHORE].length; i++)
+    {
+      var shore_d = 2;
+      var t = self.tile_groups[TILE_TYPE_SHORE][i];
+      var st;
+      for(var xd = -shore_d; xd <= shore_d; xd++)
+        for(var yd = -shore_d; yd <= shore_d; yd++)
+        {
+          st = self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd));
+          if(st.type != TILE_TYPE_LAKE) st.shoreline = 1;
+        }
+    }
+
     self.inc_bounds();
     self.hovering = 0;
   }
@@ -2474,7 +2489,7 @@ var board = function()
     switch(buy)
     {
       case BUY_TYPE_HOME:
-        return tile.owned && buildability_check(TILE_TYPE_HOME,tile.type);
+        return tile.owned && tile.shoreline && buildability_check(TILE_TYPE_HOME,tile.type);
       case BUY_TYPE_FARM:
         return tile.owned && buildability_check(TILE_TYPE_FARM,tile.type);
       case BUY_TYPE_FERTILIZER:
@@ -3184,7 +3199,7 @@ var board = function()
             tw = nx-x;
             if(x < -tw || x > gg.canvas.width) { i++; continue; }
             t = self.tiles[i];
-            if(t.owned)
+            if(t.owned && (gg.shop.selected_buy != BUY_TYPE_HOME || t.shoreline))
               gg.ctx.fillRect(x,ny,tw,th);
             i++;
           }
