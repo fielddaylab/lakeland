@@ -3594,7 +3594,7 @@ var advisors = function()
     },
     self.confirm_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(100); }, tut_build_a_farm);
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_build_a_farm);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_house'});
     },
   ];
