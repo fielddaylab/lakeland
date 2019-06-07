@@ -125,7 +125,7 @@ var demolish_cost = 10;
 var free_money = 1000;
 var festival_cost = 2000;
 
-var money_start_n = home_cost + farm_cost;
+var money_start_n = home_cost + food_cost + farm_cost;
 
 var harvest_profit = 0;
 

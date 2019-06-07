@@ -2068,6 +2068,26 @@ var advisors = function()
     gg.clicker.consumeif(x,y,w,h,self.adv_thread);
   }
 
+  self.evt_within_popup = function(evt)
+  {
+    var p = self.font_size;
+    var x = gg.canvas.width/2;
+    var y = gg.canvas.height-p;
+    var txt_fmt;
+    switch(self.advisor)
+    {
+      case ADVISOR_TYPE_MAYOR:    txt_fmt = self.mayor_fmt_history[self.mayor_history.length-1];       break;
+      case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
+      case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
+    }
+    var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
+    h += self.font_size+p;
+    var w = self.popup_w+p*2;
+    x -= w/2;
+    y -= h;
+    return doEvtWithin(evt,x,y,w,h);
+  }
+
   self.another_member = function()
   {
     if(self.thread == tut_another_member) return;
@@ -3477,6 +3497,92 @@ var advisors = function()
     },
   ];
 
+  var tut_buy_food = [
+
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_food'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("Hi!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("I'm your farm advisor."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will eventually need some food..."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.camtotile(f.tile);
+      self.hilight(f);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.confirm_adv_thread, //click
+    noop, //end
+
+    function(){ gg.shop.food_btn.active = 1; self.push_blurb("Buy some from the shop."); }, //begin
+    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FOOD); }, //tick
+    function(){ //draw
+      var b = gg.shop.food_btn;
+      self.popup(TEXT_TYPE_DIRECT);
+      self.arrow(b.x+b.w+20,b.y+b.h/2);
+    },
+    ffunc, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Place it anywhere on the map."); },//begin
+    function(){ self.camtotile(gg.b.center_tile); return self.items_exist(ITEM_TYPE_FOOD,1); }, //tick
+    function(){ self.popup(TEXT_TYPE_DIRECT); }, //draw
+    function(evt) //click
+    {
+      if(self.evt_within_popup(evt)) return;
+
+      var b = gg.b;
+      if(b.hover_t)
+      {
+        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
+          self.jmp(1);
+        else
+        {
+          gg.b.click(evt);
+          self.jmp(2);
+        }
+      }
+    },
+    noop, //end
+
+    //can't build there
+    function(){ self.dotakeover(); self.push_blurb("Can't place food there!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    function(){ self.jmp(-1); }, //click
+    noop, //end
+
+    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically eat it when hungry."); self.push_record("Buy food to quickly feed your people."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //click
+    function() { //end
+      self.pool_thread(function(){ return !self.items_exist(ITEM_TYPE_FOOD); }, tut_build_a_farm);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_food'});
+    },
+
+  ];
+
   var tut_build_a_house = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_house'}); self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
@@ -3512,7 +3618,7 @@ var advisors = function()
     ffunc, //click
     noop, //end
 
-    function(){ self.dotakeover(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Place it somewhere on the map"); },//begin
+    function(){ self.dotakeover(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Place it somewhere near a lake- people love lakes!"); },//begin
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -3594,7 +3700,7 @@ var advisors = function()
     },
     self.confirm_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(1000); }, tut_build_a_farm);
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_buy_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_house'});
     },
   ];

@@ -2358,7 +2358,7 @@ var board = function()
         for(var yd = -shore_d; yd <= shore_d; yd++)
         {
           st = self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd));
-          if(st.type != TILE_TYPE_LAKE) st.shoreline = 1;
+          if(st.type == TILE_TYPE_LAND) st.shoreline = 1;
         }
     }
 
