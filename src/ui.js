@@ -113,24 +113,19 @@ var bar = function()
   var self = this;
   self.btnh = 0;
   self.btnw = 0;
-  self.drawery = 0;
-  self.vignette_s = 0;
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.btnh = gg.b.cbounds_y-self.pad*2;
+    self.btnh = self.pad*3;
     self.btnw = self.btnh;
-    self.vignette_s = self.btnh*1.5;
 
-    self.w = gg.canvas.width/2;
-    self.h = (self.pad+self.btnh+self.pad)+self.pad+self.vignette_s+self.pad;
+    self.w = self.btnw*3+self.pad*4;
+    self.h = self.btnh+self.pad*2;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = 0;
 
-    self.drawery = self.y+self.btnh+self.pad*2;
-
-    var btnx = gg.canvas.width/2-self.btnw/2-self.pad-self.btnw;
+    var btnx = self.x+self.pad;
     var btny = self.y+self.pad;
 
     setBB(self.pause_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
@@ -139,19 +134,17 @@ var bar = function()
   }
 
   self.pause_img = GenImg("assets/pause.png");
-  self.play_img = GenImg("assets/play.png");
+  self.play_img  = GenImg("assets/play.png");
   self.speed_img = GenImg("assets/speed.png");
 
-  self.pause_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
+  self.pause_btn = new ButtonBox(0,0,0,0,function(){                 RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
   self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(!DOUBLETIME) RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
-  self.speed_btn = new ButtonBox(0,0,0,0,function(){ RESUME_SIM = 1; DOUBLETIME = 1; });
+  self.speed_btn = new ButtonBox(0,0,0,0,function(){                 RESUME_SIM = 1;           DOUBLETIME = 1; });
   self.resize();
 
   self.pause_btn.active = 0;
   self.play_btn.active = 0;
   self.speed_btn.active = 0;
-
-  self.drawer = 0;
 
   self.filter = function(filter)
   {
@@ -159,32 +152,11 @@ var bar = function()
     if(check && self.pause_btn.active) check = !filter.filter(self.pause_btn);
     if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
     if(check && self.speed_btn.active) check = !filter.filter(self.speed_btn);
-    if(check)
-    {
-      if(!self.drawer) check = !filter.consumeif(self.x,self.y,self.w,self.drawery-self.y,self.click);
-      else
-      {
-        var x = self.x+self.pad;
-        var y = self.drawery+self.pad;
-        for(var i = 0; check && i < gg.farmbits.length; i++)
-        {
-          var f = gg.farmbits[i];
-          if(filter.check(x,y,self.vignette_s,self.vignette_s))
-          {
-            check = 0;
-            gg.inspector.select_farmbit(f);
-          }
-          x += self.vignette_s+self.pad;
-        }
-        if(check) check = !filter.filter(self);
-      }
-    }
     return !check;
   }
 
   self.click = function()
   {
-    //self.drawer = !self.drawer;
   }
 
   self.tick = function()
@@ -198,165 +170,11 @@ var bar = function()
     gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "left";
 
-    if(self.drawer)
-    {
-      gg.ctx.fillStyle = white;
-      fillRRect(self.x,self.drawery-self.pad,self.w,self.pad+self.pad+self.vignette_s+self.pad,self.pad,gg.ctx);
-      var bigx = self.x;
-      var x = self.x+self.pad;
-      var y = self.drawery+self.pad;
-      var r = self.vignette_s/2;
-      for(var j = 0; j < 4; j++)
-      {
-        j = 3;
-        var test = 0;
-        y = self.drawery+self.pad;
-        gg.ctx.fillStyle = black;
-        bigx = self.x;
-        /*
-        switch(j)
-        {
-          case 0: bigx = self.x;            gg.ctx.fillText("HUNGRY",bigx,y); break;
-          case 1: bigx = self.x+self.w/4;   gg.ctx.fillText("SLEEPY",bigx,y); break;
-          case 2: bigx = self.x+self.w/2;   gg.ctx.fillText("SAD",bigx,y); break;
-          case 3: bigx = self.x+self.w*3/4; gg.ctx.fillText("CONTENT",bigx,y); break;
-        }
-        */
-        x = bigx+self.pad;
-        for(var i = 0; i < gg.farmbits.length; i++)
-        {
-          var f = gg.farmbits[i];
-
-          var pass = 1;
-          switch(j)
-          {
-            case 0: if(f.fullness_state != FARMBIT_STATE_DESPERATE) pass = 0; break;
-            case 1: if(f.energy_state   != FARMBIT_STATE_DESPERATE) pass = 0; break;
-            case 2: if(f.joy_state      != FARMBIT_STATE_DESPERATE) pass = 0; break;
-            case 3: if(f.fullness_state == FARMBIT_STATE_DESPERATE || f.energy_state == FARMBIT_STATE_DESPERATE || f.joy_state == FARMBIT_STATE_DESPERATE) pass = 0; break;
-          }
-          pass = 1;
-          if(!pass) continue;
-
-          gg.ctx.fillStyle = gg.backdrop_color;
-          gg.ctx.beginPath();
-
-          var str0 = "";
-          var str1 = "";
-          var stroke = gg.font_color;
-          switch(f.job_type)
-          {
-            case JOB_TYPE_NULL:      str0 = "Nothing";     break;
-            case JOB_TYPE_IDLE:      str0 = "Idle";        break;
-            case JOB_TYPE_WAIT:      str0 = "Waiting";     break;
-            case JOB_TYPE_EAT:       str0 = "Eating";      break;
-            case JOB_TYPE_SLEEP:     str0 = "Sleeping";    break;
-            case JOB_TYPE_PLAY:      str0 = "Playing";     break;
-            case JOB_TYPE_PLANT:     str0 = "Planting";    break;
-            case JOB_TYPE_HARVEST:   str0 = "Harvesting";  break;
-            case JOB_TYPE_FEED:      str0 = "Feeding";     break;
-            case JOB_TYPE_FERTILIZE: str0 = "Fertilizing"; break;
-            case JOB_TYPE_MILK:      str0 = "Milking";     break;
-            case JOB_TYPE_STORE:     str0 = "Storing";     break;
-            case JOB_TYPE_PROCESS:   str0 = "Processing";  break;
-            case JOB_TYPE_KICK:      str0 = "Kicking";     break;
-            case JOB_TYPE_EXPORT:    str0 = "Exporting";   break;
-            case JOB_TYPE_COUNT:     str0 = "BROKEN";      break;
-          }
-
-               if(f.fullness_state == FARMBIT_STATE_DESPERATE) { str1 = "HUNGRY"; stroke = red; }
-          else if(f.energy_state   == FARMBIT_STATE_DESPERATE) { str1 = "SLEEPY"; stroke = red; }
-          else if(f.joy_state      == FARMBIT_STATE_DESPERATE) { str1 = "SAD"; stroke = red; }
-          else if(f.fullness_state == FARMBIT_STATE_MOTIVATED) str1 = "hungry";
-          else if(f.energy_state   == FARMBIT_STATE_MOTIVATED) str1 = "sleepy";
-          else if(f.joy_state      == FARMBIT_STATE_MOTIVATED) str1 = "sad";
-          else                                                 str1 = "Content";
-          gg.ctx.strokeStyle = stroke;
-
-          gg.ctx.arc(x+r,y+r,r,0,twopi);
-          gg.ctx.fill();
-          gg.ctx.stroke();
-          gg.ctx.fillStyle = black;
-          gg.ctx.fillText(f.name,x,y+fs*3);
-          gg.ctx.fillText(str0,x,y+fs*2);
-          gg.ctx.fillText(str1,x,y+fs*1);
-
-          x += r*2+self.pad;
-          //y += r*2+self.pad;
-        }
-      }
-    }
-
     gg.ctx.fillStyle = white;
-    fillRRect(self.x,-self.pad,self.w,self.pad+self.btnh+self.pad*2,self.pad,gg.ctx);
+    fillRRect(self.x,-self.pad,self.w,self.pad+self.h,self.pad,gg.ctx);
     if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
     if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn, gg.ctx); }
     if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
-    gg.ctx.globalAlpha = 1;
-    gg.ctx.fillStyle = gg.font_color;
-    var x = self.x+self.pad;
-    var y = self.y+self.pad+fs;
-    var w = 50*gg.stage.s_mod;
-
-    //food (# corn per tick)
-    var potential_rate = 0;
-    var production_rate = 0;
-    var edible_rate = 0;
-    var sell_rate = 0;
-    var feed_rate = 0;
-    for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
-    {
-      var t = gg.b.tile_groups[TILE_TYPE_FARM][i];
-      var t_rate = clamp(farm_nutrition_uptake_min,farm_nutrition_uptake_max,t.nutrition*farm_nutrition_uptake_p)/farm_nutrition_req; //food per tick
-      potential_rate += t_rate*2;
-      if(t.state == TILE_STATE_FARM_PLANTED)
-      {
-        production_rate += t_rate*2;
-        for(var j = 0; j < 2; j++)
-        {
-          switch(t.marks[j])
-          {
-            case MARK_USE:  edible_rate += t_rate; break;
-            case MARK_SELL: sell_rate   += t_rate; break;
-            case MARK_FEED: feed_rate   += t_rate; break;
-          }
-        }
-      }
-    }
-    var ticks_before_hungry = max_fullness-fullness_content
-    gg.ctx.fillText(fdisp(edible_rate*ticks_before_hungry  ,1)+" people",      x,y+fs*0);
-    gg.ctx.fillText(fdisp(feed_rate*(feed_nutrition/feed_nutrition_leak), 1)+" livestock",   x,y+fs*1);
-    var permin = 60*60;
-    gg.ctx.fillText(fdisp(sell_rate*item_worth_food*permin ,1)+" $/min", x,y+fs*2);
-    potential_rate  *= permin;
-    production_rate *= permin;
-    edible_rate     *= permin;
-    sell_rate       *= permin;
-    feed_rate       *= permin;
-    //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
-    //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
-    //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
-    //gg.ctx.fillText(gg.food+" food", x,y);
-    x += w;
-
-    x = self.x+self.w-self.pad;
-    //population
-    x -= w;
-    x -= w;
-    gg.ctx.fillText(gg.farmbits.length+" townspeople", x,y+fs*0);
-    //gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
-    //joy
-    /*
-    x -= w;
-    if(gg.farmbits.length)
-    {
-      var sad = 0;
-      for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].joy_state == FARMBIT_STATE_DESPERATE) sad++;
-      gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad", x,y);
-    }
-    else gg.ctx.fillText("0% sad", x,y);
-    */
-
     gg.ctx.globalAlpha = 1;
   }
 
@@ -1340,6 +1158,7 @@ var inspector = function()
 
     gg.ctx.font = self.font_size+"px "+gg.font;
     gg.ctx.fillText(gg.b.item_name(it.type),cx,self.title_y);
+    gg.ctx.textAlign = "left";
 
     self.line(self.title_line_y);
 
@@ -1921,16 +1740,16 @@ var advisors = function()
 
   self.mayor_history        = [];
   self.mayor_fmt_history    = [];
-  self.mayor_records = [];
-  self.mayor_fmt_records = [];
+  self.mayor_records        = [];
+  self.mayor_fmt_records    = [];
   self.business_history     = [];
   self.business_fmt_history = [];
-  self.business_records = [];
+  self.business_records     = [];
   self.business_fmt_records = [];
   self.farmer_history       = [];
   self.farmer_fmt_history   = [];
-  self.farmer_records = [];
-  self.farmer_fmt_records = [];
+  self.farmer_records       = [];
+  self.farmer_fmt_records   = [];
 
   self.takeover = 0;
   self.advisor = ADVISOR_TYPE_NULL;
@@ -1940,6 +1759,10 @@ var advisors = function()
 
   self.preview = 0;
   self.preview_off_y = 0;
+
+  self.people_supported = 0;
+  self.livestock_supported = 0;
+  self.money_rate = 0;
 
   //queries
   self.time_passed        = function(t) { return self.thread_t >= t; }
@@ -2304,6 +2127,39 @@ var advisors = function()
 
   self.tick = function()
   {
+    //calculate stats
+    {
+      //food (# corn per tick)
+      var potential_rate = 0;
+      var production_rate = 0;
+      var edible_rate = 0;
+      var sell_rate = 0;
+      var feed_rate = 0;
+      for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
+      {
+        var t = gg.b.tile_groups[TILE_TYPE_FARM][i];
+        var t_rate = clamp(farm_nutrition_uptake_min,farm_nutrition_uptake_max,t.nutrition*farm_nutrition_uptake_p)/farm_nutrition_req; //food per tick
+        potential_rate += t_rate*2;
+        if(t.state == TILE_STATE_FARM_PLANTED)
+        {
+          production_rate += t_rate*2;
+          for(var j = 0; j < 2; j++)
+          {
+            switch(t.marks[j])
+            {
+              case MARK_USE:  edible_rate += t_rate; break;
+              case MARK_SELL: sell_rate   += t_rate; break;
+              case MARK_FEED: feed_rate   += t_rate; break;
+            }
+          }
+        }
+      }
+      var ticks_before_hungry = max_fullness-fullness_content
+      self.people_supported = edible_rate*ticks_before_hungry;
+      self.livestock_supported = feed_rate*(feed_nutrition/feed_nutrition_leak);
+      self.money_rate = sell_rate*item_worth_food;
+    }
+
     self.thread_t++;
     if(!self.thread)
     {
@@ -2439,6 +2295,47 @@ var advisors = function()
         if(ty > y+h+self.font_size) break;
       }
       gg.ctx.restore();
+
+      gg.ctx.globalAlpha = 1;
+    }
+
+    return;
+    //show stats
+    {
+      gg.ctx.fillText(fdisp(self.people_supported,    1)+" people",    x,y+fs*0);
+      gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock", x,y+fs*1);
+      var permin = 60*60;
+      gg.ctx.fillText(fdisp(self.money_rate*permin,   1)+" $/min",     x,y+fs*2);
+
+      gg.ctx.fillStyle = gg.font_color;
+      var x = self.x+self.pad;
+      var y = self.y+self.pad+fs;
+      var w = 50*gg.stage.s_mod;
+
+
+      //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
+      //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
+      //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
+      //gg.ctx.fillText(gg.food+" food", x,y);
+      x += w;
+
+      x = self.x+self.w-self.pad;
+      //population
+      x -= w;
+      x -= w;
+      gg.ctx.fillText(gg.farmbits.length+" townspeople", x,y+fs*0);
+      //gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
+      //joy
+      /*
+      x -= w;
+      if(gg.farmbits.length)
+      {
+        var sad = 0;
+        for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].joy_state == FARMBIT_STATE_DESPERATE) sad++;
+        gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad", x,y);
+      }
+      else gg.ctx.fillText("0% sad", x,y);
+      */
 
       gg.ctx.globalAlpha = 1;
     }
