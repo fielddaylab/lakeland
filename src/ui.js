@@ -3007,14 +3007,14 @@ var advisors = function()
     },
   ];
 
-  var tut_fertilize = [
-    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'fertilize'}); }, //begin
+  var tut_poop = [
+    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); }, //begin
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     ffunc, //click
     noop, //end
 
-    function(){ self.dotakeover();  self.push_blurb("You can use waste from livestock to reintroduce nutrition to the ground."); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("You can use waste from livestock to reintroduce nutrition to the ground."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3025,7 +3025,18 @@ var advisors = function()
     self.confirm_delay_adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover();  self.push_blurb("(your townmembers will do this automatically)"); }, //begin
+    function(){ self.dotakeover(); self.push_blurb("(your townmembers will do this automatically)"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var i = self.items_exist(ITEM_TYPE_POOP,1);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(i.x+i.w,i.y+i.h/2);
+    },
+    self.confirm_adv_thread, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("Consider manure an added perk- it will save money on importing fertilizer for your farms!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3115,12 +3126,43 @@ var advisors = function()
       self.pool_thread(function(){
         return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
       }, tut_business_leave);
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'fertilize'});
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'poop'});
     },
   ];
 
   var tut_buy_livestock = [
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_livestock'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Great Work!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_livestock'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("You seem to have corn production figured out."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //click
+    noop, //end
+
+    function(){ self.push_blurb("Why not expand into the world of Dairy?"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //click
+    noop, //end
+
+    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock."); self.push_record("Invest in livestock to start a dairy industry!");}, //begin
+    ffunc, //tick
+    function(){ //draw
+      var b = gg.shop.livestock_btn;
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(b.x+b.w+20,b.y+b.h/2);
+    },
+    self.confirm_adv_thread, //click
+    function() { //end
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_poop);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_livestock'});
+    },
+  ];
+
+  var tut_buy_fertilizer = [
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Great Work!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3136,17 +3178,37 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock. They might be able to help with that!"); self.push_record("Livestock create manure, which does wonders for soil nutrition.");}, //begin
+    function(){ gg.nutrition_toggle.toggle_btn.active = 1; self.dotakeover(); self.push_blurb("Click to toggle nutrition view"); }, //begin
+    function(){ gg.nutrition_toggle.filter(gg.clicker); return gg.b.nutrition_view; }, //tick
+    function(){ //draw
+      self.wash();
+      var b = gg.nutrition_toggle.toggle_btn;
+      self.popup(TEXT_TYPE_DIRECT);
+      self.larrow(b.x,b.y+b.h/2);
+      gg.nutrition_toggle.draw();
+    },
+    ffunc, //click
+    noop, //end
+
+    function(){ self.dotakeover(); self.push_blurb("The red represents the fertility of that soil."); },//begin
     ffunc, //tick
     function(){ //draw
-      var b = gg.shop.livestock_btn;
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //click
+    noop, //end
+
+    function(){ gg.shop.fertilizer_btn.active = 1; self.push_blurb("Save up for some fertilizer to keep your farms growing!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      var b = gg.shop.fertilizer_btn;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(b.x+b.w+20,b.y+b.h/2);
     },
     self.confirm_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_fertilize);
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_livestock'});
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FERTILIZER,1); }, tut_buy_livestock);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_fertilizer'});
     },
   ];
 
@@ -3341,7 +3403,7 @@ var advisors = function()
 
   var tut_build_a_farm = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("Hi!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("You probably can't afford to keep importing food."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3350,7 +3412,7 @@ var advisors = function()
     self.confirm_delay_adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("I'm your farm advisor."); },//begin
+    function(){ self.dotakeover(); self.push_blurb("Every successful community needs a sustainable strategy to feed its members."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3359,20 +3421,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will eventually need some food..."); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      var f = self.heap.f;
-      self.camtotile(f.tile);
-      self.hilight(f);
-      self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w,f.y+f.h/2);
-    },
-    self.confirm_adv_thread, //click
-    noop, //end
-
-    function(){ gg.shop.farm_btn.active = 1; self.push_blurb("Buy a farm."); }, //begin
+    function(){ gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm."); }, //begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FARM); }, //tick
     function(){ //draw
       var b = gg.shop.farm_btn;
@@ -3382,72 +3431,25 @@ var advisors = function()
     ffunc, //click
     noop, //end
 
-    function(){ self.dotakeover(); self.push_blurb("Before you place it on the map..."); },//begin
-    ffunc, //tick
+    function(){ self.dotakeover(); self.push_blurb("Place it somewhere near your home."); },//begin
+    function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
     function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //click
-    noop, //end
-
-    function(){ gg.nutrition_toggle.toggle_btn.active = 1; self.dotakeover(); self.push_blurb("Click to toggle nutrition view"); }, //begin
-    function(){ gg.nutrition_toggle.filter(gg.clicker); return gg.b.nutrition_view; }, //tick
-    function(){ //draw
-      self.wash();
-      var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.larrow(b.x,b.y+b.h/2);
-      gg.nutrition_toggle.draw();
     },
-    ffunc, //click
-    noop, //end
-
-    function(){ self.dotakeover(); self.push_blurb("The red represents the fertility of that soil."); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //click
-    noop, //end
-
-    function(){ self.dotakeover(); self.push_blurb("Place your farm on fertile grassland"); },//begin
-    function(){ self.camtotile(gg.b.center_tile); return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
-    function(){ self.popup(TEXT_TYPE_DIRECT); }, //draw
-    function(evt) //click
+    function(evt)
     {
-
-      var p = self.font_size;
-      var x = gg.canvas.width/2;
-      var y = gg.canvas.height-p;
-      var txt_fmt;
-      switch(self.advisor)
-      {
-        case ADVISOR_TYPE_MAYOR:    txt_fmt = self.mayor_fmt_history[self.mayor_history.length-1];       break;
-        case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
-        case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
-      }
-      var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
-      h += self.font_size+p;
-      var w = self.popup_w+p*2;
-      x -= w/2;
-      y -= h;
-      if(doEvtWithin(evt,x,y,w,h)) return;
-
       var b = gg.b;
       if(b.hover_t)
       {
         if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
           self.jmp(1);
-        else if(b.hover_t.nutrition < nutrition_motivated)
-          self.jmp(2);
         else
         {
           gg.b.click(evt);
-          self.jmp(3);
+          self.jmp(2);
         }
       }
-    },
+    }, //click
     noop, //end
 
     //can't build there
@@ -3459,16 +3461,7 @@ var advisors = function()
     function(){ self.jmp(-1); }, //click
     noop, //end
 
-    //find more fertile spot
-    function(){ self.dotakeover(); self.push_blurb("Not very fertile!"); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    function(){ self.jmp(-2); }, //click
-    noop, //end
-
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically manage the farm."); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3479,22 +3472,11 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //click
-    noop, //end
-
-    function(){ self.push_blurb("Click toggle at any time to disable nutrition view"); self.push_record("Buy farms to produce food for your people!"); self.push_record("Use the nutrition toggle to get a birds-eye-view of the landscape of nutrition.");},//begin
-    function(){ return !gg.b.nutrition_view; }, //tick
-    function(){ //draw
-      self.wash();
-      var b = gg.nutrition_toggle.toggle_btn;
-      self.popup(TEXT_TYPE_DIRECT);
-      gg.nutrition_toggle.draw();
-      self.larrow(b.x,b.y+b.h/2);
-    },
-    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
     },
+
   ];
 
   var tut_buy_food = [
@@ -3577,7 +3559,7 @@ var advisors = function()
     },
     self.confirm_delay_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return !self.items_exist(ITEM_TYPE_FOOD); }, tut_build_a_farm);
+      self.pool_thread(function(){ return !self.items_exist(ITEM_TYPE_FOOD,1); }, tut_build_a_farm);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_food'});
     },
 
@@ -3643,7 +3625,7 @@ var advisors = function()
 
     //can't build there
     function(){ self.dotakeover(); self.push_blurb("Can't build a house there!"); },//begin
-    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
