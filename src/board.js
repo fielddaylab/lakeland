@@ -1037,6 +1037,7 @@ var fulfillment_job_for_b = function(b)
     return 1;
   }
 
+/*
   //kick
   it = closest_unlocked_item(b.tile);
   if(it)
@@ -1057,6 +1058,7 @@ var fulfillment_job_for_b = function(b)
     }
     return 1;
   }
+*/
 
   return 0;
 }
