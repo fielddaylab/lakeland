@@ -50,7 +50,8 @@ var GamePlayScene = function()
           gg.nutrition_toggle.toggle_btn.active = 1;
           gg.bar.pause_btn.active = 1;
           gg.bar.play_btn.active = 1;
-          gg.bar.speed_btn.active = 1;
+          gg.bar.fast_btn.active = 1;
+          gg.bar.vfast_btn.active = 1;
 
           gg.advisors.mayor_active = 1;
           gg.advisors.business_active = 1;

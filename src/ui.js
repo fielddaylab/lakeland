@@ -120,7 +120,7 @@ var bar = function()
     self.btnh = self.pad*3;
     self.btnw = self.btnh;
 
-    self.w = self.btnw*3+self.pad*4;
+    self.w = self.btnw*4+self.pad*5;
     self.h = self.btnh+self.pad*2;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = 0;
@@ -130,7 +130,8 @@ var bar = function()
 
     setBB(self.pause_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
     setBB(self.play_btn,  btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
-    setBB(self.speed_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
+    setBB(self.fast_btn,  btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
+    setBB(self.vfast_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
   }
 
   self.pause_img = GenImg("assets/pause.png");
@@ -139,19 +140,22 @@ var bar = function()
 
   self.pause_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
   self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
-  self.speed_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
+  self.fast_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
+  self.vfast_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_VFAST) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_VFAST; });
   self.resize();
 
   self.pause_btn.active = 0;
   self.play_btn.active = 0;
-  self.speed_btn.active = 0;
+  self.fast_btn.active = 0;
+  self.vfast_btn.active = 0;
 
   self.filter = function(filter)
   {
     var check = true;
     if(check && self.pause_btn.active) check = !filter.filter(self.pause_btn);
     if(check && self.play_btn.active)  check = !filter.filter(self.play_btn);
-    if(check && self.speed_btn.active) check = !filter.filter(self.speed_btn);
+    if(check && self.fast_btn.active)  check = !filter.filter(self.fast_btn);
+    if(check && self.vfast_btn.active) check = !filter.filter(self.vfast_btn);
     return !check;
   }
 
@@ -174,7 +178,8 @@ var bar = function()
     fillRRect(self.x,-self.pad,self.w,self.pad+self.h,self.pad,gg.ctx);
     if(self.pause_btn.active) { if(gg.speed != SPEED_PAUSE) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
     if(self.play_btn.active)  { if(gg.speed != SPEED_PLAY)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn, gg.ctx); }
-    if(self.speed_btn.active) { if(gg.speed != SPEED_FAST)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
+    if(self.fast_btn.active)  { if(gg.speed != SPEED_FAST)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.fast_btn,gg.ctx); }
+    if(self.vfast_btn.active) { if(gg.speed != SPEED_VFAST) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.vfast_btn,gg.ctx); }
     gg.ctx.globalAlpha = 1;
   }
 
@@ -3215,7 +3220,7 @@ var advisors = function()
     function() { return gg.speed > SPEED_PLAY; }, //tick
     function() { //draw
       self.wash();
-      var b = gg.bar.speed_btn;
+      var b = gg.bar.fast_btn;
       self.popup(TEXT_TYPE_DIRECT);
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
@@ -3273,7 +3278,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){self.dotakeover(); gg.bar.pause_btn.active = 1; gg.bar.play_btn.active = 1; gg.bar.speed_btn.active = 1; gg.speed = SPEED_PAUSE; self.push_blurb("First, we'll pause the game.");}, //begin
+    function(){self.dotakeover(); gg.bar.pause_btn.active = 1; gg.bar.play_btn.active = 1; gg.bar.fast_btn.active = 1; gg.bar.vfast_btn.active = 1; gg.speed = SPEED_PAUSE; self.push_blurb("First, we'll pause the game.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
