@@ -1948,6 +1948,80 @@ function strokeRRect(x,y,w,h,r,ctx)
   ctx.closePath();
   ctx.stroke();
 }
+function fillSelectiveRRect(x,y,w,h,tl,tr,br,bl,r,ctx)
+{
+  ctx.beginPath();
+
+  if(tl) ctx.moveTo(x+r,y);
+  else   ctx.moveTo(x  ,y);
+
+  if(tr)
+  {
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  }
+  else ctx.lineTo(x+w,y);
+
+  if(br)
+  {
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  }
+  else ctx.lineTo(x+w,y+h);
+
+  if(bl)
+  {
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  }
+  else ctx.lineTo(x,y+h);
+
+  if(tl)
+  {
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  }
+
+  ctx.closePath();
+  ctx.fill();
+}
+function strokeSelectiveRRect(x,y,w,h,tl,tr,br,bl,r,ctx)
+{
+  ctx.beginPath();
+
+  if(tl) ctx.moveTo(x+r,y);
+  else   ctx.moveTo(x  ,y);
+
+  if(tr)
+  {
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  }
+  else ctx.lineTo(x+w,y);
+
+  if(br)
+  {
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  }
+  else ctx.lineTo(x+w,y+h);
+
+  if(bl)
+  {
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  }
+  else ctx.lineTo(x,y+h);
+
+  if(tl)
+  {
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  }
+
+  ctx.closePath();
+  ctx.stroke();
+}
 
 var UUIDint = function() //17 digits = 64 bit int; each second guaranteed unique, within a second = 1/99999 chance of collision (aka "not unique")
 {

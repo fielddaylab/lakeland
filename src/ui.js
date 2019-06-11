@@ -1035,37 +1035,77 @@ var inspector = function()
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Export Options:",self.x+self.pad,u.export_y);
 
-        switch(t.marks[0])
-        {
-          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
-        }
-        fillRRect(x,u.autosell_0_y,w,u.autosell_h,self.pad,gg.ctx);
-        gg.ctx.drawImage(food_img,x,u.autosell_0_y,u.autosell_h,u.autosell_h);
-        gg.ctx.fillStyle = black;
-        switch(t.marks[0])
-        {
-          case MARK_USE:  gg.ctx.fillText("Eat", x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
-          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
-          case MARK_FEED: gg.ctx.fillText("Feed",x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
-        }
+        var on = "#BAEDE1";
+        var off = "#F2F2F2";
+        var x;
+        var y;
+        var w = self.w-self.pad*2;
+        var h = u.autosell_h;
 
+        x = self.x+self.pad;
+        y = u.autosell_0_y;
+        switch(t.marks[0])
+        {
+          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+        }
+        if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/3,h,1,0,0,1,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(food_img,x,y,h,h);
+        x += w/3;
+        if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/3,h,0,0,0,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(coin_img,x,y,h,h);
+        x += w/3;
+        if(t.marks[0] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/3,h,0,1,1,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(cow_img,x,y,h,h);
+
+        gg.ctx.fillStyle = black;
+        x = self.x+self.pad;
+        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        x += self.w/3;
+        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        x += self.w/3;
+        gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
+
+        x = self.x+self.pad;
+        y = u.autosell_1_y;
         switch(t.marks[1])
         {
           case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
           case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
           case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
         }
-        fillRRect(x,u.autosell_1_y,w,u.autosell_h,self.pad,gg.ctx);
-        gg.ctx.drawImage(food_img,x,u.autosell_1_y,u.autosell_h,u.autosell_h);
+        if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/3,h,1,0,0,1,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(food_img,x,y,h,h);
+        x += w/3;
+        if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/3,h,0,0,0,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(coin_img,x,y,h,h);
+        x += w/3;
+        if(t.marks[1] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/3,h,0,1,1,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(cow_img,x,y,h,h);
+
         gg.ctx.fillStyle = black;
-        switch(t.marks[1])
-        {
-          case MARK_USE:  gg.ctx.fillText("Eat", x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
-          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
-          case MARK_FEED: gg.ctx.fillText("Feed",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
-        }
+        x = self.x+self.pad;
+        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        x += self.w/3;
+        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        x += self.w/3;
+        gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
+
+
+        x = self.x+self.pad;
 
         var rg = t.val/farm_nutrition_req;
         if(t.state == TILE_STATE_FARM_UNPLANTED) rg = 0;
@@ -1101,33 +1141,64 @@ var inspector = function()
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Export Options:",self.x+self.pad,u.export_y);
 
-        switch(t.marks[0])
-        {
-          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-        }
-        fillRRect(x,u.autosell_0_y,w,u.autosell_h,self.pad,gg.ctx);
-        gg.ctx.drawImage(milk_img,x,u.autosell_0_y,u.autosell_h,u.autosell_h);
-        gg.ctx.fillStyle = black;
-        switch(t.marks[0])
-        {
-          case MARK_USE:  gg.ctx.fillText("Eat", x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
-          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_0_y+self.font_size+self.pad); break;
-        }
+        var on = "#BAEDE1";
+        var off = "#F2F2F2";
+        var x;
+        var y;
+        var w = self.w-self.pad*2;
+        var h = u.autosell_h;
 
+        x = self.x+self.pad;
+        y = u.autosell_0_y;
+        switch(t.marks[0])
+        {
+          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
+          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+        }
+        if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/2,h,1,0,0,1,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(milk_img,x,y,h,h);
+        x += w/2;
+        if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/2,h,0,1,1,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(coin_img,x,y,h,h);
+        x += w/2;
+
+        gg.ctx.fillStyle = black;
+        x = self.x+self.pad;
+        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        x += self.w/2;
+        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+
+
+        x = self.x+self.pad;
+        y = u.autosell_1_y;
         switch(t.marks[1])
         {
           case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
           case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
+          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
         }
-        fillRRect(x,u.autosell_1_y,w,u.autosell_h,self.pad,gg.ctx);
-        gg.ctx.drawImage(poop_img,x,u.autosell_1_y,u.autosell_h,u.autosell_h);
+        if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/2,h,1,0,0,1,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(poop_img,x,y,h,h);
+        x += w/2;
+        if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/2,h,0,1,1,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(coin_img,x,y,h,h);
+        x += w/2;
+
         gg.ctx.fillStyle = black;
-        switch(t.marks[1])
-        {
-          case MARK_USE:  gg.ctx.fillText("Use", x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
-          case MARK_SELL: gg.ctx.fillText("Sell",x+u.autosell_h+self.pad,u.autosell_1_y+self.font_size+self.pad); break;
-        }
+        x = self.x+self.pad;
+        gg.ctx.fillText("Fertilize", x,y+self.font_size+self.pad);
+        x += self.w/2;
+        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+
 
         x = self.x+self.pad;
         gg.ctx.textAlign = "left";
