@@ -1,7 +1,3 @@
-var RESUME_SIM = 1;
-var DOUBLETIME = 0;
-var QUADRUPLETIME = 0;
-
 var farmbit_names = [
 "Peter",
 "Paul",

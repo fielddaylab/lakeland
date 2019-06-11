@@ -1705,34 +1705,34 @@ var board = function()
   }
   self.set_cam = function()
   {
-      var rbwx = self.wx-self.ww/2+((self.bounds_tx+self.bounds_tw+8)/self.tw)*self.ww;
-      var lbwx = self.wx-self.ww/2+((self.bounds_tx               -8)/self.tw)*self.ww;
-      var bww = rbwx-lbwx;
-      var tbwy = self.wy-self.wh/2+((self.bounds_ty+self.bounds_th+4)/self.th)*self.wh;
-      var bbwy = self.wy-self.wh/2+((self.bounds_ty               -3)/self.th)*self.wh;
-      var bwh = tbwy-bbwy;
+    var rbwx = self.wx-self.ww/2+((self.bounds_tx+self.bounds_tw+8)/self.tw)*self.ww;
+    var lbwx = self.wx-self.ww/2+((self.bounds_tx               -8)/self.tw)*self.ww;
+    var bww = rbwx-lbwx;
+    var tbwy = self.wy-self.wh/2+((self.bounds_ty+self.bounds_th+4)/self.th)*self.wh;
+    var bbwy = self.wy-self.wh/2+((self.bounds_ty               -3)/self.th)*self.wh;
+    var bwh = tbwy-bbwy;
 
-      if(bww > gg.cam.ww)
-      {
-        if(gg.cam.wx+gg.cam.ww/2 > rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
-        if(gg.cam.wx-gg.cam.ww/2 < lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
-      }
-      else
-      {
-        if(gg.cam.wx+gg.cam.ww/2 < rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
-        if(gg.cam.wx-gg.cam.ww/2 > lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
-      }
+    if(bww > gg.cam.ww)
+    {
+      if(gg.cam.wx+gg.cam.ww/2 > rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
+      if(gg.cam.wx-gg.cam.ww/2 < lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
+    }
+    else
+    {
+      if(gg.cam.wx+gg.cam.ww/2 < rbwx) gg.cam.wx = rbwx-gg.cam.ww/2;
+      if(gg.cam.wx-gg.cam.ww/2 > lbwx) gg.cam.wx = lbwx+gg.cam.ww/2;
+    }
 
-      if(bwh > gg.cam.wh)
-      {
-        if(gg.cam.wy+gg.cam.wh/2 > tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
-        if(gg.cam.wy-gg.cam.wh/2 < bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
-      }
-      else
-      {
-        if(gg.cam.wy+gg.cam.wh/2 < tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
-        if(gg.cam.wy-gg.cam.wh/2 > bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
-      }
+    if(bwh > gg.cam.wh)
+    {
+      if(gg.cam.wy+gg.cam.wh/2 > tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
+      if(gg.cam.wy-gg.cam.wh/2 < bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+    }
+    else
+    {
+      if(gg.cam.wy+gg.cam.wh/2 < tbwy) gg.cam.wy = tbwy-gg.cam.wh/2;
+      if(gg.cam.wy-gg.cam.wh/2 > bbwy) gg.cam.wy = bbwy+gg.cam.wh/2;
+    }
   }
 
   self.x = 0;
@@ -2577,9 +2577,14 @@ var board = function()
   }
   self.dragFinish = function(evt)
   {
-    var t = 1;
-    if(DOUBLETIME) t *= 4;
-    if(QUADRUPLETIME*DOUBLETIME) t *= 4;
+    var t = 0;
+    switch(gg.speed)
+    {
+      case SPEED_PAUSE: t = 0;  break;
+      case SPEED_PLAY:  t = 1;  break;
+      case SPEED_FAST:  t = 4;  break;
+      case SPEED_VFAST: t = 16; break;
+    }
     if(self.dragging_t/t < 20)
       self.click(evt);
   }

@@ -1,5 +1,16 @@
 var keycatch;
 var debug = 0;
+
+var ENUM;
+
+ENUM = 0;
+var SPEED_NULL  = ENUM; ENUM++;
+var SPEED_PAUSE = ENUM; ENUM++;
+var SPEED_PLAY  = ENUM; ENUM++;
+var SPEED_FAST  = ENUM; ENUM++;
+var SPEED_VFAST = ENUM; ENUM++;
+var SPEED_COUNT = ENUM; ENUM++;
+
 var GamePlayScene = function()
 {
   var self = this;
@@ -23,9 +34,6 @@ var GamePlayScene = function()
       if(!debug) return;
       switch(evt.key)
       {
-        case "q": QUADRUPLETIME = !QUADRUPLETIME; break;
-        case "d": DOUBLETIME = !DOUBLETIME; break;
-        case "p": RESUME_SIM = !RESUME_SIM; break;
         case "n": gg.b.nutrition_view = !gg.b.nutrition_view; break;
         case "r": gg.b.raining = !gg.b.raining; break;
         case "x": gg.b.tiles[0].lock = !gg.b.tiles[0].lock; break;
@@ -143,14 +151,20 @@ var GamePlayScene = function()
   };
 
   gg.t_mod_twelve_pi = 0;
+  gg.speed = SPEED_PLAY;
   self.tick = function(times)
   {
-    if(RESUME_SIM && !gg.advisors.takeover)
+    if(gg.speed > SPEED_PAUSE && !gg.advisors.takeover)
     {
-    if(DOUBLETIME) times *= 4;
-    if(QUADRUPLETIME*DOUBLETIME) times *= 4;
-    gg.t_mod_twelve_pi += 0.01*times;
-    if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
+      switch(gg.speed)
+      {
+        case SPEED_PAUSE: times = 0;  break;
+        case SPEED_PLAY:  times = 1;  break;
+        case SPEED_FAST:  times = 4;  break;
+        case SPEED_VFAST: times = 16; break;
+      }
+      gg.t_mod_twelve_pi += 0.01*times;
+      if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
     }
 
     gg.hoverer.filter(gg.b);
@@ -172,7 +186,7 @@ var GamePlayScene = function()
 
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.screen_bounds(gg.cam);
-    if(RESUME_SIM)
+    if(gg.speed > SPEED_PAUSE)
     {
       while(times)
       {

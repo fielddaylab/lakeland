@@ -137,9 +137,9 @@ var bar = function()
   self.play_img  = GenImg("assets/play.png");
   self.speed_img = GenImg("assets/speed.png");
 
-  self.pause_btn = new ButtonBox(0,0,0,0,function(){                 RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
-  self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(!DOUBLETIME) RESUME_SIM = !RESUME_SIM; DOUBLETIME = 0; });
-  self.speed_btn = new ButtonBox(0,0,0,0,function(){                 RESUME_SIM = 1;           DOUBLETIME = 1; });
+  self.pause_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
+  self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
+  self.speed_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
   self.resize();
 
   self.pause_btn.active = 0;
@@ -172,9 +172,9 @@ var bar = function()
 
     gg.ctx.fillStyle = white;
     fillRRect(self.x,-self.pad,self.w,self.pad+self.h,self.pad,gg.ctx);
-    if(self.pause_btn.active) { if(RESUME_SIM)                 gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
-    if(self.play_btn.active)  { if(!RESUME_SIM ||  DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn, gg.ctx); }
-    if(self.speed_btn.active) { if(!RESUME_SIM || !DOUBLETIME) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
+    if(self.pause_btn.active) { if(gg.speed != SPEED_PAUSE) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.pause_img,self.pause_btn,gg.ctx); }
+    if(self.play_btn.active)  { if(gg.speed != SPEED_PLAY)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.play_img, self.play_btn, gg.ctx); }
+    if(self.speed_btn.active) { if(gg.speed != SPEED_FAST)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(self.speed_img,self.speed_btn,gg.ctx); }
     gg.ctx.globalAlpha = 1;
   }
 
@@ -3212,7 +3212,7 @@ var advisors = function()
 
   var tut_timewarp = [
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Click here if you want to speed up time"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
-    function() { return DOUBLETIME; }, //tick
+    function() { return gg.speed > SPEED_PLAY; }, //tick
     function() { //draw
       self.wash();
       var b = gg.bar.speed_btn;
@@ -3273,7 +3273,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){self.dotakeover(); gg.bar.pause_btn.active = 1; gg.bar.play_btn.active = 1; gg.bar.speed_btn.active = 1; RESUME_SIM = 0; self.push_blurb("First, we'll pause the game.");}, //begin
+    function(){self.dotakeover(); gg.bar.pause_btn.active = 1; gg.bar.play_btn.active = 1; gg.bar.speed_btn.active = 1; gg.speed = SPEED_PAUSE; self.push_blurb("First, we'll pause the game.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3285,7 +3285,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.push_blurb("Next, click an item to select it."); },//begin
-    function(){ RESUME_SIM = 0; return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
+    function(){ gg.speed = SPEED_PAUSE; return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
     function(){ //draw
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DIRECT);
@@ -3317,7 +3317,7 @@ var advisors = function()
     noop, //end
 
     function(){ self.push_blurb("click Play to resume the game."); },//begin
-    function(){ return RESUME_SIM; }, //tick
+    function(){ return gg.speed > SPEED_PAUSE; }, //tick
     function(){ //draw
       var b = gg.bar.play_btn;
       self.popup(TEXT_TYPE_DIRECT);
