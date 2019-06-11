@@ -184,7 +184,7 @@ var bar = function()
 
   self.click = function()
   {
-    self.drawer = !self.drawer;
+    //self.drawer = !self.drawer;
   }
 
   self.tick = function()
