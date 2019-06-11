@@ -332,7 +332,7 @@ var shop = function()
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FARM); });       self.farm_btn       = b; b.img = farm_img;       b.name = "Farm";       b.cost = farm_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FERTILIZER); }); self.fertilizer_btn = b; b.img = fertilizer_img; b.name = "Fertilizer"; b.cost = fertilizer_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FOOD); });       self.food_btn       = b; b.img = food_img;       b.name = "Food";       b.cost = food_cost;
-  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });  self.livestock_btn  = b; b.img = livestock_img;  b.name = "Livestock";  b.cost = livestock_cost;
+  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });  self.livestock_btn  = b; b.img = livestock_img;  b.name = "Dairy";      b.cost = livestock_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_STORAGE); });    self.storage_btn    = b; b.img = storage_img;    b.name = "Storage";    b.cost = storage_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });       self.sign_btn       = b; b.img = sign_img;       b.name = "Sign";       b.cost = sign_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SKIMMER); });    self.skimmer_btn    = b; b.img = skimmer_img;    b.name = "Skimmer";    b.cost = skimmer_cost;

@@ -1875,7 +1875,7 @@ var board = function()
       case TILE_TYPE_FOREST:    return "Forest";    break;
       case TILE_TYPE_HOME:      return "Home";      break;
       case TILE_TYPE_FARM:      return "Farm";      break;
-      case TILE_TYPE_LIVESTOCK: return "Livestock"; break;
+      case TILE_TYPE_LIVESTOCK: return "Dairy";     break;
       case TILE_TYPE_STORAGE:   return "Storage";   break;
       case TILE_TYPE_PROCESSOR: return "Processor"; break;
       case TILE_TYPE_ROAD:      return "Road";      break;
