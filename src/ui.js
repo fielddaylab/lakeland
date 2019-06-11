@@ -1042,66 +1042,56 @@ var inspector = function()
         var w = self.w-self.pad*2;
         var h = u.autosell_h;
 
-        x = self.x+self.pad;
         y = u.autosell_0_y;
-        switch(t.marks[0])
-        {
-          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
-        }
+        gg.ctx.drawImage(food_img,self.x+self.pad,y,h,h);
+        x = self.x+self.pad+w/4;
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/3,h,1,0,0,1,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w/4,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(food_img,x,y,h,h);
-        x += w/3;
+        gg.ctx.drawImage(farmbit_imgs[0][0][0],x,y,h,h);
+        x += w/4;
         if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/3,h,0,0,0,0,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w/4,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
         gg.ctx.drawImage(coin_img,x,y,h,h);
-        x += w/3;
+        x += w/4;
         if(t.marks[0] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/3,h,0,1,1,0,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w/4,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
         gg.ctx.drawImage(cow_img,x,y,h,h);
 
         gg.ctx.fillStyle = black;
-        x = self.x+self.pad;
+        x = self.x+self.pad+w/4;
         gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
-        x += self.w/3;
+        x += w/4;
         gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
-        x += self.w/3;
+        x += w/4;
         gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
 
-        x = self.x+self.pad;
         y = u.autosell_1_y;
-        switch(t.marks[1])
-        {
-          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
-        }
+        gg.ctx.drawImage(food_img,self.x+self.pad,y,h,h);
+        x = self.x+self.pad+w/4;
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/3,h,1,0,0,1,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w/4,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(food_img,x,y,h,h);
-        x += w/3;
+        gg.ctx.drawImage(farmbit_imgs[0][0][0],x,y,h,h);
+        x += w/4;
         if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/3,h,0,0,0,0,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w/4,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
         gg.ctx.drawImage(coin_img,x,y,h,h);
-        x += w/3;
+        x += w/4;
         if(t.marks[1] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/3,h,0,1,1,0,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w/4,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
         gg.ctx.drawImage(cow_img,x,y,h,h);
 
         gg.ctx.fillStyle = black;
-        x = self.x+self.pad;
+        x = self.x+self.pad+w/4;
         gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
-        x += self.w/3;
+        x += w/4;
         gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
-        x += self.w/3;
+        x += w/4;
         gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
 
 
@@ -1148,55 +1138,45 @@ var inspector = function()
         var w = self.w-self.pad*2;
         var h = u.autosell_h;
 
-        x = self.x+self.pad;
         y = u.autosell_0_y;
-        switch(t.marks[0])
-        {
-          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
-        }
+        gg.ctx.drawImage(milk_img,self.x+self.pad,y,h,h);
+        x = self.x+self.pad+w/4;
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/2,h,1,0,0,1,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(milk_img,x,y,h,h);
-        x += w/2;
+        gg.ctx.drawImage(farmbit_imgs[0][0][0],x,y,h,h);
+        x += w*3/8;
         if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/2,h,0,1,1,0,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
         gg.ctx.drawImage(coin_img,x,y,h,h);
-        x += w/2;
+        x += w*3/8;
 
         gg.ctx.fillStyle = black;
-        x = self.x+self.pad;
+        x = self.x+self.pad+w/4;
         gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
-        x += self.w/2;
+        x += w*3/8;
         gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
 
 
-        x = self.x+self.pad;
         y = u.autosell_1_y;
-        switch(t.marks[1])
-        {
-          case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-          case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-          case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
-        }
+        gg.ctx.drawImage(poop_img,self.x+self.pad,y,h,h);
+        x = self.x+self.pad+w/4;
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/2,h,1,0,0,1,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(poop_img,x,y,h,h);
-        x += w/2;
+        gg.ctx.drawImage(farm_img,x,y,h,h);
+        x += w*3/8;
         if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
-        fillSelectiveRRect(x,y,w/2,h,0,1,1,0,self.pad,gg.ctx);
+        fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
         gg.ctx.drawImage(coin_img,x,y,h,h);
-        x += w/2;
+        x += w*3/8;
 
         gg.ctx.fillStyle = black;
-        x = self.x+self.pad;
+        x = self.x+self.pad+w/4;
         gg.ctx.fillText("Fertilize", x,y+self.font_size+self.pad);
-        x += self.w/2;
+        x += w*3/8;
         gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
 
 
