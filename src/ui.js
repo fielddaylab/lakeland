@@ -556,6 +556,7 @@ var inspector = function()
       self.tile_ui[TILE_TYPE_HOME]   = u;
       self.tile_ui[TILE_TYPE_SIGN]   = u;
       self.tile_ui[TILE_TYPE_ROAD]   = u;
+      self.tile_ui[TILE_TYPE_GRAVE]  = u;
       y = start_y;
 
       y += self.font_size;
