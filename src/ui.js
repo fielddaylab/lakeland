@@ -1346,25 +1346,105 @@ var inspector = function()
     var u = self.item_ui[it.type];
     if(u)
     {
-      var x = self.x+self.pad;
+      var on = "#BAEDE1";
+      var off = "#F2F2F2";
+      var x;
+      var y;
       var w = self.w-self.pad*2;
-      gg.ctx.textAlign = "left";
-      gg.ctx.fillText("Use:",x,self.switch_y);
-      switch(it.mark)
+      var h = u.switch_bar_h;
+
+      y = u.switch_bar_y;
+      gg.ctx.drawImage(gg.b.item_img(it.type),self.x+self.pad,y,h,h);
+      x = self.x+self.pad+w/4;
+
+      if(it.type == ITEM_TYPE_FOOD)
       {
-        case MARK_USE:  gg.ctx.fillStyle = "#BAEDE1"; break;
-        case MARK_SELL: gg.ctx.fillStyle = "#CDE1A9"; break;
-        case MARK_FEED: gg.ctx.fillStyle = "#BAEDE1"; break;
+        if(it.mark == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/4,h,1,0,0,1,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(farmbit_imgs[0][0][0],x,y,h,h);
+        x += w/4;
+        if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/4,h,0,0,0,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(coin_img,x,y,h,h);
+        x += w/4;
+        if(it.mark == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w/4,h,0,1,1,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(cow_img,x,y,h,h);
+
+        gg.ctx.fillStyle = black;
+        x = self.x+self.pad+w/4;
+        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        x += w/4;
+        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        x += w/4;
+        gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
       }
-      fillRRect(x,u.switch_bar_y,w,u.switch_bar_h,self.pad,gg.ctx);
-      gg.ctx.drawImage(gg.b.item_img(it.type),x,u.switch_bar_y,u.switch_bar_h,u.switch_bar_h);
-      gg.ctx.fillStyle = black;
-      switch(it.mark)
+      else
       {
-        case MARK_USE:  gg.ctx.fillText("Eat", x+u.switch_bar_h+self.pad,u.switch_bar_y+self.font_size+self.pad); break;
-        case MARK_SELL: gg.ctx.fillText("Sell",x+u.switch_bar_h+self.pad,u.switch_bar_y+self.font_size+self.pad); break;
-        case MARK_FEED: gg.ctx.fillText("Feed",x+u.switch_bar_h+self.pad,u.switch_bar_y+self.font_size+self.pad); break;
+        if(it.mark == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        switch(it.type)
+        {
+          case ITEM_TYPE_WATER:
+            gg.ctx.drawImage(farm_img,x,y,h,h);
+            break;
+          case ITEM_TYPE_MILK:
+            gg.ctx.drawImage(farmbit_imgs[0][0][0],x,y,h,h);
+            break;
+          case ITEM_TYPE_POOP:
+            gg.ctx.drawImage(poop_img,x,y,h,h);
+            break;
+          case ITEM_TYPE_FOOD:
+            console.log("BROKEN");
+            break;
+          case ITEM_TYPE_FERTILIZER:
+          case ITEM_TYPE_FEED:
+            console.log("BROKEN");
+            break;
+          case ITEM_TYPE_VALUABLE:
+            console.log("BROKEN");
+            break;
+        }
+        x += w*3/8;
+        if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
+        fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
+        gg.ctx.stroke();
+        gg.ctx.drawImage(coin_img,x,y,h,h);
+        x += w*3/8;
+
+        gg.ctx.fillStyle = black;
+        x = self.x+self.pad+w/4;
+        switch(it.type)
+        {
+          case ITEM_TYPE_WATER:
+            gg.ctx.fillText("Irrigate", x,y+self.font_size+self.pad);
+            break;
+          case ITEM_TYPE_MILK:
+            gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+            break;
+          case ITEM_TYPE_POOP:
+            gg.ctx.fillText("Fertilize", x,y+self.font_size+self.pad);
+            break;
+          case ITEM_TYPE_FOOD:
+            console.log("BROKEN");
+            break;
+          case ITEM_TYPE_FERTILIZER:
+          case ITEM_TYPE_FEED:
+            console.log("BROKEN");
+            break;
+          case ITEM_TYPE_VALUABLE:
+            console.log("BROKEN");
+            break;
+        }
+        x += w*3/8;
+        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+
       }
+
 
     }
   }
