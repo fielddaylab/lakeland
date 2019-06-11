@@ -666,13 +666,6 @@ var inspector = function()
       u.feed_bar_y = y;
       y += self.pad;
       y += self.pad;
-
-      y += self.font_size;
-      u.fed_y = y;
-      y += self.pad;
-      u.fed_bar_y = y;
-      y += self.pad;
-      y += self.pad;
     }
 
     {
@@ -997,36 +990,14 @@ var inspector = function()
         x += w*3/8;
         gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
 
-
         x = self.x+self.pad;
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Feed:",x,u.feed_y);
-        if(t.feed)
-        {
-          draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.feed.state%feed_nutrition)/feed_nutrition);
-          x += self.pad*3;
-          for(var j = 0; (j+1)*feed_nutrition < t.feed.state; j++)
-          {
-            draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-            x += self.pad*3;
-          }
-        }
-
-        x = self.x+self.pad;
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Fed:",x,u.fed_y);
         if(t.val)
         {
-          var drawn = 0;
-          while(drawn < t.val-feed_nutrition)
+          for(var i = 0; i < t.val; i++)
           {
-            draw_custom_pbar(x,u.fed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-            x += self.pad*3;
-            drawn += feed_nutrition;
-          }
-          if(drawn < t.val)
-          {
-            draw_custom_pbar(x,u.fed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.val-drawn)/feed_nutrition);
+            draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
             x += self.pad*3;
           }
         }
@@ -1133,7 +1104,7 @@ var inspector = function()
 
   self.select_item = function(it)
   {
-    if(it.type == ITEM_TYPE_FERTILIZER || it.type == ITEM_TYPE_FEED)
+    if(it.type == ITEM_TYPE_FERTILIZER)
     {
       self.select_tile(it.tile);
       return;
@@ -1221,7 +1192,6 @@ var inspector = function()
             console.log("BROKEN");
             break;
           case ITEM_TYPE_FERTILIZER:
-          case ITEM_TYPE_FEED:
             console.log("BROKEN");
             break;
           case ITEM_TYPE_VALUABLE:
@@ -1252,7 +1222,6 @@ var inspector = function()
             console.log("BROKEN");
             break;
           case ITEM_TYPE_FERTILIZER:
-          case ITEM_TYPE_FEED:
             console.log("BROKEN");
             break;
           case ITEM_TYPE_VALUABLE:
@@ -2156,7 +2125,7 @@ var advisors = function()
       }
       var ticks_before_hungry = max_fullness-fullness_content
       self.people_supported = edible_rate*ticks_before_hungry;
-      self.livestock_supported = feed_rate*(feed_nutrition/feed_nutrition_leak);
+      self.livestock_supported = feed_rate/3;
       self.money_rate = sell_rate*item_worth_food;
     }
 
