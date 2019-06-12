@@ -1685,10 +1685,10 @@ var board = function()
     self.cloud_y = 0;
     self.cloud_w = clouds_img.width;
     self.cloud_h = clouds_img.height;
-    self.cloud_ix = 367;
-    self.cloud_iy = 104;
-    self.cloud_iw = 1360;
-    self.cloud_ih = 1200;
+    self.cloud_ix = 100;
+    self.cloud_iy = 150;
+    self.cloud_iw = 2550;
+    self.cloud_ih = 2250;
 
     self.bounds_w = (self.bounds_tw/self.tw)*self.w;
     self.bounds_h = (self.bounds_th/self.th)*self.h;
