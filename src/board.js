@@ -4694,6 +4694,7 @@ var farmbit = function()
 
   self.draw = function()
   {
+    gg.ctx.globalAlpha = 1;
     if(debug_jobs)
     {
       if(self.job_subject)
@@ -4769,7 +4770,7 @@ var farmbit = function()
     }
 
     var anim = self.anim_anim;
-    if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE)    anim = FARMBIT_ANIM_SWIM;
+    if(self.tile.type == TILE_TYPE_LAKE)                                         anim = FARMBIT_ANIM_SWIM;
     else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)   anim = FARMBIT_ANIM_IDLE;
     //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
     else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
