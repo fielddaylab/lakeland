@@ -3264,13 +3264,13 @@ var board = function()
         {
           t = self.hover_t;
           var own_d = 2;
-          for(var xd = -own_d; xd <= own_d; xd++)
-            for(var yd = -own_d; yd <= own_d; yd++)
-            {
-              var ot = self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd));
-              self.screen_tile(ot);
-              gg.ctx.fillRect(ot.x,ot.y,ot.w,ot.h);
-            }
+          var tlt = self.tiles_t(clamp(0,self.tw-1,t.tx-own_d),clamp(0,self.th-1,t.ty+own_d)); self.screen_tile(tlt);
+          var brt = self.tiles_t(clamp(0,self.tw-1,t.tx+own_d),clamp(0,self.th-1,t.ty-own_d)); self.screen_tile(brt);
+          var x = floor(tlt.x);
+          var y = floor(tlt.y);
+          var w = floor(brt.x+brt.w)-x;
+          var h = floor(brt.y+brt.h)-y;
+          gg.ctx.fillRect(x,y,w,h);
         }
       }
       break;
