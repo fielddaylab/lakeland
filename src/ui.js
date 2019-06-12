@@ -930,7 +930,7 @@ var inspector = function()
         var h = u.autosell_h;
 
         y = u.autosell_0_y;
-        gg.ctx.drawImage(milk_img,self.x+self.pad,y,h,h);
+        gg.ctx.drawImage(icon_milk_img,self.x+self.pad,y,h,h);
         x = self.x+self.pad+w/4;
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
@@ -951,7 +951,7 @@ var inspector = function()
 
 
         y = u.autosell_1_y;
-        gg.ctx.drawImage(poop_img,self.x+self.pad,y,h,h);
+        gg.ctx.drawImage(icon_poop_img,self.x+self.pad,y,h,h);
         x = self.x+self.pad+w/4;
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);

@@ -3003,7 +3003,6 @@ var board = function()
         case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
     }
-    if(t.type == TILE_TYPE_LIVESTOCK) gg.ctx.drawImage(cow_img,x,y+h*2/3,w/2,w/2);
     var a;
     if(t.type == TILE_TYPE_LAKE)
     {
@@ -3525,8 +3524,8 @@ var item = function()
       case ITEM_TYPE_WATER:gg.ctx.drawImage(tile_water_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_FOOD: gg.ctx.drawImage(tile_food_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_POOP:
-             if(self.state == ITEM_STATE_POOP_RAW)   gg.ctx.drawImage(poop_img,      self.x,y,self.w,h);
-        else if(self.state == ITEM_STATE_POOP_LIGHT) gg.ctx.drawImage(poop_light_img,self.x,y,self.w,h);
+             if(self.state == ITEM_STATE_POOP_RAW)   gg.ctx.drawImage(tile_poop_img,      self.x,y,self.w,h);
+        else if(self.state == ITEM_STATE_POOP_LIGHT) gg.ctx.drawImage(tile_poop_light_img,self.x,y,self.w,h);
         break;
       case ITEM_TYPE_MILK: gg.ctx.drawImage(tile_milk_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(tile_valuable_img,self.x,y,self.w,h); break;

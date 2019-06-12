@@ -130,6 +130,8 @@ var icon_poop_img = GenImg("assets/icon_poop.png");
 
 var tile_bloom_img = GenImg("assets/tile_bloom.png");
 var tile_fertilizer_img = GenImg("assets/tile_fertilizer.png");
+var tile_poop_img = GenImg("assets/tile_poop.png");
+var tile_milk_img = GenImg("assets/tile_milk.png");
 var tile_farm_img = GenImg("assets/tile_farm.png");
 var tile_food_img = GenImg("assets/tile_food.png");
 var tile_forest_img = GenImg("assets/tile_forest.png");
