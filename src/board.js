@@ -1429,7 +1429,7 @@ var board = function()
     }
     next();
 
-    for(var i = 0; i < land_imgs.length; i++)
+    for(var i = 0; i < tile_land_imgs.length; i++)
     {
       ctx.fillStyle = self.tile_color(TILE_TYPE_LAND);
       tx = x;
@@ -1438,13 +1438,13 @@ var board = function()
       th = self.min_draw_th;
       self.atlas_i[TILE_TYPE_COUNT+i] = self.atlas.getWholeSprite(tx,ty,tw,th);
       ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       tx += self.min_draw_tw;
       tw = self.min_draw_tw+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
       ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       tx = x;
       ty += self.min_draw_th;
@@ -1452,13 +1452,13 @@ var board = function()
       th = self.min_draw_th+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
       ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       tx += self.min_draw_tw;
       tw = self.min_draw_tw+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
       ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(land_imgs[i],tx,ty,tw,th);
+      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       x += total_tw;
       if(x >= self.atlas.w) next();
@@ -1855,21 +1855,21 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_TYPE_LAND:      return land_imgs[0]; break;
-      case TILE_TYPE_LAKE:      return lake_img; break;
-      case TILE_TYPE_SHORE:     return shore_img; break;
-      case TILE_TYPE_LIVESTOCK: return livestock_img; break;
-      case TILE_TYPE_STORAGE:   return storage_img; break;
-      case TILE_TYPE_PROCESSOR: return processor_img; break;
-      case TILE_TYPE_ROAD:      return road_img; break;
-      case TILE_TYPE_ROCK:      return rock_img; break;
-      case TILE_TYPE_GRAVE:     return grave_img; break;
-      case TILE_TYPE_SIGN:      return sign_img; break;
-      case TILE_TYPE_FOREST:    return forest_img; break;
-      case TILE_TYPE_HOME:      return home_img; break;
-      case TILE_TYPE_FARM:      return farm_img; break;
+      case TILE_TYPE_LAND:      return tile_land_img; break;
+      case TILE_TYPE_LAKE:      return tile_lake_img; break;
+      case TILE_TYPE_SHORE:     return tile_shore_img; break;
+      case TILE_TYPE_LIVESTOCK: return tile_livestock_img; break;
+      //case TILE_TYPE_STORAGE:   return tile_storage_img; break;
+      //case TILE_TYPE_PROCESSOR: return tile_processor_img; break;
+      case TILE_TYPE_ROAD:      return tile_road_img; break;
+      case TILE_TYPE_ROCK:      return tile_rock_img; break;
+      case TILE_TYPE_GRAVE:     return tile_grave_img; break;
+      case TILE_TYPE_SIGN:      return tile_sign_img; break;
+      case TILE_TYPE_FOREST:    return tile_forest_img; break;
+      case TILE_TYPE_HOME:      return tile_home_img; break;
+      case TILE_TYPE_FARM:      return tile_farm_img; break;
     }
-    return land_imgs[0];
+    return tile_land_img;
   }
   self.tile_color = function(type)
   {
@@ -1889,7 +1889,7 @@ var board = function()
       case TILE_TYPE_FOREST:    return "#A8D384"; break;
       case TILE_TYPE_FARM:      return "#D8C44B"; break;
     }
-    return land_imgs[0];
+    return "rgba(0,0,0,0)";
   }
   self.tile_name = function(type)
   {
@@ -1936,12 +1936,12 @@ var board = function()
   {
     switch(type)
     {
-      case ITEM_TYPE_WATER:      return water_img;      break;
-      case ITEM_TYPE_FOOD:       return food_img;       break;
-      case ITEM_TYPE_POOP:       return poop_img;       break;
-      case ITEM_TYPE_MILK:       return milk_img;       break;
-      case ITEM_TYPE_VALUABLE:   return valuable_img;   break;
-      case ITEM_TYPE_FERTILIZER: return fertilizer_img; break;
+      case ITEM_TYPE_WATER:      return tile_water_img;      break;
+      case ITEM_TYPE_FOOD:       return tile_food_img;       break;
+      case ITEM_TYPE_POOP:       return tile_poop_img;       break;
+      case ITEM_TYPE_MILK:       return tile_milk_img;       break;
+      case ITEM_TYPE_VALUABLE:   return tile_valuable_img;   break;
+      case ITEM_TYPE_FERTILIZER: return tile_fertilizer_img; break;
     }
   }
   self.item_name = function(type)
@@ -2942,10 +2942,8 @@ var board = function()
       case TILE_TYPE_SHORE:
       case TILE_TYPE_ROCK:
       case TILE_TYPE_FOREST:
-        gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
-        break;
       case TILE_TYPE_LAND:
-        gg.ctx.drawImage(land_imgs[0],x,y,w,h);
+        gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
         break;
     }
   }
@@ -3285,13 +3283,13 @@ var board = function()
     if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE && !gg.shop.selected_buy)
     {
       t = gg.inspector.detailed;
-      gg.ctx.drawImage(cursor_img,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
+      gg.ctx.drawImage(icon_cursor_img,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
     }
     //if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(self.hover_t && gg.shop.selected_buy)
     {
       t = self.hover_t;
-      var cursor = cursor_img;
+      var cursor = icon_cursor_img;
       if(self.hover_t_placable)
       {
         var o = self.scratch_tile;
@@ -3312,7 +3310,7 @@ var board = function()
         }
       }
       else
-        cursor = ncursor_img;
+        cursor = icon_ncursor_img;
       //gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
       gg.ctx.drawImage(cursor,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
     }

@@ -26,7 +26,7 @@ var GamePlayScene = function()
         var secret = "spyparty";
         if(secret[keycatch.secretprogress] == String.fromCharCode(evt.keyCode).toLowerCase()) keycatch.secretprogress++;
         else                                                                                  keycatch.secretprogress = 0;
-        if(keycatch.secretprogress == secret.length) { debug = 1; gg.shop.btns[0].push(gg.shop.money_btn); gg.shop.resize(); gg.b.own_tiles(gg.b.tiles_t(floor(gg.b.bounds_tx+gg.b.bounds_tw/2),floor(gg.b.bounds_ty+gg.b.bounds_th/2)), 2); }
+        if(keycatch.secretprogress == secret.length) { debug = 1; gg.shop.btns.push(gg.shop.money_btn); gg.shop.resize(); gg.b.own_tiles(gg.b.tiles_t(floor(gg.b.bounds_tx+gg.b.bounds_tw/2),floor(gg.b.bounds_ty+gg.b.bounds_th/2)), 2); }
       }
     },
     key:function(evt)
@@ -43,9 +43,7 @@ var GamePlayScene = function()
         {
           var s = gg.shop;
           for(var i = 0; i < s.btns.length; i++)
-            for(var j = 0; j < s.btns[i].length; j++)
-              s.btns[i][j].active = 1;
-          s.festival_btn.active = 0;
+            s.btns[i].active = 1;
 
           gg.nutrition_toggle.toggle_btn.active = 1;
           gg.bar.pause_btn.active = 1;
