@@ -476,7 +476,7 @@ var shop = function()
       self.draw_btn(self.btns[i],0);
 
     if(debug) self.draw_btn(self.money_btn, tile_money_img, "Free Money", self.money_btn.active, !self.selected_buy, -free_money, 1, 0);
-    //self.draw_btn(self.abandon_btn, farmbit_imgs[0], "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
+    //self.draw_btn(self.abandon_btn, farmbit_img, "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
     if(self.selected_buy) { self.refund_btn.cost = self.buy_cost(self.selected_buy); self.draw_btn(self.refund_btn, 1); }
 
     gg.ctx.textAlign = "left";

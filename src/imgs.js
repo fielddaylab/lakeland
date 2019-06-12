@@ -104,16 +104,17 @@ farmbit_anim_nframes[FARMBIT_ANIM_SWIM] = 2;
 var farmbit_imgs = [];
 for(var c = 0; c < 5; c++)
 {
+  farmbit_imgs[c] = [];
   for(var a = 0; a < FARMBIT_ANIM_COUNT; a++)
   {
-    farmbit_imgs[a] = [];
+    farmbit_imgs[c][a] = [];
     var name = farmbit_anim_names[a];
     for(var s = 0; s < 2; s++)
     {
       var side = s ? "back" : "front";
-      farmbit_imgs[a][s] = [];
+      farmbit_imgs[c][a][s] = [];
       for(var f = 0; f < farmbit_anim_nframes[a]; f++)
-        farmbit_imgs[a][s][f] = GenImg("assets/farmbit_"+c+"_"+name+"_"+side+"_"+f+".png");
+        farmbit_imgs[c][a][s][f] = GenImg("assets/farmbit_"+c+"_"+name+"_"+side+"_"+f+".png");
     }
   }
 }

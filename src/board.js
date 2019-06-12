@@ -3558,7 +3558,8 @@ var farmbit = function()
   self.h = 0;
 
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
-  self.last_img = farmbit_imgs[FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0];
+  self.color = randIntBelow(6);
+  self.last_img = farmbit_imgs[self.color][FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
   self.job_subject = 0;
@@ -4783,7 +4784,7 @@ var farmbit = function()
       }
       */
     }
-    self.last_img = farmbit_imgs[self.anim_anim][self.anim_side][self.anim_frame];
+    self.last_img = farmbit_imgs[self.color][self.anim_anim][self.anim_side][self.anim_frame];
     gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
 
     /*
