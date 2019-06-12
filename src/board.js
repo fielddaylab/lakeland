@@ -3014,7 +3014,7 @@ var board = function()
       if(a > 0.05)
       {
         gg.ctx.globalAlpha = a;
-        gg.ctx.drawImage(bloom_img,x,y,w,h);
+        gg.ctx.drawImage(tile_bloom_img,x,y,w,h);
         gg.ctx.globalAlpha = 1;
       }
     }
@@ -3558,7 +3558,7 @@ var farmbit = function()
   self.h = 0;
 
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
-  self.color = randIntBelow(6);
+  self.color = 0;//randIntBelow(6);
   self.last_img = farmbit_imgs[self.color][FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
