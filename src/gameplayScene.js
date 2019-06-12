@@ -240,8 +240,8 @@ var GamePlayScene = function()
 
   self.draw = function()
   {
-    gg.ctx.fillStyle = red;
-    gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+    //gg.ctx.fillStyle = red;
+    //gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
 
     gg.ctx.font = gg.font_size+"px "+gg.font;
 
