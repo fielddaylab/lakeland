@@ -1396,16 +1396,19 @@ var board = function()
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
     {
       if(i == TILE_TYPE_LAND) continue; //special
+      ctx.fillStyle = self.tile_color(i);
       tx = x;
       ty = y;
       tw = self.min_draw_tw;
       th = self.min_draw_th;
       self.atlas_i[i] = self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
       ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
       self.atlas.commitSprite();
       tx += self.min_draw_tw;
       tw = self.min_draw_tw+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
       ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
       self.atlas.commitSprite();
       tx = x;
@@ -1413,11 +1416,13 @@ var board = function()
       tw = self.min_draw_tw;
       th = self.min_draw_th+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
       ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
       self.atlas.commitSprite();
       tx += self.min_draw_tw;
       tw = self.min_draw_tw+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
       ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
       self.atlas.commitSprite();
       x += total_tw;
@@ -1426,16 +1431,19 @@ var board = function()
 
     for(var i = 0; i < land_imgs.length; i++)
     {
+      ctx.fillStyle = self.tile_color(TILE_TYPE_LAND);
       tx = x;
       ty = y;
       tw = self.min_draw_tw;
       th = self.min_draw_th;
       self.atlas_i[TILE_TYPE_COUNT+i] = self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
       ctx.drawImage(land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       tx += self.min_draw_tw;
       tw = self.min_draw_tw+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
       ctx.drawImage(land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       tx = x;
@@ -1443,11 +1451,13 @@ var board = function()
       tw = self.min_draw_tw;
       th = self.min_draw_th+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
       ctx.drawImage(land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       tx += self.min_draw_tw;
       tw = self.min_draw_tw+1;
       self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
       ctx.drawImage(land_imgs[i],tx,ty,tw,th);
       self.atlas.commitSprite();
       x += total_tw;
@@ -1858,6 +1868,26 @@ var board = function()
       case TILE_TYPE_FOREST:    return forest_img; break;
       case TILE_TYPE_HOME:      return home_img; break;
       case TILE_TYPE_FARM:      return farm_img; break;
+    }
+    return land_imgs[0];
+  }
+  self.tile_color = function(type)
+  {
+    switch(type)
+    {
+      case TILE_TYPE_LIVESTOCK:
+      case TILE_TYPE_STORAGE:
+      case TILE_TYPE_PROCESSOR:
+      case TILE_TYPE_ROAD:
+      case TILE_TYPE_GRAVE:
+      case TILE_TYPE_SIGN:
+      case TILE_TYPE_HOME:      return "rgba(0,0,0,0)"; break;
+      case TILE_TYPE_LAND:      return "#BBD86F"; break;
+      case TILE_TYPE_LAKE:      return "#AAE9DA"; break;
+      case TILE_TYPE_SHORE:     return "#FEF8D3"; break;
+      case TILE_TYPE_ROCK:      return "#D4C0AB"; break;
+      case TILE_TYPE_FOREST:    return "#A8D384"; break;
+      case TILE_TYPE_FARM:      return "#D8C44B"; break;
     }
     return land_imgs[0];
   }
@@ -2894,7 +2924,7 @@ var board = function()
     */
   }
 
-  self.draw_tile_root = function(t,x,y,w,h)
+  self.draw_tile_og = function(t,x,y,w,h)
   {
     switch(t.og_type)
     {
@@ -2918,7 +2948,10 @@ var board = function()
         gg.ctx.drawImage(land_imgs[0],x,y,w,h);
         break;
     }
+  }
 
+  self.draw_tile_ontop = function(t,x,y,w,h)
+  {
     switch(t.type)
     {
       case TILE_TYPE_LIVESTOCK:
@@ -3002,13 +3035,14 @@ var board = function()
     var over = h/4;
     y -= over;
     h += over;
-    self.draw_tile_root(t,x,y,w,h);
+    self.draw_tile_og(t,x,y,w,h);
+    self.draw_tile_ontop(t,x,y,w,h);
     self.draw_tile_overlay(t,x,y,w,h);
   }
 
-  self.draw_tile_root_fast = function(t,x,y,w,h,xd,yd)
+  self.draw_tile_og_fast = function(t,x,y,w,h)
   {
-    if(!self.atlas) return self.draw_tile_root(t,x,y,w,h);
+    if(!self.atlas) return self.draw_tile_og(t,x,y,w,h);
 
     var off = 0;
     if(w == self.min_draw_tw)
@@ -3049,6 +3083,11 @@ var board = function()
       }
         break;
     }
+  }
+
+  self.draw_tile_ontop_fast = function(t,x,y,w,h,xd,yd)
+  {
+    if(!self.atlas) return self.draw_tile_ontop(t,x,y,w,h);
 
     switch(t.type)
     {
@@ -3060,6 +3099,17 @@ var board = function()
       case TILE_TYPE_GRAVE:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_FARM:
+        var off = 0;
+        if(w == self.min_draw_tw)
+        {
+                 if(h == self.min_draw_th)     off = 0;
+          else /*if(h == self.min_draw_th+1)*/ off = 2;
+        }
+        else /*if(w == self.min_draw_tw+1)*/
+        {
+                 if(h == self.min_draw_th)     off = 1;
+          else /*if(h == self.min_draw_th+1)*/ off = 3;
+        }
         self.atlas.drawWholeSprite(self.atlas_i[t.type]+off,x-xd/2,y-yd,w+xd,h+yd,gg.ctx);
         break;
       case TILE_TYPE_LAKE:
@@ -3074,11 +3124,8 @@ var board = function()
 
   self.draw_tile_fast = function(t,x,y,w,h,xd,yd)
   {
-    //Should pre-compute this!
-    //var over = h/4;
-    //y -= over;
-    //h += over;
-    self.draw_tile_root_fast(t,x,y,w,h,xd,yd);
+    self.draw_tile_og_fast(t,x,y,w,h);
+    self.draw_tile_ontop_fast(t,x,y,w,h,xd,yd);
     self.draw_tile_overlay(t,x,y,w,h);
   }
 
@@ -3095,16 +3142,17 @@ var board = function()
     var tw;
     var nx;
     var ny;
-    gg.ctx.imageSmoothingEnabled = 0;
-    //normal view
-    var i = 0;
-    ny = floor(self.y);
+    var i;
     var dhd = floor(h/4);
-
     var yd = psin(gg.t_mod_twelve_pi*10);
     var xd = bias0(1-yd)*self.min_draw_tw/10;
     yd *= self.min_draw_th/10;
 
+    gg.ctx.imageSmoothingEnabled = 0;
+
+    //og tiles
+    i = 0;
+    ny = floor(self.y);
     for(var ty = self.th-1; ty >= 0; ty--)
     {
       y = ny;
@@ -3122,7 +3170,32 @@ var board = function()
         tw = nx-x;
         if(x < -tw || x > gg.canvas.width) { i++; continue; }
         var t = self.tiles[i];
-        self.draw_tile_fast(t,x,dy,tw,dth,xd,yd);
+        self.draw_tile_og_fast(t,x,dy,tw,dth);
+        i++;
+      }
+    }
+    //top tiles + overlays
+    i = 0;
+    ny = floor(self.y);
+    for(var ty = self.th-1; ty >= 0; ty--)
+    {
+      y = ny;
+      ny = floor(self.y+self.h-ty*h);
+      th = ny-y;
+      dth = th+dhd;
+      dy = y-dhd;
+      nx = floor(self.x+(0*w));
+      i = self.tiles_i(0,ty);
+      if(dy < -dth || dy > gg.canvas.height) { i += self.tw; continue; }
+      for(var tx = 0; tx < self.tw; tx++)
+      {
+        x = nx;
+        nx = floor(self.x+((tx+1)*w));
+        tw = nx-x;
+        if(x < -tw || x > gg.canvas.width) { i++; continue; }
+        var t = self.tiles[i];
+        self.draw_tile_ontop_fast(t,x,dy,tw,dth,xd,yd);
+        self.draw_tile_overlay(t,x,dy,tw,h);
         i++;
       }
     }
@@ -3347,11 +3420,13 @@ var board = function()
       gg.ctx.strokeRect(self.cbounds_x,self.cbounds_y,self.cbounds_w,self.cbounds_h);
       //*/
       gg.ctx.drawImage(clouds_img,self.cloud_x,self.cloud_y,self.cloud_w,self.cloud_h);
-      gg.ctx.fillStyle = "rgba(255,255,255,0.9)";
+      gg.ctx.fillStyle = "#155D67";
+      gg.ctx.globalAlpha = 0.8;
       if(self.cloud_x              > 0)                gg.ctx.fillRect(0,0,self.cloud_x,gg.canvas.height);
       if(self.cloud_x+self.cloud_w < gg.canvas.width)  gg.ctx.fillRect(self.cloud_x+self.cloud_w,           0,gg.canvas.width-self.cloud_x,gg.canvas.height);
       if(self.cloud_y              > 0)                gg.ctx.fillRect(self.cloud_x,                        0,self.cloud_w,self.cloud_y);
       if(self.cloud_y+self.cloud_h < gg.canvas.height) gg.ctx.fillRect(self.cloud_x,self.cloud_y+self.cloud_h,self.cloud_w,gg.canvas.height-(self.cloud_y+self.cloud_h));
+      gg.ctx.flobalAlpha = 1;
     }
 
     if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 10;
