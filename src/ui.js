@@ -134,10 +134,6 @@ var bar = function()
     setBB(self.vfast_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
   }
 
-  self.pause_img = GenImg("assets/pause.png");
-  self.play_img  = GenImg("assets/play.png");
-  self.speed_img = GenImg("assets/speed.png");
-
   self.pause_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
   self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
   self.fast_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
@@ -273,8 +269,6 @@ var shop = function()
     setBB(self.abandon_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
     setBB(self.refund_btn,     btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
   }
-
-  self.money_img = GenImg("assets/money.png");
 
   self.buy_cost = function(buy)
   {

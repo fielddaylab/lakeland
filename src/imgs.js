@@ -65,7 +65,7 @@ for(var t = 0; t < land_topo_levels; t++) //topography
     {
       land_img = new Image();
       land_img.onload = (function(img,i){return function(){ land_imgs[i] = img; };})(land_img,land_off(t,d,f));
-      land_img.src = "assets/land_t"+t+"_d"+d+"_f"+f+".png";
+      land_img.src = "assets/tile_land_t"+t+"_d"+d+"_f"+f+".png";
     }
   }
 }
@@ -76,7 +76,7 @@ for(var i = 0; i < 4; i++)
 {
   livestock_img = new Image();
   livestock_img.onload = (function(img,i){return function(){ livestock_imgs[i] = img; };})(livestock_img,i);
-  livestock_img.src = "assets/livestock_"+i+".png";
+  livestock_img.src = "assets/tile_livestock_"+i+".png";
 }
 
 var ENUM;
@@ -143,8 +143,8 @@ var tile_skull_img = GenImg("assets/tile_skull.png");
 var tile_water_img = GenImg("assets/tile_water.png");
 
 var advisor_mayor_img = GenImg("assets/advisor_mayor.png");
-var advisor_business_img = GenImg("assets/badvisor_usiness.png");
-var advisor_farmer_img = GenImg("assets/fadvisor_armer.png");
+var advisor_business_img = GenImg("assets/advisor_business.png");
+var advisor_farmer_img = GenImg("assets/advisor_farmer.png");
 
 var advisor_panel_mayor_img = GenImg("assets/advisor_panel_mayor.png");
 var advisor_panel_business_img = GenImg("assets/advisor_panel_business.png");
