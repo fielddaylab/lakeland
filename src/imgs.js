@@ -98,7 +98,7 @@ farmbit_anim_names[FARMBIT_ANIM_SWIM] = "swim";
 
 var farmbit_anim_nframes = [];
 farmbit_anim_nframes[FARMBIT_ANIM_IDLE] = 1;
-farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 2;
+farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 5;
 farmbit_anim_nframes[FARMBIT_ANIM_SWIM] = 2;
 
 var farmbit_imgs = [];

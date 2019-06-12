@@ -4770,9 +4770,11 @@ var farmbit = function()
 
     var anim = self.anim_anim;
     if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE)    anim = FARMBIT_ANIM_SWIM;
+    else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)   anim = FARMBIT_ANIM_IDLE;
     //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
     else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
     if(anim != self.anim_anim) self.anim_frame = 0;
+    self.anim_anim = anim;
 
     if(self.job_state == JOB_STATE_ACT)
     {
