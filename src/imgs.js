@@ -155,7 +155,7 @@ var advisor_panel_business_img = GenImg("assets/advisor_panel_business.png");
 var advisor_panel_farmer_img = GenImg("assets/advisor_panel_farmer.png");
 
 var badge_cow_img = GenImg("assets/badge_cow.png");
-var badge_farmbit = GenImg("assets/badge_farmbit.png");
+var badge_farmbit_img = GenImg("assets/badge_farmbit.png");
 var badge_money_img = GenImg("assets/badge_money.png");
 
 var button_achievement_img = GenImg("assets/button_achievement.png");

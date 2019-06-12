@@ -3522,15 +3522,15 @@ var item = function()
     var h = self.h+self.h/4;
     switch(self.type)
     {
-      case ITEM_TYPE_WATER:gg.ctx.drawImage(water_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_FOOD: gg.ctx.drawImage(food_img,self.x,y,self.w,h); break;
+      case ITEM_TYPE_WATER:gg.ctx.drawImage(tile_water_img,self.x,y,self.w,h); break;
+      case ITEM_TYPE_FOOD: gg.ctx.drawImage(tile_food_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_POOP:
              if(self.state == ITEM_STATE_POOP_RAW)   gg.ctx.drawImage(poop_img,      self.x,y,self.w,h);
         else if(self.state == ITEM_STATE_POOP_LIGHT) gg.ctx.drawImage(poop_light_img,self.x,y,self.w,h);
         break;
-      case ITEM_TYPE_MILK: gg.ctx.drawImage(milk_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(valuable_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_FERTILIZER: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
+      case ITEM_TYPE_MILK: gg.ctx.drawImage(tile_milk_img,self.x,y,self.w,h); break;
+      case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(tile_valuable_img,self.x,y,self.w,h); break;
+      case ITEM_TYPE_FERTILIZER: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(tile_fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
     }
     if(self.mark == MARK_SELL)
     {
@@ -4769,8 +4769,7 @@ var farmbit = function()
 
     var anim = self.anim_anim;
     if(self.tile.type == TILE_TYPE_LAKE || self.tile.type == TILE_TYPE_SHORE)    anim = FARMBIT_ANIM_SWIM;
-    else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
-    else if(self.item)                                                           anim = FARMBIT_ANIM_CARRY;
+    //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
     else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
     if(anim != self.anim_anim) self.anim_frame = 0;
 
