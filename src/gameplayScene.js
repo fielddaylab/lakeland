@@ -63,7 +63,6 @@ var GamePlayScene = function()
           if(gg.farmbits.length == gg.b.bounds_n) { gg.b.inc_bounds(); gg.b.bounds_n++; gg.b.resize(); }
           var t = gg.b.tiles_t(gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw),gg.b.bounds_ty+randIntBelow(gg.b.bounds_th));
           var b = new farmbit();
-          gg.ticker.nq(b.name+" decided to move in!");
           b.tile = t;
           gg.b.tiles_tw(t,b);
           gg.farmbits.push(b);
@@ -97,7 +96,6 @@ var GamePlayScene = function()
       gg.nutrition_toggle.resize();
       gg.shop.resize();
       gg.inspector.resize();
-      gg.ticker.resize();
       gg.achievements.resize();
       gg.advisors.resize();
     }
@@ -143,7 +141,6 @@ var GamePlayScene = function()
     gg.nutrition_toggle = new nutrition_toggle();
     gg.shop = new shop();
     gg.inspector = new inspector();
-    gg.ticker = new ticker();
     gg.achievements = new achievements();
     gg.advisors = new advisors();
     self.readied = 1;
@@ -185,35 +182,30 @@ var GamePlayScene = function()
 
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.screen_bounds(gg.cam);
-    if(gg.speed > SPEED_PAUSE)
+    gg.b.idempotent_tick();
+    while(times)
     {
-      while(times)
+      gg.hungry = 0;
+      gg.food = 0;
+      if(!gg.advisors.takeover)
       {
-        gg.hungry = 0;
-        gg.food = 0;
-        if(!gg.advisors.takeover)
+        gg.b.tick();
+        for(var i = 0; i < gg.items.length; i++)
         {
-          gg.b.tick();
-          for(var i = 0; i < gg.items.length; i++)
-          {
-            var o = gg.items[i];
-            o.tick();
-            if(o.type == ITEM_TYPE_FOOD && (o.mark == MARK_USE)) gg.food++;
-          }
-          for(var i = 0; i < gg.farmbits.length; i++)
-          {
-            var f = gg.farmbits[i];
-            f.tick();
-            if(f.fullness_state != FARMBIT_STATE_CONTENT) gg.hungry++;
-          }
-          gg.bar.tick();
-          gg.nutrition_toggle.tick();
-          gg.shop.tick();
-          gg.ticker.tick();
+          var o = gg.items[i];
+          o.tick();
+          if(o.type == ITEM_TYPE_FOOD && (o.mark == MARK_USE)) gg.food++;
         }
-        times--;
+        for(var i = 0; i < gg.farmbits.length; i++)
+        {
+          var f = gg.farmbits[i];
+          f.tick();
+          if(f.fullness_state != FARMBIT_STATE_CONTENT) gg.hungry++;
+        }
       }
+      times--;
     }
+    gg.shop.tick();
 
     //screen space
     {
@@ -257,7 +249,6 @@ var GamePlayScene = function()
     gg.nutrition_toggle.draw();
     gg.shop.draw();
     gg.inspector.draw();
-    gg.ticker.draw();
 
     /*
     var x = gg.canvas.width-100;

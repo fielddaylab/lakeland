@@ -159,11 +159,6 @@ var bar = function()
   {
   }
 
-  self.tick = function()
-  {
-
-  }
-
   self.draw = function()
   {
     var fs = gg.font_size;
@@ -208,11 +203,6 @@ var nutrition_toggle = function()
     var check = true;
     if(check && self.toggle_btn.active) check = !filter.filter(self.toggle_btn);
     return !check;
-  }
-
-  self.tick = function()
-  {
-
   }
 
   self.draw = function()
@@ -1443,64 +1433,6 @@ var inspector = function()
     }
     gg.ctx.textAlign = "left";
 
-  }
-}
-
-var ticker = function()
-{
-  var self = this;
-  self.resize = function()
-  {
-    self.pad = 10*gg.stage.s_mod;
-    self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad;
-    self.y = 0;
-    self.w = gg.canvas.width-self.x;
-    self.h = gg.canvas.height;
-  }
-  self.resize();
-
-  self.feed = [];
-  self.feed_t = [];
-  var feed_t_max = 500;
-  self.nq = function(txt)
-  {
-    return;
-    self.feed.push(txt);
-    self.feed_t.push(0);
-  }
-
-  self.tick = function()
-  {
-    return;
-    for(var i = 0; i < self.feed.length; i++)
-    {
-      self.feed_t[i]++;
-      if(self.feed_t[i] > feed_t_max)
-      {
-        self.feed.splice(i,1);
-        self.feed_t.splice(i,1);
-        i--;
-      }
-    }
-  }
-
-  self.draw = function()
-  {
-    return;
-    gg.ctx.font = gg.font_size+"px "+gg.font;
-    var pad = 20*gg.stage.s_mod;
-    var y = self.y+self.h-pad;
-    for(var i = 0; i < self.feed.length; i++)
-    {
-      var index = self.feed.length-1-i;
-      var t = self.feed_t[index]/feed_t_max;
-      var a = min(1,2-(2*t));
-      var r = floor(max(0,1-t*5)*255);
-      gg.ctx.fillStyle = "rgba("+r+",0,0,"+a+")";
-      gg.ctx.fillText(self.feed[index],self.x+10*gg.stage.s_mod,self.y+10*gg.stage.s_mod+y);
-      y -= pad;
-    }
-    gg.ctx.fillStyle = black;
   }
 }
 
