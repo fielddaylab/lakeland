@@ -1395,7 +1395,7 @@ var board = function()
     }
     for(var i = 0; i < TILE_TYPE_COUNT; i++)
     {
-      if(i == TILE_TYPE_LAND) continue; //special
+      if(i == TILE_TYPE_LAND || i == TILE_TYPE_LIVESTOCK) continue; //special
       ctx.fillStyle = self.tile_color(i);
       tx = x;
       ty = y;
@@ -1463,6 +1463,44 @@ var board = function()
       x += total_tw;
       if(x >= self.atlas.w) next();
     }
+    next();
+
+    for(var i = 0; i < tile_livestock_imgs.length; i++)
+    {
+      ctx.fillStyle = self.tile_color(TILE_TYPE_LIVESTOCK);
+      tx = x;
+      ty = y;
+      tw = self.min_draw_tw;
+      th = self.min_draw_th;
+      self.atlas_i[TILE_TYPE_COUNT+livestock_off(i)] = self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx += self.min_draw_tw;
+      tw = self.min_draw_tw+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx = x;
+      ty += self.min_draw_th;
+      tw = self.min_draw_tw;
+      th = self.min_draw_th+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      tx += self.min_draw_tw;
+      tw = self.min_draw_tw+1;
+      self.atlas.getWholeSprite(tx,ty,tw,th);
+      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+      self.atlas.commitSprite();
+      x += total_tw;
+      if(x >= self.atlas.w) next();
+    }
+    //next(); //because it commits next anyways
+
     self.atlas.commit();
 
     if(self.timer_atlas) self.timer_atlas.destroy();
@@ -3089,6 +3127,19 @@ var board = function()
     switch(t.type)
     {
       case TILE_TYPE_LIVESTOCK:
+        var off = 0;
+        if(w == self.min_draw_tw)
+        {
+                 if(h == self.min_draw_th)     off = 0;
+          else /*if(h == self.min_draw_th+1)*/ off = 2;
+        }
+        else /*if(w == self.min_draw_tw+1)*/
+        {
+                 if(h == self.min_draw_th)     off = 1;
+          else /*if(h == self.min_draw_th+1)*/ off = 3;
+        }
+        self.atlas.drawWholeSprite(self.atlas_i[TILE_TYPE_COUNT+livestock_off(t.val)]+off,x-xd/2,y-yd,w+xd,h+yd,gg.ctx);
+        break;
       case TILE_TYPE_STORAGE:
       case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_ROAD:
@@ -4765,7 +4816,6 @@ var farmbit = function()
     {
       if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
         gg.ctx.drawImage(tile_out_img,self.x,self.y,self.w,self.h);
-        //gg.ctx.fillText("BACK SOON",self.x+self.w/2,self.y+self.h/2);
       return;
     }
 
