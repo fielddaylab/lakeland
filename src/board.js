@@ -3253,6 +3253,7 @@ var board = function()
       case BUY_TYPE_STORAGE:
       case BUY_TYPE_PROCESSOR:
       {
+        var own_d = 2;
         var i = 0;
         var a;
         gg.ctx.fillStyle = blue;
@@ -3273,21 +3274,15 @@ var board = function()
             if(x < -tw || x > gg.canvas.width) { i++; continue; }
             t = self.tiles[i];
             if(t.owned && (gg.shop.selected_buy != BUY_TYPE_HOME || t.shoreline))
+              ;
+            else
+            {
+              if(self.hover_t && self.hover_t_placable && abs(self.hover_t.tx-tx) <= own_d && abs(self.hover_t.ty-ty) <= own_d) gg.ctx.globalAlpha = 0.15;
+              else gg.ctx.globalAlpha = 0.25;
               gg.ctx.fillRect(x,ny,tw,th);
+            }
             i++;
           }
-        }
-        if(self.hover_t && self.hover_t_placable)
-        {
-          t = self.hover_t;
-          var own_d = 2;
-          var tlt = self.tiles_t(clamp(0,self.tw-1,t.tx-own_d),clamp(0,self.th-1,t.ty+own_d)); self.screen_tile(tlt);
-          var brt = self.tiles_t(clamp(0,self.tw-1,t.tx+own_d),clamp(0,self.th-1,t.ty-own_d)); self.screen_tile(brt);
-          var x = floor(tlt.x);
-          var y = floor(tlt.y);
-          var w = floor(brt.x+brt.w)-x;
-          var h = floor(brt.y+brt.h)-y;
-          gg.ctx.fillRect(x,y,w,h);
         }
       }
       break;
