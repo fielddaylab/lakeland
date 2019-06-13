@@ -2159,12 +2159,39 @@ var advisors = function()
       var y = gg.canvas.height-h;
       gg.ctx.textAlign = "left";
       gg.ctx.fillStyle = self.fgc;
+      var fs = gg.font_size;
       gg.ctx.fillText("ADVISORS",x,y);
-      if(self.mayor_active)    gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h);
+      gg.ctx.textAlign = "center";
+      if(self.mayor_active)
+      {
+        gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h);
+        gg.ctx.fillText(gg.farmbits.length+" townspeople",x+w/2,y+fs*3);
+        if(gg.farmbits.length)
+        {
+          var sad = 0;
+          for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].joy_state == FARMBIT_STATE_DESPERATE) sad++;
+          gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad",x+w/2,y+fs*4);
+        }
+        else gg.ctx.fillText("0% sad",x+w/2,y+fs*4);
+      }
       x += w*1.5;
-      if(self.business_active) gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h);
+      if(self.business_active)
+      {
+        gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h);
+        var permin = 60*60;
+        gg.ctx.fillText(fdisp(self.money_rate*permin,1)+" $/min",x+w/2,y+fs*3);
+      }
       x += w*1.5;
-      if(self.farmer_active)   gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h);
+      if(self.farmer_active)
+      {
+        gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h);
+        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people supported",x+w/2,y+fs*3);
+        gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock supported",x+w/2,y+fs*4);
+        //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*5);
+        //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*6);
+        //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
+        //gg.ctx.fillText(gg.food+" food", x,y);
+      }
       x += w*1.5;
     }
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
@@ -2251,47 +2278,6 @@ var advisors = function()
         if(ty > y+h+self.font_size) break;
       }
       gg.ctx.restore();
-
-      gg.ctx.globalAlpha = 1;
-    }
-
-    return;
-    //show stats
-    {
-      gg.ctx.fillText(fdisp(self.people_supported,    1)+" people",    x,y+fs*0);
-      gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock", x,y+fs*1);
-      var permin = 60*60;
-      gg.ctx.fillText(fdisp(self.money_rate*permin,   1)+" $/min",     x,y+fs*2);
-
-      gg.ctx.fillStyle = gg.font_color;
-      var x = self.x+self.pad;
-      var y = self.y+self.pad+fs;
-      var w = 50*gg.stage.s_mod;
-
-
-      //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*0);
-      //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*1);
-      //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*2);
-      //gg.ctx.fillText(gg.food+" food", x,y);
-      x += w;
-
-      x = self.x+self.w-self.pad;
-      //population
-      x -= w;
-      x -= w;
-      gg.ctx.fillText(gg.farmbits.length+" townspeople", x,y+fs*0);
-      //gg.ctx.fillText(fdisp(gg.farmbits.length*(1/(max_fullness-fullness_content))*permin)+" food/min", x,y+fs*1);
-      //joy
-      /*
-      x -= w;
-      if(gg.farmbits.length)
-      {
-        var sad = 0;
-        for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].joy_state == FARMBIT_STATE_DESPERATE) sad++;
-        gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad", x,y);
-      }
-      else gg.ctx.fillText("0% sad", x,y);
-      */
 
       gg.ctx.globalAlpha = 1;
     }
