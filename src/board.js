@@ -4764,7 +4764,8 @@ var farmbit = function()
     if(self.offscreen)
     {
       if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
-        gg.ctx.fillText("BACK SOON",self.x+self.w/2,self.y+self.h/2);
+        gg.ctx.drawImage(tile_out_img,self.x,self.y,self.w,self.h);
+        //gg.ctx.fillText("BACK SOON",self.x+self.w/2,self.y+self.h/2);
       return;
     }
 

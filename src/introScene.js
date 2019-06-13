@@ -21,9 +21,8 @@ var IntroScene = function()
   var t = 0;
   var txt_len = 200;
   var txts = [
-    "You set out to form a new town.",
-    "You will be responsible for its inhabitants.",
-    "Grow to 20 townmembers.",
+    "You are forming a new town called lakeland for people that love lakes",
+    "Grow your town without destroying the lakes",
   ];
 
   self.tick = function()

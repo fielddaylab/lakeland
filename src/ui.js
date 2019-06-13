@@ -169,6 +169,7 @@ var bar = function()
     var fs = gg.font_size;
     gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "left";
+    gg.ctx.globalAlpha = 1;
 
     gg.ctx.fillStyle = white;
     fillRRect(self.x,-self.pad,self.w,self.pad+self.h,self.pad,gg.ctx);
@@ -1510,9 +1511,9 @@ var achievements = function()
 
   self.triggers = [];
   self.nullt = {name:"null",local:0,global:0,trigger:ffunc};
-  self.pushtrigger = function(name,offimg,onimg,fn,dep)
+  self.pushtrigger = function(name,description,offimg,onimg,fn,dep)
   {
-    var t = {name:name,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
+    var t = {name:name,description:description,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
     self.triggers.push(t);
     return t;
   }
@@ -1521,20 +1522,20 @@ var achievements = function()
   self.notif_ts = [];
 
   var t;
-  t = self.pushtrigger("Exist",farmbit_img,farmbit_img,function(){return gg.farmbits.length;},0);
-  t = self.pushtrigger("Group",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 3;},t);
-  t = self.pushtrigger("Town",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 5;},t);
-  t = self.pushtrigger("City",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 10;},t);
+  t = self.pushtrigger("Exist","Get a person",farmbit_img,farmbit_img,function(){return gg.farmbits.length;},0);
+  t = self.pushtrigger("Group","Get a person",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 3;},t);
+  t = self.pushtrigger("Town","Get a person",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 5;},t);
+  t = self.pushtrigger("City","Get a person",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 10;},t);
 
-  t = self.pushtrigger("Farmer",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;},0);
-  t = self.pushtrigger("Farmers",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;},t);
-  t = self.pushtrigger("Farmtown",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;},t);
-  t = self.pushtrigger("MegaFarm",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;},t);
+  t = self.pushtrigger("Farmer","Get a farm",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;},0);
+  t = self.pushtrigger("Farmers","Get a farm",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;},t);
+  t = self.pushtrigger("Farmtown","Get a farm",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;},t);
+  t = self.pushtrigger("MegaFarm","Get a farm",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;},t);
 
-  t = self.pushtrigger("Paycheck",icon_money_img,icon_money_img,function(){return gg.money > 350;},0);
-  t = self.pushtrigger("Thousandair",icon_money_img,icon_money_img,function(){return gg.money > 1000;},t);
-  t = self.pushtrigger("Stability",icon_money_img,icon_money_img,function(){return gg.money > 5000;},t);
-  t = self.pushtrigger("Riches",icon_money_img,icon_money_img,function(){return gg.money > 10000;},t);
+  t = self.pushtrigger("Paycheck","Get a dollar",icon_money_img,icon_money_img,function(){return gg.money > 350;},0);
+  t = self.pushtrigger("Thousandair","Get a dollar",icon_money_img,icon_money_img,function(){return gg.money > 1000;},t);
+  t = self.pushtrigger("Stability","Get a dollar",icon_money_img,icon_money_img,function(){return gg.money > 5000;},t);
+  t = self.pushtrigger("Riches","Get a dollar",icon_money_img,icon_money_img,function(){return gg.money > 10000;},t);
 
   var n_bloomed = function(n)
   {
@@ -1549,10 +1550,10 @@ var achievements = function()
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom","Get a bloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom","Get a bloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom","Get a bloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","Get a bloom",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -1596,11 +1597,7 @@ var achievements = function()
 
   self.draw = function()
   {
-    gg.ctx.fillStyle = white;
-    fillRBB(self.open_btn,self.pad,gg.ctx);
-    gg.ctx.fillStyle = black;
-    gg.ctx.textAlign = "left";
-    gg.ctx.fillText("Achievements",self.open_btn.x,self.open_btn.y+self.open_btn.h);
+    gg.ctx.drawImage(button_achievement_img,self.open_btn.x,self.open_btn.y,self.open_btn.w,self.open_btn.h);
     gg.ctx.textAlign = "center";
     if(self.open)
     {
@@ -1638,12 +1635,27 @@ var achievements = function()
     for(var i = 0; i < self.notifs.length; i++)
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
-      gg.ctx.fillStyle = white;
       var w = 150*gg.stage.s_mod;
-      fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-gg.font_size*3-offy,w,gg.font_size*4,gg.font_size,gg.ctx);
-      gg.ctx.fillStyle = black;
-      gg.ctx.fillText("Achievement!",gg.canvas.width/2,gg.canvas.height/2-gg.font_size-offy);
-      gg.ctx.fillText(self.notifs[i].name,gg.canvas.width/2,gg.canvas.height/2-offy);
+      var h = gg.font_size*8;
+      var x = gg.canvas.width/2-w/2;
+      var y = gg.canvas.height/2-h/2;
+      var pad = gg.font_size;
+      y -= offy;
+      gg.ctx.strokeStyle = "#18315B";
+      gg.ctx.fillStyle = "#6EBCA9";
+      fillRRect(x,y,w,h,pad,gg.ctx);
+      gg.ctx.stroke();
+      gg.ctx.fillStyle = "#9CE6D4";
+      fillSelectiveRRect(x,y+h*3/5,w,h*2/5,0,0,1,1,pad,gg.ctx);
+      gg.ctx.stroke();
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3);
+      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size);
+      gg.ctx.fillStyle = "#18315B";
+      gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
+      gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
+      var imgs = w/4;
+      gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
     }
   }
 
@@ -1839,7 +1851,8 @@ var advisors = function()
     {
       ty += p+self.font_size*txt_fmt.length;
       gg.ctx.fillStyle = gray;
-      gg.ctx.fillText("(click to continue)", x+p, ty);
+      gg.ctx.drawImage(button_next_img, x+p,ty-self.font_size-p/2, w/4, w/9);
+      //gg.ctx.fillText("(click to continue)", x+p, ty);
     }
     if(type == TEXT_TYPE_CONFIRM)
     {
@@ -2016,11 +2029,13 @@ var advisors = function()
     if(self.thread) self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_CLICK](evt);
     else
     {
+
       //copied from draw!
-      var h = gg.stage.s_mod*50;
+      var h = gg.stage.s_mod*80;
       var w = h*1.5;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
+
       var previewed = 0;
       if(self.mayor_active    && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_MAYOR)    { self.set_advisor(ADVISOR_TYPE_MAYOR);    self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
       x += w*1.5;
@@ -2138,26 +2153,18 @@ var advisors = function()
       self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_DRAW]();
     else
     {
-      var h = gg.stage.s_mod*50;
+      var h = gg.stage.s_mod*80;
       var w = h*1.5;
       var x = gg.canvas.width/2-w*2;
       var y = gg.canvas.height-h;
-      var p = w/10;
       gg.ctx.textAlign = "left";
       gg.ctx.fillStyle = self.fgc;
-      gg.ctx.fillText("ADVISORS",x,y-p);
-      gg.ctx.textAlign = "center";
-      gg.ctx.strokeStyle = self.fgc;
-      gg.ctx.fillStyle = self.bgc;
-      if(self.mayor_active)    { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(advisor_mayor_img,x+w/2-h/2+p*2,y+p,h-p*4,h-p*4);    gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("MAYOR",x+w/2,y+h-p); }
-      gg.ctx.strokeStyle = self.fgc;
-      gg.ctx.fillStyle = self.bgc;
+      gg.ctx.fillText("ADVISORS",x,y);
+      if(self.mayor_active)    gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h);
       x += w*1.5;
-      if(self.business_active) { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(advisor_business_img,x+w/2-h/2+p*2,y+p,h-p*4,h-p*4); gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("BUSINESS",x+w/2,y+h-p); }
-      gg.ctx.strokeStyle = self.fgc;
-      gg.ctx.fillStyle = self.bgc;
+      if(self.business_active) gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h);
       x += w*1.5;
-      if(self.farmer_active)   { fillRRect(x,y,w,h*2,h/4,gg.ctx); gg.ctx.stroke(); gg.ctx.drawImage(advisor_farmer_img,x+w/2-h/2+p*2,y+p,h-p*4,h-p*4);   gg.ctx.fillStyle = self.fgc; gg.ctx.fillText("FARMER",x+w/2,y+h-p); }
+      if(self.farmer_active)   gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h);
       x += w*1.5;
     }
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
