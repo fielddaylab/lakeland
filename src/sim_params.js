@@ -138,5 +138,6 @@ var land_topo_levels = 4;
 var land_detail_levels = 3;
 var land_frames = 2;
 var land_off = function(topo,detail,frame){return topo*(land_detail_levels*land_frames)+(detail*land_frames)+frame;}
-var livestock_off = function(feed){return land_off(land_topo_levels,land_detail_levels,land_frames)+feed;}
+var livestock_fill_levels = 4;
+var livestock_off = function(feed){return land_off(land_topo_levels,land_detail_levels,land_frames)+min(feed,livestock_fill_levels-1);}
 

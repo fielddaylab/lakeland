@@ -421,6 +421,7 @@ var shop = function()
     gg.ctx.fillStyle = gg.backdrop_color;
     fillRBB(bb,self.pad,gg.ctx);
     gg.ctx.strokeStyle = gg.font_color;
+    gg.ctx.lineWidth = self.pad/2;
     gg.ctx.fillStyle = gg.font_color;
     if(buying) gg.ctx.stroke();
 
@@ -833,6 +834,10 @@ var inspector = function()
         var y;
         var w = self.w-self.pad*2;
         var h = u.autosell_h;
+        var img_s = h/2;
+        gg.ctx.lineWidth = 1;
+        gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
         gg.ctx.drawImage(tile_food_img,self.x+self.pad,y,h,h);
@@ -840,25 +845,25 @@ var inspector = function()
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x,y,h,h);
+        gg.ctx.drawImage(badge_farmbit_img,x+w/8-img_s/2,y,img_s,img_s);
         x += w/4;
         if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x,y,h,h);
+        gg.ctx.drawImage(badge_money_img,x+w/8-img_s/2,y,img_s,img_s);
         x += w/4;
         if(t.marks[0] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_cow_img,x,y,h,h);
+        gg.ctx.drawImage(badge_cow_img,x+w/8-img_s/2,y,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = self.x+self.pad+w/4;
-        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+w/8,y+self.font_size+self.pad);
         x += w/4;
-        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+w/8,y+self.font_size+self.pad);
         x += w/4;
-        gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("feed",x+w/8,y+self.font_size+self.pad);
 
         y = u.autosell_1_y;
         gg.ctx.drawImage(tile_food_img,self.x+self.pad,y,h,h);
@@ -866,27 +871,28 @@ var inspector = function()
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x,y,h,h);
+        gg.ctx.drawImage(badge_farmbit_img,x+w/8-img_s/2,y,img_s,img_s);
         x += w/4;
         if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x,y,h,h);
+        gg.ctx.drawImage(badge_money_img,x+w/8-img_s/2,y,img_s,img_s);
         x += w/4;
         if(t.marks[1] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_cow_img,x,y,h,h);
+        gg.ctx.drawImage(badge_cow_img,x+w/8-img_s/2,y,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = self.x+self.pad+w/4;
-        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+w/8,y+self.font_size+self.pad);
         x += w/4;
-        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+w/8,y+self.font_size+self.pad);
         x += w/4;
-        gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("feed",x+w/8,y+self.font_size+self.pad);
 
 
+        gg.ctx.font = self.font_size+"px "+gg.font;
         x = self.x+self.pad;
 
         var rg = t.val/farm_nutrition_req;
@@ -929,6 +935,10 @@ var inspector = function()
         var y;
         var w = self.w-self.pad*2;
         var h = u.autosell_h;
+        var img_s = h/2;
+        gg.ctx.lineWidth = 1;
+        gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
         gg.ctx.drawImage(icon_milk_img,self.x+self.pad,y,h,h);
@@ -936,19 +946,19 @@ var inspector = function()
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x,y,h,h);
+        gg.ctx.drawImage(badge_farmbit_img,x+w*3/16-img_s/2,y,img_s,img_s);
         x += w*3/8;
         if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x,y,h,h);
+        gg.ctx.drawImage(badge_money_img,x+w*3/16-img_s/2,y,img_s,img_s);
         x += w*3/8;
 
         gg.ctx.fillStyle = black;
         x = self.x+self.pad+w/4;
-        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+w*3/16,y+self.font_size+self.pad);
         x += w*3/8;
-        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+w*3/16,y+self.font_size+self.pad);
 
 
         y = u.autosell_1_y;
@@ -957,21 +967,22 @@ var inspector = function()
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(tile_farm_img,x,y,h,h);
+        gg.ctx.drawImage(tile_farm_img,x+w*3/16-img_s/2,y,img_s,img_s);
         x += w*3/8;
         if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x,y,h,h);
+        gg.ctx.drawImage(badge_money_img,x+w*3/16-img_s/2,y,img_s,img_s);
         x += w*3/8;
 
         gg.ctx.fillStyle = black;
         x = self.x+self.pad+w/4;
-        gg.ctx.fillText("Fertilize", x,y+self.font_size+self.pad);
+        gg.ctx.fillText("fertilize", x+w*3/16,y+self.font_size+self.pad);
         x += w*3/8;
-        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+w*3/16,y+self.font_size+self.pad);
 
         x = self.x+self.pad;
+        gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Feed:",x,u.feed_y);
         if(t.val)
@@ -1123,6 +1134,10 @@ var inspector = function()
       var y;
       var w = self.w-self.pad*2;
       var h = u.switch_bar_h;
+      var img_s = h/2;
+      gg.ctx.lineWidth = 1;
+      gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+      gg.ctx.textAlign = "center";
 
       y = u.switch_bar_y;
       gg.ctx.drawImage(gg.b.item_img(it.type),self.x+self.pad,y,h,h);
@@ -1133,25 +1148,25 @@ var inspector = function()
         if(it.mark == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x,y,h,h);
+        gg.ctx.drawImage(badge_farmbit_img,x+w/8-img_s/2,y,img_s,img_s);
         x += w/4;
         if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x,y,h,h);
+        gg.ctx.drawImage(badge_money_img,x+w/8-img_s/2,y,img_s,img_s);
         x += w/4;
         if(it.mark == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w/4,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_cow_img,x,y,h,h);
+        gg.ctx.drawImage(badge_cow_img,x+w/8-img_s/2,y,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = self.x+self.pad+w/4;
-        gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+w/8,y+self.font_size+self.pad);
         x += w/4;
-        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+w/8,y+self.font_size+self.pad);
         x += w/4;
-        gg.ctx.fillText("Feed",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("feed",x+w/8,y+self.font_size+self.pad);
       }
       else
       {
@@ -1161,13 +1176,13 @@ var inspector = function()
         switch(it.type)
         {
           case ITEM_TYPE_WATER:
-            gg.ctx.drawImage(tile_farm_img,x,y,h,h);
+            gg.ctx.drawImage(tile_farm_img,x+w*3/16-img_s/2,y,img_s,img_s);
             break;
           case ITEM_TYPE_MILK:
-            gg.ctx.drawImage(badge_farmbit_img,x,y,h,h);
+            gg.ctx.drawImage(badge_farmbit_img,x+w*3/16-img_s/2,y,img_s,img_s);
             break;
           case ITEM_TYPE_POOP:
-            gg.ctx.drawImage(tile_farm_img,x,y,h,h);
+            gg.ctx.drawImage(tile_farm_img,x+w*3/16-img_s/2,y,img_s,img_s);
             break;
           case ITEM_TYPE_FOOD:
             console.log("BROKEN");
@@ -1183,7 +1198,7 @@ var inspector = function()
         if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x,y,h,h);
+        gg.ctx.drawImage(badge_money_img,x+w*3/16-img_s/2,y,img_s,img_s);
         x += w*3/8;
 
         gg.ctx.fillStyle = black;
@@ -1191,13 +1206,13 @@ var inspector = function()
         switch(it.type)
         {
           case ITEM_TYPE_WATER:
-            gg.ctx.fillText("Irrigate", x,y+self.font_size+self.pad);
+            gg.ctx.fillText("irrigate", x+w*3/16,y+self.font_size+self.pad);
             break;
           case ITEM_TYPE_MILK:
-            gg.ctx.fillText("Eat", x,y+self.font_size+self.pad);
+            gg.ctx.fillText("eat", x+w*3/16,y+self.font_size+self.pad);
             break;
           case ITEM_TYPE_POOP:
-            gg.ctx.fillText("Fertilize", x,y+self.font_size+self.pad);
+            gg.ctx.fillText("fertilize", x+w*3/16,y+self.font_size+self.pad);
             break;
           case ITEM_TYPE_FOOD:
             console.log("BROKEN");
@@ -1210,8 +1225,9 @@ var inspector = function()
             break;
         }
         x += w*3/8;
-        gg.ctx.fillText("Sell",x,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+w*3/16,y+self.font_size+self.pad);
 
+        gg.ctx.font = self.font_size+"px "+gg.font;
       }
 
 
@@ -1641,6 +1657,8 @@ var achievements = function()
       var y = gg.canvas.height/2-h/2;
       var pad = gg.font_size;
       y -= offy;
+      gg.ctx.lineWidth = self.pad/2;
+      gg.ctx.font = gg.font_size+"px "+gg.font_size;
       gg.ctx.strokeStyle = "#18315B";
       gg.ctx.fillStyle = "#6EBCA9";
       fillRRect(x,y,w,h,pad,gg.ctx);
@@ -1791,9 +1809,9 @@ var advisors = function()
   }
   self.popup = function(type)
   {
-    var p = self.font_size;
+    self.pad = self.font_size;
     var x = gg.canvas.width/2;
-    var y = gg.canvas.height-p;
+    var y = gg.canvas.height-self.pad;
     var t = min(1,self.thread_t/100);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     var txt_fmt;
@@ -1803,23 +1821,24 @@ var advisors = function()
       case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
       case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
     }
-    var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
-    if(type == TEXT_TYPE_DISMISS) h += self.font_size+p;
-    if(type == TEXT_TYPE_CONFIRM) h += self.title_font_size+p;
+    var h = self.pad+self.title_font_size+self.pad+self.font_size*txt_fmt.length+self.pad;
+    if(type == TEXT_TYPE_DISMISS) h += self.font_size+self.pad;
+    if(type == TEXT_TYPE_CONFIRM) h += self.title_font_size+self.pad;
     self.target_popup_h = h;
-    var w = self.popup_w+p*2;
+    var w = self.popup_w+self.pad*2;
     x -= w/2;
     y -= h;
 
     gg.ctx.fillStyle = light_gray;
     gg.ctx.strokeStyle = gray;
+    gg.ctx.lineWidth = self.pad/2;
     if(self.popup_h < 100) gg.ctx.globalAlpha = min(1,t*6);
     gg.ctx.textAlign = "left";
 
     //bubble
     gg.ctx.fillStyle = self.bgc;
     gg.ctx.strokeStyle = self.fgc;
-    fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,p,gg.ctx);
+    fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,self.pad,gg.ctx);
     gg.ctx.stroke();
     gg.ctx.fillStyle = self.fgc;
 
@@ -1831,35 +1850,35 @@ var advisors = function()
       case ADVISOR_TYPE_FARMER:   aimg = advisor_farmer_img;   break;
     }
     gg.ctx.drawImage(aimg, x-w/4, y+self.target_popup_h-w/2, w/4, w/2);
-    drawLine(x-w/3+p,y+self.target_popup_h,x+w-p,y+self.target_popup_h,gg.ctx);
+    drawLine(x-w/3+self.pad,y+self.target_popup_h,x+w-self.pad,y+self.target_popup_h,gg.ctx);
 
-    var ty = y+p+self.title_font_size;
+    var ty = y+self.pad+self.title_font_size;
     gg.ctx.font = self.title_font;
     switch(self.advisor)
     {
-      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x+p, ty); break;
-      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x+p, ty); break;
-      case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x+p, ty); break;
+      case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x+self.pad, ty); break;
+      case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x+self.pad, ty); break;
+      case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x+self.pad, ty); break;
     }
 
-    ty += p+self.font_size;
+    ty += self.pad+self.font_size;
     gg.ctx.font = self.font;
     for(var i = 0; i < txt_fmt.length; i++)
-      gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
+      gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
 
     if(type == TEXT_TYPE_DISMISS)
     {
-      ty += p+self.font_size*txt_fmt.length;
+      ty += self.pad+self.font_size*txt_fmt.length;
       gg.ctx.fillStyle = gray;
-      gg.ctx.drawImage(button_next_img, x+p,ty-self.font_size-p/2, w/4, w/9);
-      //gg.ctx.fillText("(click to continue)", x+p, ty);
+      gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
+      //gg.ctx.fillText("(click to continue)", x+self.pad, ty);
     }
     if(type == TEXT_TYPE_CONFIRM)
     {
-      ty += p+self.font_size*(txt_fmt.length-1);
+      ty += self.pad+self.font_size*(txt_fmt.length-1);
       ty += self.title_font_size;
       gg.ctx.font = self.title_font;
-      gg.ctx.fillText("CONFIRM", x+p, ty);
+      gg.ctx.fillText("CONFIRM", x+self.pad, ty);
     }
 
     gg.ctx.globalAlpha = 1;
@@ -1966,9 +1985,9 @@ var advisors = function()
   }
   self.confirm_adv_thread = function()
   {
-    var p = self.font_size;
+    self.pad = self.font_size;
     var x = gg.canvas.width/2;
-    var y = gg.canvas.height-p;
+    var y = gg.canvas.height-self.pad;
     var txt_fmt;
     switch(self.advisor)
     {
@@ -1976,9 +1995,9 @@ var advisors = function()
       case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
       case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
     }
-    var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
-    h += self.font_size+p;
-    var w = self.popup_w+p*2;
+    var h = self.pad+self.title_font_size+self.pad+self.font_size*txt_fmt.length+self.pad;
+    h += self.font_size+self.pad;
+    var w = self.popup_w+self.pad*2;
     x -= w/2;
     y -= h;
     gg.clicker.consumeif(x,y,w,h,self.adv_thread);
@@ -1986,9 +2005,9 @@ var advisors = function()
 
   self.evt_within_popup = function(evt)
   {
-    var p = self.font_size;
+    self.pad = self.font_size;
     var x = gg.canvas.width/2;
-    var y = gg.canvas.height-p;
+    var y = gg.canvas.height-self.pad;
     var txt_fmt;
     switch(self.advisor)
     {
@@ -1996,9 +2015,9 @@ var advisors = function()
       case ADVISOR_TYPE_BUSINESS: txt_fmt = self.business_fmt_history[self.business_history.length-1]; break;
       case ADVISOR_TYPE_FARMER:   txt_fmt = self.farmer_fmt_history[self.farmer_history.length-1];     break;
     }
-    var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
-    h += self.font_size+p;
-    var w = self.popup_w+p*2;
+    var h = self.pad+self.title_font_size+self.pad+self.font_size*txt_fmt.length+self.pad;
+    h += self.font_size+self.pad;
+    var w = self.popup_w+self.pad*2;
     x -= w/2;
     y -= h;
     return doEvtWithin(evt,x,y,w,h);
@@ -2054,13 +2073,13 @@ var advisors = function()
     if(self.preview)
     {
       //copied from draw!
-      x = gg.canvas.width/2;
-      y = gg.canvas.height-p;
+      var x = gg.canvas.width/2;
+      var y = gg.canvas.height-self.pad;
       y = y-(100*gg.stage.s_mod);
-      h = p+self.title_font_size+p+self.font_size+p;
-      h += self.font_size+p;
+      var h = self.pad+self.title_font_size+self.pad+self.font_size+self.pad;
+      h += self.font_size+self.pad;
       h += 100*gg.stage.s_mod;
-      w = self.popup_w+p*2;
+      var w = self.popup_w+self.pad*2;
       x -= w/2;
       y -= h;
       if(doEvtWithin(evt,x,y,w,h))
@@ -2198,9 +2217,9 @@ var advisors = function()
 
     if(self.preview)
     {
-      var p = self.font_size;
+      self.pad = self.font_size;
       var x = gg.canvas.width/2;
-      var y = gg.canvas.height-p;
+      var y = gg.canvas.height-self.pad;
       var t = min(1,self.thread_t/100);
       y = y-(10-10*bounceup(t)+100)*gg.stage.s_mod;
       var txt_fmt;
@@ -2213,23 +2232,24 @@ var advisors = function()
         case ADVISOR_TYPE_FARMER:   fmt_records = self.farmer_fmt_records;   fmt_history = self.farmer_fmt_history;  break;
       }
       txt_fmt = fmt_history[fmt_history.length-1];
-      var h = p+self.title_font_size+p+self.font_size*txt_fmt.length+p;
-      h += self.font_size+p;
+      var h = self.pad+self.title_font_size+self.pad+self.font_size*txt_fmt.length+self.pad;
+      h += self.font_size+self.pad;
       h += 100*gg.stage.s_mod;
       self.target_popup_h = h;
-      var w = self.popup_w+p*2;
+      var w = self.popup_w+self.pad*2;
       x -= w/2;
       y -= h;
 
       gg.ctx.fillStyle = light_gray;
       gg.ctx.strokeStyle = gray;
+      gg.ctx.lineWidth = self.pad/2;
       if(self.popup_h < 100) gg.ctx.globalAlpha = min(1,t*6);
       gg.ctx.textAlign = "left";
 
       //bubble
       gg.ctx.fillStyle = self.bgc;
       gg.ctx.strokeStyle = self.fgc;
-      fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,p,gg.ctx);
+      fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,self.pad,gg.ctx);
       gg.ctx.stroke();
       gg.ctx.fillStyle = self.fgc;
 
@@ -2241,40 +2261,40 @@ var advisors = function()
         case ADVISOR_TYPE_FARMER:   aimg = advisor_farmer_img;   break;
       }
       gg.ctx.drawImage(aimg, x-w/4, y+self.target_popup_h-w/2, w/4, w/2);
-      drawLine(x-w/3+p,y+self.target_popup_h,x+w-p,y+self.target_popup_h,gg.ctx);
+      drawLine(x-w/3+self.pad,y+self.target_popup_h,x+w-self.pad,y+self.target_popup_h,gg.ctx);
 
-      var ty = y+p+self.title_font_size;
+      var ty = y+self.pad+self.title_font_size;
       gg.ctx.font = self.title_font;
       switch(self.advisor)
       {
-        case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x+p, ty); break;
-        case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x+p, ty); break;
-        case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x+p, ty); break;
+        case ADVISOR_TYPE_MAYOR:    gg.ctx.fillText("Mayor Advisor:",    x+self.pad, ty); break;
+        case ADVISOR_TYPE_BUSINESS: gg.ctx.fillText("Business Advisor:", x+self.pad, ty); break;
+        case ADVISOR_TYPE_FARMER:   gg.ctx.fillText("Farm Advisor:",     x+self.pad, ty); break;
       }
 
-      ty += p+self.font_size;
+      ty += self.pad+self.font_size;
       gg.ctx.font = self.font;
       for(var i = 0; i < txt_fmt.length; i++)
-        gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
+        gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
 
-      ty += p+self.font_size*txt_fmt.length;
+      ty += self.pad+self.font_size*txt_fmt.length;
       gg.ctx.fillStyle = gray;
-      gg.ctx.fillText("(click to continue)", x+p, ty);
+      gg.ctx.fillText("(click to continue)", x+self.pad, ty);
 
       gg.ctx.fillStyle = white;
-      gg.ctx.fillRect(x,ty+p,w,100*gg.stage.s_mod);
-      gg.ctx.rect(x,ty+p,w,100*gg.stage.s_mod);
+      gg.ctx.fillRect(x,ty+self.pad,w,100*gg.stage.s_mod);
+      gg.ctx.rect(x,ty+self.pad,w,100*gg.stage.s_mod);
       gg.ctx.save();
       gg.ctx.clip();
-      ty += p+self.font_size;
+      ty += self.pad+self.font_size;
       ty += self.preview_off_y+(self.drag_cur_y-self.drag_start_y);
       gg.ctx.fillStyle = self.fgc;
       for(var j = 0; j < fmt_records.length; j++)
       {
         txt_fmt = fmt_records[fmt_records.length-1-j];
         for(var i = 0; i < txt_fmt.length; i++)
-          gg.ctx.fillText(txt_fmt[i],x+p,ty+self.font_size*i);
-        ty += (p+self.font_size)*txt_fmt.length;
+          gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
+        ty += (self.pad+self.font_size)*txt_fmt.length;
         if(ty > y+h+self.font_size) break;
       }
       gg.ctx.restore();

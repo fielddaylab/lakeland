@@ -72,7 +72,7 @@ for(var t = 0; t < land_topo_levels; t++) //topography
 
 var tmp_livestock_img;
 var tile_livestock_imgs = [];
-for(var i = 0; i < 4; i++)
+for(var i = 0; i < livestock_fill_levels; i++)
 {
   tmp_livestock_img = new Image();
   tmp_livestock_img.onload = (function(img,i){return function(){ tile_livestock_imgs[i] = img; };})(tmp_livestock_img,i);
