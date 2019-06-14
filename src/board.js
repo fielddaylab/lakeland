@@ -2798,21 +2798,27 @@ var board = function()
       for(var i = 0; i < gg.items.length; i++) { var it = gg.items[i]; if(!it.offscreen && ptWithinBB(it,evt.doX,evt.doY)) clicked = it; }
       if(clicked)
       {
-        gg.inspector.select_item(clicked);
+        if(gg.inspector.detailed == clicked) gg.inspector.select_tile(clicked.tile);
+        else gg.inspector.select_item(clicked);
         return;
       }
 
       for(var i = 0; i < gg.farmbits.length; i++) { var b = gg.farmbits[i]; if(!b.offscreen && ptWithinBB(b,evt.doX,evt.doY)) clicked = b; }
       if(clicked)
       {
-        gg.inspector.select_farmbit(clicked);
+        if(gg.inspector.detailed == clicked) gg.inspector.select_tile(clicked.tile);
+        else gg.inspector.select_farmbit(clicked);
         return;
       }
 
       if(self.hover_t)
       {
-        gg.inspector.select_tile(self.hover_t);
-        if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
+        if(gg.inspector.detailed == self.hover_t) gg.inspector.deselect();
+        else
+        {
+          gg.inspector.select_tile(self.hover_t);
+          if(self.hover_t.directions_dirty) gg.b.calculate_directions(self.hover_t);
+        }
       }
     }
   }

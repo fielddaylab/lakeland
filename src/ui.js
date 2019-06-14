@@ -161,6 +161,7 @@ var bar = function()
 
   self.draw = function()
   {
+    if(!self.play_btn.active) return;
     var fs = gg.font_size;
     gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "left";
@@ -222,38 +223,32 @@ var shop = function()
   {
     self.pad = 10*gg.stage.s_mod;
     self.x = 0;
-    self.y = 0;
     self.w = gg.b.cbounds_x-self.pad;
-    self.h = gg.canvas.height;
+    var btn_s = (self.w-self.pad*3)/2;
+    self.h = self.pad+(btn_s+self.pad)*(ceil((self.btns.length-debug)/2)+1);
+    self.y = gg.canvas.height-self.h-btn_s-self.pad*2;
 
-    var btn_w = (self.w-self.pad*3)/2;
-    var btn_h = self.h/8;
     var btn_x = self.pad;
-    var btn_y = self.pad;
+    var btn_y = self.y+self.pad;
 
     self.font_size = self.pad*1.5;
-    self.img_size = min(btn_w-self.pad*2,btn_h-self.pad*2-self.font_size*2);
+    self.img_size = min(btn_s-self.pad*2,btn_s-self.pad*2-self.font_size*2);
 
-    setBB(self.money_display, btn_x, btn_y, btn_w*2+self.pad, btn_h*3/4); btn_y += btn_h+self.pad;
-    setBB(self.tab, self.x+self.w,btn_y,btn_w/2,btn_h/2);
+    setBB(self.money_display, btn_x, btn_y, btn_s*2+self.pad, btn_s/2); btn_y += btn_s+self.pad;
+    setBB(self.tab, self.x+self.w,btn_y,btn_s/2,btn_s/2);
 
-    var biggest_y = 0;
     btn_x = self.pad;
-    btn_y = self.pad;
-    btn_y += btn_h+self.pad;
     for(var i = 0; i < self.btns.length; i+=2)
     {
-                                 setBB(self.btns[i],   btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-      if(i+1 < self.btns.length) setBB(self.btns[i+1], btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
+                                 setBB(self.btns[i],   btn_x,btn_y,btn_s,btn_s); btn_x += btn_s+self.pad;
+      if(i+1 < self.btns.length) setBB(self.btns[i+1], btn_x,btn_y,btn_s,btn_s); btn_x = self.pad; btn_y += btn_s+self.pad;
     }
-    if(btn_y > biggest_y) biggest_y = btn_y;
 
     //others
-    self.h = biggest_y-self.y;
-    btn_y = biggest_y;
-    if(debug) setBB(self.money_btn,      btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
-    setBB(self.abandon_btn,    btn_x,btn_y,btn_w,btn_h); btn_x = self.pad; btn_y += btn_h+self.pad;
-    setBB(self.refund_btn,     btn_x,btn_y,btn_w,btn_h); btn_x += btn_w+self.pad;
+    //if(debug) setBB(self.money_btn,btn_x,btn_y,btn_s,btn_s);
+    //setBB(self.abandon_btn,btn_x,btn_y,btn_s,btn_s);
+
+    setBB(self.refund_btn,0,0,btn_s,btn_s);
   }
 
   self.buy_cost = function(buy)
@@ -326,7 +321,7 @@ var shop = function()
   //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FESTIVAL); });   self.festival_btn   = b; b.img = tile_festival_img;   b.name = "Festival";   b.cost = festival_cost;
 
   b = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; }); self.money_btn = b; b.img = tile_money_img; b.name = "Free"; b.cost = -free_money;
-  b = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); self.abandon_btn = b;
+  //b = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); self.abandon_btn = b;
   b = new ButtonBox(0,0,0,0,function(){ gg.money += self.buy_cost(self.selected_buy); self.selected_buy = 0; }); self.refund_btn = b; b.img = tile_money_img; b.name = "Refund"; b.cost = 0;
 
   self.btns = [
@@ -432,6 +427,7 @@ var shop = function()
   {
     gg.ctx.font = gg.font_size+"px "+gg.font;
     gg.ctx.strokeStyle = black;
+    gg.ctx.globalAlpha = 1;
 
     //bg
     gg.ctx.fillStyle = white;
@@ -441,8 +437,8 @@ var shop = function()
     gg.ctx.fillStyle = gg.font_color;
     var fs = self.money_display.h*0.7;
     gg.ctx.font = fs+"px "+gg.font;
-    if(self.open) gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h);
-    else          gg.ctx.fillText(">",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h);
+    if(self.open) gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h*3/4);
+    else          gg.ctx.fillText(">",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h*3/4);
     fs = self.money_display.h*0.7;
     gg.ctx.font = fs+"px "+gg.font;
 
@@ -1452,7 +1448,7 @@ var achievements = function()
     self.open_btn.w = 100;
     self.open_btn.h = 100;
     self.open_btn.x = self.pad;
-    self.open_btn.y = gg.canvas.height-self.pad-self.open_btn.h;
+    self.open_btn.y = self.pad;
   }
   self.open_btn = new ButtonBox(0,0,0,0,function(){ self.open = !self.open; });
   self.resize();
@@ -1984,16 +1980,16 @@ var advisors = function()
       //copied from draw!
       var h = gg.stage.s_mod*80;
       var w = h*1.5;
-      var x = gg.canvas.width/2-w*2;
+      var x = gg.canvas.width/2-w*(1.1+.55);
       var y = gg.canvas.height-h;
 
       var previewed = 0;
       if(self.mayor_active    && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_MAYOR)    { self.set_advisor(ADVISOR_TYPE_MAYOR);    self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
-      x += w*1.5;
+      x += w*1.1;
       if(self.business_active && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_BUSINESS) { self.set_advisor(ADVISOR_TYPE_BUSINESS); self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
-      x += w*1.5;
+      x += w*1.1;
       if(self.farmer_active   && doEvtWithin(evt,x,y,w,h)) { if(!self.preview || self.advisor != ADVISOR_TYPE_FARMER)   { self.set_advisor(ADVISOR_TYPE_FARMER);   self.preview = 1; self.preview_off_y = 0; previewed = 1; } else self.preview = 0; }
-      x += w*1.5;
+      x += w*1.1;
       if(!previewed) self.preview = 0;
     }
   }
@@ -2106,16 +2102,14 @@ var advisors = function()
     {
       var h = gg.stage.s_mod*80;
       var w = h*1.5;
-      var x = gg.canvas.width/2-w*2;
+      var x = gg.canvas.width/2-w*(1.1+.55);
       var y = gg.canvas.height-h;
-      gg.ctx.textAlign = "left";
-      gg.ctx.fillStyle = self.fgc;
       var fs = gg.font_size;
-      gg.ctx.fillText("ADVISORS",x,y);
+      gg.ctx.fillStyle = self.fgc;
       gg.ctx.textAlign = "center";
       if(self.mayor_active)
       {
-        gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h);
+        gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h*1.05);
         gg.ctx.fillText(gg.farmbits.length+" townspeople",x+w/2,y+fs*3);
         if(gg.farmbits.length)
         {
@@ -2125,17 +2119,17 @@ var advisors = function()
         }
         else gg.ctx.fillText("0% sad",x+w/2,y+fs*4);
       }
-      x += w*1.5;
+      x += w*1.1;
       if(self.business_active)
       {
-        gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h);
+        gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h*1.05);
         var permin = 60*60;
         gg.ctx.fillText(fdisp(self.money_rate*permin,1)+" $/min",x+w/2,y+fs*3);
       }
-      x += w*1.5;
+      x += w*1.1;
       if(self.farmer_active)
       {
-        gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h);
+        gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h*1.05);
         gg.ctx.fillText(fdisp(self.people_supported, 1)+" people supported",x+w/2,y+fs*3);
         gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock supported",x+w/2,y+fs*4);
         //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*5);
@@ -2143,7 +2137,7 @@ var advisors = function()
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
         //gg.ctx.fillText(gg.food+" food", x,y);
       }
-      x += w*1.5;
+      x += w*1.1;
     }
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
 
