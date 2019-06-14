@@ -2176,7 +2176,7 @@ var advisors = function()
       gg.ctx.fillStyle = self.bgc;
       gg.ctx.strokeStyle = self.fgc;
       fillRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,self.pad,gg.ctx);
-      gg.ctx.stroke();
+      //gg.ctx.stroke(); //moved below
       gg.ctx.fillStyle = self.fgc;
 
       var aimg = 0;
@@ -2204,8 +2204,7 @@ var advisors = function()
         gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
 
       ty += self.pad+self.font_size*txt_fmt.length;
-      gg.ctx.fillStyle = gray;
-      gg.ctx.fillText("(click to continue)", x+self.pad, ty);
+      gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
 
       gg.ctx.fillStyle = white;
       gg.ctx.fillRect(x,ty+self.pad,w,100*gg.stage.s_mod);
@@ -2224,6 +2223,7 @@ var advisors = function()
         if(ty > y+h+self.font_size) break;
       }
       gg.ctx.restore();
+      strokeRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,self.pad,gg.ctx); //copied from fillrrect above
 
       gg.ctx.globalAlpha = 1;
     }
