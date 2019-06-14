@@ -2693,6 +2693,7 @@ var board = function()
                 it.tile = self.hover_t;
                 gg.b.tiles_tw(it.tile,it);
                 gg.items.push(it);
+                if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
                 gg.inspector.select_item(it);
               }
 
