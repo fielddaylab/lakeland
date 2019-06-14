@@ -1,12 +1,12 @@
+- "place food" should be trigger to seek out hungry people to eat it
+- introduce timer when first waiting for farm to grow
 - if you mark second corn (during sell tutorial) to "sell", popup saying "woah, you'll need _some_ corn to feed your people"
 
-- find way to spread out tuts
-- make sure eat/sell/feed is honored re: corn/milk (corn should be fed even if hungry, milk should be eaten if hungry)
+- pace tuts w/ achievements (wait a bit before popping up advisor)
+- timers on "out to market" signs
 
 - display "currently exporting dudes"
 - if quickbuy house- skip appropriate tut
-- fill out quests
-
 
 - randomize fulfillment priorities (equal chance to farm-related and export)
 

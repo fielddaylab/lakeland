@@ -4224,7 +4224,9 @@ var farmbit = function()
               kick_item(it);
               gg.items.push(it);
               if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
-              else if(!b_for_job(JOB_TYPE_EAT, 0, it)) b_for_job(JOB_TYPE_STORE, 0, it);
+              else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
+              else if(!(it.mark == MARK_FEED && b_for_job(JOB_TYPE_FEED, 0, it))) ;
+              else b_for_job(JOB_TYPE_STORE, 0, it);
             }
 
             b_for_job(JOB_TYPE_PLANT, t, 0);
@@ -4443,7 +4445,7 @@ var farmbit = function()
             kick_item(it);
             gg.items.push(it);
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
-            else if(b_for_job(JOB_TYPE_STORE, 0, it)) ;
+            else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) b_for_job(JOB_TYPE_STORE, 0, it);
 
             if(self.job_type == JOB_TYPE_IDLE) job_for_b(self);
           }
