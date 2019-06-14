@@ -150,18 +150,16 @@ var GamePlayScene = function()
   gg.speed = SPEED_PLAY;
   self.tick = function(times)
   {
-    if(gg.speed > SPEED_PAUSE && !gg.advisors.takeover)
+    switch(gg.speed)
     {
-      switch(gg.speed)
-      {
-        case SPEED_PAUSE: times = 0;  break;
-        case SPEED_PLAY:  times = 1;  break;
-        case SPEED_FAST:  times = 4;  break;
-        case SPEED_VFAST: times = 16; break;
-      }
-      gg.t_mod_twelve_pi += 0.01*times;
-      if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
+      case SPEED_PAUSE: times *= 0;  break;
+      case SPEED_PLAY:  times *= 1;  break;
+      case SPEED_FAST:  times *= 4;  break;
+      case SPEED_VFAST: times *= 16; break;
     }
+    if(gg.advisors.takeover) times *= 0;
+    gg.t_mod_twelve_pi += 0.01*times;
+    if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
 
     gg.hoverer.filter(gg.b);
 

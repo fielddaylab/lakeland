@@ -3377,7 +3377,7 @@ var advisors = function()
     function(){ self.jmp(-1); }, //click
     noop, //end
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*2); self.heap.f = gg.farmbits[0]; self.push_blurb(self.heap.f.name+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3468,7 +3468,14 @@ var advisors = function()
     function(){ self.jmp(-1); }, //click
     noop, //end
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically eat it when hungry."); self.push_record("Buy food to quickly feed your people."); if(f.fullness > fullness_motivated+max_fullness/100) f.fullness = floor(fullness_motivated+max_fullness/100); }, //begin
+    function(){ //begin
+      self.heap.f = gg.farmbits[0];
+      var f = self.heap.f;
+      self.push_blurb(f.name+" will automatically eat it when hungry.");
+      self.push_record("Buy food to quickly feed your people.");
+      if(f.fullness > fullness_content+max_fullness/50)
+        f.fullness = floor(fullness_content+max_fullness/50);
+    },
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
