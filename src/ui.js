@@ -3337,7 +3337,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm."); }, //begin
+    function(){ gg.money += farm_cost; gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm."); }, //begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FARM); }, //tick
     function(){ //draw
       var b = gg.shop.farm_btn;
@@ -3428,7 +3428,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ gg.shop.food_btn.active = 1; self.push_blurb("Buy some from the shop."); }, //begin
+    function(){ gg.money += food_cost; gg.shop.food_btn.active = 1; self.push_blurb("Buy some from the shop."); }, //begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FOOD); }, //tick
     function(){ //draw
       var b = gg.shop.food_btn;
@@ -3468,7 +3468,7 @@ var advisors = function()
     function(){ self.jmp(-1); }, //click
     noop, //end
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically eat it when hungry."); self.push_record("Buy food to quickly feed your people."); }, //begin
+    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will automatically eat it when hungry."); self.push_record("Buy food to quickly feed your people."); if(f.fullness > fullness_motivated+max_fullness/100) f.fullness = floor(fullness_motivated+max_fullness/100); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3507,7 +3507,7 @@ var advisors = function()
     self.confirm_adv_thread, //click
     noop, //end
 
-    function(){ self.push_blurb("Buy your first house."); },//begin
+    function(){ gg.money += home_cost; self.push_blurb("Buy your first house."); },//begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
