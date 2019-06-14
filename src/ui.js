@@ -2067,7 +2067,7 @@ var advisors = function()
       }
       var ticks_before_hungry = max_fullness-fullness_content
       self.people_supported = edible_rate*ticks_before_hungry;
-      self.livestock_supported = feed_rate/3;
+      self.livestock_supported = feed_rate*ticks_before_hungry/3;
       self.money_rate = sell_rate*item_worth_food;
     }
 
@@ -2110,28 +2110,28 @@ var advisors = function()
       if(self.mayor_active)
       {
         gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h*1.05);
-        gg.ctx.fillText(gg.farmbits.length+" townspeople",x+w/2,y+fs*3);
+        gg.ctx.fillText(gg.farmbits.length+" townspeople",x+w/2,y+fs*3+self.pad/2);
         if(gg.farmbits.length)
         {
           var sad = 0;
           for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].joy_state == FARMBIT_STATE_DESPERATE) sad++;
-          gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad",x+w/2,y+fs*4);
+          gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+"% sad",x+w/2,y+fs*4+self.pad);
         }
-        else gg.ctx.fillText("0% sad",x+w/2,y+fs*4);
+        else gg.ctx.fillText("0% sad",x+w/2,y+fs*4+self.pad);
       }
       x += w*1.1;
       if(self.business_active)
       {
         gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h*1.05);
         var permin = 60*60;
-        gg.ctx.fillText(fdisp(self.money_rate*permin,1)+" $/min",x+w/2,y+fs*3);
+        gg.ctx.fillText(floor(self.money_rate*permin)+" $/min",x+w/2,y+fs*3+self.pad/2);
       }
       x += w*1.1;
       if(self.farmer_active)
       {
         gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h*1.05);
-        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people supported",x+w/2,y+fs*3);
-        gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock supported",x+w/2,y+fs*4);
+        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people supported",x+w/2,y+fs*3+self.pad/2);
+        gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock supported",x+w/2,y+fs*4+self.pad);
         //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*5);
         //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*6);
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
