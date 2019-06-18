@@ -39,25 +39,8 @@ var GamePlayScene = function()
         case "x": gg.b.tiles[0].lock = !gg.b.tiles[0].lock; break;
         case "a": debug_pathfinding = !debug_pathfinding; break;
         case "j": debug_jobs = !debug_jobs; break;
-        case "u":
-        {
-          var s = gg.shop;
-          for(var i = 0; i < s.btns.length; i++)
-            s.btns[i].active = 1;
-
-          gg.nutrition_toggle.toggle_btn.active = 1;
-          gg.bar.pause_btn.active = 1;
-          gg.bar.play_btn.active = 1;
-          gg.bar.fast_btn.active = 1;
-          gg.bar.vfast_btn.active = 1;
-
-          gg.advisors.mayor_active = 1;
-          gg.advisors.business_active = 1;
-          gg.advisors.farmer_active = 1;
-
-          break;
-        }
-        case "t": gg.advisors.end(); break;
+        case "u": gg.unlock_ui(); break;
+        case "t": gg.advisors.skip_tutorial(); break;
         case "m":
         {
           if(gg.farmbits.length == gg.b.bounds_n) { gg.b.inc_bounds(); gg.b.bounds_n++; gg.b.resize(); }
