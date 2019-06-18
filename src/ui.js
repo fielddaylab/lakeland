@@ -1979,6 +1979,7 @@ var advisors = function()
   }
   self.adv_thread = function()
   {
+    if(gg.speed > SPEED_PLAY) gg.speed = SPEED_PLAY;
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_END]();
     self.takeover = 0;
     self.thread_i++;
@@ -3274,21 +3275,12 @@ var advisors = function()
 
   var tut_buy_fertilizer = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Great Work!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Your farms might be using up the nutrition in the soil."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("Your farms might be using up the nutrition in the soil."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3314,36 +3306,67 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.shop.fertilizer_btn.active = 1; self.push_blurb("Save up for some fertilizer to keep your farms growing!"); }, //begin
-    ffunc, //tick
+    function(){ gg.shop.fertilizer_btn.active = 1; gg.money += fertilizer_cost; self.push_blurb("Buy some fertilizer to bump up your farm's soil nutrition!"); }, //begin
+    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FERTILIZER); }, //tick
     function(){ //draw
       var b = gg.shop.fertilizer_btn;
-      self.popup(TEXT_TYPE_DISMISS);
+      self.popup(TEXT_TYPE_DIRECT);
       self.arrow(b.x+b.w+20,b.y+b.h/2);
+    },
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("Place the fertilizer on your farm"); },//begin
+    function(){ return self.items_exist(ITEM_TYPE_FERTILIZER,1); }, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    function(evt)
+    {
+      var b = gg.b;
+      if(b.hover_t)
+      {
+        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
+          self.jmp(1);
+        else
+        {
+          gg.b.click(evt);
+          self.jmp(2);
+        }
+      }
+    }, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    //can't build there
+    function(){ self.dotakeover(); self.push_blurb("Can't place fertilizer there!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    function(){ self.jmp(-1); }, //click
+    noop, //end
+    ffunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("That should make your farm grow faster!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("See if you can save up enough money to buy another farm."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FERTILIZER,1); }, tut_buy_livestock);
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_fertilizer'});
-    },
-    tfunc, //shouldsim
-
-  ];
-
-  var tut_timewarp = [
-
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Click here if you want to speed up time"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
-    function() { return gg.speed > SPEED_PLAY; }, //tick
-    function() { //draw
-      self.wash();
-      var b = gg.bar.fast_btn;
-      self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x+b.w,b.y+b.h/2);
-    },
-    self.confirm_delay_adv_thread, //click
-    function() { //end
       self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, tut_buy_livestock);
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_fertilizer'});
     },
     tfunc, //shouldsim
 
@@ -3402,7 +3425,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){self.dotakeover(); gg.bar.pause_btn.active = 1; gg.bar.play_btn.active = 1; gg.bar.fast_btn.active = 1; gg.bar.vfast_btn.active = 1; gg.speed = SPEED_PAUSE; self.push_blurb("First, we'll pause the game.");}, //begin
+    function(){ self.dotakeover(); gg.speed = SPEED_PAUSE; self.push_blurb("First, we'll pause the game.");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3534,8 +3557,27 @@ var advisors = function()
     },
     self.confirm_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
+      self.pool_thread(function(){ for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++) { var t = gg.b.tile_groups[TILE_TYPE_FARM][i]; if(t && t.nutrition < nutrition_motivated) return 1; } return 0; }, tut_buy_fertilizer);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'sell_food'});
+    },
+    tfunc, //shouldsim
+
+  ];
+
+  var tut_timewarp = [
+
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); gg.bar.unlock_all(); self.push_blurb("Click here if you want to speed up time"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
+    function() { return gg.speed > SPEED_PLAY; }, //tick
+    function() { //draw
+      self.wash();
+      var b = gg.bar.fast_btn;
+      self.popup(TEXT_TYPE_DIRECT);
+      self.arrow(b.x+b.w,b.y+b.h/2);
+    },
+    self.confirm_delay_adv_thread, //click
+    function() { //end
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
     },
     tfunc, //shouldsim
 
@@ -3543,13 +3585,23 @@ var advisors = function()
 
   var tut_build_a_farm = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.push_blurb("You probably can't afford to keep importing food."); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.heap.f = gg.farmbits[0]; self.push_blurb(self.heap.f.name+" ate your food!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("You've fixed their hunger for now, but you probably can't afford to keep importing food."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3618,7 +3670,7 @@ var advisors = function()
     },
     self.confirm_delay_adv_thread, //click
     function() { //end
-      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
+      self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
     },
     tfunc, //shouldsim

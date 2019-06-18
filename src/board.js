@@ -1261,7 +1261,22 @@ var b_for_job = function(job_type, job_subject, job_object)
       break;
     case JOB_TYPE_EXPORT:
     {
-      console.log("FINISH");//figure out
+      /*
+      //priorities:
+      closest low fulfillment bit
+      */
+
+      var best = closest_free_farmbit_with_desire(job_object.tile, 0, 0, 0, 1);
+      if(best)
+      {
+        best.go_idle();
+        best.job_object = job_object;
+        best.lock_object(best.job_object);
+        best.job_subject = closest_edge_tile(job_object.tile);
+        best.job_type = job_type;
+        best.job_state = JOB_STATE_GET;
+        return 1;
+      }
     }
       break;
     default:
@@ -2841,14 +2856,18 @@ var board = function()
       {
         if(gg.farmbits.length) gg.advisors.another_member();
         if(gg.farmbits.length == self.bounds_n) { self.inc_bounds(); self.bounds_n++; self.resize(); }
-        var t = self.tiles_t(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th));
+        var t;
+        t = self.tiles_t(self.bounds_tx+floor(self.bounds_tw/2),self.bounds_ty+floor(self.bounds_th/2));
+        var h = closest_unlocked_state_tile_from_list(t, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME])
+        if(h) t = h;
+        else t = self.tiles_t(self.bounds_tx+randIntBelow(self.bounds_tw),self.bounds_ty+randIntBelow(self.bounds_th));
         var b = new farmbit();
         b.tile = t;
         gg.b.tiles_tw(t,b);
         gg.farmbits.push(b);
         job_for_b(b);
-        b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
-        b.home.state = TILE_STATE_HOME_OCCUPIED;
+        b.home = h;
+        if(h) b.home.state = TILE_STATE_HOME_OCCUPIED;
       }
     }
 
@@ -4018,6 +4037,7 @@ var farmbit = function()
             self.item = 0;
             self.fullness = max_fullness;
             self.fullness_state = FARMBIT_STATE_CONTENT;
+            self.emote("😋");
             self.go_idle();
             job_for_b(self);
             break;
