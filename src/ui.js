@@ -743,6 +743,29 @@ var inspector = function()
         gg.ctx.globalAlpha = 1;
       }
     }
+    if(t.type == TILE_TYPE_FARM)
+    {
+      gg.ctx.fillStyle = red;
+      var vp = 0.8;
+      var vy = self.vignette_y+self.vignette_h*vp;
+      var p;
+      //nutrition
+      p = min(1,(t.nutrition/(nutrition_max/4)));
+      gg.ctx.fillRect(self.vignette_x,vy,self.vignette_w,self.vignette_h*(1-vp)*p);
+      //growth;
+      p = t.val/farm_nutrition_req;
+      gg.ctx.fillRect(self.vignette_x,vy-(vp*self.vignette_h*p),self.vignette_w,vp*self.vignette_h*p);
+      //delineator
+      gg.ctx.strokeStyle = black;
+      drawLine(self.vignette_x,vy,self.vignette_x+self.vignette_w,vy,gg.ctx);
+      //poop
+      if(t.fertilizer)
+      {
+      gg.ctx.fillStyle = brown;
+      p = t.fertilizer.state/fertilizer_nutrition;
+      gg.ctx.fillRect(self.vignette_x,vy-(vp*self.vignette_h*p*0.2),self.vignette_w,vp*self.vignette_h*p*0.2);
+      }
+    }
 
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.textAlign = "center";
@@ -3466,7 +3489,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.dotakeover(); self.push_blurb(f.name+" will eventually export this for sale!"); }, //begin
+    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.dotakeover(); self.push_blurb((f ? f.name : 0)+" will eventually export this for sale!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3498,7 +3521,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); var f = self.heap.f; self.push_blurb(f.name+" is exporting the marked food"); },//begin
+    function(){ self.dotakeover(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is exporting the marked food"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3531,7 +3554,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); var f = self.heap.f; self.push_blurb(f.name+" has returned!"); },//begin
+    function(){ self.dotakeover(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" has returned!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3595,7 +3618,7 @@ var advisors = function()
 
   var tut_build_a_farm = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.heap.f = gg.farmbits[0]; self.push_blurb(self.heap.f.name+" ate your food!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.dotakeover(); self.heap.f = gg.farmbits[0]; self.push_blurb((f ? f.name : 0)+" ate your food!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3668,7 +3691,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*2); } self.heap.f = gg.farmbits[0]; self.push_blurb(self.heap.f.name+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*2); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3709,7 +3732,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb(f.name+" will eventually need some food..."); },//begin
+    function(){ self.dotakeover(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will eventually need some food..."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3769,9 +3792,9 @@ var advisors = function()
     function(){ //begin
       self.heap.f = gg.farmbits[0];
       var f = self.heap.f;
-      self.push_blurb(f.name+" will automatically eat it when hungry.");
+      self.push_blurb((f ? f.name : 0)+" will automatically eat it when hungry.");
       self.push_record("Buy food to quickly feed your people.");
-      if(f.fullness > fullness_content+max_fullness/50)
+      if(f && f.fullness > fullness_content+max_fullness/50)
         f.fullness = floor(fullness_content+max_fullness/50);
     },
     ffunc, //tick
@@ -3887,7 +3910,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; gg.inspector.select_farmbit(self.heap.f); gg.inspector.detailed_type = INSPECTOR_CONTENT_FARMBIT; self.dotakeover(); self.push_blurb(f.name+" moved into your town!"); }, //begin
+    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; if(f) gg.inspector.select_farmbit(f); self.dotakeover(); self.push_blurb((f ? f.name : 0)+" moved into your town!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
