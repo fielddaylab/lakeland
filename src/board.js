@@ -1496,7 +1496,7 @@ var board = function()
     var timer_s = floor(self.min_draw_tw*0.6);
     var timer_c = floor(timer_s/2);
     var timer_r = floor(timer_c*0.8);
-    self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*self.timer_colors+1);
+    self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*(self.timer_colors+1));
     ctx = self.timer_atlas.context;
 
     x = 0;
@@ -1529,7 +1529,6 @@ var board = function()
       color.r = lerp(ca.r,cb.r,ct);
       color.g = lerp(ca.g,cb.g,ct);
       color.b = lerp(ca.b,cb.b,ct);
-      x = 0;
       ctx.fillStyle = RGB2Hex(color);
       for(var j = 0; j < self.timer_progressions; j++)
       {
@@ -1547,6 +1546,7 @@ var board = function()
         x += timer_s;
       }
       y += timer_s;
+      x = 0;
     }
     //non-colored timer
     ctx.fillStyle = black;

@@ -3582,8 +3582,9 @@ var advisors = function()
       gg.bar.draw();
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
-    noop, //click
+    ffunc, //click
     function() { //end
+      gg.speed = SPEED_FAST;
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
     },
@@ -3613,7 +3614,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("Every successful community needs a sustainable strategy to feed its members."); },//begin
+    function(){ self.dotakeover(); self.push_blurb("We need a sustainable strategy to feed our townmembers."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
