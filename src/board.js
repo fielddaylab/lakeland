@@ -3593,6 +3593,8 @@ var item = function()
       gg.ctx.fillText("4SALE",self.x,self.y+self.h/3);
       gg.ctx.fillText("$"+worth_for_item(self.type),self.x,self.y+self.h);
     }
+
+    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
   }
 }
 
@@ -4861,6 +4863,8 @@ var farmbit = function()
       gg.ctx.fillText(self.emote_c,self.x+self.w/2,y);
     }
     gg.ctx.globalAlpha = 1;
+
+    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
   }
 }
 

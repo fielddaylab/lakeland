@@ -2318,10 +2318,16 @@ var advisors = function()
 
       gg.ctx.globalAlpha = 1;
     }
-    if(self.skip_btn.active) gg.ctx.fillRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
+    if(self.skip_btn.active)
+    {
+      gg.ctx.fillStyle = black;
+      gg.ctx.fillText("(skip tutorial)",self.skip_btn.x,self.skip_btn.y+self.skip_btn.h);
+      //gg.ctx.fillRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
+    }
   }
 
   var tut_mayor_leave = [
+
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mayor_leave'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Too many people have died."); },//begin
     noop, //tick
     function() { //draw
@@ -2358,6 +2364,7 @@ var advisors = function()
   ];
 
   var tut_farmer_leave = [
+
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'farmer_leave'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Too many people have died."); },//begin
     noop, //tick
     function() { //draw
@@ -3566,15 +3573,16 @@ var advisors = function()
 
   var tut_timewarp = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); gg.bar.unlock_all(); self.push_blurb("Click here if you want to speed up time"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_MAYOR); gg.bar.unlock_all(); self.push_blurb("Click here to speed up time"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
     function() { return gg.speed > SPEED_PLAY; }, //tick
     function() { //draw
       self.wash();
       var b = gg.bar.fast_btn;
       self.popup(TEXT_TYPE_DIRECT);
+      gg.bar.draw();
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
-    self.confirm_delay_adv_thread, //click
+    noop, //click
     function() { //end
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
@@ -3595,7 +3603,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("You've fixed their hunger for now, but you probably can't afford to keep importing food."); },//begin
+    function(){ self.dotakeover(); self.push_blurb("You've fed them for now, but you probably can't afford to keep importing food."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
