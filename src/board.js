@@ -1496,7 +1496,7 @@ var board = function()
     var timer_s = floor(self.min_draw_tw*0.6);
     var timer_c = floor(timer_s/2);
     var timer_r = floor(timer_c*0.8);
-    self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*self.timer_colors);
+    self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*self.timer_colors+1);
     ctx = self.timer_atlas.context;
 
     x = 0;
@@ -1547,6 +1547,23 @@ var board = function()
         x += timer_s;
       }
       y += timer_s;
+    }
+    //non-colored timer
+    ctx.fillStyle = black;
+    for(var j = 0; j < self.timer_progressions; j++)
+    {
+      self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
+      ctx.beginPath();
+      ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x+timer_c,y+timer_c);
+      ctx.lineTo(x+timer_c,y+timer_c-timer_r);
+      ctx.arc(x+timer_c,y+timer_c,timer_r,0-halfpi,twopi*((j+1)/self.timer_progressions)-halfpi);
+      ctx.lineTo(x+timer_c,y+timer_c);
+      ctx.fill();
+      self.timer_atlas.commitSprite();
+      x += timer_s;
     }
   }
 
@@ -4791,7 +4808,10 @@ var farmbit = function()
     if(self.offscreen)
     {
       if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
+      {
         gg.ctx.drawImage(tile_out_img,self.x,self.y,self.w,self.h);
+        gg.b.timer_atlas.blitWholeSprite(gg.b.timer_atlas_i(self.job_state_t/export_t,1+(1/(gg.b.timer_colors-1))),self.x,self.y,gg.ctx);
+      }
       return;
     }
 

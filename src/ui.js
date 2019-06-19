@@ -834,7 +834,7 @@ var inspector = function()
         self.line(u.produce_line_y);
 
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Export Options:",self.x+self.pad,u.export_y);
+        gg.ctx.fillText("Default Output:",self.x+self.pad,u.export_y);
 
         var on = "#BAEDE1";
         var off = "#F2F2F2";
@@ -935,7 +935,7 @@ var inspector = function()
         self.line(u.produce_line_y);
 
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Export Options:",self.x+self.pad,u.export_y);
+        gg.ctx.fillText("Default Output:",self.x+self.pad,u.export_y);
 
         var on = "#BAEDE1";
         var off = "#F2F2F2";
