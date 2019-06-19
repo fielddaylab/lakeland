@@ -2320,6 +2320,7 @@ var advisors = function()
     }
     if(self.skip_btn.active)
     {
+      gg.ctx.textAlign = "left";
       gg.ctx.fillStyle = black;
       gg.ctx.fillText("(skip tutorial)",self.skip_btn.x,self.skip_btn.y+self.skip_btn.h);
       //gg.ctx.fillRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
