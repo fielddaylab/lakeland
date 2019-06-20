@@ -104,8 +104,7 @@ var swim_joy              = floor(0.02*max_joy); //per frame
 
 var max_dist = 9999999;
 
-var farmbit_cost = 500;
-var home_cost = 200;
+var home_cost = 1000;
 var farm_cost = 150;
 var livestock_cost = 200;
 var fertilizer_cost = 200;
@@ -125,7 +124,7 @@ var harvest_profit = 0;
 
 var item_worth_food = 100;
 var item_worth_poop = 10;
-var item_worth_milk = 200;
+var item_worth_milk = 500;
 var item_worth_valuable = 5000;
 
 var roads_per_buy = 10;
