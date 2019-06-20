@@ -2651,7 +2651,7 @@ var board = function()
   self.dragFinish = function(evt)
   {
     var t = 0;
-    if(self.dragging_t < 20) self.click(evt);
+    if(self.dragging_t < 10) self.click(evt);
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered

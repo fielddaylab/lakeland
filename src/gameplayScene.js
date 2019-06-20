@@ -147,17 +147,13 @@ var GamePlayScene = function()
     gg.hoverer.filter(gg.b);
 
     var check = true;
-    if(!gg.advisors.takeover)
-    {
-      if(check) check = !gg.achievements.filter(gg.clicker);
-      if(check) check = !gg.bar.filter(gg.clicker);
-      if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
-      if(check) check = !gg.shop.filter(gg.clicker);
-      if(check) check = !gg.inspector.filter(gg.clicker);
-      if(check) check = !gg.dragger.filter(gg.advisors);
-      if(check) check = !gg.dragger.filter(gg.b);
-    }
-    else gg.dragger.filter(gg.advisors);
+    if(check) check = !gg.achievements.filter(gg.clicker);
+    if(check) check = !gg.bar.filter(gg.clicker);
+    if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
+    if(check) check = !gg.shop.filter(gg.clicker);
+    if(check) check = !gg.inspector.filter(gg.clicker);
+    gg.dragger.filter(gg.advisors);
+    if(check) check = !gg.dragger.filter(gg.b);
 
     gg.keyer.filter(keycatch);
 
@@ -244,8 +240,8 @@ var GamePlayScene = function()
     gg.ctx.fillText("j- debug jobs",    x,y); y += h;
     */
 
-    gg.achievements.draw();
     gg.advisors.draw();
+    gg.achievements.draw();
   };
 
   self.cleanup = function()
