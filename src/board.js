@@ -3960,7 +3960,7 @@ var farmbit = function()
     {
       case FARMBIT_STATE_CONTENT:   if(self.fullness < fullness_content)   { self.fullness_state = FARMBIT_STATE_MOTIVATED; self.emote("I'm hungry");   dirty = 1; } break;
       case FARMBIT_STATE_MOTIVATED: if(self.fullness < fullness_motivated) { self.fullness_state = FARMBIT_STATE_DESPERATE; self.emote("I NEED FOOD!"); dirty = 1; if(self.job_type != JOB_TYPE_IDLE && !need_met_for_above_job(FARMBIT_NEED_FULLNESS, self.job_type)) { self.abandon_job(1); } } break;
-      case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; console.log(self.lifetime); self.die(); return; } break;
+      case FARMBIT_STATE_DESPERATE: if(self.fullness < fullness_desperate) { self.fullness_state = FARMBIT_STATE_DIRE; self.die(); return; } break;
       default: break;
     }
     switch(self.energy_state)

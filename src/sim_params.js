@@ -2,6 +2,11 @@ var farmbit_names = [
 "Peter",
 "Paul",
 "Mary",
+"John",
+"George",
+"Ringo",
+"Yoko",
+"Stevie",
 ];
 
 var board_w = 50;

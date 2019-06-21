@@ -1612,15 +1612,16 @@ var achievements = function()
         for(var j = 0; j < cols; j++)
         {
           t = self.triggers[i*cols+j];
-          if(!t) t = self.nullt;
+          if(!t) continue
           if(t.local) gg.ctx.fillStyle = red;
-          else        gg.ctx.fillStyle = gray;
+          else        { gg.ctx.fillStyle = gray; gg.ctx.globalAlpha = 0.5; }
           fillRRect(x,y,s,s,self.pad,gg.ctx);
           if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
           gg.ctx.fillStyle = black;
           gg.ctx.fillText(t.name,x+s/2,y+s);
           x += s+self.pad;
+          gg.ctx.globalAlpha = 1;
         }
         y += s+self.pad;
       }
@@ -2276,10 +2277,10 @@ var advisors = function()
       if(self.farmer_active)
       {
         gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h*1.05);
-        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people",x+w/2,y+fs*3+self.pad/2-fs/2);
-        gg.ctx.fillText("sustainable",x+w/2,y+fs*3+self.pad/2+fs/2);
-        gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock",x+w/2,y+fs*4+self.pad);
-        gg.ctx.fillText("sustainable",x+w/2,y+fs*4+self.pad/2+fs);
+        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people",x+w/2,y+fs*3+self.pad/2);
+        gg.ctx.fillText("sustainable",x+w/2,y+fs*4+self.pad/2);
+        //gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock",x+w/2,y+fs*4+self.pad);
+        //gg.ctx.fillText("sustainable",x+w/2,y+fs*4+self.pad/2+fs);
         //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*5);
         //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*6);
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
@@ -2916,7 +2917,7 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("It's your responsibility to make sure there is enough food to go around"); }, //begin
+    function(){ self.push_blurb("It's your responsibility to make sure there is enough edible food to go around"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3234,15 +3235,7 @@ var advisors = function()
 
   var tut_poop = [
 
-    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); }, //begin
-    function(){ return self.time_passed(100); }, //tick
-    noop, //draw
-    ffunc, //qclick
-    noop, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.dotakeover(); self.push_blurb("You can use waste from livestock to reintroduce nutrition to the ground."); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); self.dotakeover(); self.push_blurb("You can use waste from livestock to reintroduce nutrition to the ground."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3369,15 +3362,7 @@ var advisors = function()
 
   var tut_livestock = [
 
-    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'livestock'}); }, //begin
-    function(){ return self.time_passed(100); }, //tick
-    noop, //draw
-    ffunc, //qclick
-    noop, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.dotakeover(); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Good work!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'livestock'}); self.dotakeover(); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Good work!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
