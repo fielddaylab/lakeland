@@ -224,6 +224,7 @@ var nutrition_toggle = function()
 
   self.draw = function()
   {
+    gg.ctx.lineWidth = 2;
     if(self.toggle_btn.active)
       draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,gg.b.nutrition_view);
   }
@@ -336,7 +337,7 @@ var shop = function()
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });  self.livestock_btn  = b; b.img = tile_livestock_img;  b.name = "Dairy";      b.cost = livestock_cost;
   //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_STORAGE); });    self.storage_btn    = b; b.img = tile_storage_img;    b.name = "Storage";    b.cost = storage_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });       self.sign_btn       = b; b.img = tile_sign_img;       b.name = "Sign";       b.cost = sign_cost;
-  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SKIMMER); });    self.skimmer_btn    = b; b.img = tile_bloom_img;      b.name = "Skimmer";    b.cost = skimmer_cost;
+  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SKIMMER); });    self.skimmer_btn    = b; b.img = tile_bloom_img;      b.name = "Skim Lake";    b.cost = skimmer_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_ROAD); });       self.road_btn       = b; b.img = tile_road_img;       b.name = "Road";       b.cost = road_cost;
   //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_PROCESSOR); });  self.processor_btn  = b; b.img = tile_processor_img;  b.name = "Processor";  b.cost = processor_cost;
   //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_DEMOLISH); });   self.demolish_btn   = b; b.img = tile_skull_img;      b.name = "Demolish";   b.cost = demolish_cost;
@@ -1516,7 +1517,7 @@ var achievements = function()
 
   var t;
   t = self.pushtrigger("Exist","Get a visitor.",farmbit_img,farmbit_img,function(){return gg.farmbits.length;},0);
-  t = self.pushtrigger("Group","3 Friends",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 3;},t);
+  t = self.pushtrigger("Group","3 Workers",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 3;},t);
   t = self.pushtrigger("Town","A small community",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 5;},t);
   t = self.pushtrigger("City","10 Townmembers",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 10;},t);
 
@@ -1782,10 +1783,11 @@ var advisors = function()
         t == tut_build_a_house ||
         t == tut_buy_food ||
         t == tut_build_a_farm ||
-        t == tut_sell_food ||
         t == tut_timewarp ||
+        t == tut_sell_food ||
         t == tut_buy_fertilizer ||
         t == tut_buy_livestock ||
+        t == tut_livestock ||
         t == tut_poop ||
         0
         )
@@ -3365,6 +3367,76 @@ var advisors = function()
 
   ];
 
+  var tut_livestock = [
+
+    function() { gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'livestock'}); }, //begin
+    function(){ return self.time_passed(100); }, //tick
+    noop, //draw
+    ffunc, //qclick
+    noop, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Good work!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    noop, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("A Dairy farm can produce milk, which will sell for a great price!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    noop, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("But you'll have to feed your livestock if you want any output"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    noop, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("Select some food, and toggle its switch to use it for \"feed\"."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    noop, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); self.push_blurb("Three feed should be enough to produce some milk!"); self.push_record("Feed your livestock to produce Milk."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    noop, //click
+    function() { //end
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_poop);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'livestock'});
+    },
+    tfunc, //shouldsim
+
+  ];
+
   var tut_buy_livestock = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_livestock'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("You seem to have corn production figured out."); }, //begin
@@ -3397,7 +3469,7 @@ var advisors = function()
     self.confirm_adv_thread, //qclick
     noop, //click
     function() { //end
-      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_poop);
+      self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_LIVESTOCK,1); }, tut_livestock);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_livestock'});
     },
     tfunc, //shouldsim
