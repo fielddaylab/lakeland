@@ -2631,27 +2631,35 @@ var board = function()
     gg.inspector.quick_type = INSPECTOR_CONTENT_NULL;
   }
 
+  self.drag_t = 0;
+  self.drag_x = 0;
+  self.drag_y = 0;
+  self.last_evt = 0;
   self.dragStart = function(evt)
   {
-    self.dragging_t = 0;
-    self.dragging_x = evt.doX;
-    self.dragging_y = evt.doY;
+    self.last_evt = evt;
+
+    self.drag_t = 0;
+    self.drag_x = evt.doX;
+    self.drag_y = evt.doY;
     self.cam_sx = gg.cam.wx;
     self.cam_sy = gg.cam.wy;
   }
   self.drag = function(evt)
   {
-    if(self.dragging_t > 10 || lensqr(self.dragging_x-evt.doX,self.dragging_y-evt.doY) > 10)
+    self.last_evt = evt;
+    if(self.drag_t > 10 || lensqr(self.drag_x-evt.doX,self.drag_y-evt.doY) > 10)
     {
-      gg.cam.wx = self.cam_sx + (self.dragging_x-evt.doX)/gg.canvas.width*gg.cam.ww;
-      gg.cam.wy = self.cam_sy - (self.dragging_y-evt.doY)/gg.canvas.height*gg.cam.wh;
+      gg.cam.wx = self.cam_sx + (self.drag_x-evt.doX)/gg.canvas.width*gg.cam.ww;
+      gg.cam.wy = self.cam_sy - (self.drag_y-evt.doY)/gg.canvas.height*gg.cam.wh;
       self.set_cam();
     }
   }
   self.dragFinish = function(evt)
   {
-    var t = 0;
-    if(self.dragging_t < 10) self.click(evt);
+    if(self.last_evt && self.last_evt.doX) { evt.doX = self.last_evt.doX; evt.doY = self.last_evt.doY; }
+
+    if(self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) self.click(evt);
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
@@ -2858,7 +2866,7 @@ var board = function()
 
   self.idempotent_tick = function()
   {
-    if(self.dragging) self.dragging_t++;
+    if(self.dragging) self.drag_t++;
   }
 
   self.tick = function()
@@ -3341,6 +3349,16 @@ var board = function()
     {
       t = gg.inspector.detailed;
       gg.ctx.drawImage(icon_cursor_img,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
+
+      if(t.type == TILE_TYPE_SIGN)
+      {
+        gg.ctx.strokeStyle = red;
+        gg.ctx.lineWidth = 2;
+        gg.ctx.beginPath();
+        gg.ctx.arc(self.x+t.tx*w+w/2,self.y+self.h-(t.ty+1)*h+h/2,w*2,0,twopi);
+        gg.ctx.stroke();
+      }
+
     }
     //if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(self.hover_t && gg.shop.selected_buy)
@@ -3361,9 +3379,20 @@ var board = function()
           var h = self.h/self.th;
           var ny = round(self.y+self.h-((o.ty+1)*h));
           var  x = round(self.x+       ((o.tx  )*w));
+
+          if(gg.shop.selected_buy == BUY_TYPE_SIGN)
+          {
+            gg.ctx.strokeStyle = red;
+            gg.ctx.lineWidth = 2;
+            gg.ctx.beginPath();
+            gg.ctx.arc(x+w/2,ny+h/2,w*2,0,twopi);
+            gg.ctx.stroke();
+          }
+
           gg.ctx.globalAlpha = 0.5;
           self.draw_tile(o,x,ny,w,h);
           gg.ctx.globalAlpha = 1;
+
         }
       }
       else
