@@ -2746,7 +2746,7 @@ var advisors = function()
   var tut_delay_gross_again = [
 
     noop, //begin
-    ffunc, //tick
+    tfunc, //tick
     noop, //draw
     ffunc, //qclick
     noop, //click
