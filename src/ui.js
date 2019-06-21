@@ -2514,7 +2514,7 @@ var advisors = function()
     noop, //click
     function(){ //end
       gg.b.raining = 0;
-      self.pool_thread(function(){ return self.time_passed(4000); }, tut_cycle_rain);
+      self.pool_thread(function(){ return self.time_passed(2600); }, tut_cycle_rain);
     },
     tfunc, //shouldsim
 
