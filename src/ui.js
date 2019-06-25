@@ -1771,15 +1771,12 @@ var advisors = function()
     self.thread_t = 0;
     self.heap = {};
 
+    gg.achievements.open = 0;
+    self.preview = 0;
     //keep running through remaining skippable threads
     for(var i = 0; i < self.trigger_threads.length; i++)
     {
       t = self.trigger_threads[i];
-      gg.achievements.open = 0;
-      self.preview = 0;
-      var thread = self.trigger_threads[i];
-      self.triggers.splice(i,1);
-      self.trigger_threads.splice(i,1);
       if(
         t == tut_build_a_house ||
         t == tut_buy_food ||
@@ -1793,6 +1790,8 @@ var advisors = function()
         0
         )
       {
+        self.triggers.splice(i,1);
+        self.trigger_threads.splice(i,1);
         for(var j = 0; j < t.length; j+=THREADF_TYPE_COUNT)
         {
           if(t[j+THREADF_TYPE_SSIM]())
@@ -1801,14 +1800,15 @@ var advisors = function()
             t[j+THREADF_TYPE_END]();
           }
         }
+        i--;
       }
+
       self.advisor = 0;
       self.takeover = 0;
       self.thread = 0;
       self.thread_i = 0;
       self.thread_t = 0;
       self.heap = {};
-      i--;
     }
 
     gg.speed = SPEED_PLAY;
