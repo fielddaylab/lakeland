@@ -35,6 +35,7 @@ var TILE_STATE_LAND_D2             = ENUM; ENUM++;
 var TILE_STATE_FARM_UNPLANTED      = ENUM; ENUM++;
 var TILE_STATE_FARM_PLANTED        = ENUM; ENUM++;
 var TILE_STATE_FARM_GROWN          = ENUM; ENUM++;
+var TILE_STATE_LIVESTOCK_EATING    = ENUM; ENUM++;
 var TILE_STATE_LIVESTOCK_DIGESTING = ENUM; ENUM++;
 var TILE_STATE_LIVESTOCK_MILKABLE  = ENUM; ENUM++;
 var TILE_STATE_STORAGE_UNASSIGNED  = ENUM; ENUM++;
@@ -1965,6 +1966,7 @@ var board = function()
       case TILE_STATE_FARM_UNPLANTED:      return "Unplanted";  break;
       case TILE_STATE_FARM_PLANTED:        return "Planted";    break;
       case TILE_STATE_FARM_GROWN:          return "Grown";      break;
+      case TILE_STATE_LIVESTOCK_EATING:    return "Digesting";  break;
       case TILE_STATE_LIVESTOCK_DIGESTING: return "Digesting";  break;
       case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
       case TILE_STATE_STORAGE_UNASSIGNED:  return "Unassigned"; break;
@@ -2468,7 +2470,7 @@ var board = function()
         self.own_tiles(t,2);
         break;
       case TILE_TYPE_LIVESTOCK:
-        t.state = TILE_STATE_LIVESTOCK_DIGESTING;
+        t.state = TILE_STATE_LIVESTOCK_EATING;
         t.marks[0] = MARK_SELL;
         self.own_tiles(t,2);
         break;
@@ -2925,9 +2927,9 @@ var board = function()
           break;
         case TILE_TYPE_LIVESTOCK:
         {
-          if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.val >= livestock_produce_feed)
+          if(t.state == TILE_STATE_LIVESTOCK_EATING && t.val >= livestock_produce_feed)
           {
-            t.state = TILE_STATE_LIVESTOCK_MILKABLE;
+            t.state = TILE_STATE_LIVESTOCK_DIGESTING;
             t.val -= livestock_produce_feed;
             t.state_t = 0;
 
@@ -2946,7 +2948,10 @@ var board = function()
               !b_for_job(JOB_TYPE_STORE, 0, it)
               )
               ; //do nothing- all atempts present in if
-
+          }
+          else if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t >= milkable_t)
+          {
+            t.state = TILE_STATE_LIVESTOCK_MILKABLE;
             if(
               !b_for_job(JOB_TYPE_MILK, t, 0)
               )
@@ -3057,6 +3062,10 @@ var board = function()
           break;
         case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
+    }
+    if(t.type == TILE_TYPE_LIVESTOCK && t.state == TILE_STATE_LIVESTOCK_DIGESTING)
+    {
+      self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x,y,gg.ctx);
     }
     var a;
     if(t.type == TILE_TYPE_LAKE)
@@ -4501,7 +4510,7 @@ var farmbit = function()
           {
             self.release_locks();
             var t = self.job_subject;
-            t.state = TILE_STATE_LIVESTOCK_DIGESTING;
+            t.state = TILE_STATE_LIVESTOCK_EATING;
             t.state_t = 0;
 
             self.fulfillment += milking_fulfillment;

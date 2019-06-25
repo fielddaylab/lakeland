@@ -3934,7 +3934,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.money += food_cost; gg.shop.food_btn.active = 1; self.push_blurb("Buy some from the shop."); }, //begin
+    function(){ gg.money += food_cost; gg.shop.food_btn.active = 1; self.push_blurb("Buy some food from the shop."); }, //begin
     function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FOOD); }, //tick
     function(){ //draw
       var b = gg.shop.food_btn;
