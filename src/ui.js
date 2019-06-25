@@ -1723,6 +1723,7 @@ var advisors = function()
   self.thread = 0;
   self.thread_i = 0;
   self.thread_t = 0;
+  self.stable_thread_t = 0;
 
   self.preview = 0;
   self.preview_off_y = 0;
@@ -1769,6 +1770,7 @@ var advisors = function()
     }
     self.thread_i = 0;
     self.thread_t = 0;
+    self.stable_thread_t = 0;
     self.heap = {};
 
     gg.achievements.open = 0;
@@ -1808,6 +1810,7 @@ var advisors = function()
       self.thread = 0;
       self.thread_i = 0;
       self.thread_t = 0;
+      self.stable_thread_t = 0;
       self.heap = {};
     }
 
@@ -1849,16 +1852,16 @@ var advisors = function()
   }
   self.larrow = function(x,y)
   {
-    var t = (self.thread_t%100)/100;
-    gg.ctx.globalAlpha = min(1,self.thread_t/30);
+    var t = (self.stable_thread_t%100)/100;
+    gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     drawArrow(x-30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
     gg.ctx.globalAlpha = 1;
   }
   self.arrow = function(x,y)
   {
-    var t = (self.thread_t%100)/100;
-    gg.ctx.globalAlpha = min(1,self.thread_t/30);
+    var t = (self.stable_thread_t%100)/100;
+    gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     drawArrow(x+30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
     gg.ctx.globalAlpha = 1;
@@ -1874,7 +1877,7 @@ var advisors = function()
     self.pad = self.font_size;
     var x = gg.canvas.width/2;
     var y = gg.canvas.height-self.pad;
-    var t = min(1,self.thread_t/100);
+    var t = min(1,self.stable_thread_t/100);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
     var txt_fmt;
     switch(self.advisor)
@@ -1992,6 +1995,7 @@ var advisors = function()
     self.takeover = 0;
     self.thread_i += i;
     self.thread_t = 0;
+    self.stable_thread_t = 0;
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_BEGIN]();
   }
 
@@ -2006,6 +2010,7 @@ var advisors = function()
     self.heap = {};
     self.thread_i = 0;
     self.thread_t = 0;
+    self.stable_thread_t = 0;
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_BEGIN]();
     return 1;
   }
@@ -2016,6 +2021,7 @@ var advisors = function()
     self.takeover = 0;
     self.thread_i++;
     self.thread_t = 0;
+    self.stable_thread_t = 0;
     if(self.thread_i*THREADF_TYPE_COUNT >= self.thread.length)
     {
       self.thread = 0;
@@ -2026,11 +2032,11 @@ var advisors = function()
   }
   self.delay_adv_thread = function()
   {
-    if(self.thread_t > 30) self.adv_thread();
+    if(self.stable_thread_t > 30) self.adv_thread();
   }
   self.confirm_delay_adv_thread = function()
   {
-    if(self.thread_t > 30) self.confirm_adv_thread();
+    if(self.stable_thread_t > 30) self.confirm_adv_thread();
   }
   self.confirm_adv_thread = function()
   {
@@ -2181,7 +2187,7 @@ var advisors = function()
     self.dragging_preview = 0;
   }
 
-  self.tick = function()
+  self.tick = function(times)
   {
     self.drag_t++;
 
@@ -2218,7 +2224,8 @@ var advisors = function()
       self.money_rate = sell_rate*item_worth_food;
     }
 
-    self.thread_t++;
+    self.thread_t += times;
+    self.stable_thread_t++;
     if(!self.thread)
     {
       for(var i = 0; i < self.triggers.length; i++)
@@ -2507,14 +2514,14 @@ var advisors = function()
 
   var tut_cycle_rain = [
 
-    function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(400); }, //tick
+    function(){ gg.b.raining = 1; if(gg.speed > SPEED_PLAY) gg.speed = SPEED_PLAY; }, //begin
+    function(){ return self.time_passed(1000); }, //tick
     noop, //draw
     ffunc, //qclick
     noop, //click
     function(){ //end
       gg.b.raining = 0;
-      self.pool_thread(function(){ return self.time_passed(2600); }, tut_cycle_rain);
+      self.pool_thread(function(){ return self.time_passed(4000); }, tut_cycle_rain);
     },
     tfunc, //shouldsim
 
@@ -2542,7 +2549,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ gg.b.raining = 1; }, //begin
-    function(){ return self.time_passed(200); }, //tick
+    function(){ return self.time_passed(800); }, //tick
     noop, //draw
     ffunc, //qclick
     noop, //click

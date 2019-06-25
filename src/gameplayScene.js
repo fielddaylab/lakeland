@@ -140,6 +140,7 @@ var GamePlayScene = function()
       case SPEED_FAST:  times *= 4;  break;
       case SPEED_VFAST: times *= 16; break;
     }
+    var game_times = times;
     if(gg.advisors.takeover) times *= 0;
     gg.t_mod_twelve_pi += 0.01*times;
     if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
@@ -199,7 +200,7 @@ var GamePlayScene = function()
       }
     }
     gg.achievements.tick();
-    gg.advisors.tick();
+    gg.advisors.tick(game_times);
 
     gg.clicker.flush();
     gg.hoverer.flush();
