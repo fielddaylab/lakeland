@@ -1512,7 +1512,7 @@ var achievements = function()
     self.open_btn.x = self.pad;
     self.open_btn.y = self.pad;
   }
-  self.open_btn = new ButtonBox(0,0,0,0,function(){ self.open = !self.open; });
+  self.open_btn = new ButtonBox(0,0,0,0,function(){ if(!gg.advisors.thread) self.open = !self.open; });
   self.resize();
 
   self.triggers = [];
@@ -1528,20 +1528,20 @@ var achievements = function()
   self.notif_ts = [];
 
   var t;
-  t = self.pushtrigger("Exist","Get a visitor.",farmbit_img,farmbit_img,function(){return gg.farmbits.length;},0);
-  t = self.pushtrigger("Group","3 Workers",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 3;},t);
-  t = self.pushtrigger("Town","A small community",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 5;},t);
-  t = self.pushtrigger("City","10 Townmembers",farmbit_img,farmbit_img,function(){return gg.farmbits.length >= 10;},t);
+  t = self.pushtrigger("Exist", "Get a visitor.",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length;       },0);
+  t = self.pushtrigger("Group", "3 Workers",         farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 3;  },t);
+  t = self.pushtrigger("Town",  "A small community", farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 5;  },t);
+  t = self.pushtrigger("City",  "10 Townmembers",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 10; },t);
 
-  t = self.pushtrigger("Farmer","Own a farm!",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length;},0);
-  t = self.pushtrigger("Farmers","Get three farms",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;},t);
-  t = self.pushtrigger("Farmtown","5 Farms!",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;},t);
-  t = self.pushtrigger("MegaFarm","10 Farm Industry",tile_farm_img,tile_farm_img,function(){return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10;},t);
+  t = self.pushtrigger("Farmer",   "Own a farm!",      tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
+  t = self.pushtrigger("Farmers",  "Get three farms",  tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
+  t = self.pushtrigger("Farmtown", "5 Farms!",         tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
+  t = self.pushtrigger("MegaFarm", "10 Farm Industry", tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
 
-  t = self.pushtrigger("Paycheck","$500",icon_money_img,icon_money_img,function(){return gg.money > 500;},0);
-  t = self.pushtrigger("Thousandair","$1000",icon_money_img,icon_money_img,function(){return gg.money > 1000;},t);
-  t = self.pushtrigger("Stability","$5000",icon_money_img,icon_money_img,function(){return gg.money > 5000;},t);
-  t = self.pushtrigger("Riches","$10000",icon_money_img,icon_money_img,function(){return gg.money > 10000;},t);
+  t = self.pushtrigger("Paycheck",    "$500",   icon_money_img, icon_money_img, function(){ return gg.money > 500;   },0);
+  t = self.pushtrigger("Thousandair", "$1000",  icon_money_img, icon_money_img, function(){ return gg.money > 1000;  },t);
+  t = self.pushtrigger("Stability",   "$5000",  icon_money_img, icon_money_img, function(){ return gg.money > 5000;  },t);
+  t = self.pushtrigger("Riches",      "$10000", icon_money_img, icon_money_img, function(){ return gg.money > 10000; },t);
 
   var n_bloomed = function(n)
   {
@@ -1556,10 +1556,10 @@ var achievements = function()
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom","Algae destroys one tile",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom","You have an algae problem",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom","A whole lake destroyed",tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom","Algae destroys one tile",       tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom","You have an algae problem", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -1577,6 +1577,7 @@ var achievements = function()
 
   self.tick = function()
   {
+    if(gg.advisors.thread == gg.advisors.first_thread) return;
     var t;
     for(var i = 0; i < self.triggers.length; i++)
     {
@@ -1603,6 +1604,7 @@ var achievements = function()
 
   self.draw = function()
   {
+    if(gg.advisors.thread) return;
     gg.ctx.drawImage(button_achievement_img,self.open_btn.x,self.open_btn.y,self.open_btn.w,self.open_btn.h);
     gg.ctx.textAlign = "center";
     if(self.open)
@@ -2018,6 +2020,7 @@ var advisors = function()
   }
   self.launch_thread = function(t)
   {
+    gg.achievements.open = 0;
     self.thread = t;
     self.heap = {};
     self.thread_i = 0;
@@ -2028,6 +2031,7 @@ var advisors = function()
   }
   self.adv_thread = function()
   {
+    gg.achievements.open = 0;
     if(gg.speed > SPEED_PLAY) gg.speed = SPEED_PLAY;
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_END]();
     self.takeover = 0;
@@ -4157,7 +4161,8 @@ var advisors = function()
 
   ];
 
-  self.pool_thread(tfunc,tut_build_a_house);
+  self.first_thread = tut_build_a_house;
+  self.pool_thread(tfunc,self.first_thread);
 
 }
 
