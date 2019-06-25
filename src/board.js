@@ -3625,7 +3625,15 @@ var item = function()
         break;
       case ITEM_TYPE_MILK: gg.ctx.drawImage(tile_milk_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_VALUABLE: gg.ctx.drawImage(tile_valuable_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_FERTILIZER: gg.ctx.globalAlpha = 0.5; gg.ctx.drawImage(tile_fertilizer_img,self.x,y,self.w,h); gg.ctx.globalAlpha = 1; break;
+      case ITEM_TYPE_FERTILIZER:
+      {
+        gg.ctx.fillStyle = red;
+        gg.ctx.globalAlpha = 0.5;
+        if(gg.b.nutrition_view) gg.ctx.fillRect(self.x,y,self.w,h);
+        else gg.ctx.drawImage(tile_fertilizer_img,self.x,y,self.w,h);
+        gg.ctx.globalAlpha = 1;
+      }
+      break;
     }
     if(self.mark == MARK_SELL)
     {

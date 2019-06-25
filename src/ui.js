@@ -3891,7 +3891,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*3); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
