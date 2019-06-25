@@ -3447,7 +3447,7 @@ var board = function()
       }
     }
 
-    var debug_sheds = 1;
+    var debug_sheds = 0;
     if(debug_sheds && self.raining)
     {
       gg.ctx.strokeStyle = red;
