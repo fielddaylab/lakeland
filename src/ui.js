@@ -729,7 +729,19 @@ var inspector = function()
     fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
 
     self.img_vignette(gg.b.tile_img(t.og_type),1);
+    if(t.type == TILE_TYPE_LIVESTOCK)
+    {
+      switch(t.val)
+      {
+        case 0:  self.img_vignette(tile_livestock_imgs[0],1); break;
+        case 1:  self.img_vignette(tile_livestock_imgs[1],1); break;
+        case 2:  self.img_vignette(tile_livestock_imgs[2],1); break;
+        default: self.img_vignette(tile_livestock_imgs[3],1); break;
+      }
+    }
+    else
     self.img_vignette(gg.b.tile_img(t.type),1);
+
     if(t.type == TILE_TYPE_LAKE)
     {
       var a = 0;
@@ -1495,8 +1507,8 @@ var achievements = function()
     self.x = gg.canvas.width/2-self.w/2;
     self.y = gg.canvas.height/2-self.h/2;
 
-    self.open_btn.w = 100;
-    self.open_btn.h = 100;
+    self.open_btn.w = 50*gg.stage.s_mod;
+    self.open_btn.h = 50*gg.stage.s_mod;
     self.open_btn.x = self.pad;
     self.open_btn.y = self.pad;
   }
@@ -2284,8 +2296,8 @@ var advisors = function()
       if(self.farmer_active)
       {
         gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h*1.05);
-        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people",x+w/2,y+fs*3+self.pad/2);
-        gg.ctx.fillText("sustainable",x+w/2,y+fs*4+self.pad/2);
+        gg.ctx.fillText("Farms support",x+w/2,y+fs*3+self.pad/2);
+        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people",x+w/2,y+fs*4+self.pad);
         //gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock",x+w/2,y+fs*4+self.pad);
         //gg.ctx.fillText("sustainable",x+w/2,y+fs*4+self.pad/2+fs);
         //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*5);
@@ -3242,7 +3254,7 @@ var advisors = function()
 
   var tut_poop = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); self.dotakeover(); self.push_blurb("You can use waste from livestock to reintroduce nutrition to the ground."); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); self.dotakeover(); self.push_blurb("You can use manure from livestock to reintroduce nutrition to the ground."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3875,7 +3887,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*2); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*3); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically manage the farm."); self.push_record("Buy farms to produce food for your people!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;

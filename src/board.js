@@ -3275,7 +3275,7 @@ var board = function()
     }
     if(self.nutrition_view)
     {
-      gg.ctx.globalAlpha = 0.5;
+      gg.ctx.globalAlpha = 0.8;
       gg.ctx.fillStyle = white;
       gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       var i = 0;
@@ -3697,7 +3697,7 @@ var farmbit = function()
   self.anim_side = FARMBIT_ANIM_FRONT;
   self.anim_anim = FARMBIT_ANIM_IDLE;
   self.anim_frame = 0;
-  self.anim_frame_l = 10;
+  self.anim_frame_l = 4;
   self.anim_frame_t = randIntBelow(self.anim_frame_l);
 
   self.walk_mod = function()
@@ -4853,7 +4853,7 @@ var farmbit = function()
       if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
       {
         gg.ctx.drawImage(tile_out_img,self.x,self.y,self.w,self.h);
-        gg.b.timer_atlas.blitWholeSprite(gg.b.timer_atlas_i(self.job_state_t/export_t,1+(1/(gg.b.timer_colors-1))),self.x,self.y,gg.ctx);
+        gg.b.timer_atlas.blitWholeSprite(gg.b.timer_atlas_i(self.job_state_t/export_t,1+(1/(gg.b.timer_colors-1))),self.x,self.y-self.h/2,gg.ctx);
       }
       return;
     }
@@ -4894,8 +4894,8 @@ var farmbit = function()
     {
       var t = self.emote_t/self.emote_l;
            if(t < 0.01) gg.ctx.globalAlpha = t*100;
-      else if(t > 0.7) gg.ctx.globalAlpha = clamp(0,1,1-((t-0.7)/0.3));
-      else             gg.ctx.globalAlpha = 1;
+      else if(t > 0.7)  gg.ctx.globalAlpha = clamp(0,1,1-((t-0.7)/0.3));
+      else              gg.ctx.globalAlpha = 1;
 
       var y = self.y-(20-(30-bounceup(t)*30))*gg.stage.s_mod;
       gg.ctx.fillStyle = white;
