@@ -7,6 +7,16 @@ var farmbit_names = [
 "Ringo",
 "Yoko",
 "Stevie",
+"Saanvi",
+"Nethra",
+"Meha",
+"Sidney",
+"Lucy",
+"Belden",
+"Henry",
+"Alejandro",
+"Victor",
+"Richard",
 ];
 
 var board_w = 50;
