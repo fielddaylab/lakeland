@@ -1829,6 +1829,7 @@ var advisors = function()
     }
 
     gg.speed = SPEED_PLAY;
+    unlock_ui();
   }
 
   //transitions
@@ -2826,7 +2827,20 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    function(){ self.dotakeover(); gg.shop.sign_btn.active = 1; self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.adv_thread, //qclick
+    noop, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.dotakeover(); gg.shop.skimmer_btn.active = 1; self.push_blurb("Or, if you can afford it, clean the lake!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3146,7 +3160,7 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("Consider building some roads to cut down on travel time!"); self.push_record("Roads make for MUCH faster transportation. It could be the difference that makes for an efficient farming pipeline!");}, //begin
+    function(){ self.dotakeover(); gg.shop.road_btn.active = 1; self.push_blurb("Consider building some roads to cut down on travel time!"); self.push_record("Roads make for MUCH faster transportation. It could be the difference that makes for an efficient farming pipeline!");}, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3306,7 +3320,6 @@ var advisors = function()
     self.confirm_delay_adv_thread, //qclick
     noop, //click
     function() { //end
-      unlock_ui();
       self.pool_thread(function(){ return self.time_passed(1000); }, tut_rain);
       self.pool_thread(function(){
         for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++)
