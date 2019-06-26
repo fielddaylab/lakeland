@@ -105,6 +105,7 @@ var GamePlayScene = function()
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
 
     gg.b = new board();
+    gg.ignore_single_board = 0; //flag to ignore a single input
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.zoom_bounds(gg.cam);
     gg.b.resize();
@@ -154,7 +155,8 @@ var GamePlayScene = function()
     if(check) check = !gg.shop.filter(gg.clicker);
     if(check) check = !gg.inspector.filter(gg.clicker);
     gg.dragger.filter(gg.advisors);
-    if(check) check = !gg.dragger.filter(gg.b);
+    if(check && !gg.ignore_single_board) check = !gg.dragger.filter(gg.b);
+    gg.ignore_single_boad = 0;
 
     gg.keyer.filter(keycatch);
 

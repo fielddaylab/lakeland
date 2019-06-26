@@ -27,7 +27,6 @@ var TEXT_TYPE_NULL    = ENUM; ENUM++;
 var TEXT_TYPE_OBSERVE = ENUM; ENUM++;
 var TEXT_TYPE_DISMISS = ENUM; ENUM++;
 var TEXT_TYPE_DIRECT  = ENUM; ENUM++;
-var TEXT_TYPE_CONFIRM = ENUM; ENUM++;
 var TEXT_TYPE_COUNT   = ENUM; ENUM++;
 
 ENUM = 0;
@@ -1903,7 +1902,6 @@ var advisors = function()
     }
     var h = self.pad+self.title_font_size+self.pad+self.font_size*txt_fmt.length+self.pad;
     if(type == TEXT_TYPE_DISMISS) h += self.font_size+self.pad;
-    if(type == TEXT_TYPE_CONFIRM) h += self.title_font_size+self.pad;
     self.target_popup_h = h;
     var w = self.popup_w+self.pad*2;
     x -= w/2;
@@ -1952,13 +1950,6 @@ var advisors = function()
       gg.ctx.fillStyle = gray;
       gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
       //gg.ctx.fillText("(click to continue)", x+self.pad, ty);
-    }
-    if(type == TEXT_TYPE_CONFIRM)
-    {
-      ty += self.pad+self.font_size*(txt_fmt.length-1);
-      ty += self.title_font_size;
-      gg.ctx.font = self.title_font;
-      gg.ctx.fillText("CONFIRM", x+self.pad, ty);
     }
 
     gg.ctx.globalAlpha = 1;
@@ -2046,14 +2037,17 @@ var advisors = function()
     }
     else
       self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_BEGIN]();
+    return 1;
   }
   self.delay_adv_thread = function()
   {
-    if(self.stable_thread_t > 30) self.adv_thread();
+    if(self.stable_thread_t > 30) return self.adv_thread();
+    return 0;
   }
   self.confirm_delay_adv_thread = function()
   {
-    if(self.stable_thread_t > 30) self.confirm_adv_thread();
+    if(self.stable_thread_t > 30) return self.confirm_adv_thread();
+    return 0;
   }
   self.confirm_adv_thread = function()
   {
@@ -2072,7 +2066,8 @@ var advisors = function()
     var w = self.popup_w+self.pad*2;
     x -= w/2;
     y -= h;
-    if(doEvtWithin(self.last_evt,x,y,w,h)) self.adv_thread();
+    if(doEvtWithin(self.last_evt,x,y,w,h)) return self.adv_thread();
+    return 0;
   }
 
   self.evt_within_popup = function(evt)
@@ -2117,10 +2112,12 @@ var advisors = function()
 
   self.click = function(evt)
   {
-    if(self.thread) self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_CLICK](evt);
+    if(self.thread)
+    {
+      if(self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_CLICK](evt)) gg.ignore_single_board = 1;
+    }
     else if(0)
     {
-
       //copied from draw!
       var h = gg.stage.s_mod*80;
       var w = h*1.5;
@@ -2156,7 +2153,10 @@ var advisors = function()
     self.drag_start_x = evt.doX;
     self.drag_start_y = evt.doY;
 
-    if(self.thread) self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_QCLICK](evt);
+    if(self.thread)
+    {
+      if(self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_QCLICK](evt)) { self.drag_t = 50; gg.ignore_single_board = 1; }
+    }
 
     if(self.preview)
     {
@@ -2418,7 +2418,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2429,7 +2429,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2441,7 +2441,7 @@ var advisors = function()
       self.mayor_active = 0;
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'mayor_leave'});
     },
@@ -2458,7 +2458,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -2469,7 +2469,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2481,7 +2481,7 @@ var advisors = function()
       self.farmer_active = 0;
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'farmer_leave'});
     },
@@ -2498,7 +2498,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -2509,7 +2509,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2521,7 +2521,7 @@ var advisors = function()
       self.mayor_active = 0;
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'business_leave'});
     },
@@ -2535,7 +2535,7 @@ var advisors = function()
     function(){ return self.time_passed(1000); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     function(){ //end
       gg.b.raining = 0;
       self.pool_thread(function(){ return self.time_passed(4000); }, tut_cycle_rain);
@@ -2553,7 +2553,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2561,7 +2561,7 @@ var advisors = function()
     function(){ return self.time_passed(400); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2569,7 +2569,7 @@ var advisors = function()
     function(){ return self.time_passed(800); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2580,7 +2580,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2591,7 +2591,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2602,7 +2602,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2613,7 +2613,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2621,7 +2621,7 @@ var advisors = function()
     function(){ return self.time_passed(400); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2629,7 +2629,7 @@ var advisors = function()
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2640,7 +2640,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2651,7 +2651,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function(){ //end
       self.pool_thread(function(){ return self.time_passed(500); }, tut_cycle_rain);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
@@ -2683,7 +2683,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2698,7 +2698,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2713,7 +2713,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function(){
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'low_nutrients'});
     }, //end
@@ -2744,7 +2744,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2759,7 +2759,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function(){
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'bloom'});
     }, //end
@@ -2773,7 +2773,7 @@ var advisors = function()
     tfunc, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     function(){
       self.pool_thread(function(){
         for(var i = 0; i < gg.farmbits.length; i++)
@@ -2810,7 +2810,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2823,7 +2823,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2836,7 +2836,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2849,7 +2849,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2862,7 +2862,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function(){
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross'});
       self.pool_thread(function(){ return self.time_passed(3000); }, tut_delay_gross_again);
@@ -2893,7 +2893,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2906,7 +2906,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2919,7 +2919,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2932,7 +2932,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function(){
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross'});
       self.pool_thread(function(){ return self.time_passed(3000); }, tut_delay_gross_again);
@@ -2950,7 +2950,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -2961,7 +2961,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -2972,7 +2972,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'death'});
     },
@@ -2989,7 +2989,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3000,7 +3000,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3011,7 +3011,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'unattended_farm'});
     },
@@ -3028,7 +3028,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3039,7 +3039,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3050,7 +3050,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'unused_fertilizer'});
     },
@@ -3067,7 +3067,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3078,7 +3078,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3089,7 +3089,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'flooded_fertilizer'});
     },
@@ -3106,7 +3106,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3117,7 +3117,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3128,7 +3128,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3139,7 +3139,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'mass_sadness'});
     },
@@ -3156,7 +3156,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3167,7 +3167,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'long_travel'});
     },
@@ -3184,7 +3184,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3195,7 +3195,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_death'});
     },
@@ -3212,7 +3212,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3223,7 +3223,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_member'});
     },
@@ -3240,7 +3240,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop,
     tfunc, //shouldsim
 
@@ -3251,7 +3251,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3262,7 +3262,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_death'});
     },
@@ -3281,7 +3281,7 @@ var advisors = function()
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3294,7 +3294,7 @@ var advisors = function()
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3307,7 +3307,7 @@ var advisors = function()
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3318,7 +3318,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.time_passed(1000); }, tut_rain);
       self.pool_thread(function(){
@@ -3405,7 +3405,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3416,7 +3416,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3427,7 +3427,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3438,7 +3438,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3449,7 +3449,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_poop);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'livestock'});
@@ -3466,7 +3466,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3476,7 +3476,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3488,7 +3488,7 @@ var advisors = function()
       self.arrow(b.x+b.w+20,b.y+b.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_LIVESTOCK,1); }, tut_livestock);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_livestock'});
@@ -3505,7 +3505,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3519,7 +3519,7 @@ var advisors = function()
       gg.nutrition_toggle.draw();
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3529,7 +3529,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3541,7 +3541,7 @@ var advisors = function()
       self.arrow(b.x+b.w+20,b.y+b.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3575,7 +3575,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     function(){ self.jmp(-1); }, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     ffunc, //shouldsim
 
@@ -3585,7 +3585,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3595,7 +3595,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, tut_buy_livestock);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_fertilizer'});
@@ -3610,7 +3610,7 @@ var advisors = function()
     function(){ return self.time_passed(40); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3621,7 +3621,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3632,7 +3632,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3645,7 +3645,7 @@ var advisors = function()
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3658,7 +3658,7 @@ var advisors = function()
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3671,7 +3671,7 @@ var advisors = function()
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3683,7 +3683,7 @@ var advisors = function()
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3694,7 +3694,7 @@ var advisors = function()
       self.larrow(gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3709,7 +3709,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3721,7 +3721,7 @@ var advisors = function()
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3729,7 +3729,7 @@ var advisors = function()
     function(){ return self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3743,7 +3743,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3757,7 +3757,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3765,7 +3765,7 @@ var advisors = function()
     function(){ return !self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3780,7 +3780,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3792,7 +3792,7 @@ var advisors = function()
       self.arrow(gg.shop.x+gg.shop.w,gg.shop.y+40);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++) { var t = gg.b.tile_groups[TILE_TYPE_FARM][i]; if(t && t.nutrition < nutrition_motivated) return 1; } return 0; }, tut_buy_fertilizer);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'sell_food'});
@@ -3813,7 +3813,7 @@ var advisors = function()
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       gg.speed = SPEED_FAST;
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
@@ -3832,7 +3832,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3843,7 +3843,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3854,7 +3854,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3866,7 +3866,7 @@ var advisors = function()
       self.arrow(b.x+b.w+20,b.y+b.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3888,6 +3888,7 @@ var advisors = function()
           gg.b.click(evt);
           self.jmp(2);
         }
+        return 1;
       }
     },
     noop, //end
@@ -3899,8 +3900,8 @@ var advisors = function()
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
-    function(){ self.jmp(-1); }, //qclick
-    noop, //click
+    function(){ self.jmp(-1); return 1; }, //qclick
+    ffunc, //click
     noop, //end
     ffunc, //shouldsim
 
@@ -3915,7 +3916,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
@@ -3933,7 +3934,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3944,7 +3945,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3959,7 +3960,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3971,7 +3972,7 @@ var advisors = function()
       self.arrow(b.x+b.w+20,b.y+b.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3981,7 +3982,7 @@ var advisors = function()
     noop, //qclick
     function(evt) //click
     {
-      if(self.evt_within_popup(evt)) return;
+      if(self.evt_within_popup(evt)) return 1;
 
       var b = gg.b;
       if(b.hover_t)
@@ -3993,6 +3994,7 @@ var advisors = function()
           gg.b.click(evt);
           self.jmp(2);
         }
+        return 1;
       }
     },
     noop, //end
@@ -4004,8 +4006,8 @@ var advisors = function()
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
-    function(){ self.jmp(-1); }, //qclick
-    noop, //click
+    function(){ self.jmp(-1); return 1; }, //qclick
+    ffunc, //click
     noop, //end
     ffunc, //shouldsim
 
@@ -4022,7 +4024,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return !self.items_exist(ITEM_TYPE_FOOD,1); }, tut_build_a_farm);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_food'});
@@ -4037,7 +4039,7 @@ var advisors = function()
     function(){ return self.time_passed(100); }, //tick
     noop, //draw
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4048,7 +4050,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4059,7 +4061,7 @@ var advisors = function()
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4070,7 +4072,7 @@ var advisors = function()
       self.arrow(gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4094,19 +4096,20 @@ var advisors = function()
           gg.b.click(evt);
           self.jmp(2);
         }
+        return 1;
       }
     },
     noop, //end
     function(){ /*auto build a home here*/ self.push_blurb("Place it somewhere near a lake- people love lakes!"); return false; }, //shouldsim
 
     //can't build there
-    function(){ self.dotakeover(); self.push_blurb("Can't build a house there!"); },//begin
-    ffunc, //tick
+    function(){ self.push_blurb("Can't build a house there!"); },//begin
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
-    function(){ self.jmp(-1); }, //qclick
-    noop, //click
+    function(evt){ if(self.evt_within_popup(evt)) { self.jmp(-1); return 1; } return 0; }, //qclick
+    ffunc, //click
     noop, //end
     ffunc, //shouldsim
 
@@ -4122,7 +4125,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     }, //draw
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4135,7 +4138,7 @@ var advisors = function()
       self.arrow(t.x+t.w,t.y+t.h/2);
     },
     ffunc, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4150,7 +4153,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -4165,7 +4168,7 @@ var advisors = function()
       self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
-    noop, //click
+    ffunc, //click
     function() { //end
       self.pool_thread(function(){ return self.time_passed(1000); }, tut_buy_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_house'});
