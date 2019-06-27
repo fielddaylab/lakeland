@@ -683,9 +683,9 @@ var inspector = function()
       y += self.font_size;
       u.switch_y = y;
       y += self.pad;
-      u.switch_bar_y = y;
-      u.switch_bar_h = self.pad*3;
-      y += u.switch_bar_h;
+      u.switch_y = y;
+      u.switch_h = self.pad*3;
+      y += u.switch_h;
       y += self.pad;
     }
 
@@ -705,9 +705,9 @@ var inspector = function()
       y += self.font_size;
       u.switch_y = y;
       y += self.pad;
-      u.switch_bar_y = y;
-      u.switch_bar_h = self.pad*3;
-      y += u.switch_bar_h;
+      u.switch_y = y;
+      u.switch_h = self.pad*3;
+      y += u.switch_h;
       y += self.pad;
     }
 
@@ -1161,13 +1161,13 @@ var inspector = function()
     var u = self.tile_ui[t.type];
     if(t.type == TILE_TYPE_FARM)
     {
-      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){ t.marks[0]++; if(t.marks[0] == MARK_COUNT) t.marks[0] = MARK_USE; })) return 1;
-      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){ t.marks[1]++; if(t.marks[1] == MARK_COUNT) t.marks[1] = MARK_USE; })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL; else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[0] = MARK_FEED; else { t.marks[0]++; if(t.marks[0] == MARK_COUNT) t.marks[0] = MARK_USE; } })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL; else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[1] = MARK_FEED; else { t.marks[1]++; if(t.marks[1] == MARK_COUNT) t.marks[1] = MARK_USE; } })) return 1;
     }
     if(t.type == TILE_TYPE_LIVESTOCK)
     {
-      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){ t.marks[0]++; if(t.marks[0] == MARK_FEED) t.marks[0] = MARK_USE; })) return 1;
-      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){ t.marks[1]++; if(t.marks[1] == MARK_FEED) t.marks[1] = MARK_USE; })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL; else { t.marks[0]++; if(t.marks[0] == MARK_FEED) t.marks[0] = MARK_USE; } })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL; else { t.marks[1]++; if(t.marks[1] == MARK_FEED) t.marks[1] = MARK_USE; } })) return 1;
     }
 
     return 0;
@@ -1212,13 +1212,13 @@ var inspector = function()
       var x;
       var y;
       var w = self.w-self.pad*2;
-      var h = u.switch_bar_h;
+      var h = u.switch_h;
       var img_s = h/2;
       gg.ctx.lineWidth = 1;
       gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
       gg.ctx.textAlign = "center";
 
-      y = u.switch_bar_y;
+      y = u.switch_y;
       gg.ctx.drawImage(gg.b.item_img(it.type),self.x+self.pad,y,h,h);
       x = u.switch_0_x;
 
@@ -1320,11 +1320,15 @@ var inspector = function()
   {
     var u = self.item_ui[it.type];
     if(!u) return 0;
+    var clicked = 0;
 
-    if(clicker.consumeif(self.x,u.switch_bar_y,self.w,u.switch_bar_h,function()
+    if(it.type == ITEM_TYPE_FOOD)
+      clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){ clicked = 1; if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE; else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL; else if(between(evt.doX,u.switch_2_x,u.switch_3_x)) it.mark = MARK_FEED; else { it.mark++; if(it.mark == MARK_COUNT) it.mark = MARK_USE; } });
+    else
+      clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){ clicked = 1; if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE; else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL; else { it.mark++; if(it.mark == MARK_FEED) it.mark = MARK_USE; } });
+
+    if(clicked)
     {
-      it.mark++;
-      if(it.mark == MARK_COUNT || (it.mark == MARK_FEED && it.type != ITEM_TYPE_FOOD)) it.mark = MARK_USE;
       if(it.lock)
       {
         var f = farmbit_with_item(it);
@@ -1336,7 +1340,8 @@ var inspector = function()
       }
       if(!it.lock && it.mark == MARK_SELL)
         b_for_job(JOB_TYPE_EXPORT, 0, it);
-    })) return 1;
+      return 1;
+    }
 
     return 0;
   }

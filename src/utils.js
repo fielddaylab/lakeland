@@ -493,6 +493,11 @@ function len(x,y)
   return Math.sqrt(x*x+y*y);
 }
 
+function between(v,min,max)
+{
+  return v >= min && v <= max;
+}
+
 function vlensqr(v)
 {
   return v.x*v.x+v.y*v.y;
