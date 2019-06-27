@@ -3524,7 +3524,11 @@ var advisors = function()
       gg.nutrition_toggle.draw();
     },
     ffunc, //qclick
-    ffunc, //click
+    function(evt) //click
+    {
+      var nt = gg.nutrition_toggle;
+      if(doEvtWithin(evt,nt.x,nt.y,nt.w,nt.h)) gg.nutrition_toggle.toggle_btn.click(evt);
+    },
     noop, //end
     tfunc, //shouldsim
 
