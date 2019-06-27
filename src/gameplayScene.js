@@ -142,14 +142,14 @@ var GamePlayScene = function()
       case SPEED_VFAST: times *= 16; break;
     }
     var game_times = times;
-    if(gg.advisors.takeover) times *= 0;
+    if(gg.advisors.owns_time) times *= 0;
     gg.t_mod_twelve_pi += 0.01*times;
     if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
 
     gg.hoverer.filter(gg.b);
 
     var check = true;
-    if(!gg.advisors.takeover)
+    if(!gg.advisors.owns_ui)
     {
       if(check) check = !gg.achievements.filter(gg.clicker);
       if(check) check = !gg.bar.filter(gg.clicker);
