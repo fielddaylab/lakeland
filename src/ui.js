@@ -3523,12 +3523,12 @@ var advisors = function()
       self.larrow(b.x,b.y+b.h/2);
       gg.nutrition_toggle.draw();
     },
-    ffunc, //qclick
-    function(evt) //click
+    function(evt) //qclick
     {
       var nt = gg.nutrition_toggle;
       if(doEvtWithin(evt,nt.x,nt.y,nt.w,nt.h)) gg.nutrition_toggle.toggle_btn.click(evt);
     },
+    ffunc, //click
     noop, //end
     tfunc, //shouldsim
 
@@ -3672,15 +3672,16 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.speed = SPEED_PAUSE; self.push_blurb("First, we'll pause the game.");}, //begin
-    function(){ gg.speed = SPEED_PAUSE; }, //tick
+    function(){ self.takeover_time(); self.push_blurb("First, let's pause the game.");}, //begin
+    function(){ return (gg.speed == SPEED_PAUSE); }, //tick
     function(){ //draw
       self.wash();
-      var b = gg.bar.play_btn;
-      self.popup(TEXT_TYPE_DISMISS);
+      var b = gg.bar.pause_btn;
+      self.popup(TEXT_TYPE_DIRECT);
+      gg.bar.draw();
       self.arrow(b.x+b.w,b.y+b.h/2);
     },
-    self.confirm_adv_thread, //qclick
+    ffunc, //qclick
     ffunc, //click
     noop, //end
     tfunc, //shouldsim
@@ -3698,7 +3699,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("Toggle the switch to mark it as \"for sale\"."); },//begin
-    function(){ var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
+    function(){ gg.speed = SPEED_PAUSE; var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
       self.larrow(gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h);
