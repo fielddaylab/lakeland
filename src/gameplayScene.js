@@ -149,14 +149,17 @@ var GamePlayScene = function()
     gg.hoverer.filter(gg.b);
 
     var check = true;
-    if(check) check = !gg.achievements.filter(gg.clicker);
-    if(check) check = !gg.bar.filter(gg.clicker);
-    if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
-    if(check) check = !gg.shop.filter(gg.clicker);
-    if(check) check = !gg.inspector.filter(gg.clicker);
+    if(!gg.advisors.takeover)
+    {
+      if(check) check = !gg.achievements.filter(gg.clicker);
+      if(check) check = !gg.bar.filter(gg.clicker);
+      if(check) check = !gg.nutrition_toggle.filter(gg.clicker);
+      if(check) check = !gg.shop.filter(gg.clicker);
+      if(check) check = !gg.inspector.filter(gg.clicker);
+    }
     gg.dragger.filter(gg.advisors);
-    if(check && !gg.ignore_single_board) check = !gg.dragger.filter(gg.b);
-    gg.ignore_single_boad = 0;
+    if(check) check = !gg.dragger.filter(gg.b);
+    gg.ignore_single_board = 0;
 
     gg.keyer.filter(keycatch);
 
@@ -167,21 +170,18 @@ var GamePlayScene = function()
     {
       gg.hungry = 0;
       gg.food = 0;
-      if(!gg.advisors.takeover)
+      gg.b.tick();
+      for(var i = 0; i < gg.items.length; i++)
       {
-        gg.b.tick();
-        for(var i = 0; i < gg.items.length; i++)
-        {
-          var o = gg.items[i];
-          o.tick();
-          if(o.type == ITEM_TYPE_FOOD && (o.mark == MARK_USE)) gg.food++;
-        }
-        for(var i = 0; i < gg.farmbits.length; i++)
-        {
-          var f = gg.farmbits[i];
-          f.tick();
-          if(f.fullness_state != FARMBIT_STATE_CONTENT) gg.hungry++;
-        }
+        var o = gg.items[i];
+        o.tick();
+        if(o.type == ITEM_TYPE_FOOD && (o.mark == MARK_USE)) gg.food++;
+      }
+      for(var i = 0; i < gg.farmbits.length; i++)
+      {
+        var f = gg.farmbits[i];
+        f.tick();
+        if(f.fullness_state != FARMBIT_STATE_CONTENT) gg.hungry++;
       }
       times--;
     }

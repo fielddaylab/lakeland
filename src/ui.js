@@ -4043,7 +4043,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("Hi!"); },//begin
+    function(){ self.push_blurb("Hi!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4054,7 +4054,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("I'm the Mayor!"); },//begin
+    function(){ self.push_blurb("I'm the Mayor!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4157,7 +4157,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.dotakeover(); self.push_blurb("It's your job to ensure their survival!"); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
+    function(){ self.push_blurb("It's your job to ensure their survival!"); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();

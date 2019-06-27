@@ -2661,7 +2661,7 @@ var board = function()
   {
     if(self.last_evt && self.last_evt.doX) { evt.doX = self.last_evt.doX; evt.doY = self.last_evt.doY; }
 
-    if(self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) self.click(evt);
+    if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.takeover && !gg.ignore_single_board) self.click(evt);
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
