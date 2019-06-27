@@ -1801,7 +1801,7 @@ var advisors = function()
 
   self.skip_tutorial = function()
   {
-    self.skip_btn.active = 0;
+    //self.skip_btn.active = 0;
     var t;
 
     //finish cur thread
@@ -1818,6 +1818,9 @@ var advisors = function()
         }
       }
     }
+    self.owns_ui = 0;
+    self.owns_time = 0;
+    self.thread = 0;
     self.thread_i = 0;
     self.thread_t = 0;
     self.stable_thread_t = 0;
@@ -1825,6 +1828,8 @@ var advisors = function()
 
     gg.achievements.open = 0;
     self.preview = 0;
+
+    /*
     //keep running through remaining skippable threads
     for(var i = 0; i < self.trigger_threads.length; i++)
     {
@@ -1855,7 +1860,6 @@ var advisors = function()
         i--;
       }
 
-      self.advisor = 0;
       self.owns_ui = 0;
       self.owns_time = 0;
       self.thread = 0;
@@ -1864,9 +1868,10 @@ var advisors = function()
       self.stable_thread_t = 0;
       self.heap = {};
     }
+    unlock_ui();
+    */
 
     gg.speed = SPEED_PLAY;
-    unlock_ui();
   }
 
   //transitions
@@ -2441,7 +2446,7 @@ var advisors = function()
 
       gg.ctx.globalAlpha = 1;
     }
-    if(self.skip_btn.active)
+    if(self.skip_btn.active && self.thread)
     {
       gg.ctx.textAlign = "left";
       gg.ctx.fillStyle = black;

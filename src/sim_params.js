@@ -61,8 +61,8 @@ var nutrition_motivated = 20000;
 var nutrition_content = 50000;
 
 var wait_t = 100;
-var export_t = 2000;
-var milkable_t = 2000;
+var export_t = 1000;
+var milkable_t = 1000;
 
 var nutrition_max = 1000000;
 var nutrition_percent = nutrition_max/100;
