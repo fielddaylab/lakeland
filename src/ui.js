@@ -4085,6 +4085,171 @@ var advisors = function()
 
   ];
 
+  var tut_extra_life = [
+
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'extra_life'}); self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
+    function(){ return self.time_passed(100); }, //tick
+    noop, //draw
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("Uh oh."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("Looks like your town hasn't done so well..."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("I think we can scrounge up enough investment to give you one more shot-"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ gg.money += home_cost; self.push_blurb("Let's buy another house."); },//begin
+    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DIRECT);
+      self.arrow(gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2);
+    },
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Let's make this count!"); },//begin
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DIRECT);
+    },
+    noop, //qclick
+    function(evt) //click
+    {
+      var b = gg.b;
+      if(b.hover_t)
+      {
+        if(!b.placement_valid(b.hover_t,gg.shop.selected_buy))
+          self.jmp(1);
+        else
+        {
+          for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 0;
+          b.hover_t.owned = 1;
+          gg.b.click(evt);
+          self.jmp(2);
+        }
+        return 1;
+      }
+    },
+    noop, //end
+    function(){ /*auto build a home here*/ self.push_blurb("Let's make this count!"); return false; }, //shouldsim
+
+    //can't build there
+    function(){ self.push_blurb("Can't build a house there!"); },//begin
+    function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    function(evt){ if(self.evt_within_popup(evt)) { self.jmp(-1); return 1; } return 0; }, //qclick
+    ffunc, //click
+    noop, //end
+    ffunc, //shouldsim
+
+    function(){ self.push_blurb("Someone should move in soon!"); },//begin
+    function(){ return self.bits_exist(1); }, //tick
+    function(){
+      self.wash();
+      var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
+      gg.b.screen_tile(t);
+      self.camtotile(t);
+      self.hilight(t);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(t.x+t.w,t.y+t.h/2);
+    }, //draw
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; self.push_blurb("Waiting..."); }, //begin
+    function(){ return self.bits_exist(1); }, //tick
+    function(){ //draw
+      var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
+      gg.b.screen_tile(t);
+      self.popup(TEXT_TYPE_OBSERVE);
+      self.arrow(t.x+t.w,t.y+t.h/2);
+    },
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){  //begin
+      self.heap.f = gg.farmbits[0];
+      var f = self.heap.f;
+      if(f) gg.inspector.select_farmbit(f);
+      self.push_blurb((f ? f.name : 0)+" moved into your town!");
+    },
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.camtotile(f.tile);
+      self.hilight(f);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("Good luck!"); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      var f = self.heap.f;
+      self.camtotile(f.tile);
+      self.hilight(f);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(f.x+f.w,f.y+f.h/2);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'extra_life'});
+      //remove other death notifs
+      for(var i = 0; i < self.trigger_threads.length; i++)
+      {
+             if(self.trigger_threads[i] == tut_another_death) {           self.trigger_threads.splice(i,1); i--; }
+        else if(self.trigger_threads[i] == tut_death) { self.a_death = 0; self.trigger_threads.splice(i,1); i--; }
+      }
+    },
+    tfunc, //shouldsim
+
+  ];
+
   var tut_build_a_house = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_house'}); self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
@@ -4194,7 +4359,13 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; if(f) gg.inspector.select_farmbit(f); self.push_blurb((f ? f.name : 0)+" moved into your town!"); }, //begin
+    function(){  //begin
+      self.heap.f = gg.farmbits[0];
+      var f = self.heap.f;
+      if(f) gg.inspector.select_farmbit(f);
+      self.push_blurb((f ? f.name : 0)+" moved into your town!");
+      self.pool_thread(function(){ return gg.farmbits.length == 0 && gg.money < 1000 && !self.tiles_exist(TILE_TYPE_HOME,1); }, tut_extra_life);
+    },
     ffunc, //tick
     function(){ //draw
       self.wash();
