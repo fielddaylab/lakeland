@@ -82,15 +82,11 @@ var farm_nutrition_fertilize_threshhold = nutrition_percent*20;
 var fertilizer_nutrition = farm_nutrition_req*2;
 var water_fouled_threshhold = nutrition_percent*10;
 var livestock_produce_feed = 3;
-var storage_max = 10;
 
 var water_carryability = 0.2;
 var food_carryability = 0.8;
-var poop_raw_carryability = 0.2;
-var poop_light_carryability = 0.6;
-var poop_potent_carryability = 0.2;
+var poop_carryability = 0.2;
 var milk_carryability = 0.8;
-var valuable_carryability = 0.2;
 
 var land_walkability      = 1;
 var rock_walkability      = 0.7;
@@ -102,8 +98,6 @@ var forest_walkability    = 0.6;
 var home_walkability      = 0.9;
 var farm_walkability      = 0.9;
 var livestock_walkability = 0.8;
-var storage_walkability   = 0.9;
-var processor_walkability = 0.9;
 var road_walkability      = 4;
 var export_walkability    = 1;
 
@@ -113,9 +107,7 @@ var harvest_fulfillment   = floor(0.01*max_fulfillment);
 var fertilize_fulfillment = floor(0.01*max_fulfillment);
 var milking_fulfillment   = floor(0.01*max_fulfillment);
 var feed_fulfillment      = floor(0.01*max_fulfillment);
-var store_fulfillment     = floor(0.01*max_fulfillment);
-var process_fulfillment   = floor(0.01*max_fulfillment);
-var kick_fulfillment      = floor(0.01*max_fulfillment);
+var export_fulfillment    = floor(0.01*max_fulfillment);
 var swim_joy              = floor(0.02*max_joy); //per frame
 
 var max_dist = 9999999;
@@ -125,14 +117,10 @@ var farm_cost = 150;
 var livestock_cost = 200;
 var fertilizer_cost = 200;
 var food_cost = 200;
-var storage_cost = 10;
-var processor_cost = 5000;
 var sign_cost = 10;
 var skimmer_cost = 1000;
 var road_cost = 500;
-var demolish_cost = 10;
 var free_money = 1000;
-var festival_cost = 2000;
 
 var money_start_n = 0;
 
@@ -141,7 +129,6 @@ var harvest_profit = 0;
 var item_worth_food = 100;
 var item_worth_poop = 10;
 var item_worth_milk = 500;
-var item_worth_valuable = 5000;
 
 var roads_per_buy = 10;
 

@@ -6,13 +6,9 @@ var BUY_TYPE_FARM       = ENUM; ENUM++;
 var BUY_TYPE_FERTILIZER = ENUM; ENUM++;
 var BUY_TYPE_FOOD       = ENUM; ENUM++;
 var BUY_TYPE_LIVESTOCK  = ENUM; ENUM++;
-var BUY_TYPE_STORAGE    = ENUM; ENUM++;
 var BUY_TYPE_SIGN       = ENUM; ENUM++;
 var BUY_TYPE_SKIMMER    = ENUM; ENUM++;
 var BUY_TYPE_ROAD       = ENUM; ENUM++;
-var BUY_TYPE_PROCESSOR  = ENUM; ENUM++;
-var BUY_TYPE_DEMOLISH   = ENUM; ENUM++;
-var BUY_TYPE_FESTIVAL   = ENUM; ENUM++;
 var BUY_TYPE_COUNT      = ENUM; ENUM++;
 
 ENUM = 0;
@@ -260,10 +256,6 @@ var shop = function()
       if(i+1 < self.btns.length) setBB(self.btns[i+1], btn_x,btn_y,btn_s,btn_s); btn_x = self.pad; btn_y += btn_s+self.pad;
     }
 
-    //others
-    //if(debug) setBB(self.money_btn,btn_x,btn_y,btn_s,btn_s);
-    //setBB(self.abandon_btn,btn_x,btn_y,btn_s,btn_s);
-
     setBB(self.refund_btn,0,0,btn_s,btn_s);
   }
 
@@ -276,13 +268,9 @@ var shop = function()
       case BUY_TYPE_FERTILIZER: return fertilizer_cost; break;
       case BUY_TYPE_FOOD:       return food_cost; break;
       case BUY_TYPE_LIVESTOCK:  return livestock_cost; break;
-      case BUY_TYPE_STORAGE:    return storage_cost; break;
       case BUY_TYPE_SIGN:       return sign_cost; break;
       case BUY_TYPE_SKIMMER:    return skimmer_cost; break;
       case BUY_TYPE_ROAD:       return road_cost; break;
-      case BUY_TYPE_PROCESSOR:  return processor_cost; break;
-      case BUY_TYPE_DEMOLISH:   return demolish_cost; break;
-      case BUY_TYPE_FESTIVAL:   return festival_cost; break;
       default: return 0; break;
     }
   }
@@ -296,13 +284,9 @@ var shop = function()
       case BUY_TYPE_FERTILIZER: return self.fertilizer_btn; break;
       case BUY_TYPE_FOOD:       return self.food_btn; break;
       case BUY_TYPE_LIVESTOCK:  return self.livestock_btn; break;
-      case BUY_TYPE_STORAGE:    return self.storage_btn; break;
       case BUY_TYPE_SIGN:       return self.sign_btn; break;
       case BUY_TYPE_SKIMMER:    return self.skimmer_btn; break;
       case BUY_TYPE_ROAD:       return self.road_btn; break;
-      case BUY_TYPE_PROCESSOR:  return self.processor_btn; break;
-      case BUY_TYPE_DEMOLISH:   return self.demolish_btn; break;
-      case BUY_TYPE_FESTIVAL:   return self.festival_btn; break;
       default: return 0; break;
     }
   }
@@ -334,16 +318,11 @@ var shop = function()
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FERTILIZER); }); self.fertilizer_btn = b; b.img = tile_fertilizer_img; b.name = "Fertilizer"; b.cost = fertilizer_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FOOD); });       self.food_btn       = b; b.img = tile_food_img;       b.name = "Food";       b.cost = food_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });  self.livestock_btn  = b; b.img = tile_livestock_img;  b.name = "Dairy";      b.cost = livestock_cost;
-  //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_STORAGE); });    self.storage_btn    = b; b.img = tile_storage_img;    b.name = "Storage";    b.cost = storage_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });       self.sign_btn       = b; b.img = tile_sign_img;       b.name = "Sign";       b.cost = sign_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SKIMMER); });    self.skimmer_btn    = b; b.img = tile_bloom_img;      b.name = "Skim Lake";    b.cost = skimmer_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_ROAD); });       self.road_btn       = b; b.img = tile_road_img;       b.name = "Road";       b.cost = road_cost;
-  //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_PROCESSOR); });  self.processor_btn  = b; b.img = tile_processor_img;  b.name = "Processor";  b.cost = processor_cost;
-  //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_DEMOLISH); });   self.demolish_btn   = b; b.img = tile_skull_img;      b.name = "Demolish";   b.cost = demolish_cost;
-  //b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FESTIVAL); });   self.festival_btn   = b; b.img = tile_festival_img;   b.name = "Festival";   b.cost = festival_cost;
 
   b = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; }); self.money_btn = b; b.img = tile_money_img; b.name = "Free"; b.cost = -free_money;
-  //b = new ButtonBox(0,0,0,0,function(){ for(var i = 0; i < gg.farmbits.length; i++) gg.farmbits[i].abandon_job(); }); self.abandon_btn = b;
   b = new ButtonBox(0,0,0,0,function(){ gg.money += self.buy_cost(self.selected_buy); self.selected_buy = 0; }); self.refund_btn = b; b.img = tile_money_img; b.name = "Refund"; b.cost = 0;
 
   self.btns = [
@@ -352,13 +331,9 @@ var shop = function()
     self.livestock_btn,
     self.fertilizer_btn,
     self.food_btn,
-    //self.storage_btn,
     self.skimmer_btn,
     self.sign_btn,
     self.road_btn,
-    //self.processor_btn,
-    //self.demolish_btn,
-    //self.festival_btn,
   ];
   if(debug) self.btns.push(self.money_btn);
 
@@ -371,17 +346,11 @@ var shop = function()
   self.fertilizer_btn.active = 0;
   self.food_btn.active = 0;
   self.livestock_btn.active = 0;
-  //self.storage_btn.active = 0;
   self.sign_btn.active = 0;
   self.skimmer_btn.active = 0;
   self.road_btn.active = 0;
-  //self.processor_btn.active = 0;
-  //self.demolish_btn.active = 0;
   self.money_btn.active = 0;
-  //self.abandon_btn.active = 0;
   self.refund_btn.active = 1;
-
-  //self.festival_btn.active = 0;
 
   self.filter = function(filter)
   {
@@ -486,7 +455,6 @@ var shop = function()
       self.draw_btn(self.btns[i],0);
 
     if(debug) self.draw_btn(self.money_btn, tile_money_img, "Free Money", self.money_btn.active, !self.selected_buy, -free_money, 1, 0);
-    //self.draw_btn(self.abandon_btn, farmbit_img, "Abandon",    self.abandon_btn.active, (!self.selected_buy&&gg.inspector.detailed_type == INSPECTOR_CONTENT_FARMBIT), 0, 1, 0);
     if(self.selected_buy) { self.refund_btn.cost = self.buy_cost(self.selected_buy); self.draw_btn(self.refund_btn, 1); }
 
     gg.ctx.textAlign = "left";
@@ -694,7 +662,6 @@ var inspector = function()
       self.item_ui[ITEM_TYPE_WATER]    = u;
       self.item_ui[ITEM_TYPE_POOP]     = u;
       self.item_ui[ITEM_TYPE_MILK]     = u;
-      self.item_ui[ITEM_TYPE_VALUABLE] = u;
       y = start_y;
 
       u.switch_w = (self.w-self.pad*2)/3
@@ -878,10 +845,8 @@ var inspector = function()
       case TILE_TYPE_SHORE:
       case TILE_TYPE_FOREST:
       case TILE_TYPE_LAKE:
-      case TILE_TYPE_STORAGE:
       case TILE_TYPE_SIGN:
       case TILE_TYPE_ROAD:
-      case TILE_TYPE_PROCESSOR:
       case TILE_TYPE_COUNT:
       {
         gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
@@ -1144,12 +1109,6 @@ var inspector = function()
         x = self.x+self.w/2;
       }
         break;
-      case TILE_TYPE_STORAGE:
-      {
-        y += self.pad+self.font_size;
-        y += self.pad+self.font_size;
-        y += self.pad+self.font_size;
-      }
     }
     y += self.pad+self.font_size;
 
@@ -1161,13 +1120,31 @@ var inspector = function()
     var u = self.tile_ui[t.type];
     if(t.type == TILE_TYPE_FARM)
     {
-      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL; else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[0] = MARK_FEED; else { t.marks[0]++; if(t.marks[0] == MARK_COUNT) t.marks[0] = MARK_USE; } })) return 1;
-      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL; else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[1] = MARK_FEED; else { t.marks[1]++; if(t.marks[1] == MARK_COUNT) t.marks[1] = MARK_USE; } })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){
+             if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE;
+        else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL;
+        else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[0] = MARK_FEED;
+        else { t.marks[0]++; if(t.marks[0] == MARK_COUNT) t.marks[0] = MARK_USE; }
+      })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){
+             if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE;
+        else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL;
+        else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[1] = MARK_FEED;
+        else { t.marks[1]++; if(t.marks[1] == MARK_COUNT) t.marks[1] = MARK_USE; }
+      })) return 1;
     }
     if(t.type == TILE_TYPE_LIVESTOCK)
     {
-      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL; else { t.marks[0]++; if(t.marks[0] == MARK_FEED) t.marks[0] = MARK_USE; } })) return 1;
-      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){ if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE; else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL; else { t.marks[1]++; if(t.marks[1] == MARK_FEED) t.marks[1] = MARK_USE; } })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_0_y,self.w,u.autosell_h,function(evt){
+             if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE;
+        else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL;
+        else { t.marks[0]++; if(t.marks[0] == MARK_FEED) t.marks[0] = MARK_USE; }
+      })) return 1;
+      if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){
+             if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE;
+        else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL;
+        else { t.marks[1]++; if(t.marks[1] == MARK_FEED) t.marks[1] = MARK_USE; }
+      })) return 1;
     }
 
     return 0;
@@ -1269,9 +1246,6 @@ var inspector = function()
           case ITEM_TYPE_FERTILIZER:
             console.log("BROKEN");
             break;
-          case ITEM_TYPE_VALUABLE:
-            console.log("BROKEN");
-            break;
         }
         x = u.switch_1_x;
         if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
@@ -1298,9 +1272,6 @@ var inspector = function()
           case ITEM_TYPE_FERTILIZER:
             console.log("BROKEN");
             break;
-          case ITEM_TYPE_VALUABLE:
-            console.log("BROKEN");
-            break;
         }
         x = u.switch_1_x;
         gg.ctx.fillText("sell",x+u.switch_w/2,y+self.font_size+self.pad);
@@ -1323,9 +1294,20 @@ var inspector = function()
     var clicked = 0;
 
     if(it.type == ITEM_TYPE_FOOD)
-      clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){ clicked = 1; if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE; else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL; else if(between(evt.doX,u.switch_2_x,u.switch_3_x)) it.mark = MARK_FEED; else { it.mark++; if(it.mark == MARK_COUNT) it.mark = MARK_USE; } });
+      clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){
+        clicked = 1;
+             if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE;
+        else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL;
+        else if(between(evt.doX,u.switch_2_x,u.switch_3_x)) it.mark = MARK_FEED;
+        else { it.mark++; if(it.mark == MARK_COUNT) it.mark = MARK_USE; }
+      });
     else
-      clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){ clicked = 1; if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE; else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL; else { it.mark++; if(it.mark == MARK_FEED) it.mark = MARK_USE; } });
+      clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){
+        clicked = 1;
+             if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE;
+        else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL;
+        else { it.mark++; if(it.mark == MARK_FEED) it.mark = MARK_USE; }
+      });
 
     if(clicked)
     {
@@ -1334,12 +1316,28 @@ var inspector = function()
         var f = farmbit_with_item(it);
         if(f)
         {
-               if(f.job_type == JOB_TYPE_EXPORT && it.mark != MARK_SELL) f.abandon_job(0);
-          else if(f.job_type != JOB_TYPE_EXPORT && it.mark == MARK_SELL) f.abandon_job(0);
+               if((f.job_type == JOB_TYPE_EAT || f.job_type == JOB_TYPE_PLANT || f.job_type == JOB_TYPE_FERTILIZE)
+                                                && it.mark != MARK_USE) f.abandon_job(0);
+          else if(f.job_type == JOB_TYPE_EXPORT && it.mark != MARK_SELL) f.abandon_job(0);
+          else if(f.job_type == JOB_TYPE_FEED   && it.mark != MARK_FEED) f.abandon_job(0);
         }
       }
-      if(!it.lock && it.mark == MARK_SELL)
-        b_for_job(JOB_TYPE_EXPORT, 0, it);
+      if(!it.lock)
+      {
+        if(it.mark == MARK_USE)
+        {
+          switch(it.type)
+          {
+            case ITEM_TYPE_WATER:      b_for_job(JOB_TYPE_PLANT, 0, it);     break;
+            case ITEM_TYPE_FOOD:       b_for_job(JOB_TYPE_EAT, 0, it);       break;
+            case ITEM_TYPE_POOP:       b_for_job(JOB_TYPE_FERTILIZE, 0, it); break;
+            case ITEM_TYPE_FERTILIZER: console.log("BROKEN");                break;
+            case ITEM_TYPE_MILK:       b_for_job(JOB_TYPE_EAT, 0, it);       break;
+          }
+        }
+        else if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
+        else if(it.mark == MARK_FEED) b_for_job(JOB_TYPE_FEED, 0, it);
+      }
       return 1;
     }
 
@@ -2957,7 +2955,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
