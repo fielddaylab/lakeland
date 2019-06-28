@@ -1358,7 +1358,9 @@ var board = function()
     return 0;
   }
 
+  self.rain_t = 0;
   self.raining = 0;
+  self.autorain = 0;
   self.nutrition_view = 0;
   self.spewing_road = 0;
 
@@ -2472,6 +2474,13 @@ var board = function()
 
   self.tick = function()
   {
+    if(self.autorain)
+    {
+      self.rain_t++;
+      if(self.rain_t > 4000) self.raining = 1;
+      if(self.rain_t > 5000) { self.raining = 0; self.rain_t = 0; }
+    }
+
     self.visit_t++;
     var n = 1000;
     if(self.visit_t > n)

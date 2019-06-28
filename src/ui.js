@@ -2574,21 +2574,6 @@ var advisors = function()
 
   ];
 
-  var tut_cycle_rain = [
-
-    function(){ gg.b.raining = 1; if(gg.speed > SPEED_PLAY) gg.speed = SPEED_PLAY; }, //begin
-    function(){ return self.time_passed(1000); }, //tick
-    noop, //draw
-    ffunc, //qclick
-    ffunc, //click
-    function(){ //end
-      gg.b.raining = 0;
-      self.pool_thread(function(){ return self.time_passed(4000); }, tut_cycle_rain);
-    },
-    tfunc, //shouldsim
-
-  ];
-
   var tut_rain = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Looks like it's about to rain!"); }, //begin
@@ -2698,7 +2683,8 @@ var advisors = function()
     self.confirm_adv_thread, //qclick
     ffunc, //click
     function(){ //end
-      self.pool_thread(function(){ return self.time_passed(500); }, tut_cycle_rain);
+      gg.b.rain_t = 0;
+      gg.b.autorain = 1;
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
     },
     tfunc, //shouldsim
