@@ -915,7 +915,7 @@ var b_for_job = function(job_type, job_subject, job_object)
     {
       if(!job_subject && !job_object) return; //not going to waste time "looking to find some bit and some farm and some fertilizer and get 'em goin"
 
-      if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
+      if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
       if(!job_subject) return 0;
 
       if(!job_object) job_object = closest_unlocked_marked_item_of_type(job_subject,ITEM_TYPE_POOP,MARK_USE);
@@ -937,7 +937,7 @@ var b_for_job = function(job_type, job_subject, job_object)
       break;
     case JOB_TYPE_MILK:
     {
-      if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
+      if(!job_subject) job_subject = closest_unlocked_nutrientdeficient_tile_from_list(job_object.tile, farm_nutrition_fertilize_threshhold, gg.b.tile_groups[TILE_TYPE_FARM]);
       if(!job_subject) return 0;
 
       var best = closest_free_farmbit_with_desire(job_subject, 0, 0, 0, 1);
@@ -3180,7 +3180,7 @@ var item = function()
     self.tile = gg.b.tiles_wt(self.wx,self.wy);
     switch(self.type)
     {
-      case ITEM_TYPE_POOP:       self.tile.nutrition += poop_nutrition_leak; break;
+      case ITEM_TYPE_POOP: self.tile.nutrition += poop_nutrition_leak; break;
       case ITEM_TYPE_FERTILIZER:
         self.state -= fertilizer_nutrition_leak;
         self.tile.nutrition += fertilizer_nutrition_leak;

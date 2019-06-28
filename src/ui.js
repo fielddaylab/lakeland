@@ -4242,8 +4242,8 @@ var advisors = function()
       //remove other death notifs
       for(var i = 0; i < self.trigger_threads.length; i++)
       {
-             if(self.trigger_threads[i] == tut_another_death) {           self.trigger_threads.splice(i,1); i--; }
-        else if(self.trigger_threads[i] == tut_death) { self.a_death = 0; self.trigger_threads.splice(i,1); i--; }
+             if(self.trigger_threads[i] == tut_another_death) {           self.triggers.splice(i,1); self.trigger_threads.splice(i,1); i--; }
+        else if(self.trigger_threads[i] == tut_death) { self.a_death = 0; self.triggers.splice(i,1); self.trigger_threads.splice(i,1); i--; }
       }
     },
     tfunc, //shouldsim
