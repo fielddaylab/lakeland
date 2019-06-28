@@ -3083,11 +3083,27 @@ var board = function()
       gg.ctx.fillStyle = blue;
       var s = 3*gg.stage.s_mod;
       var hs = s/2;
-      for(var i = 0; i < 1000; i++)
+      if(gg.speed == SPEED_PAUSE || gg.advisors.owns_time)
       {
-        var x = rand()*self.w;
-        var y = rand()*self.h;
-        gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+        var x = 0;
+        var y = 0;
+        for(var i = 0; i < 1000; i++)
+        {
+          x = Math.sin(i)*10000;
+          x = (x-Math.floor(x))*self.w;
+          y = Math.sin(i+1000)*10000;
+          y = (y-Math.floor(y))*self.h;
+          gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+        }
+      }
+      else
+      {
+        for(var i = 0; i < 1000; i++)
+        {
+          var x = rand()*self.w;
+          var y = rand()*self.h;
+          gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+        }
       }
     }
 
