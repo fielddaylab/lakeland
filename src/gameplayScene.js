@@ -105,6 +105,7 @@ var GamePlayScene = function()
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
 
     gg.b = new board();
+    gg.b.init();
     gg.ignore_single_board = 0; //flag to ignore a single input
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.zoom_bounds(gg.cam);

@@ -138,6 +138,16 @@ var buy_to_tile = function(buy)
   return TILE_TYPE_NULL;
 }
 
+var buy_to_item = function(buy)
+{
+  switch(buy)
+  {
+    case BUY_TYPE_FERTILIZER: return ITEM_TYPE_FERTILIZER;
+    case BUY_TYPE_FOOD:       return ITEM_TYPE_FOOD;
+  }
+  return ITEM_TYPE_NULL;
+}
+
 var walkability_check = function(type,state)
 {
   switch(type)
@@ -2432,8 +2442,8 @@ var board = function()
 
     self.inc_bounds();
     self.hovering = 0;
+    self.scratch_item = new item();
   }
-  self.init();
 
   self.own_tiles = function(t, own_d)
   {
@@ -3003,7 +3013,7 @@ var board = function()
       case TILE_TYPE_ROCK:
       case TILE_TYPE_FOREST:
       case TILE_TYPE_LAND:
-        gg.ctx.drawImage(self.tile_img(t.type),x,y,w,h);
+        gg.ctx.drawImage(self.tile_img(t.og_type),x,y,w,h);
         break;
     }
   }
@@ -3234,9 +3244,9 @@ var board = function()
       th = ny-y;
       dth = th+dhd;
       dy = y-dhd;
+      //og
       nx = floor(self.x+(0*w));
       i = self.tiles_i(0,ty);
-      if(dy < -dth || dy > gg.canvas.height) { i += self.tw; continue; }
       for(var tx = 0; tx < self.tw; tx++)
       {
         x = nx;
@@ -3247,20 +3257,9 @@ var board = function()
         self.draw_tile_og_fast(t,x,dy,tw,dth);
         i++;
       }
-    }
-    //top tiles + overlays
-    i = 0;
-    ny = floor(self.y);
-    for(var ty = self.th-1; ty >= 0; ty--)
-    {
-      y = ny;
-      ny = floor(self.y+self.h-ty*h);
-      th = ny-y;
-      dth = th+dhd;
-      dy = y-dhd;
+      //ontop
       nx = floor(self.x+(0*w));
       i = self.tiles_i(0,ty);
-      if(dy < -dth || dy > gg.canvas.height) { i += self.tw; continue; }
       for(var tx = 0; tx < self.tw; tx++)
       {
         x = nx;
@@ -3402,6 +3401,21 @@ var board = function()
           self.draw_tile(o,x,ny,w,h);
           gg.ctx.globalAlpha = 1;
 
+        }
+        else
+        {
+          var it = self.scratch_item;
+          it.type = buy_to_item(gg.shop.selected_buy);
+          if(it.type != ITEM_TYPE_NULL)
+          {
+            it.tile = t;
+            gg.b.tiles_tw(it.tile,it);
+            screenSpace(gg.cam, gg.canvas, it);
+
+            gg.ctx.globalAlpha = 0.5;
+            it.draw();
+            gg.ctx.globalAlpha = 1;
+          }
         }
       }
       else
