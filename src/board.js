@@ -3572,7 +3572,7 @@ var farmbit = function()
           case JOB_STATE_SEEK:
           {
             self.walk_toward_tile(self.job_subject);
-            if(rand() < 0.01)
+            if(self.tile == self.job_subject || rand() < 0.01)
             {
               self.job_state = JOB_STATE_ACT;
               self.job_state_t = 0;
@@ -4175,7 +4175,7 @@ var farmbit = function()
 
     var anim = self.anim_anim;
     if(self.tile.type == TILE_TYPE_LAKE)                                         anim = FARMBIT_ANIM_SWIM;
-    else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)   anim = FARMBIT_ANIM_IDLE;
+    else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_IDLE;
     //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
     else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
     if(anim != self.anim_anim) self.anim_frame = 0;
