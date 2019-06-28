@@ -1192,7 +1192,7 @@ var inspector = function()
     gg.ctx.fillStyle = white;
     fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
 
-    self.img_vignette(gg.b.tile_img(it.tile.type),1);
+    self.img_vignette(gg.b.tile_img(it.tile.og_type),1);
     self.img_vignette(gg.b.item_img(it.type),1);
 
     gg.ctx.textAlign = "center";
@@ -1358,6 +1358,7 @@ var inspector = function()
     gg.ctx.fillStyle = white;
     fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
 
+    self.img_vignette(gg.b.tile_img(b.tile.og_type),1);
     self.img_vignette(b.last_img,1);
 
     gg.ctx.textAlign = "center";
@@ -3743,7 +3744,8 @@ var advisors = function()
     function(){ gg.speed = SPEED_PAUSE; var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
-      self.larrow(gg.inspector.x,gg.inspector.vignette_y+gg.inspector.vignette_h);
+      var u = gg.inspector.tile_ui[TILE_TYPE_FARM];
+      self.larrow(gg.inspector.x,u.autosell_0_y);
     },
     ffunc, //qclick
     ffunc, //click
