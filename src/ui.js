@@ -320,12 +320,12 @@ var shop = function()
   self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open; self.open_t = 0;});
   var b;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_HOME); });       self.home_btn       = b; b.img = tile_home_img;       b.name = "Home";       b.cost = home_cost;
+  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FOOD); });       self.food_btn       = b; b.img = tile_food_img;       b.name = "Food";       b.cost = food_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FARM); });       self.farm_btn       = b; b.img = tile_farm_img;       b.name = "Farm";       b.cost = farm_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FERTILIZER); }); self.fertilizer_btn = b; b.img = tile_fertilizer_img; b.name = "Fertilizer"; b.cost = fertilizer_cost;
-  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FOOD); });       self.food_btn       = b; b.img = tile_food_img;       b.name = "Food";       b.cost = food_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_LIVESTOCK); });  self.livestock_btn  = b; b.img = tile_livestock_img;  b.name = "Dairy";      b.cost = livestock_cost;
+  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SKIMMER); });    self.skimmer_btn    = b; b.img = tile_bloom_img;      b.name = "Skim Lake";  b.cost = skimmer_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SIGN); });       self.sign_btn       = b; b.img = tile_sign_img;       b.name = "Sign";       b.cost = sign_cost;
-  b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_SKIMMER); });    self.skimmer_btn    = b; b.img = tile_bloom_img;      b.name = "Skim Lake";    b.cost = skimmer_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_ROAD); });       self.road_btn       = b; b.img = tile_road_img;       b.name = "Road";       b.cost = road_cost;
 
   b = new ButtonBox(0,0,0,0,function(){ gg.money += free_money; }); self.money_btn = b; b.img = tile_money_img; b.name = "Free"; b.cost = -free_money;
@@ -333,10 +333,10 @@ var shop = function()
 
   self.btns = [
     self.home_btn,
-    self.farm_btn,
-    self.livestock_btn,
-    self.fertilizer_btn,
     self.food_btn,
+    self.farm_btn,
+    self.fertilizer_btn,
+    self.livestock_btn,
     self.skimmer_btn,
     self.sign_btn,
     self.road_btn,
