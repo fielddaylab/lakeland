@@ -1043,169 +1043,253 @@ var board = function()
   self.timer_progressions = 50;
   self.timer_colors = 20;
   self.timer_atlas_i = function(progress,color) { return floor((self.timer_colors-1)*color)*self.timer_progressions+floor((self.timer_progressions-1)*progress); };
+  self.nutrition_atlas;
+  self.nutrition_atlas_i = [];
 
   self.resize = function()
   {
-    if(self.atlas) self.atlas.destroy();
-    self.atlas = new atlas();
     self.min_draw_tw = floor(self.w/self.tw);
     self.min_draw_th = floor(self.h/self.th)+floor(self.h/self.th/4);
     var total_tw = self.min_draw_tw*2+1;
     var total_th = self.min_draw_th*2+1;
-    self.atlas.init(total_tw*TILE_TYPE_COUNT,total_th);
 
-    var x = 0;
-    var y = 0;
-    var ctx = self.atlas.context;
-    var tx = 0;
-    var ty = 0;
-    var tw = 0;
-    var th = 0;
-    var next = function()
+    //tile atlas
     {
-      self.atlas.nextAtlas();
+      if(self.atlas) self.atlas.destroy();
+      self.atlas = new atlas();
+      self.atlas.init(total_tw*TILE_TYPE_COUNT,total_th);
+
+      var x = 0;
+      var y = 0;
+      var ctx = self.atlas.context;
+      var tx = 0;
+      var ty = 0;
+      var tw = 0;
+      var th = 0;
+      var next = function()
+      {
+        self.atlas.nextAtlas();
+        x = 0;
+        y = 0;
+        ctx = self.atlas.context;
+        tx = 0;
+        ty = 0;
+        tw = 0;
+        th = 0;
+      }
+      for(var i = 0; i < TILE_TYPE_COUNT; i++)
+      {
+        if(i == TILE_TYPE_LAND || i == TILE_TYPE_LIVESTOCK) continue; //special
+        ctx.fillStyle = self.tile_color(i);
+        tx = x;
+        ty = y;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th;
+        self.atlas_i[i] = self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx = x;
+        ty += self.min_draw_th;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
+        self.atlas.commitSprite();
+        x += total_tw;
+      }
+      next();
+
+      for(var i = 0; i < tile_land_imgs.length; i++)
+      {
+        ctx.fillStyle = self.tile_color(TILE_TYPE_LAND);
+        tx = x;
+        ty = y;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th;
+        self.atlas_i[TILE_TYPE_COUNT+i] = self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx = x;
+        ty += self.min_draw_th;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        x += total_tw;
+        if(x >= self.atlas.w) next();
+      }
+      next();
+
+      for(var i = 0; i < tile_livestock_imgs.length; i++)
+      {
+        ctx.fillStyle = self.tile_color(TILE_TYPE_LIVESTOCK);
+        tx = x;
+        ty = y;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th;
+        self.atlas_i[TILE_TYPE_COUNT+livestock_off(i)] = self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx = x;
+        ty += self.min_draw_th;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.atlas.getWholeSprite(tx,ty,tw,th);
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
+        self.atlas.commitSprite();
+        x += total_tw;
+        if(x >= self.atlas.w) next();
+      }
+      //next(); //because it commits next anyways
+
+      self.atlas.commit();
+    }
+
+    //nutrition atlas
+    {
+      if(self.nutrition_atlas) self.nutrition_atlas.destroy();
+      self.nutrition_atlas = new atlas();
+      self.nutrition_atlas.init(total_tw*nutrition_overlay_levels,total_th);
+
+      var x = 0;
+      var y = 0;
+      var ctx = self.nutrition_atlas.context;
+      var tx = 0;
+      var ty = 0;
+      var tw = 0;
+      var th = 0;
+      for(var i = 0; i < nutrition_overlay_levels; i++)
+      {
+        ctx.fillStyle = white;
+        tx = x;
+        ty = y;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th;
+        self.nutrition_atlas_i[i] = self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+        //ctx.fillStyle = red;
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
+        self.nutrition_atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+        //ctx.fillStyle = orange;
+        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
+        self.nutrition_atlas.commitSprite();
+        tx = x;
+        ty += self.min_draw_th;
+        tw = self.min_draw_tw;
+        th = self.min_draw_th+1;
+        self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+        //ctx.fillStyle = yellow;
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
+        self.nutrition_atlas.commitSprite();
+        tx += self.min_draw_tw;
+        tw = self.min_draw_tw+1;
+        self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+        //ctx.fillStyle = green;
+        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
+        self.nutrition_atlas.commitSprite();
+        x += total_tw;
+      }
+
+      self.nutrition_atlas.commit();
+    }
+
+    //timer atlas
+    {
+      if(self.timer_atlas) self.timer_atlas.destroy();
+      self.timer_atlas = new atlas();
+      var timer_s = floor(self.min_draw_tw*0.6);
+      var timer_c = floor(timer_s/2);
+      var timer_r = floor(timer_c*0.8);
+      self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*(self.timer_colors+1));
+      ctx = self.timer_atlas.context;
+
       x = 0;
       y = 0;
-      ctx = self.atlas.context;
-      tx = 0;
-      ty = 0;
-      tw = 0;
-      th = 0;
-    }
-    for(var i = 0; i < TILE_TYPE_COUNT; i++)
-    {
-      if(i == TILE_TYPE_LAND || i == TILE_TYPE_LIVESTOCK) continue; //special
-      ctx.fillStyle = self.tile_color(i);
-      tx = x;
-      ty = y;
-      tw = self.min_draw_tw;
-      th = self.min_draw_th;
-      self.atlas_i[i] = self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx += self.min_draw_tw;
-      tw = self.min_draw_tw+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx = x;
-      ty += self.min_draw_th;
-      tw = self.min_draw_tw;
-      th = self.min_draw_th+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx += self.min_draw_tw;
-      tw = self.min_draw_tw+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(self.tile_img(i),tx,ty,tw,th);
-      self.atlas.commitSprite();
-      x += total_tw;
-    }
-    next();
-
-    for(var i = 0; i < tile_land_imgs.length; i++)
-    {
-      ctx.fillStyle = self.tile_color(TILE_TYPE_LAND);
-      tx = x;
-      ty = y;
-      tw = self.min_draw_tw;
-      th = self.min_draw_th;
-      self.atlas_i[TILE_TYPE_COUNT+i] = self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx += self.min_draw_tw;
-      tw = self.min_draw_tw+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx = x;
-      ty += self.min_draw_th;
-      tw = self.min_draw_tw;
-      th = self.min_draw_th+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx += self.min_draw_tw;
-      tw = self.min_draw_tw+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(tile_land_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      x += total_tw;
-      if(x >= self.atlas.w) next();
-    }
-    next();
-
-    for(var i = 0; i < tile_livestock_imgs.length; i++)
-    {
-      ctx.fillStyle = self.tile_color(TILE_TYPE_LIVESTOCK);
-      tx = x;
-      ty = y;
-      tw = self.min_draw_tw;
-      th = self.min_draw_th;
-      self.atlas_i[TILE_TYPE_COUNT+livestock_off(i)] = self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx += self.min_draw_tw;
-      tw = self.min_draw_tw+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx = x;
-      ty += self.min_draw_th;
-      tw = self.min_draw_tw;
-      th = self.min_draw_th+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      tx += self.min_draw_tw;
-      tw = self.min_draw_tw+1;
-      self.atlas.getWholeSprite(tx,ty,tw,th);
-      ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-      ctx.drawImage(tile_livestock_imgs[i],tx,ty,tw,th);
-      self.atlas.commitSprite();
-      x += total_tw;
-      if(x >= self.atlas.w) next();
-    }
-    //next(); //because it commits next anyways
-
-    self.atlas.commit();
-
-    if(self.timer_atlas) self.timer_atlas.destroy();
-    self.timer_atlas = new atlas();
-    var timer_s = floor(self.min_draw_tw*0.6);
-    var timer_c = floor(timer_s/2);
-    var timer_r = floor(timer_c*0.8);
-    self.timer_atlas.init(timer_s*self.timer_progressions,timer_s*(self.timer_colors+1));
-    ctx = self.timer_atlas.context;
-
-    x = 0;
-    y = 0;
-    var nutrition = color_str_to_obj(nutrition_color);
-    var black     = {r:0,g:0,b:0};
-    var color     = {r:0,g:0,b:0};
-    var ct = 0;
-    var fillColor = "";
-    ctx.strokeStyle = "#000000";;
-    ctx.lineWidth = timer_r*0.1;
-    for(var i = 0; i < self.timer_colors; i++)
-    {
-      ct = i/(self.timer_colors-1);
-      color.r = lerp(black.r,nutrition.r,ct);
-      color.g = lerp(black.g,nutrition.g,ct);
-      color.b = lerp(black.b,nutrition.b,ct);
-      fillColor = RGB2Hex(color);
+      var nutrition = color_str_to_obj(nutrition_color);
+      var black     = {r:0,g:0,b:0};
+      var color     = {r:0,g:0,b:0};
+      var ct = 0;
+      var fillColor = "";
+      ctx.strokeStyle = "#000000";;
+      ctx.lineWidth = timer_r*0.1;
+      for(var i = 0; i < self.timer_colors; i++)
+      {
+        ct = i/(self.timer_colors-1);
+        color.r = lerp(black.r,nutrition.r,ct);
+        color.g = lerp(black.g,nutrition.g,ct);
+        color.b = lerp(black.b,nutrition.b,ct);
+        fillColor = RGB2Hex(color);
+        for(var j = 0; j < self.timer_progressions; j++)
+        {
+          self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
+          ctx.beginPath();
+          ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+          ctx.fillStyle = white;
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = fillColor;
+          ctx.beginPath();
+          ctx.moveTo(x+timer_c,y+timer_c);
+          ctx.lineTo(x+timer_c,y+timer_c-timer_r);
+          ctx.arc(x+timer_c,y+timer_c,timer_r,0-halfpi,twopi*((j+1)/self.timer_progressions)-halfpi);
+          ctx.lineTo(x+timer_c,y+timer_c);
+          ctx.fill();
+          self.timer_atlas.commitSprite();
+          x += timer_s;
+        }
+        y += timer_s;
+        x = 0;
+      }
+      //non-colored timer
       for(var j = 0; j < self.timer_progressions; j++)
       {
         self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
@@ -1214,7 +1298,7 @@ var board = function()
         ctx.fillStyle = white;
         ctx.fill();
         ctx.stroke();
-        ctx.fillStyle = fillColor;
+        ctx.fillStyle = "#000000";;
         ctx.beginPath();
         ctx.moveTo(x+timer_c,y+timer_c);
         ctx.lineTo(x+timer_c,y+timer_c-timer_r);
@@ -1224,28 +1308,10 @@ var board = function()
         self.timer_atlas.commitSprite();
         x += timer_s;
       }
-      y += timer_s;
-      x = 0;
+
+      self.timer_atlas.commit();
     }
-    //non-colored timer
-    for(var j = 0; j < self.timer_progressions; j++)
-    {
-      self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
-      ctx.beginPath();
-      ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
-      ctx.fillStyle = white;
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#000000";;
-      ctx.beginPath();
-      ctx.moveTo(x+timer_c,y+timer_c);
-      ctx.lineTo(x+timer_c,y+timer_c-timer_r);
-      ctx.arc(x+timer_c,y+timer_c,timer_r,0-halfpi,twopi*((j+1)/self.timer_progressions)-halfpi);
-      ctx.lineTo(x+timer_c,y+timer_c);
-      ctx.fill();
-      self.timer_atlas.commitSprite();
-      x += timer_s;
-    }
+
   }
 
   self.tw = board_w;
@@ -2786,6 +2852,32 @@ var board = function()
     self.draw_tile_overlay(t,x,y,w,h);
   }
 
+  self.draw_nutrition = function(t,x,y,w,h)
+  {
+    gg.ctx.drawImage(nutrition_imgs[floor(min(t,0.99)*nutrition_overlay_levels)],x,y,w,h);
+  }
+
+  self.draw_nutrition_fast = function(t,x,y,w,h)
+  {
+    if(!self.nutrition_atlas) return self.draw_nutrition(t,x,y,w,h);
+
+    var off = 0;
+    if(w == self.min_draw_tw)
+    {
+             if(h == self.min_draw_th)     off = 0;
+      else /*if(h == self.min_draw_th+1)*/ { off = 2; y -= 1; }
+    }
+    else /*if(w == self.min_draw_tw+1)*/
+    {
+             if(h == self.min_draw_th)     off = 1;
+      else /*if(h == self.min_draw_th+1)*/ { off = 3; y -= 1; }
+    }
+
+    var n = floor(min(t,0.99)*nutrition_overlay_levels);
+    self.nutrition_atlas.blitWholeSprite(self.nutrition_atlas_i[n]+off,x,y,gg.ctx);
+  }
+
+
   self.draw = function()
   {
     var t;
@@ -2845,20 +2937,20 @@ var board = function()
         i++;
       }
     }
+
     if(self.nutrition_view)
     {
-      gg.ctx.globalAlpha = 0.8;
-      gg.ctx.fillStyle = white;
-      gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       var i = 0;
+      gg.ctx.globalAlpha = 0.5;
       var a;
-      gg.ctx.fillStyle = nutrition_color;
       ny = floor(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
         y = ny;
         ny = floor(self.y+self.h-(ty+1)*h);
         th = y-ny;
+        dth = th+dhd;
+        dy = y-dhd;
         nx = floor(self.x+(0*w));
         if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
         for(var tx = 0; tx < self.tw; tx++)
@@ -2869,14 +2961,11 @@ var board = function()
           if(x < -tw || x > gg.canvas.width) { i++; continue; }
           t = self.tiles[i];
           a = bias1(t.nutrition/nutrition_max);
-          if(a > 0.05)
-          {
-            gg.ctx.globalAlpha = a;
-            gg.ctx.fillRect(x,ny,tw,th);
-          }
+          self.draw_nutrition_fast(a,x,dy,tw,dth,xd,yd);
           i++;
         }
       }
+      gg.ctx.globalAlpha = 1;
     }
 
     var t;
@@ -2939,6 +3028,7 @@ var board = function()
       }
 
     }
+
     //if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
     if(self.hover_t && gg.shop.selected_buy)
     {

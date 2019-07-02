@@ -1884,6 +1884,79 @@ var advisors = function()
     gg.speed = SPEED_PLAY;
   }
 
+  self.skip_all_tutorials = function()
+  {
+    //self.skip_btn.active = 0;
+    var t;
+
+    //finish cur thread
+    if(self.thread)
+    {
+      t = self.thread;
+      t[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_END]();
+      for(var j = (self.thread_i+1)*THREADF_TYPE_COUNT; j < t.length; j+=THREADF_TYPE_COUNT)
+      {
+        if(t[j+THREADF_TYPE_SSIM]())
+        {
+          t[j+THREADF_TYPE_BEGIN]();
+          t[j+THREADF_TYPE_END]();
+        }
+      }
+    }
+    self.owns_ui = 0;
+    self.owns_time = 0;
+    self.thread = 0;
+    self.thread_i = 0;
+    self.thread_t = 0;
+    self.stable_thread_t = 0;
+    self.heap = {};
+
+    gg.achievements.open = 0;
+    self.preview = 0;
+
+    //keep running through remaining skippable threads
+    for(var i = 0; i < self.trigger_threads.length; i++)
+    {
+      t = self.trigger_threads[i];
+      if(
+        t == tut_build_a_house ||
+        t == tut_buy_food ||
+        t == tut_build_a_farm ||
+        t == tut_timewarp ||
+        t == tut_sell_food ||
+        t == tut_buy_fertilizer ||
+        t == tut_buy_livestock ||
+        t == tut_livestock ||
+        t == tut_poop ||
+        0
+        )
+      {
+        self.triggers.splice(i,1);
+        self.trigger_threads.splice(i,1);
+        for(var j = 0; j < t.length; j+=THREADF_TYPE_COUNT)
+        {
+          if(t[j+THREADF_TYPE_SSIM]())
+          {
+            t[j+THREADF_TYPE_BEGIN]();
+            t[j+THREADF_TYPE_END]();
+          }
+        }
+        i--;
+      }
+
+      self.owns_ui = 0;
+      self.owns_time = 0;
+      self.thread = 0;
+      self.thread_i = 0;
+      self.thread_t = 0;
+      self.stable_thread_t = 0;
+      self.heap = {};
+    }
+    unlock_ui();
+
+    gg.speed = SPEED_PLAY;
+  }
+
   //transitions
   self.takeover_ui   = function(){ self.owns_ui   = 1; }
   self.takeover_time = function(){ self.owns_time = 1; }

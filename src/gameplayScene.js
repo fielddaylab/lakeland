@@ -40,7 +40,7 @@ var GamePlayScene = function()
         case "a": debug_pathfinding = !debug_pathfinding; break;
         case "j": debug_jobs = !debug_jobs; break;
         case "u": gg.unlock_ui(); break;
-        case "t": gg.advisors.skip_tutorial(); break;
+        case "t": gg.advisors.skip_all_tutorials(); break;
         case "m":
         {
           if(gg.farmbits.length == gg.b.bounds_n) { gg.b.inc_bounds(); gg.b.bounds_n++; gg.b.resize(); }

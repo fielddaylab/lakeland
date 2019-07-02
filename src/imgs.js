@@ -19,7 +19,7 @@ var up_img;
   ctx.lineWidth = s/4;
   ctx.fillStyle = "#00FF00";
   ctx.strokeStyle = "#00FF00";
-  drawArrow(s/2,s*3/4,s/2,0,s/8,ctx)
+  drawArrow(s/2,s,s/2,s/4,s/8,ctx)
 }
 
 var icon_ncursor_img;
@@ -78,6 +78,28 @@ for(var i = 0; i < livestock_fill_levels; i++)
   tmp_livestock_img.onload = (function(img,i){return function(){ tile_livestock_imgs[i] = img; };})(tmp_livestock_img,i);
   tmp_livestock_img.src = "assets/tile_livestock_"+i+".png";
 }
+
+var nutrition_imgs = [];
+for(var i = 0; i < nutrition_overlay_levels; i++)
+{
+  var s = 200;
+  var img = GenIcon(s,floor(s*1.25));
+  nutrition_imgs[i] = img;
+  if(i > 0) img.context.drawImage(nutrition_imgs[i-1],0,0,s,floor(s*1.25));
+  img.context.fillStyle = nutrition_color;
+  var x;
+  var y;
+  var ds;
+  for(var j = 0; j < nutrition_overlay_dots_per_level; j++)
+  {
+    ds = (1+rand0()*0.1)*s/(nutrition_overlay_levels*nutrition_overlay_dots_per_level)*2;
+    x = ds+rand()*(s-ds*2);
+    y = ds+rand()*(s-ds*2);
+    img.context.beginPath();
+    img.context.arc(x,y+s/4,ds,0,twopi);
+    img.context.fill();
+  }
+};
 
 var ENUM;
 
