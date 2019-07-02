@@ -19,6 +19,8 @@ var farmbit_names = [
 "Richard",
 ];
 
+var nutrition_color = "#FF599D";
+
 var board_w = 50;
 var board_h = 50;
 

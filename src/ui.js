@@ -64,7 +64,7 @@ var draw_money_switch = function(x,y,w,h,on)
 
 var mark_pbar = function(x,y,w,h,t)
 {
-  gg.ctx.strokeStyle = red;
+  gg.ctx.strokeStyle = nutrition_color;
   var r = h/2;
   var tx = x+r+(w-r*2)*t;
        if(t >= 1) tx = x+2;
@@ -769,7 +769,7 @@ var inspector = function()
     if(t.type == TILE_TYPE_FARM)
     {
       gg.ctx.globalAlpha = 0.2;
-      gg.ctx.fillStyle = red;
+      gg.ctx.fillStyle = nutrition_color;
       var vp = 0.8;
       var vy = self.vignette_y+self.vignette_h*vp;
       var x = self.vignette_x;
@@ -1077,7 +1077,7 @@ var inspector = function()
     gg.ctx.textAlign = "right";
     gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
 
-    draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? red : gg.backdrop_color, bias_nutrition(rn/100));
+    draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? nutrition_color : gg.backdrop_color, bias_nutrition(rn/100));
     if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, u.nutrition_bar_y, w, self.pad, bias_nutrition(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
 

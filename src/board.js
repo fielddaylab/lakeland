@@ -1192,41 +1192,29 @@ var board = function()
 
     x = 0;
     y = 0;
-    var red    = {r:1,g:0,b:0};
-    var yellow = {r:1,g:1,b:0};
-    var green  = {r:0,g:1,b:0};
-    var color  = {r:0,g:0,b:0};
-    var ca = red;
-    var cb = red;
+    var nutrition = color_str_to_obj(nutrition_color);
+    var black     = {r:0,g:0,b:0};
+    var color     = {r:0,g:0,b:0};
     var ct = 0;
-    ctx.strokeStyle = black;
+    var fillColor = "";
+    ctx.strokeStyle = "#000000";;
     ctx.lineWidth = timer_r*0.1;
     for(var i = 0; i < self.timer_colors; i++)
     {
       ct = i/(self.timer_colors-1);
-      if(ct < 0.5)
-      {
-        ca = red;
-        cb = yellow;
-        ct *= 2;
-      }
-      else
-      {
-        ct -= 0.5;
-        ca = yellow;
-        cb = green;
-        ct *= 2;
-      }
-      color.r = lerp(ca.r,cb.r,ct);
-      color.g = lerp(ca.g,cb.g,ct);
-      color.b = lerp(ca.b,cb.b,ct);
-      ctx.fillStyle = RGB2Hex(color);
+      color.r = lerp(black.r,nutrition.r,ct);
+      color.g = lerp(black.g,nutrition.g,ct);
+      color.b = lerp(black.b,nutrition.b,ct);
+      fillColor = RGB2Hex(color);
       for(var j = 0; j < self.timer_progressions; j++)
       {
         self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
         ctx.beginPath();
         ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+        ctx.fillStyle = white;
+        ctx.fill();
         ctx.stroke();
+        ctx.fillStyle = fillColor;
         ctx.beginPath();
         ctx.moveTo(x+timer_c,y+timer_c);
         ctx.lineTo(x+timer_c,y+timer_c-timer_r);
@@ -1240,13 +1228,15 @@ var board = function()
       x = 0;
     }
     //non-colored timer
-    ctx.fillStyle = black;
     for(var j = 0; j < self.timer_progressions; j++)
     {
       self.timer_atlas.getWholeSprite(x,y,timer_s,timer_s);
       ctx.beginPath();
       ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+      ctx.fillStyle = white;
+      ctx.fill();
       ctx.stroke();
+      ctx.fillStyle = "#000000";;
       ctx.beginPath();
       ctx.moveTo(x+timer_c,y+timer_c);
       ctx.lineTo(x+timer_c,y+timer_c-timer_r);
@@ -2862,7 +2852,7 @@ var board = function()
       gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       var i = 0;
       var a;
-      gg.ctx.fillStyle = red;
+      gg.ctx.fillStyle = nutrition_color;
       ny = floor(self.y+self.h-(0*h));
       for(var ty = 0; ty < self.th; ty++)
       {
@@ -3042,51 +3032,6 @@ var board = function()
       }
     }
 
-    var debug_sheds = 0;
-    if(debug_sheds && self.raining)
-    {
-      gg.ctx.strokeStyle = red;
-      var lt = (gg.t_mod_twelve_pi%eighthpi)/eighthpi;
-      var base_alpha = -4*lt*lt+4*lt;
-      var l = w*2/3;
-      var g = 1;
-      var d = gg.inspector.detailed;
-      var i = 0;
-      var sx = 0;
-      var ex = 0;
-      var sy = 0;
-      var ey = 0;
-      var n;
-      var a;
-      for(var ty = 0; ty < self.th; ty++)
-      {
-        var y = self.y+self.h-(ty*h)-h/4;
-        if(y < 0 || y > gg.canvas.height) { i += self.tw; continue; }
-        for(var tx = 0; tx < self.tw; tx++)
-        {
-          var x = self.x+tx*w+w/2;
-          if(x < 0 || x > gg.canvas.width) { i++; continue; }
-          var t = self.tiles[i];
-          n = t.nutrition/nutrition_percent/100;
-          var dx = t.shed.tx-t.tx;
-          var dy = t.shed.ty-t.ty;
-          sx = x;
-          ex = x+dx*l;
-          sy = y;
-          ey = y-dy*l;
-          a = base_alpha*bias1(bias1(n));
-          if(a > 0.05)
-          {
-            gg.ctx.globalAlpha = a;
-            gg.ctx.lineWidth = (0.5+n/2)*10*gg.stage.s_mod;
-            drawLine(lerp(sx,ex,lt),lerp(sy,ey,lt),lerp(sx,ex,lt+0.2),lerp(sy,ey,lt+0.2),gg.ctx);
-          }
-          i++;
-        }
-      }
-      gg.ctx.globalAlpha = 1;
-    }
-
     if(self.raining)
     {
       gg.ctx.fillStyle = blue;
@@ -3233,9 +3178,12 @@ var item = function()
       case ITEM_TYPE_MILK: gg.ctx.drawImage(tile_milk_img,self.x,y,self.w,h); break;
       case ITEM_TYPE_FERTILIZER:
       {
-        gg.ctx.fillStyle = red;
         gg.ctx.globalAlpha = 0.5;
-        if(gg.b.nutrition_view) gg.ctx.fillRect(self.x,y,self.w,h);
+        if(gg.b.nutrition_view)
+        {
+          gg.ctx.fillStyle = nutrition_color;
+          gg.ctx.fillRect(self.x,y,self.w,h);
+        }
         else gg.ctx.drawImage(tile_fertilizer_img,self.x,y,self.w,h);
         gg.ctx.globalAlpha = 1;
       }
