@@ -230,6 +230,12 @@ var shop = function()
 {
   var self = this;
   self.open = 1;
+  self.open_t = 0;
+  self.keep_open = function()
+  {
+    self.open = 1;
+    self.open_t = 0;
+  }
 
   self.resize = function()
   {
@@ -311,7 +317,7 @@ var shop = function()
   }
 
   self.money_display = new BB();
-  self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open;});
+  self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open; self.open_t = 0;});
   var b;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_HOME); });       self.home_btn       = b; b.img = tile_home_img;       b.name = "Home";       b.cost = home_cost;
   b = new ButtonBox(0,0,0,0,function(){ self.try_buy(BUY_TYPE_FARM); });       self.farm_btn       = b; b.img = tile_farm_img;       b.name = "Farm";       b.cost = farm_cost;
@@ -374,10 +380,13 @@ var shop = function()
 
   self.tick = function()
   {
+    self.open_t++;
+    if(self.selected_buy) self.keep_open();
     if(self.open)
     {
       if(self.x < 1) self.x = lerp(self.x,0,0.15);
       else self.x = 0;
+      if(self.open_t > 1000) { self.open = 0; self.open_t = 0; }
     }
     else
     {
@@ -1532,6 +1541,7 @@ var achievements = function()
 {
   var self = this;
   self.open = 0;
+  self.open_t = 0;
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
@@ -1546,7 +1556,7 @@ var achievements = function()
     self.open_btn.x = self.pad;
     self.open_btn.y = self.pad;
   }
-  self.open_btn = new ButtonBox(0,0,0,0,function(){ if(!gg.advisors.thread) self.open = !self.open; });
+  self.open_btn = new ButtonBox(0,0,0,0,function(){ if(!gg.advisors.thread) self.open = !self.open; self.open_t = 0; });
   self.resize();
 
   self.triggers = [];
@@ -1607,6 +1617,7 @@ var achievements = function()
   self.click = function()
   {
     self.open = 0;
+    self.open_t = 0;
   }
 
   self.tick = function()
@@ -3569,7 +3580,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ gg.shop.fertilizer_btn.active = 1; gg.money += fertilizer_cost; self.push_blurb("Buy some fertilizer to bump up your farm's soil nutrition!"); }, //begin
-    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FERTILIZER); }, //tick
+    function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FERTILIZER); }, //tick
     function(){ //draw
       var b = gg.shop.fertilizer_btn;
       self.popup(TEXT_TYPE_DIRECT);
@@ -3823,7 +3834,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You just made $"+item_worth_food+"!");  self.push_record("Click on items and mark them as 'FOR SALE' to signal your townspeople to take those items to the market."); },//begin
-    function(){ gg.shop.open = 1; }, //tick
+    function(){ gg.shop.keep_open(); }, //tick
     function(){ //draw
       self.wash();
       self.popup(TEXT_TYPE_DISMISS);
@@ -3897,7 +3908,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ gg.money += farm_cost; gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm."); }, //begin
-    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FARM); }, //tick
+    function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FARM); }, //tick
     function(){ //draw
       var b = gg.shop.farm_btn;
       self.popup(TEXT_TYPE_DIRECT);
@@ -4003,7 +4014,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ gg.money += food_cost; gg.shop.food_btn.active = 1; self.push_blurb("Buy some food from the shop."); }, //begin
-    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_FOOD); }, //tick
+    function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FOOD); }, //tick
     function(){ //draw
       var b = gg.shop.food_btn;
       self.popup(TEXT_TYPE_DIRECT);
@@ -4115,7 +4126,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ gg.money += home_cost; self.push_blurb("Let's buy another house."); },//begin
-    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
       self.arrow(gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2);
@@ -4269,7 +4280,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ gg.money += home_cost; self.push_blurb("Buy your first house."); },//begin
-    function(){ gg.shop.open = 1; return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
+    function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
       self.arrow(gg.shop.home_btn.x+gg.shop.home_btn.w+20,gg.shop.home_btn.y+gg.shop.home_btn.h/2);
