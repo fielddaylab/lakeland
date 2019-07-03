@@ -1192,7 +1192,8 @@ var board = function()
     {
       if(self.nutrition_atlas) self.nutrition_atlas.destroy();
       self.nutrition_atlas = new atlas();
-      self.nutrition_atlas.init(total_tw*nutrition_overlay_levels,total_th);
+      var nutrition_atlas_stack = 4;
+      self.nutrition_atlas.init(total_tw*nutrition_overlay_frames*nutrition_atlas_stack,total_th*(ceil(nutrition_overlay_levels/nutrition_atlas_stack)+1));
 
       var x = 0;
       var y = 0;
@@ -1203,43 +1204,58 @@ var board = function()
       var th = 0;
       for(var i = 0; i < nutrition_overlay_levels; i++)
       {
-        ctx.fillStyle = white;
-        tx = x;
-        ty = y;
-        tw = self.min_draw_tw;
-        th = self.min_draw_th;
-        self.nutrition_atlas_i[i] = self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
-        //ctx.fillStyle = red;
-        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
-        self.nutrition_atlas.commitSprite();
-        tx += self.min_draw_tw;
-        tw = self.min_draw_tw+1;
-        self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
-        //ctx.fillStyle = orange;
-        ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
-        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
-        self.nutrition_atlas.commitSprite();
-        tx = x;
-        ty += self.min_draw_th;
-        tw = self.min_draw_tw;
-        th = self.min_draw_th+1;
-        self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
-        //ctx.fillStyle = yellow;
-        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
-        self.nutrition_atlas.commitSprite();
-        tx += self.min_draw_tw;
-        tw = self.min_draw_tw+1;
-        self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
-        //ctx.fillStyle = green;
-        ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
-        ctx.drawImage(nutrition_imgs[i],tx,ty,tw,th);
-        self.nutrition_atlas.commitSprite();
-        x += total_tw;
+        for(var j = 0; j < nutrition_overlay_frames; j++)
+        {
+          ctx.fillStyle = white;
+          tx = x;
+          ty = y;
+          tw = self.min_draw_tw;
+          th = self.min_draw_th;
+          if(j == 0) self.nutrition_atlas_i[i] = self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+          else self.nutrition_atlas.getWholeSprite(tx,ty,tw,th)
+          //ctx.fillStyle = red;
+          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
+          self.nutrition_atlas.commitSprite();
+          tx += self.min_draw_tw;
+          tw = self.min_draw_tw+1;
+          self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+          //ctx.fillStyle = orange;
+          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
+          self.nutrition_atlas.commitSprite();
+          tx = x;
+          ty += self.min_draw_th;
+          tw = self.min_draw_tw;
+          th = self.min_draw_th+1;
+          self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+          //ctx.fillStyle = yellow;
+          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
+          self.nutrition_atlas.commitSprite();
+          tx += self.min_draw_tw;
+          tw = self.min_draw_tw+1;
+          self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
+          //ctx.fillStyle = green;
+          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
+          self.nutrition_atlas.commitSprite();
+          x += total_tw;
+        }
+        if(i % nutrition_atlas_stack == 0)
+        {
+          y += total_th;
+          x = 0;
+        }
       }
 
       self.nutrition_atlas.commit();
+      for(var i = 0; i < nutrition_imgs.length; i++)
+      {
+        nutrition_imgs[i].width = 0;
+        nutrition_imgs[i].height = 0;
+        nutrition_imgs[i] = 0;
+      }
     }
 
     //timer atlas
@@ -2854,7 +2870,8 @@ var board = function()
 
   self.draw_nutrition = function(t,x,y,w,h)
   {
-    gg.ctx.drawImage(nutrition_imgs[floor(min(t,0.99)*nutrition_overlay_levels)],x,y,w,h);
+    var frame = randIntBelow(nutrition_overlay_frames);
+    gg.ctx.drawImage(nutrition_imgs[floor(t*nutrition_overlay_levels)*nutrition_overlay_frames+frame],x,y,w,h);
   }
 
   self.draw_nutrition_fast = function(t,x,y,w,h)
@@ -2865,18 +2882,19 @@ var board = function()
     if(w == self.min_draw_tw)
     {
              if(h == self.min_draw_th)     off = 0;
-      else /*if(h == self.min_draw_th+1)*/ { off = 2; y -= 1; }
+      else /*if(h == self.min_draw_th+1)*/ off = 2;
     }
     else /*if(w == self.min_draw_tw+1)*/
     {
              if(h == self.min_draw_th)     off = 1;
-      else /*if(h == self.min_draw_th+1)*/ { off = 3; y -= 1; }
+      else /*if(h == self.min_draw_th+1)*/ off = 3;
     }
 
-    var n = floor(min(t,0.99)*nutrition_overlay_levels);
-    self.nutrition_atlas.blitWholeSprite(self.nutrition_atlas_i[n]+off,x,y,gg.ctx);
+    var frame = randIntBelow(nutrition_overlay_frames);
+    if(nutrition_overlay_ii(t) >= nutrition_overlay_levels)
+      console.log("heyo");
+    self.nutrition_atlas.blitWholeSprite(self.nutrition_atlas_i[nutrition_overlay_ii(t)]+frame*4+off,x,y,gg.ctx);
   }
-
 
   self.draw = function()
   {
@@ -2940,28 +2958,28 @@ var board = function()
 
     if(self.nutrition_view)
     {
-      var i = 0;
       gg.ctx.globalAlpha = 0.5;
-      var a;
-      ny = floor(self.y+self.h-(0*h));
-      for(var ty = 0; ty < self.th; ty++)
+      i = 0;
+      ny = floor(self.y);
+      for(var ty = self.th-1; ty >= 0; ty--)
       {
         y = ny;
-        ny = floor(self.y+self.h-(ty+1)*h);
-        th = y-ny;
+        ny = floor(self.y+self.h-ty*h);
+        th = ny-y;
         dth = th+dhd;
         dy = y-dhd;
+        //og
         nx = floor(self.x+(0*w));
-        if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
+        i = self.tiles_i(0,ty);
         for(var tx = 0; tx < self.tw; tx++)
         {
           x = nx;
           nx = floor(self.x+((tx+1)*w));
           tw = nx-x;
           if(x < -tw || x > gg.canvas.width) { i++; continue; }
-          t = self.tiles[i];
-          a = bias1(t.nutrition/nutrition_max);
-          self.draw_nutrition_fast(a,x,dy,tw,dth,xd,yd);
+          var t = self.tiles[i];
+          a = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          self.draw_nutrition_fast(a,x,dy,tw,dth);
           i++;
         }
       }

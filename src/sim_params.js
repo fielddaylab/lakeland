@@ -137,8 +137,10 @@ var roads_per_buy = 10;
 var debug_pathfinding = 0;
 var debug_jobs = 0;
 
-var nutrition_overlay_levels = 10;
+var nutrition_overlay_levels = 20;
+var nutrition_overlay_frames = 2;
 var nutrition_overlay_dots_per_level = 5;
+var nutrition_overlay_ii = function(t){ return floor(t*nutrition_overlay_levels); }
 //don't change
 var land_topo_levels = 4;
 var land_detail_levels = 3;

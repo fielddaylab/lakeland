@@ -80,26 +80,77 @@ for(var i = 0; i < livestock_fill_levels; i++)
 }
 
 var nutrition_imgs = [];
-for(var i = 0; i < nutrition_overlay_levels; i++)
 {
+
   var s = 200;
-  var img = GenIcon(s,floor(s*1.25));
-  nutrition_imgs[i] = img;
-  if(i > 0) img.context.drawImage(nutrition_imgs[i-1],0,0,s,floor(s*1.25));
-  img.context.fillStyle = nutrition_color;
+  var ds = s/(nutrition_overlay_levels*nutrition_overlay_dots_per_level);
+  var dds;
+  var img;
   var x;
   var y;
-  var ds;
-  for(var j = 0; j < nutrition_overlay_dots_per_level; j++)
+  var rx = [];
+  var ry = [];
+  var ri = 0;
+  //gen faux-uniform dots
   {
-    ds = (1+rand0()*0.1)*s/(nutrition_overlay_levels*nutrition_overlay_dots_per_level)*2;
-    x = ds+rand()*(s-ds*2);
-    y = ds+rand()*(s-ds*2);
-    img.context.beginPath();
-    img.context.arc(x,y+s/4,ds,0,twopi);
-    img.context.fill();
+    var rg = ceil(sqrt(nutrition_overlay_levels*nutrition_overlay_dots_per_level));
+    var hrg = 1/(rg*2);
+    var erg = 1/(rg*4);
+    for(var i = 0; i < rg; i++)
+    {
+      for(var j = 0; j < rg; j++)
+      {
+        rx[ri] = i/rg+hrg+rand0()*erg;
+        ry[ri] = j/rg+hrg+rand0()*erg;
+        ri++;
+      }
+    }
+    //shuffle
+    for(var i = 0; i < rx.length; i++)
+    {
+      var r = randIntBelow(rx.length-i);
+      var tx = rx[i];
+      var ty = ry[i];
+      rx[i] = rx[r];
+      ry[i] = ry[r];
+      rx[r] = tx;
+      ry[r] = ty;
+    }
   }
-};
+  ri = 0;
+  for(var i = 0; i < nutrition_overlay_levels; i++)
+  {
+    img = GenIcon(s,floor(s*1.25));
+    nutrition_imgs[i*nutrition_overlay_frames] = img;
+    img.context.fillStyle = nutrition_color;
+    for(var j = 0; j < nutrition_overlay_dots_per_level; j++)
+    {
+      dds = (1+rand0()*0.1)*ds;
+      x = dds+rx[ri]*(s-dds*2);
+      y = dds+ry[ri]*(s-dds*2);
+      img.context.beginPath();
+      img.context.arc(x,y+s/4,dds*2,0,twopi);
+      img.context.fill();
+      ri++;
+    }
+    for(var j = 1; j < nutrition_overlay_frames; j++)
+    {
+      img = GenIcon(s,floor(s*1.25));
+      nutrition_imgs[i*nutrition_overlay_frames+j] = img;
+      img.context.drawImage(nutrition_imgs[i*nutrition_overlay_frames],rand0()*ds,rand0()*ds,s,floor(s*1.25));
+    }
+  }
+
+  for(var i = 1; i < nutrition_overlay_levels; i++)
+  {
+    for(var j = 0; j < nutrition_overlay_frames; j++)
+    {
+      img = nutrition_imgs[i*nutrition_overlay_frames+j];
+      img.context.drawImage(nutrition_imgs[(i-1)*nutrition_overlay_frames+j],0,0,s,floor(s*1.25));
+    }
+  }
+
+}
 
 var ENUM;
 
