@@ -994,6 +994,11 @@ var kick_item = function(it)
   it.wvy = sin(theta)*s;
   it.wvz = s/2;
 }
+var light_kick_item = function(it)
+{
+  var s = gg.b.walk_speed;
+  it.wvz = s/2;
+}
 
 var tile = function()
 {
@@ -1248,7 +1253,7 @@ var board = function()
       {
         for(var j = 0; j < nutrition_overlay_frames; j++)
         {
-          ctx.fillStyle = white;
+          //ctx.fillStyle = white;
           tx = x;
           ty = y;
           tw = self.min_draw_tw;
@@ -1256,14 +1261,14 @@ var board = function()
           if(j == 0) self.nutrition_atlas_i[i] = self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           else self.nutrition_atlas.getWholeSprite(tx,ty,tw,th)
           //ctx.fillStyle = red;
-          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          //ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx += self.min_draw_tw;
           tw = self.min_draw_tw+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = orange;
-          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          //ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx = x;
@@ -1272,14 +1277,14 @@ var board = function()
           th = self.min_draw_th+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = yellow;
-          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          //ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx += self.min_draw_tw;
           tw = self.min_draw_tw+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = green;
-          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          //ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           x += total_tw;
@@ -1292,12 +1297,14 @@ var board = function()
       }
 
       self.nutrition_atlas.commit();
+      /*
       for(var i = 0; i < nutrition_imgs.length; i++)
       {
         nutrition_imgs[i].width = 0;
         nutrition_imgs[i].height = 0;
         nutrition_imgs[i] = 0;
       }
+      */
     }
 
     //timer atlas
@@ -3009,6 +3016,8 @@ var board = function()
     if(self.nutrition_view)
     {
       gg.ctx.globalAlpha = 0.5;
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       i = 0;
       ny = floor(self.y);
       for(var ty = self.th-1; ty >= 0; ty--)
@@ -3278,7 +3287,7 @@ var board = function()
       gg.ctx.strokeRect(self.cbounds_x,self.cbounds_y,self.cbounds_w,self.cbounds_h);
       //*/
       gg.ctx.drawImage(clouds_img,self.cloud_x,self.cloud_y,self.cloud_w,self.cloud_h);
-      gg.ctx.fillStyle = "#155D67";
+      gg.ctx.fillStyle = cloud_color;
       gg.ctx.globalAlpha = 0.8;
       if(self.cloud_x              > 0)                gg.ctx.fillRect(0,0,self.cloud_x,gg.canvas.height);
       if(self.cloud_x+self.cloud_w < gg.canvas.width)  gg.ctx.fillRect(self.cloud_x+self.cloud_w,           0,gg.canvas.width-self.cloud_x,gg.canvas.height);
@@ -3390,8 +3399,9 @@ var item = function()
         gg.ctx.globalAlpha = 0.5;
         if(gg.b.nutrition_view)
         {
-          gg.ctx.fillStyle = nutrition_color;
-          gg.ctx.fillRect(self.x,y,self.w,h);
+          gg.b.draw_nutrition(0.999,self.x,y,self.w,h);
+          //gg.ctx.fillStyle = nutrition_color;
+          //gg.ctx.fillRect(self.x,y,self.w,h);
         }
         else gg.ctx.drawImage(tile_fertilizer_img,self.x,y,self.w,h);
         gg.ctx.globalAlpha = 1;
@@ -3920,7 +3930,7 @@ var farmbit = function()
                   it.type = ITEM_TYPE_WATER;
                   it.tile = t;
                   gg.b.tiles_tw(it.tile,it);
-                  kick_item(it);
+                  light_kick_item(it);
                   gg.items.push(it);
                   self.lock_object(it);
 

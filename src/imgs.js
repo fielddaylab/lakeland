@@ -108,7 +108,7 @@ var nutrition_imgs = [];
     //shuffle
     for(var i = 0; i < rx.length; i++)
     {
-      var r = randIntBelow(rx.length-i);
+      var r = i+randIntBelow(rx.length-i);
       var tx = rx[i];
       var ty = ry[i];
       rx[i] = rx[r];
