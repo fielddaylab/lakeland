@@ -2947,8 +2947,6 @@ var board = function()
     }
 
     var frame = floor(gg.b.visit_t/10+x/3+y/7)%(nutrition_overlay_frames);
-    if(nutrition_overlay_ii(t) >= nutrition_overlay_levels)
-      console.log("heyo");
     self.nutrition_atlas.blitWholeSprite(self.nutrition_atlas_i[nutrition_overlay_ii(t)]+frame*4+off,x,y,gg.ctx);
   }
 
@@ -3734,9 +3732,7 @@ var farmbit = function()
     self.job_state_t++;
     switch(self.job_type)
     {
-      case JOB_TYPE_NULL:
-        console.log("GAH!"); //shouldn't get here
-        break;
+      case JOB_TYPE_NULL: console.log("BROKEN"); break;
       case JOB_TYPE_IDLE:
       {
         switch(self.job_state)
