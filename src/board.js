@@ -1046,6 +1046,48 @@ var board = function()
   self.nutrition_atlas;
   self.nutrition_atlas_i = [];
 
+  self.up_ptt = [];
+  self.up_pt = [];
+  self.up_px = [];
+  self.up_py = [];
+  self.down_ptt = [];
+  self.down_pt = [];
+  self.down_px = [];
+  self.down_py = [];
+  self.buy_ptt = [];
+  self.buy_pn = [];
+  self.buy_pt = [];
+  self.sell_ptt = [];
+  self.sell_pn = [];
+  self.sell_pt = [];
+
+  self.up_p = function(t,x,y)
+  {
+    self.up_ptt.push(t);
+    self.up_pt.push(0);
+    self.up_px.push(x);
+    self.up_py.push(y);
+  }
+  self.down_p = function(t,x,y)
+  {
+    self.down_ptt.push(t);
+    self.down_pt.push(0);
+    self.down_px.push(x);
+    self.down_py.push(y);
+  }
+  self.buy_p = function(t,n)
+  {
+    self.buy_ptt.push(t);
+    self.buy_pn.push(n);
+    self.buy_pt.push(0);
+  }
+  self.sell_p = function(t,n)
+  {
+    self.sell_ptt.push(t);
+    self.sell_pn.push(n);
+    self.sell_pt.push(0);
+  }
+
   self.resize = function()
   {
     self.min_draw_tw = floor(self.w/self.tw);
@@ -2235,35 +2277,6 @@ var board = function()
     self.dirty_directions();
   }
 
-  self.abandon_tile = function(t)
-  {
-    for(var i = 0; i < gg.farmbits.length; i++)
-    {
-      var f = gg.farmbits[i];
-      if(
-        f.job_subject     == t ||
-        f.job_object      == t ||
-        f.locked_subject  == t ||
-        f.locked_object   == t)
-      {
-        f.abandon_job(0);
-      }
-    }
-    if(t.type == TILE_TYPE_HOME)
-    {
-      for(var i = 0; i < gg.farmbits.length; i++)
-      {
-        var f = gg.farmbits[i];
-        if(f.home == t) f.home = 0;
-      }
-    }
-    if(t.type == TILE_TYPE_FARM || t.type == TILE_TYPE_LIVESTOCK)
-    {
-      t.marks[0] = MARK_USE;
-      t.marks[1] = MARK_USE;
-    }
-  }
-
   self.placement_valid = function(tile,buy)
   {
     if(
@@ -2578,6 +2591,7 @@ var board = function()
       }
     }
 
+    //tiles
     var n = self.tw*self.th;
     for(var i = 0; i < n; i++)
     {
@@ -2640,21 +2654,70 @@ var board = function()
       if(self.raining) self.rainflow(t);
     }
 
-    /*
-    for(var i = 0; i < n; i++)
+    //particles
     {
-      var t = self.tiles[i];
-      var fn = floor(t.nutrition/nutrition_percent);
-      var d = fn-t.known_nutrition;
-      if(d)
+      for(var i = self.up_pt.length-1; i >= 0; i--)
       {
-        t.known_nutrition_d = d;
-        t.known_nutrition_t = 10;
+        self.up_pt[i]++;
+        if(self.up_pt[i] > particle_t)
+        {
+          self.up_ptt.splice(i,1);
+          self.up_pt.splice(i,1);
+          self.up_px.splice(i,1);
+          self.up_py.splice(i,1);
+        }
       }
-      else if(t.known_nutrition_t) t.known_nutrition_t--;
-      t.known_nutrition = fn;
+      for(var i = self.down_pt.length-1; i >= 0; i--)
+      {
+        self.down_pt[i]++;
+        if(self.down_pt[i] > particle_t)
+        {
+          self.down_ptt.splice(i,1);
+          self.down_pt.splice(i,1);
+          self.down_px.splice(i,1);
+          self.down_py.splice(i,1);
+        }
+      }
+      for(var i = self.buy_pt.length-1; i >= 0; i--)
+      {
+        self.buy_pt[i]++;
+        if(self.buy_pt[i] > particle_t)
+        {
+          self.buy_ptt.splice(i,1);
+          self.buy_pn.splice(i,1);
+          self.buy_pt.splice(i,1);
+        }
+      }
+      for(var i = self.sell_pt.length-1; i >= 0; i--)
+      {
+        self.sell_pt[i]++;
+        if(self.sell_pt[i] > particle_t)
+        {
+          self.sell_ptt.splice(i,1);
+          self.sell_pn.splice(i,1);
+          self.sell_pt.splice(i,1);
+        }
+      }
+      for(var i = 0; i < self.tile_groups[TILE_TYPE_FARM].length; i++)
+      {
+        var t = self.tile_groups[TILE_TYPE_FARM][i];
+        if(t.state == TILE_STATE_FARM_PLANTED)
+        {
+               if(t.nutrition > nutrition_motivated) { if(rand() < 0.2)  self.up_p(t,rand(),rand()); }
+          else if(t.nutrition > nutrition_desperate) { if(rand() < 0.1)  self.up_p(t,rand(),rand()); }
+          else if(t.nutrition > 0)                   { if(rand() < 0.05) self.up_p(t,rand(),rand()); }
+        }
+      }
+      for(var i = 0; i < gg.items.length; i++)
+      {
+        if(gg.items[i].type == ITEM_TYPE_FERTILIZER)
+        {
+          var t = gg.items[i].tile;
+          if(rand() < 0.2)  self.down_p(t,rand(),rand());
+        }
+      }
     }
-    */
+
   }
 
   self.draw_tile_og = function(t,x,y,w,h)
@@ -2714,21 +2777,7 @@ var board = function()
       switch(t.state)
       {
         case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red; gg.ctx.fillText("x",x,y+h/3); break;
-        case TILE_STATE_FARM_PLANTED:
-               if(t.nutrition > nutrition_motivated) gg.ctx.fillStyle = green;
-          else if(t.nutrition > nutrition_desperate) gg.ctx.fillStyle = yellow;
-          else if(t.nutrition > 0)                   gg.ctx.fillStyle = red;
-          /*
-          gg.ctx.beginPath();
-          gg.ctx.arc(x+w/2,y+h/2,r,0,twopi);
-          gg.ctx.fill();
-          gg.ctx.strokeStyle = black;
-          gg.ctx.stroke();
-          p = (t.val/farm_nutrition_req*twopi)-halfpi;
-          drawLine(x+w/2,y+h/2,x+w/2+cos(p)*r,y+h/2+sin(p)*r,gg.ctx);
-          */
-          self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x,y,gg.ctx);
-          break;
+        case TILE_STATE_FARM_PLANTED: self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x,y,gg.ctx); break;
         case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
     }
@@ -2870,7 +2919,7 @@ var board = function()
 
   self.draw_nutrition = function(t,x,y,w,h)
   {
-    var frame = randIntBelow(nutrition_overlay_frames);
+    var frame = floor(gg.b.visit_t/10+x/3+y/7)%(nutrition_overlay_frames);
     gg.ctx.drawImage(nutrition_imgs[floor(t*nutrition_overlay_levels)*nutrition_overlay_frames+frame],x,y,w,h);
   }
 
@@ -2890,7 +2939,7 @@ var board = function()
       else /*if(h == self.min_draw_th+1)*/ off = 3;
     }
 
-    var frame = randIntBelow(nutrition_overlay_frames);
+    var frame = floor(gg.b.visit_t/10+x/3+y/7)%(nutrition_overlay_frames);
     if(nutrition_overlay_ii(t) >= nutrition_overlay_levels)
       console.log("heyo");
     self.nutrition_atlas.blitWholeSprite(self.nutrition_atlas_i[nutrition_overlay_ii(t)]+frame*4+off,x,y,gg.ctx);
@@ -2956,6 +3005,7 @@ var board = function()
       }
     }
 
+    //nutrition
     if(self.nutrition_view)
     {
       gg.ctx.globalAlpha = 0.5;
@@ -2983,49 +3033,100 @@ var board = function()
           i++;
         }
       }
+
+      //nutrition particles
+      {
+        gg.ctx.fillStyle = nutrition_color;
+        var s = self.w/self.tw/20;
+        var hs = s/2;
+        for(var i = self.up_pt.length-1; i >= 0; i--)
+        {
+          gg.ctx.globalAlpha = 1-(self.up_pt[i]/particle_t);
+          var t = self.up_ptt[i];
+          self.screen_tile(t);
+          gg.ctx.fillRect(t.x+self.up_px[i]*t.w-hs,t.y+self.up_py[i]*t.h-hs-(self.up_pt[i]/particle_t)*t.h,s,s);
+        }
+        for(var i = self.down_pt.length-1; i >= 0; i--)
+        {
+          gg.ctx.globalAlpha = 1-(self.down_pt[i]/particle_t);
+          var t = self.down_ptt[i];
+          self.screen_tile(t);
+          gg.ctx.fillRect(t.x+self.down_px[i]*t.w-hs,t.y+self.down_py[i]*t.h-hs+(self.down_pt[i]/particle_t)*t.h,s,s);
+        }
+      }
+
       gg.ctx.globalAlpha = 1;
     }
 
-    var t;
-    switch(gg.shop.selected_buy)
+    //non-nutrition particles
     {
-      case BUY_TYPE_HOME:
-      case BUY_TYPE_FARM:
-      case BUY_TYPE_LIVESTOCK:
+      /*
+      for(var i = self.buy_pt.length-1; i >= 0; i--)
       {
-        var own_d = 2;
-        var i = 0;
-        var a;
-        gg.ctx.fillStyle = blue;
-        gg.ctx.globalAlpha = 0.25;
-        ny = floor(self.y+self.h-(0*h));
-        for(var ty = 0; ty < self.th; ty++)
+        self.buy_pt[i]++;
+        if(self.buy_pt > particle_t)
         {
-          y = ny;
-          ny = floor(self.y+self.h-(ty+1)*h);
-          th = y-ny;
-          nx = floor(self.x+(0*w));
-          if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
-          for(var tx = 0; tx < self.tw; tx++)
-          {
-            x = nx;
-            nx = floor(self.x+((tx+1)*w));
-            tw = nx-x;
-            if(x < -tw || x > gg.canvas.width) { i++; continue; }
-            t = self.tiles[i];
-            if(t.owned && (gg.shop.selected_buy != BUY_TYPE_HOME || t.shoreline))
-              ;
-            else
-            {
-              if(self.hover_t && self.hover_t_placable && abs(self.hover_t.tx-tx) <= own_d && abs(self.hover_t.ty-ty) <= own_d) gg.ctx.globalAlpha = 0.15;
-              else gg.ctx.globalAlpha = 0.25;
-              gg.ctx.fillRect(x,ny,tw,th);
-            }
-            i++;
-          }
+          self.buy_ptt.splice(i,1);
+          self.buy_pn.splice(i,1);
+          self.buy_pt.splice(i,1);
         }
       }
-      break;
+      for(var i = self.sell_pt.length-1; i >= 0; i--)
+      {
+        self.sell_pt[i]++;
+        if(self.sell_pt > particle_t)
+        {
+          self.sell_ptt.splice(i,1);
+          self.sell_pn.splice(i,1);
+          self.sell_pt.splice(i,1);
+        }
+      }
+      */
+    }
+
+    //buy preview
+    {
+      var t;
+      switch(gg.shop.selected_buy)
+      {
+        case BUY_TYPE_HOME:
+        case BUY_TYPE_FARM:
+        case BUY_TYPE_LIVESTOCK:
+        {
+          var own_d = 2;
+          var i = 0;
+          var a;
+          gg.ctx.fillStyle = blue;
+          gg.ctx.globalAlpha = 0.25;
+          ny = floor(self.y+self.h-(0*h));
+          for(var ty = 0; ty < self.th; ty++)
+          {
+            y = ny;
+            ny = floor(self.y+self.h-(ty+1)*h);
+            th = y-ny;
+            nx = floor(self.x+(0*w));
+            if(ny < -th || ny > gg.canvas.height) { i += self.tw; continue; }
+            for(var tx = 0; tx < self.tw; tx++)
+            {
+              x = nx;
+              nx = floor(self.x+((tx+1)*w));
+              tw = nx-x;
+              if(x < -tw || x > gg.canvas.width) { i++; continue; }
+              t = self.tiles[i];
+              if(t.owned && (gg.shop.selected_buy != BUY_TYPE_HOME || t.shoreline))
+                ;
+              else
+              {
+                if(self.hover_t && self.hover_t_placable && abs(self.hover_t.tx-tx) <= own_d && abs(self.hover_t.ty-ty) <= own_d) gg.ctx.globalAlpha = 0.15;
+                else gg.ctx.globalAlpha = 0.25;
+                gg.ctx.fillRect(x,ny,tw,th);
+              }
+              i++;
+            }
+          }
+        }
+        break;
+      }
     }
 
     gg.ctx.globalAlpha = 1;
@@ -3460,11 +3561,7 @@ var farmbit = function()
   {
     self.abandon_job(1);
     var t = self.tile;
-    if(self.home)
-    {
-      self.home.state = TILE_STATE_HOME_VACANT;
-      t = self.home;
-    }
+    if(self.home) t = self.home;
     else
     {
       switch(t.type)
@@ -3895,6 +3992,7 @@ var farmbit = function()
             t.state_t = 0;
 
             gg.money += harvest_profit;
+            if(harvest_profit) gg.b.sell_p(t.tile,"+$"+harvest_profit);
             self.fulfillment += harvest_fulfillment;
             self.calibrate_stats();
             self.go_idle();
@@ -4135,6 +4233,7 @@ var farmbit = function()
               var t = self.job_subject;
 
               gg.money += worth_for_item(self.item.type);
+              gg.b.sell_p(t.tile,"+$"+worth_for_item(self.item.type));
 
               break_item(self.item);
               self.item = 0;

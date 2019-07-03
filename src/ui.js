@@ -1389,14 +1389,12 @@ var inspector = function()
 
     gg.ctx.fillText("Fullness:",x,y);
     y += self.pad+self.font_size;
-    gg.ctx.fillText("Energy:",x,y);
-    y += self.pad+self.font_size;
+    //gg.ctx.fillText("Energy:",x,y);
+    //y += self.pad+self.font_size;
     gg.ctx.fillText("Joy:",x,y);
     y += self.pad+self.font_size;
-    /*
-    gg.ctx.fillText("Fulfillment:",x,y);
-    y += self.pad+self.font_size;
-    */
+    //gg.ctx.fillText("Fulfillment:",x,y);
+    //y += self.pad+self.font_size;
 
     y = sy;
     x = self.x+self.w-self.pad;
@@ -1411,6 +1409,7 @@ var inspector = function()
     gg.ctx.fillText(floor(b.fullness/max_fullness*10)+"/10",x,y);
     y += self.pad+self.font_size;
 
+/*
     switch(b.energy_state)
     {
       case FARMBIT_STATE_CONTENT:   gg.ctx.fillStyle = green;  break;
@@ -1419,6 +1418,7 @@ var inspector = function()
     }
     gg.ctx.fillText(floor(b.energy/max_energy*10)+"/10",x,y);
     y += self.pad+self.font_size;
+*/
 
     switch(b.joy_state)
     {
@@ -1447,54 +1447,10 @@ var inspector = function()
 
   self.tick_farmbit = function(b)
   {
-    return;
-    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
-    //gg.ctx.fillText(b.name,x,y);
-    y += self.pad;
-
-    y += self.pad+self.font_size;
-
-    //gg.ctx.fillText("Status:",x,y);
-    y += self.pad+self.font_size;
-
-    //gg.ctx.fillText("Fullness:",x,y);
-    y += self.pad+self.font_size;
-    //gg.ctx.fillText("Energy:",x,y);
-    y += self.pad+self.font_size;
-    //gg.ctx.fillText("Joy:",x,y);
-    y += self.pad+self.font_size;
-    //gg.ctx.fillText("Fulfillment:",x,y);
-    y += self.pad+self.font_size;
-
-    y += self.pad+self.font_size;
-
-    return y;
   }
 
   self.filter_farmbit = function(clicker,b)
   {
-    return 0;
-    var y = self.vignette_y+self.vignette_h+self.pad+self.font_size;
-    //gg.ctx.fillText(b.name,x,y);
-    y += self.pad;
-
-    y += self.pad+self.font_size;
-
-    //gg.ctx.fillText("Status:",x,y);
-    y += self.pad+self.font_size;
-
-    //gg.ctx.fillText("Fullness:",x,y);
-    y += self.pad+self.font_size;
-    //gg.ctx.fillText("Energy:",x,y);
-    y += self.pad+self.font_size;
-    //gg.ctx.fillText("Joy:",x,y);
-    y += self.pad+self.font_size;
-    //gg.ctx.fillText("Fulfillment:",x,y);
-    y += self.pad+self.font_size;
-
-    y += self.pad+self.font_size;
-
-    return 0;
   }
 
   self.filter = function(clicker)

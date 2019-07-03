@@ -137,6 +137,8 @@ var roads_per_buy = 10;
 var debug_pathfinding = 0;
 var debug_jobs = 0;
 
+var particle_t = 100;
+
 var nutrition_overlay_levels = 20;
 var nutrition_overlay_frames = 2;
 var nutrition_overlay_dots_per_level = 5;
