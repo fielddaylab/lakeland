@@ -254,7 +254,7 @@ var shop = function()
     self.x = 0;
     self.w = gg.b.cbounds_x-self.pad;
     var btn_s = (self.w-self.pad*3)/2;
-    self.h = self.pad+(btn_s+self.pad)*ceil(self.btns.length/2);
+    self.h = self.pad+btn_s/2+self.pad+(btn_s+self.pad)*ceil(self.btns.length/2);
     self.y = gg.canvas.height-self.h-btn_s-self.pad*2;
 
     var btn_x = self.pad;

@@ -2797,9 +2797,9 @@ var board = function()
       var p;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red; gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
         case TILE_STATE_FARM_PLANTED: self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x,y,gg.ctx); break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
     }
     if(t.type == TILE_TYPE_LIVESTOCK && t.state == TILE_STATE_LIVESTOCK_DIGESTING)
@@ -3019,7 +3019,7 @@ var board = function()
         if(x < -tw || x > gg.canvas.width) { i++; continue; }
         var t = self.tiles[i];
         self.draw_tile_ontop_fast(t,x,dy,tw,dth,xd,yd);
-        self.draw_tile_overlay(t,x,dy,tw,h);
+        self.draw_tile_overlay(t,x,dy,tw,dth);
         i++;
       }
     }
