@@ -241,7 +241,8 @@ var shop = function()
   }
 
   self.selected_buy = 0;
-  self.selected_t = 0;
+  self.last_selected_buy = 0;
+  self.selected_t = self.transition_t+1;
   self.deselect = function()
   {
     self.selected_buy = 0;
@@ -269,13 +270,19 @@ var shop = function()
 
     btn_x = self.pad;
     btn_y += btn_s/2+self.pad;
-    setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s);
+    setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s/2);
     for(var i = 0; i < self.btns.length; i+=2)
     {
                                  setBB(self.btns[i],   btn_x,btn_y,btn_s,btn_s); btn_x += btn_s+self.pad;
       if(i+1 < self.btns.length) setBB(self.btns[i+1], btn_x,btn_y,btn_s,btn_s); btn_x = self.pad; btn_y += btn_s+self.pad;
     }
 
+    for(var i = BUY_TYPE_NULL+1; i < BUY_TYPE_COUNT; i++)
+    {
+      var b = self.buy_btn(i);
+      b.description_fmt = textToLines(self.font_size+"px "+gg.font,self.w-self.pad*2,b.description,gg.ctx);
+      self.descriptions[i] = b.description_fmt;
+    }
   }
 
   self.buy_btn = function(buy)
@@ -305,22 +312,22 @@ var shop = function()
       case BUY_TYPE_SKIMMER:    return "Skim Lake"; break;
       case BUY_TYPE_SIGN:       return "Sign"; break;
       case BUY_TYPE_ROAD:       return "Road x10"; break;
-      default: return "BROKEN"; break;
+      default: return ""; break;
     }
   }
   self.buy_description = function(buy)
   {
     switch(buy)
     {
-      case BUY_TYPE_HOME:       return "A Home"; break;
-      case BUY_TYPE_FOOD:       return "A Food"; break;
-      case BUY_TYPE_FARM:       return "A Farm"; break;
-      case BUY_TYPE_FERTILIZER: return "A Fertilizer"; break;
-      case BUY_TYPE_LIVESTOCK:  return "A Dairy"; break;
-      case BUY_TYPE_SKIMMER:    return "A Skim Lake"; break;
-      case BUY_TYPE_SIGN:       return "A Sign"; break;
-      case BUY_TYPE_ROAD:       return "A Road x10"; break;
-      default: return "BROKEN"; break;
+      case BUY_TYPE_HOME:       return "A Home Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_FOOD:       return "A Food Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_FARM:       return "A Farm Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_FERTILIZER: return "A Fertilizer Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_LIVESTOCK:  return "A Dairy Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_SKIMMER:    return "A Skim Lake Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_SIGN:       return "A Sign Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      case BUY_TYPE_ROAD:       return "A Road x10 Lorem Ipsum Doobie doobie doo. This description is for me and you."; break;
+      default: return ""; break;
     }
   }
   self.buy_img = function(buy)
@@ -335,7 +342,7 @@ var shop = function()
       case BUY_TYPE_SKIMMER:    return tile_bloom_img; break;
       case BUY_TYPE_SIGN:       return tile_sign_img; break;
       case BUY_TYPE_ROAD:       return tile_road_img; break;
-      default: return tile_land_img; break;
+      default: return null_img; break;
     }
   }
   self.buy_cost = function(buy)
@@ -364,6 +371,7 @@ var shop = function()
   self.select = function(buy)
   {
     self.selected_buy = buy;
+    self.last_selected_buy = self.selected_buy;
     self.selected_t = 0;
   }
 
@@ -380,6 +388,7 @@ var shop = function()
   self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open; self.open_t = 0;});
   var b;
   self.btns = [];
+  self.descriptions = [];
   for(var i = BUY_TYPE_NULL+1; i < BUY_TYPE_COUNT; i++)
   {
     b = new ButtonBox(0,0,0,0,(function(i){return function(){ self.select(i); }})(i));
@@ -554,17 +563,84 @@ var shop = function()
     //description
     if(self.selected_buy || self.selected_t < self.transition_t)
     {
+      var bb = self.btns[0]; //top-left button
+      var new_x;
+
+      //copied from draw_btn
+      {
+      var old_x = bb.x;
+      bb.x += self.x+description_offx;
+      new_x = bb.x;
+      gg.ctx.fillStyle = gg.backdrop_color;
+      fillRBB(bb,self.pad,gg.ctx);
+
+      gg.ctx.drawImage(self.buy_img(self.last_selected_buy),bb.x+bb.w/2-self.img_size/2,bb.y+self.pad-self.img_size/2,self.img_size,self.img_size*1.5);
+      bb.x = old_x;
+      }
+
       var fs = self.font_size;
       gg.ctx.font = fs+"px "+gg.font;
-      gg.ctx.textAlign = "center";
-      self.draw_btn(self.cancel_btn, description_offx);
       gg.ctx.textAlign = "left";
-      var x = self.x+description_offx+self.pad;
-      var y = self.cancel_btn.y+self.cancel_btn.h+fs*2;
-      gg.ctx.fillText(self.buy_name(self.selected_buy), x, y); y += fs;
-      gg.ctx.fillText(self.buy_description(self.selected_buy), x, y); y += fs;
-      if(gg.money < self.buy_cost(self.selected_buy)) gg.ctx.fillStyle = red;
-      gg.ctx.fillText("$"+self.buy_cost(self.selected_buy), x, y); y += fs;
+      var x = bb.x+description_offx+bb.w+self.pad;
+      var y = bb.y+fs;
+      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.fillText(self.buy_name(self.last_selected_buy), x, y); y += fs+self.pad;
+      if(gg.money < self.buy_cost(self.last_selected_buy)) gg.ctx.fillStyle = red;
+      gg.ctx.fillText("Cost: $"+self.buy_cost(self.last_selected_buy), x, y); y += fs;
+      gg.ctx.fillStyle = gg.font_color;
+      x = self.x+description_offx+self.pad;
+      y = bb.y+bb.h+self.pad+fs;
+
+      switch(self.last_selected_buy)
+      {
+        case BUY_TYPE_HOME:
+          gg.ctx.fillText("Buildable: Owned Land Near Water", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_FOOD:
+          gg.ctx.fillText("Placeable: Anywhere", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_FARM:
+          gg.ctx.fillText("Buildable: Owned Land", x, y); y += fs*1.1;
+          gg.ctx.fillText("Takes in: Water & Nutrition", x, y); y += fs*1.1;
+          gg.ctx.fillText("Spits out: 2 Corn", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_FERTILIZER:
+          gg.ctx.fillText("Placeable: Farm", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_LIVESTOCK:
+          gg.ctx.fillText("Buildable: Owned Land", x, y); y += fs*1.1;
+          gg.ctx.fillText("Takes in: 3 Corn", x, y); y += fs*1.1;
+          gg.ctx.fillText("Spits out: Milk & Manure", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_SKIMMER:
+          gg.ctx.fillText("Usable: Lakes", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_SIGN:
+          gg.ctx.fillText("Buildable: Land and Shoreline", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+        case BUY_TYPE_ROAD:
+          gg.ctx.fillText("Buildable: Anywhere", x, y); y += fs*1.1;
+          y += self.pad;
+          break;
+      }
+
+      for(var i = 0; i < self.descriptions[self.last_selected_buy].length; i++)
+      {
+        gg.ctx.fillText(self.descriptions[self.last_selected_buy][i], x, y); y += fs*1.1;
+      }
+      y += self.pad;
+
+      self.cancel_btn.y = y;
+      self.cancel_btn.x = self.x+self.pad;
+      gg.ctx.textAlign = "center";
+      self.draw_btn(self.cancel_btn,description_offx);
     }
 
     gg.ctx.textAlign = "left";

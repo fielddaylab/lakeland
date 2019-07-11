@@ -193,6 +193,8 @@ for(var c = 0; c < 5; c++)
   }
 }
 
+var null_img = GenIcon(10,10);
+
 var icon_cursor_img = GenImg("assets/icon_cursor.png");
 var icon_fertilizer_img = GenImg("assets/icon_fertilizer.png");
 var icon_food_img = GenImg("assets/icon_food.png");

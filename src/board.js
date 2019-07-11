@@ -3178,17 +3178,17 @@ var board = function()
       {
         var o = self.scratch_tile;
         o.type = buy_to_tile(gg.shop.selected_buy);
+        o.tx = t.tx;
+        o.ty = t.ty;
+        o.og_type = t.og_type;
+
+        var w = self.w/self.tw;
+        var h = self.h/self.th;
+        var ny = round(self.y+self.h-((o.ty+1)*h));
+        var  x = round(self.x+       ((o.tx  )*w));
+
         if(o.type != TILE_TYPE_NULL)
         {
-          o.tx = t.tx;
-          o.ty = t.ty;
-          o.og_type = t.og_type;
-
-          var w = self.w/self.tw;
-          var h = self.h/self.th;
-          var ny = round(self.y+self.h-((o.ty+1)*h));
-          var  x = round(self.x+       ((o.tx  )*w));
-
           if(gg.shop.selected_buy == BUY_TYPE_SIGN)
           {
             gg.ctx.strokeStyle = red;
@@ -3201,7 +3201,6 @@ var board = function()
           gg.ctx.globalAlpha = 0.5;
           self.draw_tile(o,x,ny,w,h);
           gg.ctx.globalAlpha = 1;
-
         }
         else
         {
@@ -3218,6 +3217,12 @@ var board = function()
             gg.ctx.globalAlpha = 1;
           }
         }
+
+        if(gg.shop.buy_cost(gg.shop.selected_buy) > gg.money) gg.ctx.fillStyle = red;
+        else gg.ctx.fillStyle = gg.font_color;
+        gg.ctx.font = gg.font_size+"px "+gg.font;
+        gg.ctx.textAlign = "center";
+        gg.ctx.fillText("$"+gg.shop.buy_cost(gg.shop.selected_buy),x+w/2,ny+h+gg.font_size);
       }
       else
         cursor = icon_ncursor_img;
