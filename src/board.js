@@ -2377,12 +2377,14 @@ var board = function()
     gg.inspector.quick_type = INSPECTOR_CONTENT_NULL;
   }
 
+  self.drag_ignored = 0;
   self.drag_t = 0;
   self.drag_x = 0;
   self.drag_y = 0;
   self.last_evt = 0;
   self.dragStart = function(evt)
   {
+    if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
 
     self.drag_t = 0;
@@ -2393,6 +2395,7 @@ var board = function()
   }
   self.drag = function(evt)
   {
+    if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
     if(self.drag_t > 10 || lensqr(self.drag_x-evt.doX,self.drag_y-evt.doY) > 10)
     {
@@ -2403,9 +2406,11 @@ var board = function()
   }
   self.dragFinish = function(evt)
   {
+    if(gg.ignore_single_board) self.drag_ignored = 1;
     if(self.last_evt && self.last_evt.doX) { evt.doX = self.last_evt.doX; evt.doY = self.last_evt.doY; }
 
-    if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !gg.ignore_single_board) self.click(evt);
+    if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !self.drag_ignored) self.click(evt);
+    self.drag_ignored = 0;
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
