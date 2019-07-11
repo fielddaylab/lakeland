@@ -84,6 +84,7 @@ var nutrition_imgs = [];
 
   var s = 200;
   var ds = s/(nutrition_overlay_levels*nutrition_overlay_dots_per_level);
+  ds *= 2;
   var dds;
   var img;
   var x;
@@ -191,6 +192,8 @@ for(var c = 0; c < 5; c++)
     }
   }
 }
+
+var null_img = GenIcon(10,10);
 
 var icon_cursor_img = GenImg("assets/icon_cursor.png");
 var icon_fertilizer_img = GenImg("assets/icon_fertilizer.png");

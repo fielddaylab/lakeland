@@ -1243,8 +1243,19 @@ var board = function()
       var ty = 0;
       var tw = 0;
       var th = 0;
+      var color = {r:0,g:0,b:0};
+      var cwhite = color_str_to_obj("#FFFFFF")
+      var cpink = color_str_to_obj(nutrition_color);
+      var alpha = 0.5;
       for(var i = 0; i < nutrition_overlay_levels; i++)
       {
+        color.r = lerp(cwhite.r,cpink.r,i/nutrition_overlay_levels);
+        color.g = lerp(cwhite.g,cpink.g,i/nutrition_overlay_levels);
+        color.b = lerp(cwhite.b,cpink.b,i/nutrition_overlay_levels);
+        ctx.fillStyle = RGB2Hex(color);
+        //ctx.fillStyle = nutrition_color;
+        ctx.fillStyle = "#AF235C";
+        alpha = i/nutrition_overlay_levels;
         for(var j = 0; j < nutrition_overlay_frames; j++)
         {
           //ctx.fillStyle = white;
@@ -1255,14 +1266,18 @@ var board = function()
           if(j == 0) self.nutrition_atlas_i[i] = self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           else self.nutrition_atlas.getWholeSprite(tx,ty,tw,th)
           //ctx.fillStyle = red;
-          //ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx += self.min_draw_tw;
           tw = self.min_draw_tw+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = orange;
-          //ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx = x;
@@ -1271,14 +1286,18 @@ var board = function()
           th = self.min_draw_th+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = yellow;
-          //ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx += self.min_draw_tw;
           tw = self.min_draw_tw+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = green;
-          //ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           x += total_tw;
@@ -2358,12 +2377,14 @@ var board = function()
     gg.inspector.quick_type = INSPECTOR_CONTENT_NULL;
   }
 
+  self.drag_ignored = 0;
   self.drag_t = 0;
   self.drag_x = 0;
   self.drag_y = 0;
   self.last_evt = 0;
   self.dragStart = function(evt)
   {
+    if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
 
     self.drag_t = 0;
@@ -2374,6 +2395,7 @@ var board = function()
   }
   self.drag = function(evt)
   {
+    if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
     if(self.drag_t > 10 || lensqr(self.drag_x-evt.doX,self.drag_y-evt.doY) > 10)
     {
@@ -2384,9 +2406,11 @@ var board = function()
   }
   self.dragFinish = function(evt)
   {
+    if(gg.ignore_single_board) self.drag_ignored = 1;
     if(self.last_evt && self.last_evt.doX) { evt.doX = self.last_evt.doX; evt.doY = self.last_evt.doY; }
 
-    if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !gg.ignore_single_board) self.click(evt);
+    if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !self.drag_ignored) self.click(evt);
+    self.drag_ignored = 0;
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
@@ -2778,9 +2802,9 @@ var board = function()
       var p;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red; gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
         case TILE_STATE_FARM_PLANTED: self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x,y,gg.ctx); break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3);break;
       }
     }
     if(t.type == TILE_TYPE_LIVESTOCK && t.state == TILE_STATE_LIVESTOCK_DIGESTING)
@@ -3000,7 +3024,7 @@ var board = function()
         if(x < -tw || x > gg.canvas.width) { i++; continue; }
         var t = self.tiles[i];
         self.draw_tile_ontop_fast(t,x,dy,tw,dth,xd,yd);
-        self.draw_tile_overlay(t,x,dy,tw,h);
+        self.draw_tile_overlay(t,x,dy,tw,dth);
         i++;
       }
     }
@@ -3009,8 +3033,8 @@ var board = function()
     if(self.nutrition_view)
     {
       gg.ctx.globalAlpha = 0.5;
-      gg.ctx.fillStyle = white;
-      gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+      //gg.ctx.fillStyle = white;
+      //gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       i = 0;
       ny = floor(self.y);
       for(var ty = self.th-1; ty >= 0; ty--)
@@ -3039,7 +3063,7 @@ var board = function()
       //nutrition particles
       {
         gg.ctx.fillStyle = nutrition_color;
-        var s = self.w/self.tw/20;
+        var s = self.w/self.tw/10;
         var hs = s/2;
         for(var i = self.up_pt.length-1; i >= 0; i--)
         {
@@ -3159,17 +3183,17 @@ var board = function()
       {
         var o = self.scratch_tile;
         o.type = buy_to_tile(gg.shop.selected_buy);
+        o.tx = t.tx;
+        o.ty = t.ty;
+        o.og_type = t.og_type;
+
+        var w = self.w/self.tw;
+        var h = self.h/self.th;
+        var ny = round(self.y+self.h-((o.ty+1)*h));
+        var  x = round(self.x+       ((o.tx  )*w));
+
         if(o.type != TILE_TYPE_NULL)
         {
-          o.tx = t.tx;
-          o.ty = t.ty;
-          o.og_type = t.og_type;
-
-          var w = self.w/self.tw;
-          var h = self.h/self.th;
-          var ny = round(self.y+self.h-((o.ty+1)*h));
-          var  x = round(self.x+       ((o.tx  )*w));
-
           if(gg.shop.selected_buy == BUY_TYPE_SIGN)
           {
             gg.ctx.strokeStyle = red;
@@ -3182,7 +3206,6 @@ var board = function()
           gg.ctx.globalAlpha = 0.5;
           self.draw_tile(o,x,ny,w,h);
           gg.ctx.globalAlpha = 1;
-
         }
         else
         {
@@ -3199,6 +3222,12 @@ var board = function()
             gg.ctx.globalAlpha = 1;
           }
         }
+
+        if(gg.shop.buy_cost(gg.shop.selected_buy) > gg.money) gg.ctx.fillStyle = red;
+        else gg.ctx.fillStyle = gg.font_color;
+        gg.ctx.font = gg.font_size+"px "+gg.font;
+        gg.ctx.textAlign = "center";
+        gg.ctx.fillText("$"+gg.shop.buy_cost(gg.shop.selected_buy),x+w/2,ny+h+gg.font_size);
       }
       else
         cursor = icon_ncursor_img;
