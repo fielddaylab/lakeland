@@ -84,6 +84,7 @@ var nutrition_imgs = [];
 
   var s = 200;
   var ds = s/(nutrition_overlay_levels*nutrition_overlay_dots_per_level);
+  ds *= 2;
   var dds;
   var img;
   var x;

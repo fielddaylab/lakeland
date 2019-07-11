@@ -254,7 +254,7 @@ var shop = function()
     self.x = 0;
     self.w = gg.b.cbounds_x-self.pad;
     var btn_s = (self.w-self.pad*3)/2;
-    self.h = self.pad+(btn_s+self.pad)*(ceil((self.btns.length-debug)/2)+1);
+    self.h = self.pad+(btn_s+self.pad)*ceil(self.btns.length/2);
     self.y = gg.canvas.height-self.h-btn_s-self.pad*2;
 
     var btn_x = self.pad;
@@ -264,10 +264,11 @@ var shop = function()
     self.img_size = min(btn_s-self.pad*2,btn_s-self.pad*2-self.font_size*2);
 
     setBB(self.money_btn, btn_x,btn_y,btn_s*2,btn_s/2);
-    setBB(self.money_display, btn_x, btn_y, btn_s*2+self.pad, btn_s/2); btn_y += btn_s+self.pad;
-    setBB(self.tab, self.x+self.w,btn_y,btn_s/2,btn_s/2);
+    setBB(self.money_display, btn_x, btn_y, btn_s*2+self.pad, btn_s/2);
+    setBB(self.tab, self.x+self.w-self.pad,self.y,btn_s/2+self.pad,btn_s/2);
 
     btn_x = self.pad;
+    btn_y += btn_s/2+self.pad;
     setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s);
     for(var i = 0; i < self.btns.length; i+=2)
     {
@@ -464,7 +465,8 @@ var shop = function()
       if(self.x > -self.w) self.x = lerp(self.x,-self.w,0.15);
       else self.x = -self.w;
     }
-    self.tab.x = self.x+self.w;
+    self.tab.x = self.x+self.w-self.pad;
+    self.money_display.x = self.x+self.pad;
   }
 
   self.draw_btn = function(bb,offx)
@@ -504,10 +506,20 @@ var shop = function()
       fillRRect(self.tab.x-self.pad,self.tab.y,self.tab.w+self.pad,self.tab.h,self.pad,gg.ctx);
       gg.ctx.textAlign = "center";
       gg.ctx.fillStyle = gg.font_color;
-      var fs = self.money_display.h*0.7;
-      gg.ctx.font = fs+"px "+gg.font;
-      if(self.open) gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h*3/4);
-      else          gg.ctx.fillText(">",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h*3/4);
+      if(self.open)
+      {
+        var fs = self.money_display.h*0.7;
+        gg.ctx.font = fs+"px "+gg.font;
+        gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h*3/4);
+      }
+      else
+      {
+        var s = self.tab.w/2;
+        gg.ctx.drawImage(icon_money_img,self.tab.x+(self.tab.w+self.pad-s)/2,self.tab.y+self.pad/2,s,s);
+        var fs = self.money_display.h*0.3;
+        gg.ctx.font = fs+"px "+gg.font;
+        gg.ctx.fillText("Buy",self.tab.x+(self.tab.w+self.pad)/2,self.tab.y+self.tab.h*5/6);
+      }
     }
 
     //money
@@ -532,11 +544,6 @@ var shop = function()
     else if(!self.selected_buy && self.selected_t < self.transition_t) { store_offx = (-1+self.selected_t/self.transition_t)*self.w; description_offx =  -  self.selected_t/self.transition_t *self.w; }
     if(!self.selected_buy || self.selected_t < self.transition_t)
     {
-      gg.ctx.strokeStyle = gg.backdrop_color;
-      var y = self.money_display.y+self.money_display.h+self.pad;
-      gg.ctx.lineWidth = self.pad/2;
-      drawLine(self.x+self.pad+store_offx,y,self.x+self.w-self.pad+store_offx,y,gg.ctx);
-
       var fs = self.font_size;
       gg.ctx.font = fs+"px "+gg.font;
       gg.ctx.textAlign = "center";

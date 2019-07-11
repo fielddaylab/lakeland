@@ -1243,8 +1243,19 @@ var board = function()
       var ty = 0;
       var tw = 0;
       var th = 0;
+      var color = {r:0,g:0,b:0};
+      var cwhite = color_str_to_obj("#FFFFFF")
+      var cpink = color_str_to_obj(nutrition_color);
+      var alpha = 0.5;
       for(var i = 0; i < nutrition_overlay_levels; i++)
       {
+        color.r = lerp(cwhite.r,cpink.r,i/nutrition_overlay_levels);
+        color.g = lerp(cwhite.g,cpink.g,i/nutrition_overlay_levels);
+        color.b = lerp(cwhite.b,cpink.b,i/nutrition_overlay_levels);
+        ctx.fillStyle = RGB2Hex(color);
+        //ctx.fillStyle = nutrition_color;
+        ctx.fillStyle = "#AF235C";
+        alpha = i/nutrition_overlay_levels;
         for(var j = 0; j < nutrition_overlay_frames; j++)
         {
           //ctx.fillStyle = white;
@@ -1255,14 +1266,18 @@ var board = function()
           if(j == 0) self.nutrition_atlas_i[i] = self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           else self.nutrition_atlas.getWholeSprite(tx,ty,tw,th)
           //ctx.fillStyle = red;
-          //ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx += self.min_draw_tw;
           tw = self.min_draw_tw+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = orange;
-          //ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-self.min_draw_tw,tw,self.min_draw_tw);
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx = x;
@@ -1271,14 +1286,18 @@ var board = function()
           th = self.min_draw_th+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = yellow;
-          //ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           tx += self.min_draw_tw;
           tw = self.min_draw_tw+1;
           self.nutrition_atlas.getWholeSprite(tx,ty,tw,th);
           //ctx.fillStyle = green;
-          //ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(tx,ty+th-(self.min_draw_tw+1),tw,(self.min_draw_tw+1));
+          ctx.globalAlpha = 1;
           ctx.drawImage(nutrition_imgs[i*nutrition_overlay_frames+j],tx,ty,tw,th);
           self.nutrition_atlas.commitSprite();
           x += total_tw;
@@ -3009,8 +3028,8 @@ var board = function()
     if(self.nutrition_view)
     {
       gg.ctx.globalAlpha = 0.5;
-      gg.ctx.fillStyle = white;
-      gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+      //gg.ctx.fillStyle = white;
+      //gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       i = 0;
       ny = floor(self.y);
       for(var ty = self.th-1; ty >= 0; ty--)
@@ -3039,7 +3058,7 @@ var board = function()
       //nutrition particles
       {
         gg.ctx.fillStyle = nutrition_color;
-        var s = self.w/self.tw/20;
+        var s = self.w/self.tw/10;
         var hs = s/2;
         for(var i = self.up_pt.length-1; i >= 0; i--)
         {
