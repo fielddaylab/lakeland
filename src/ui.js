@@ -4286,7 +4286,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Hi!"); },//begin
+    function(){ self.push_blurb("Oh, hi there!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4308,7 +4308,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.money += home_cost; self.push_blurb("Buy your first house."); },//begin
+    function(){ gg.money += home_cost; self.push_blurb("Why dontcha buy your first house?"); },//begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
