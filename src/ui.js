@@ -103,6 +103,26 @@ var draw_custom_pbar = function(x,y,w,h,bg,fg,t)
   gg.ctx.fill();
 }
 
+var draw_nutrition_bar = function(x,y,w,n,color)
+{
+  var ox = x;
+  var s = w/(dots_per_line*2-1);
+  var p = s/2;
+  s = s*2-p;
+
+  gg.ctx.fillStyle = color;
+  for(var i = 0; i*nutrition_per_dot < n; i++)
+  {
+    gg.ctx.fillRect(x,y,s,s);
+    x += s+p;
+    if(i%dots_per_line == dots_per_line-1)
+    {
+      x = ox;
+      y += s+p;
+    }
+  }
+}
+
 var unlock_ui = function()
 {
   gg.shop.unlock_all();
@@ -1138,14 +1158,15 @@ var inspector = function()
 
         gg.ctx.fillText("Growth:",x,u.growth_y);
         gg.ctx.textAlign = "right";
-        gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,u.growth_y);
+        //gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,u.growth_y);
 
-        draw_custom_pbar(x,u.growth_bar_y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
+        draw_nutrition_bar(x,u.growth_bar_y,self.w-self.pad*2,t.val,"#83AE43");
+        //draw_custom_pbar(x,u.growth_bar_y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
         gg.ctx.fillStyle = gg.font_color;
 
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
-        if(!t.fertilizer) gg.ctx.fillText("[None]",x,u.fertilizer_bar_y+self.pad);
+        //if(!t.fertilizer) gg.ctx.fillText("[None]",x,u.fertilizer_bar_y+self.pad);
       }
         break;
       case TILE_TYPE_LIVESTOCK:
@@ -1215,6 +1236,8 @@ var inspector = function()
         gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Feed:",x,u.feed_y);
+        draw_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,"#704617");
+        /*
         if(t.val)
         {
           for(var i = 0; i < t.val; i++)
@@ -1223,6 +1246,7 @@ var inspector = function()
             x += self.pad*3;
           }
         }
+        */
 
       }
         break;
@@ -1252,26 +1276,30 @@ var inspector = function()
     gg.ctx.fillStyle = gg.font_color;
     gg.ctx.fillText("Nutrition:",x,u.nutrition_y);
     gg.ctx.textAlign = "right";
-    gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
+    //gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
 
-    draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? nutrition_color : gg.backdrop_color, bias_nutrition(rn/100));
+    draw_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,nutrition_color);
+    //draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? nutrition_color : gg.backdrop_color, bias_nutrition(rn/100));
     if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, u.nutrition_bar_y, w, self.pad, bias_nutrition(water_fouled_threshhold/nutrition_max));
     gg.ctx.fillStyle = gg.font_color;
 
     if(t.fertilizer)
     {
-      gg.ctx.textAlign = "left";
-      gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
-      if(t.fertilizer)
+      if(t.type != TILE_TYPE_FARM)
       {
-        draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
-        x += self.pad*3;
-        for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
-        {
-          draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-          x += self.pad*3;
-        }
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Runoff Fertilizer:",x,u.fertilizer_y);
       }
+      draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
+      /*
+      draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
+      x += self.pad*3;
+      for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
+      {
+        draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
+        x += self.pad*3;
+      }
+      */
     }
   }
 

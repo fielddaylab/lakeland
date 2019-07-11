@@ -3380,8 +3380,16 @@ var item = function()
         self.tile.nutrition += fertilizer_nutrition_leak;
         if(gg.b.raining)
         {
-          self.wvx += (self.tile.shed.tx-self.tile.tx)*0.01;
-          self.wvy += (self.tile.shed.ty-self.tile.ty)*0.01;
+          if(self.tile.shed == self.tile)
+          {
+            self.wvx += (self.tile.wx-self.wx)*0.001;
+            self.wvy += (self.tile.wy-self.wy)*0.001;
+          }
+          else
+          {
+            self.wvx += (self.tile.shed.tx-self.tile.tx)*0.01;
+            self.wvy += (self.tile.shed.ty-self.tile.ty)*0.01;
+          }
         }
         if(ot != self.tile)
         {

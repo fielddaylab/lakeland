@@ -142,7 +142,7 @@ var particle_t = 100;
 
 //'dot' refers to inspector nutrition bar dots
 var nutrition_per_dot = nutrition_max/1000;
-var dots_per_line = 100;
+var dots_per_line = 50;
 
 var nutrition_overlay_levels = 30;
 var nutrition_overlay_frames = 2;
