@@ -227,7 +227,7 @@ var shop = function()
 
   self.transition_t = 10;
 
-  self.open = 1;
+  self.open = 0;
   self.open_t = 0;
   self.keep_open = function()
   {
@@ -3576,7 +3576,6 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'livestock'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Good work!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3587,7 +3586,6 @@ var advisors = function()
     function(){ self.push_blurb("A Dairy farm can produce milk, which will sell for a great price!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3598,7 +3596,6 @@ var advisors = function()
     function(){ self.push_blurb("But you'll have to feed your livestock if you want any output"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3609,7 +3606,6 @@ var advisors = function()
     function(){ self.push_blurb("Select some food, and toggle its switch to use it for \"feed\"."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3620,7 +3616,6 @@ var advisors = function()
     function(){ self.push_blurb("Three feed should be enough to produce some milk!"); self.push_record("Feed your livestock to produce Milk."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3797,7 +3792,6 @@ var advisors = function()
     function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Ope! Didn't see ya there!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3808,7 +3802,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I'm Bo, your business advisor."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3819,7 +3812,6 @@ var advisors = function()
     function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.takeover_ui(); self.takeover_time(); self.push_blurb("Uff dah! Look at all that extra food, just sittin' there!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
@@ -3832,7 +3824,6 @@ var advisors = function()
     function(){ self.push_blurb("You musta been takin' advice from Joe and Flo."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3843,7 +3834,6 @@ var advisors = function()
     function(){ self.push_blurb("They're okay, as far as siblings go. But they don't understand the bottom line."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3854,7 +3844,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You need to sell the surplus!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
@@ -3867,7 +3856,6 @@ var advisors = function()
     function(){ self.push_blurb("Doncha worry. I've got an easy three-point plan!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3905,8 +3893,8 @@ var advisors = function()
     function(){ gg.speed = SPEED_PAUSE; var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
-      var u = gg.inspector.tile_ui[TILE_TYPE_FARM];
-      self.larrow(gg.inspector.x,u.autosell_0_y);
+      var u = gg.inspector.item_ui[ITEM_TYPE_FOOD];
+      self.larrow(u.switch_1_x,u.switch_0_y);
     },
     ffunc, //qclick
     ffunc, //click
@@ -3916,7 +3904,6 @@ var advisors = function()
     function(){ self.push_blurb("See? Easy as strawberry-rhubarb cobbler!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3927,7 +3914,6 @@ var advisors = function()
     function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.takeover_ui(); self.takeover_time(); self.push_blurb((f ? f.name : 0)+" will export your item for sale!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.hilight(f);
@@ -3963,7 +3949,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is scootin' over to the next town to sell your item!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.popup(TEXT_TYPE_DISMISS);
@@ -3977,7 +3962,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("They'll be back soon with some money!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.popup(TEXT_TYPE_DISMISS);
@@ -3991,7 +3975,6 @@ var advisors = function()
     function(){ self.push_blurb("That's just what every town needs. Good, old-fashioned trade. Ya know?"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4010,7 +3993,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is back!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.hilight(f);
@@ -4025,7 +4007,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Yahtzee! You just made $"+item_worth_food+"!");  self.push_record("Click on items and mark them as 'FOR SALE' to signal your townspeople to take those items to the market."); },//begin
     function(){ gg.shop.keep_open(); }, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(gg.shop.x+gg.shop.w,gg.shop.y+40);
     },
@@ -4066,7 +4047,6 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is all full up!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -4077,7 +4057,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("But don't count yer chickens just yet. You can't afford to keep buyin' food."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4088,7 +4067,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("What's that? You need a better way to feed your people?"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4170,7 +4148,6 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_food'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.push_blurb("Hiya, friend. Watchin' the grass grow?"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -4181,7 +4158,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.push_blurb("Relax. Just teasin'. I'm Flo, your farm advisor."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4192,7 +4168,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.push_blurb("Cripe's sake... not a single farm in your whole town?"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4203,7 +4178,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.push_blurb("You musta been takin' advice from my brother, Joe."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4214,7 +4188,6 @@ var advisors = function()
     function(){ self.push_blurb("He's nice, as far as brothers go. But he's never worked a day in his life."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4226,7 +4199,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.push_blurb("Anywho, enough dawdlin'."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4237,7 +4209,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" can't work on an empty stomach."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.hilight(f);
@@ -4412,7 +4383,6 @@ var advisors = function()
     function(){ self.push_blurb("Someone should move in soon!"); },//begin
     function(){ return self.bits_exist(1); }, //tick
     function(){
-      self.wash();
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -4446,7 +4416,6 @@ var advisors = function()
     },
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.hilight(f);
@@ -4461,7 +4430,6 @@ var advisors = function()
     function(){ self.push_blurb("Good luck!"); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.hilight(f);
@@ -4496,7 +4464,6 @@ var advisors = function()
     function(){ self.push_blurb("Oh, hey dere!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -4507,7 +4474,6 @@ var advisors = function()
     function(){ self.push_blurb("I'm Joe, da mayor!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4518,7 +4484,6 @@ var advisors = function()
     function(){ self.push_blurb("Maybe you've heard of me?"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4529,7 +4494,6 @@ var advisors = function()
     function(){ self.push_blurb("Not ta toot my own horn, but I won Nicest Mayor three years runnin'!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4589,7 +4553,6 @@ var advisors = function()
     function(){ self.push_blurb("Nice goin', friend! Somebody oughta be movin' in real soon!"); },//begin
     function(){ return self.bits_exist(1); }, //tick
     function(){
-      self.wash();
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -4624,7 +4587,6 @@ var advisors = function()
     },
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.camtotile(f.tile);
       self.hilight(f);
@@ -4639,7 +4601,6 @@ var advisors = function()
     function(){ self.push_blurb("It's yer job ta keep da town happy!"); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4650,7 +4611,6 @@ var advisors = function()
     function(){ self.push_blurb("Click on yer people ta see how they're doin'."); },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -4662,12 +4622,7 @@ var advisors = function()
     function(){ self.push_blurb("Oh, and try not to let anybody die. Just a little insider tip for ya."); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
-      var f = self.heap.f;
-      self.camtotile(f.tile);
-      self.hilight(f);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(f.x+f.w,f.y+f.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
