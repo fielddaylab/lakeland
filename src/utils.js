@@ -261,6 +261,40 @@ var bounceup = function(t)
   return lerp(bounceup_data[root],bounceup_data[root+1],d);
 }
 
+var tink_data = [];
+{
+  var n = 50;
+  var p = 0;
+  var vel = 0.1;
+  var pull = 0.02;
+  var damp = 0.8;
+  for(var i = 0; i < n; i++)
+  {
+    p += vel;
+    vel -= pull;
+    vel *= damp;
+    if(p < 0)
+    {
+      p = 0;
+      vel = abs(vel);
+      if(vel < pull*3)
+      {
+        vel = 0;
+        pull = 0;
+      }
+    }
+    tink_data[i] = p;
+  }
+  tink_data[n] = tink_data[n-1];
+}
+var tink = function(t)
+{
+  t *= tink_data.length-2; //knowing that final data is duplicate
+  var root = floor(t);
+  var d = t-root;
+  return lerp(tink_data[root],tink_data[root+1],d);
+}
+
 var fdisp = function(f,n) //formats float for display (from 8.124512 to 8.12)
 {
   if(n == undefined) n = 2;

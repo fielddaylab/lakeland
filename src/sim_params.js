@@ -140,6 +140,7 @@ var debug_pathfinding = 0;
 var debug_jobs = 0;
 
 var particle_t = 100;
+var clock_bounce_t = 50;
 
 //'dot' refers to inspector nutrition bar dots
 var nutrition_per_dot = nutrition_max/1000;

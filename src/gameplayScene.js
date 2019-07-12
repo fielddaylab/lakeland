@@ -216,28 +216,11 @@ var GamePlayScene = function()
     //gg.ctx.fillStyle = red;
     //gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
 
-    gg.ctx.font = gg.font_size+"px "+gg.font;
-
-    gg.ctx.font = (gg.font_size*1.5)+"px "+gg.font;
-    gg.ctx.textAlign = "center";
     gg.b.draw();
     gg.bar.draw();
     gg.nutrition_toggle.draw();
     gg.shop.draw();
     gg.inspector.draw();
-
-    /*
-    var x = gg.canvas.width-100;
-    var y = 520;
-    h = 20;
-    gg.ctx.fillText("d- speed time",    x,y); y += h;
-    gg.ctx.fillText("p- pause",         x,y); y += h;
-    gg.ctx.fillText("n- nutrition view",x,y); y += h;
-    gg.ctx.fillText("r- rain",          x,y); y += h;
-    gg.ctx.fillText("x- toggle export", x,y); y += h;
-    gg.ctx.fillText("a- debug pathing", x,y); y += h;
-    gg.ctx.fillText("j- debug jobs",    x,y); y += h;
-    */
 
     gg.advisors.draw();
     gg.achievements.draw();

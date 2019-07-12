@@ -1,7 +1,6 @@
-- note growth max on dot bar
-- note bloom max on dot bar
 - handle many lines of fertilizer on dot bar
-- note "state" next to "growth" indicator on farm (ie- "not growing, bc needs water")
+- incl faded "needs" in tile inspector; filled when needs met (farms: water, dairy: feed)
+- fade "production" according to ability to produce (farms: corn when harvestable; dairy: milk/poop when milkable)
 - amortize flow across ticks
 - allow building on top of (to destroy) roads
 - allow building a road (to destroy) signs?

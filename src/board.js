@@ -1015,6 +1015,7 @@ var tile = function()
   self.shoreline = 0;
   self.state = TILE_STATE_LAND_D0+floor(bias0(bias0(bias0(rand())))*land_detail_levels*0.99);
   self.state_t = 0;
+  self.fx_t = 0;
   self.val = 0;
   self.nutrition = 0;
   //self.known_nutrition = 0;
@@ -2635,6 +2636,10 @@ var board = function()
             t.nutrition -= d;
             d = max(d,farm_nutrition_uptake_min); //nutrition created out of thin air!
             t.val += d;
+            t.fx_t++;
+            var fx_tt = min(1,t.nutrition/(farm_nutrition_req/4));
+            if(t.fx_t > clock_bounce_t+(1-fx_tt)*clock_bounce_t*4)
+              t.fx_t = 0;
             if(t.val > farm_nutrition_req)
             {
               t.state = TILE_STATE_FARM_GROWN;
@@ -2800,16 +2805,24 @@ var board = function()
     {
       var r = w/4;
       var p;
+      var yoff = 0;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
-        case TILE_STATE_FARM_PLANTED: self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x,y,gg.ctx); break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.textAlign = "left"; gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.textAlign = "left"; gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
+        case TILE_STATE_FARM_PLANTED:
+          if(t.fx_t < clock_bounce_t)
+          {
+            var fx_tt = min(1,t.nutrition/(farm_nutrition_req/4));
+            yoff = tink(min(t.fx_t/clock_bounce_t,1))*-30*gg.stage.s_mod*(0.5+fx_tt/2);
+          }
+          self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.val/farm_nutrition_req,min(1,t.nutrition/nutrition_motivated)),x-w/4,y+yoff,gg.ctx);
+          break;
       }
     }
     if(t.type == TILE_TYPE_LIVESTOCK && t.state == TILE_STATE_LIVESTOCK_DIGESTING)
     {
-      self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x,y,gg.ctx);
+      self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x-w/4,y,gg.ctx);
     }
     /*
     if(t.known_nutrition_t)
@@ -3979,6 +3992,7 @@ var farmbit = function()
 
             t.state = TILE_STATE_FARM_PLANTED;
             t.state_t = 0;
+            t.fx_t = 0;
             self.fulfillment += harvest_fulfillment;
             self.calibrate_stats();
             self.go_idle();
