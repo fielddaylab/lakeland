@@ -7,7 +7,8 @@
 - money particles
 - correctly align arrows
 - remove washout where unnecessary
-- bounce growth timer at a rate corresponding to nutrition
+
+- "buy from shop" clickthroughs to placement if valid; no good
 
 - "place food" should be trigger to seek out hungry people to eat it
 - introduce timer when first waiting for farm to grow
