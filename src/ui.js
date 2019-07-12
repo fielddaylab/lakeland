@@ -651,7 +651,6 @@ var inspector = function()
     self.pad = 10*gg.stage.s_mod;
     self.font_size = self.pad*1.5;
     self.title_font_size = self.pad*2;
-    self.subtitle_font_size = self.pad*1;
     self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2;
     self.w = gg.canvas.width-self.x;
     self.y = self.pad+gg.stage.s_mod*50;
@@ -672,13 +671,6 @@ var inspector = function()
     self.title_y = y;
     y += self.pad;
 
-    y += self.subtitle_font_size;
-    self.subtitle_y = y;
-    y += self.pad;
-
-    self.title_line_y = y;
-    y += self.pad;
-
     var start_y = y;
     self.tile_ui = [];
     self.item_ui = [];
@@ -696,6 +688,7 @@ var inspector = function()
       self.tile_ui[TILE_TYPE_ROAD]   = u;
       self.tile_ui[TILE_TYPE_GRAVE]  = u;
       y = start_y;
+      y += self.pad;
 
       y += self.font_size;
       u.nutrition_y = y;
@@ -716,16 +709,31 @@ var inspector = function()
       u = {};
       self.tile_ui[TILE_TYPE_FARM] = u;
       y = start_y;
-
-      y += self.font_size;
-      u.produce_y = y;
-      y += self.pad;
-
-      u.produce_line_y = y;
       y += self.pad;
 
       y += self.font_size;
-      u.export_y = y;
+      u.nutrition_y = y;
+      y += self.pad;
+      u.nutrition_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.fertilizer_y = y;
+      y += self.pad;
+      u.fertilizer_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.growth_y = y;
+      y += self.pad;
+      u.growth_bar_y = y;
+      y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.production_y = y;
       y += self.pad;
 
       u.autosell_w = (self.w-self.pad*2)/4
@@ -742,58 +750,12 @@ var inspector = function()
       y += u.autosell_h;
       y += self.pad;
 
-      u.nutrition_border_y = y;
-      y += self.pad;
-
-      y += self.font_size;
-      u.growth_y = y;
-      y += self.pad;
-      u.growth_bar_y = y;
-      y += self.pad;
-      y += self.pad;
-
-      y += self.font_size;
-      u.fertilizer_y = y;
-      y += self.pad;
-      u.fertilizer_bar_y = y;
-      y += self.pad;
-      y += self.pad;
-
-      y += self.font_size;
-      u.nutrition_y = y;
-      y += self.pad;
-      u.nutrition_bar_y = y;
-      y += self.pad;
-      y += self.pad;
     }
 
     {
       u = {};
       self.tile_ui[TILE_TYPE_LIVESTOCK] = u;
       y = start_y;
-
-      y += self.font_size;
-      u.produce_y = y;
-      y += self.pad;
-
-      u.produce_line_y = y;
-      y += self.pad;
-
-      y += self.font_size;
-      u.export_y = y;
-      y += self.pad;
-
-      u.autosell_w = (self.w-self.pad*2)/3
-      u.autosell_0_x = self.x+self.pad+(self.w-self.pad*2)/4;
-      u.autosell_1_x = u.autosell_0_x+u.autosell_w;
-      u.autosell_2_x = u.autosell_1_x+u.autosell_w;
-
-      u.autosell_h = self.pad*3;
-      u.autosell_0_y = y;
-      y += u.autosell_h;
-      y += self.pad;
-      u.autosell_1_y = y;
-      y += u.autosell_h;
       y += self.pad;
 
       y += self.font_size;
@@ -815,6 +777,23 @@ var inspector = function()
       y += self.pad;
       u.feed_bar_y = y;
       y += self.pad;
+      y += self.pad;
+
+      y += self.font_size;
+      u.production_y = y;
+      y += self.pad;
+
+      u.autosell_w = (self.w-self.pad*2)/3
+      u.autosell_0_x = self.x+self.pad+(self.w-self.pad*2)/4;
+      u.autosell_1_x = u.autosell_0_x+u.autosell_w;
+      u.autosell_2_x = u.autosell_1_x+u.autosell_w;
+
+      u.autosell_h = self.pad*3;
+      u.autosell_0_y = y;
+      y += u.autosell_h;
+      y += self.pad;
+      u.autosell_1_y = y;
+      y += u.autosell_h;
       y += self.pad;
     }
 
@@ -864,9 +843,6 @@ var inspector = function()
 
   self.detailed = 0;
   self.detailed_type = INSPECTOR_CONTENT_NULL;
-  self.known_nutrition = 0;
-  self.nutrition_delta_t = 0;
-  self.nutrition_delta_d = 0;
   self.quick = 0;
   self.quick_type = INSPECTOR_CONTENT_NULL;
 
@@ -897,7 +873,6 @@ var inspector = function()
   {
     self.detailed = t;
     self.detailed_type = INSPECTOR_CONTENT_TILE;
-    self.known_nutrition = floor(t.nutrition/nutrition_percent);
   }
 
   self.draw_tile = function(t)
@@ -954,8 +929,7 @@ var inspector = function()
         default: self.img_vignette(tile_livestock_imgs[3],1); break;
       }
     }
-    else
-    self.img_vignette(gg.b.tile_img(t.type),1);
+    else self.img_vignette(gg.b.tile_img(t.type),1);
 
     if(t.type == TILE_TYPE_LAKE)
     {
@@ -973,6 +947,7 @@ var inspector = function()
     }
     if(t.type == TILE_TYPE_FARM)
     {
+    /*
       gg.ctx.globalAlpha = 0.2;
       gg.ctx.fillStyle = nutrition_color;
       var vp = 0.8;
@@ -997,97 +972,114 @@ var inspector = function()
       gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p*0.2),w,vp*self.vignette_h*p*0.2);
       }
       gg.ctx.globalAlpha = 1;
+    */
     }
-
-    gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.textAlign = "center";
 
     //title
-    gg.ctx.font = self.title_font_size+"px "+gg.font;
-    gg.ctx.fillText(gg.b.tile_name(t.type),cx,self.title_y);
-
-    var u = self.tile_ui[t.type];
-
-    //subtitle
-    switch(t.type)
     {
-      case TILE_TYPE_HOME:
-      {
-        gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        switch(t.state)
-        {
-          case TILE_STATE_HOME_VACANT:   gg.ctx.fillText("VACANT",cx,self.subtitle_y); break;
-          case TILE_STATE_HOME_OCCUPIED:
-          {
-            var b = 0;
-            for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].home == t) b = gg.farmbits[i];
-            if(b) gg.ctx.fillText("Owner: "+b.name,cx,self.subtitle_y);
-            else  gg.ctx.fillText("Owner: unknown",cx,self.subtitle_y);
-          }
-          break;
-        }
-        self.line(self.title_line_y);
-      }
-        break;
-      case TILE_TYPE_FARM:
-      {
-        gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        switch(t.state)
-        {
-          case TILE_STATE_FARM_UNPLANTED: gg.ctx.fillText("Needs Water",cx,self.subtitle_y);        break;
-          case TILE_STATE_FARM_PLANTED:   gg.ctx.fillText("Growing",cx,self.subtitle_y);            break;
-          case TILE_STATE_FARM_GROWN:     gg.ctx.fillText("Ready for Harvest!",cx,self.subtitle_y); break;
-        }
-        self.line(self.title_line_y);
-      }
-        break;
-      case TILE_TYPE_LIVESTOCK:
-      {
-        gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        switch(t.state)
-        {
-          case TILE_STATE_LIVESTOCK_DIGESTING: gg.ctx.fillText("Digesting",cx,self.subtitle_y);          break;
-          case TILE_STATE_LIVESTOCK_MILKABLE:  gg.ctx.fillText("Ready For Milking!",cx,self.subtitle_y); break;
-        }
-        self.line(self.title_line_y);
-      }
-        break;
-      case TILE_TYPE_NULL:
-      case TILE_TYPE_LAND:
-      case TILE_TYPE_ROCK:
-      case TILE_TYPE_GRAVE:
-      case TILE_TYPE_SHORE:
-      case TILE_TYPE_FOREST:
-      case TILE_TYPE_LAKE:
-      case TILE_TYPE_SIGN:
-      case TILE_TYPE_ROAD:
-      case TILE_TYPE_COUNT:
-      {
-        gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
-        gg.ctx.fillText(gg.b.tile_name(t.type),cx,self.subtitle_y);
-        self.line(self.title_line_y);
-      }
-        break;
+      gg.ctx.fillStyle = "#ECF3F6";
+      var y = round(self.vignette_y+self.vignette_h);
+      gg.ctx.fillRect(self.x,y,self.w,self.title_y+self.pad-y);
+      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.textAlign = "center";
+      gg.ctx.font = self.title_font_size+"px "+gg.font;
+      gg.ctx.fillText(gg.b.tile_name(t.type),cx,self.title_y);
     }
 
+/*
+    //owner
+    if(t.type == TILE_TYPE_HOME || t.type == TILE_TYPE_GRAVE)
+    {
+      gg.ctx.font = self.subtitle_font_size+"px "+gg.font;
+      switch(t.state)
+      {
+        case TILE_STATE_HOME_VACANT:   gg.ctx.fillText("VACANT",cx,self.subtitle_y); break;
+        case TILE_STATE_HOME_OCCUPIED:
+        {
+          var b = 0;
+          for(var i = 0; i < gg.farmbits.length; i++) if(gg.farmbits[i].home == t) b = gg.farmbits[i];
+          if(b) gg.ctx.fillText("Owner: "+b.name,cx,self.subtitle_y);
+          else  gg.ctx.fillText("Owner: unknown",cx,self.subtitle_y);
+        }
+        break;
+      }
+    }
+*/
+
+    var u = self.tile_ui[t.type];
     gg.ctx.font = self.font_size+"px "+gg.font;
+    gg.ctx.textAlign = "left";
+    gg.ctx.fillStyle = gg.font_color;
     var x = self.x+self.pad;
     var w = self.w-self.pad*2;
 
-    //production
-    switch(t.type)
+    //nutrition
     {
-      case TILE_TYPE_FARM:
-      {
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Produces:",self.x+self.pad,u.produce_y);
-        gg.ctx.textAlign = "right";
-        gg.ctx.fillText("2 Corn",self.x+self.w-self.pad,u.produce_y);
-        gg.ctx.textAlign = "center";
-        self.line(u.produce_line_y);
+      if(t.type == TILE_TYPE_LAKE)
+        gg.ctx.fillText("Water Nutrition:",x,u.nutrition_y);
+      else
+        gg.ctx.fillText("Soil Nutrition:",x,u.nutrition_y);
 
+                                   draw_nutrition_bar(          x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,                        nutrition_color);
+      if(t.type == TILE_TYPE_LAKE) draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,water_fouled_threshhold,vlight_gray);
+
+      gg.ctx.fillStyle = gg.font_color;
+      if(t.fertilizer)
+      {
+        if(t.type == TILE_TYPE_FARM)
+          gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
+        else
+          gg.ctx.fillText("Runoff Fertilizer:",x,u.fertilizer_y);
+        draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
+      }
+      else if(t.type == TILE_TYPE_FARM)
+        gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
+
+      //growth
+      if(t.type == TILE_TYPE_FARM)
+      {
+        gg.ctx.fillStyle = gg.font_color;
+        if(t.state == TILE_STATE_FARM_UNPLANTED)
+          gg.ctx.fillText("Growth: [Unplanted]",x,u.growth_y);
+        else
+          gg.ctx.fillText("Growth:",x,u.growth_y);
+
+        draw_nutrition_bar(          x,u.growth_bar_y,self.w-self.pad*2,t.val,                   "#83AE43");
+        draw_remaining_nutrition_bar(x,u.growth_bar_y,self.w-self.pad*2,t.val,farm_nutrition_req,"#D3EE93");
+      }
+    }
+
+    //requirements
+    {
+      if(t.type == TILE_TYPE_FARM)
+      {
+/*
+        x = self.x+self.pad;
+        gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Default Output:",self.x+self.pad,u.export_y);
+        gg.ctx.fillText("Feed:",x,u.feed_y);
+        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val,                 "#704617");
+        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,food_nutrition*3,"#906637");
+*/
+      }
+      if(t.type == TILE_TYPE_LIVESTOCK)
+      {
+        gg.ctx.fillStyle = gg.font_color;
+        x = self.x+self.pad;
+        gg.ctx.font = self.font_size+"px "+gg.font;
+        gg.ctx.textAlign = "left";
+        gg.ctx.fillText("Feed:",x,u.feed_y);
+        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,                 "#704617");
+        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,3*food_nutrition,"#D09677");
+      }
+    }
+
+    //production
+    {
+      gg.ctx.fillStyle = gg.font_color;
+      if(t.type == TILE_TYPE_FARM)
+      {
+        gg.ctx.fillText("Production:",self.x+self.pad,u.production_y);
 
         var on = "#BAEDE1";
         var off = "#F2F2F2";
@@ -1150,44 +1142,10 @@ var inspector = function()
         gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad);
         x = u.autosell_2_x;
         gg.ctx.fillText("feed",x+u.autosell_w/2,y+self.font_size+self.pad);
-
-        gg.ctx.font = self.font_size+"px "+gg.font;
-        x = self.x+self.pad;
-
-        var rg = t.val/farm_nutrition_req;
-        if(t.state == TILE_STATE_FARM_UNPLANTED) rg = 0;
-        if(t.state == TILE_STATE_FARM_GROWN)     rg = 1;
-
-        gg.ctx.fillStyle = vlight_gray;
-        fillRRect(self.x,u.nutrition_border_y,self.w,self.y+self.h-u.nutrition_border_y,self.pad,gg.ctx);
-        gg.ctx.fillStyle = gg.font_color;
-
-        gg.ctx.textAlign = "left";
-
-        gg.ctx.fillText("Growth:",x,u.growth_y);
-        gg.ctx.textAlign = "right";
-        //gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,u.growth_y);
-
-        draw_nutrition_bar(          x,u.growth_bar_y,self.w-self.pad*2,t.val,                   "#83AE43");
-        draw_remaining_nutrition_bar(x,u.growth_bar_y,self.w-self.pad*2,t.val,farm_nutrition_req,"#A3CE63");
-        gg.ctx.fillStyle = gg.font_color;
-
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
-        //if(!t.fertilizer) gg.ctx.fillText("[None]",x,u.fertilizer_bar_y+self.pad);
       }
-        break;
-      case TILE_TYPE_LIVESTOCK:
+      else if(t.type == TILE_TYPE_LIVESTOCK)
       {
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Produces:",self.x+self.pad,u.produce_y);
-        gg.ctx.textAlign = "right";
-        gg.ctx.fillText("Milk,Manure",self.x+self.w-self.pad,u.produce_y);
-        gg.ctx.textAlign = "center";
-        self.line(u.produce_line_y);
-
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Default Output:",self.x+self.pad,u.export_y);
+        gg.ctx.fillText("Production:",self.x+self.pad,u.production_y);
 
         var on = "#BAEDE1";
         var off = "#F2F2F2";
@@ -1239,59 +1197,9 @@ var inspector = function()
         gg.ctx.fillText("fertilize", x+u.autosell_w/2,y+self.font_size+self.pad);
         x = u.autosell_1_x;
         gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad);
-
-        x = self.x+self.pad;
-        gg.ctx.font = self.font_size+"px "+gg.font;
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Feed:",x,u.feed_y);
-        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val,                 "#704617");
-        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,food_nutrition*3,"#906637");
-
       }
-        break;
     }
 
-    x = self.x+self.pad;
-    if(self.known_nutrition > n) { self.nutrition_delta_d = -1; self.nutrition_delta_t = 10; }
-    if(self.known_nutrition < n) { self.nutrition_delta_d =  1; self.nutrition_delta_t = 10; }
-    if(self.nutrition_delta_t)
-    {
-      self.nutrition_delta_t--;
-      /*
-      var as = 50*gg.stage.s_mod;
-      if(self.nutrition_delta_d < 0)
-      {
-        gg.ctx.fillStyle = red;
-        gg.ctx.drawImage(down_img,x-as/2,u.nutrition_y-self.nutrition_delta_t-as/2,as,as);
-      }
-      else if(self.nutrition_delta_d > 0)
-      {
-        gg.ctx.fillStyle = green;
-        gg.ctx.drawImage(up_img,x-as/2,u.nutrition_y+self.nutrition_delta_t-as/2,as,as);
-      }
-      */
-    }
-    self.known_nutrition = n;
-
-    gg.ctx.textAlign = "left";
-    gg.ctx.fillStyle = gg.font_color;
-    gg.ctx.fillText("Nutrition:",x,u.nutrition_y);
-    gg.ctx.textAlign = "right";
-    //gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
-
-                                 draw_nutrition_bar(          x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,                        nutrition_color);
-    if(t.type == TILE_TYPE_LAKE) draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,water_fouled_threshhold,black);
-    gg.ctx.fillStyle = gg.font_color;
-
-    if(t.fertilizer)
-    {
-      if(t.type != TILE_TYPE_FARM)
-      {
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Runoff Fertilizer:",x,u.fertilizer_y);
-      }
-      draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
-    }
   }
 
   self.tick_tile = function(t)
