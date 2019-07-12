@@ -6,6 +6,8 @@
 - allow building on top of (to destroy) roads
 - allow building a road (to destroy) signs?
 - money particles
+- correctly align arrows
+- remove washout where unnecessary
 - bounce growth timer at a rate corresponding to nutrition
 
 - "place food" should be trigger to seek out hungry people to eat it

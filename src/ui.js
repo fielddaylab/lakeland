@@ -53,56 +53,6 @@ var draw_switch = function(x,y,w,h,on)
   gg.ctx.stroke();
 }
 
-var draw_money_switch = function(x,y,w,h,on)
-{
-  if(on) gg.ctx.fillStyle = "#91B15D";
-  else   gg.ctx.fillStyle = light_gray;
-  fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
-  if(on) gg.ctx.drawImage(icon_money_img,x+w-h,y-h/4,h,h*1.25);
-  else   gg.ctx.drawImage(icon_money_img,x,    y-h/4,h,h*1.25);
-}
-
-var mark_pbar = function(x,y,w,h,t)
-{
-  gg.ctx.strokeStyle = nutrition_color;
-  var r = h/2;
-  var tx = x+r+(w-r*2)*t;
-       if(t >= 1) tx = x+2;
-  else if(t <= 0) tx = x;
-  drawLine(tx,y-r,tx,y+h+r,gg.ctx)
-}
-
-var draw_pbar = function(x,y,w,h,t)
-{
-  draw_custom_pbar(x,y,w,h,light_gray,gg.backdrop_color,t);
-}
-
-var draw_custom_pbar = function(x,y,w,h,bg,fg,t)
-{
-  var r = h/2;
-  if(t >= 1)
-  {
-    gg.ctx.fillStyle = fg;
-    fillRRect(x,y,w,h,r,gg.ctx);
-    return;
-  }
-  gg.ctx.fillStyle = bg;
-  fillRRect(x,y,w,h,r,gg.ctx);
-  if(t <= 0) return;
-  gg.ctx.fillStyle = fg;
-
-  var tx = x+r+(w-r*2)*t;
-
-  gg.ctx.beginPath();
-  gg.ctx.moveTo(tx,y+h);
-  gg.ctx.lineTo(x+r,y+h);
-  gg.ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  gg.ctx.quadraticCurveTo(x,y,x+r,y);
-  gg.ctx.lineTo(tx,y);
-  gg.ctx.closePath();
-  gg.ctx.fill();
-}
-
 var draw_nutrition_bar = function(x,y,w,n,color)
 {
   var ox = x;
@@ -112,6 +62,31 @@ var draw_nutrition_bar = function(x,y,w,n,color)
 
   gg.ctx.fillStyle = color;
   for(var i = 0; i*nutrition_per_dot < n; i++)
+  {
+    gg.ctx.fillRect(x,y,s,s);
+    x += s+p;
+    if(i%dots_per_line == dots_per_line-1)
+    {
+      x = ox;
+      y += s+p;
+    }
+  }
+}
+
+var draw_remaining_nutrition_bar = function(x,y,w,n,t,color)
+{
+  var ox = x;
+  var s = w/(dots_per_line*2-1);
+  var p = s/2;
+  s = s*2-p;
+
+  gg.ctx.fillStyle = color;
+  var xi = ceil(n/nutrition_per_dot)%dots_per_line;
+  var yi = ceil(n/nutrition_per_dot/dots_per_line);
+  if(xi) yi--; //to fix ceil junk
+  y += yi*(s+p);
+  x += xi*(s+p);
+  for(var i = ceil(n/nutrition_per_dot); i*nutrition_per_dot < t; i++)
   {
     gg.ctx.fillRect(x,y,s,s);
     x += s+p;
@@ -932,8 +907,41 @@ var inspector = function()
     var cx = self.x+self.w/2;
 
     //bg
-    gg.ctx.fillStyle = white;
-    fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
+    {
+      //copied from fillRRect to split across colors
+      var x = self.x;
+      var y = self.y;
+      var cy = round(self.vignette_y+self.vignette_h);
+      var w = self.w;
+      var h = self.h;
+      var r = self.pad;
+      var ctx = gg.ctx;
+
+      ctx.fillStyle = sky_color
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.lineTo(x+w,y);
+      ctx.lineTo(x+w,cy);
+      ctx.lineTo(x,  cy);
+      ctx.lineTo(x,y+r);
+      ctx.quadraticCurveTo(x,y,x+r,y);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = white;
+      ctx.beginPath();
+      ctx.moveTo(x,cy);
+      ctx.lineTo(x+w,cy);
+      ctx.lineTo(x+w,y+h);
+      ctx.lineTo(x+r,y+h);
+      ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+      ctx.lineTo(x,cy);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    //gg.ctx.fillStyle = white;
+    //fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
 
     self.img_vignette(gg.b.tile_img(t.og_type),1);
     if(t.type == TILE_TYPE_LIVESTOCK)
@@ -1160,8 +1168,8 @@ var inspector = function()
         gg.ctx.textAlign = "right";
         //gg.ctx.fillText(floor(rg*100)+"%",self.x+self.w-self.pad,u.growth_y);
 
-        draw_nutrition_bar(x,u.growth_bar_y,self.w-self.pad*2,t.val,"#83AE43");
-        //draw_custom_pbar(x,u.growth_bar_y,self.w-self.pad*2,self.pad,"#B5D87A","#83AE43",rg);
+        draw_nutrition_bar(          x,u.growth_bar_y,self.w-self.pad*2,t.val,                   "#83AE43");
+        draw_remaining_nutrition_bar(x,u.growth_bar_y,self.w-self.pad*2,t.val,farm_nutrition_req,"#A3CE63");
         gg.ctx.fillStyle = gg.font_color;
 
         gg.ctx.textAlign = "left";
@@ -1236,17 +1244,8 @@ var inspector = function()
         gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Feed:",x,u.feed_y);
-        draw_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,"#704617");
-        /*
-        if(t.val)
-        {
-          for(var i = 0; i < t.val; i++)
-          {
-            draw_custom_pbar(x,u.feed_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-            x += self.pad*3;
-          }
-        }
-        */
+        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val,                 "#704617");
+        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,food_nutrition*3,"#906637");
 
       }
         break;
@@ -1280,9 +1279,8 @@ var inspector = function()
     gg.ctx.textAlign = "right";
     //gg.ctx.fillText(n+"%",self.x+self.w-self.pad,u.nutrition_y);
 
-    draw_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,nutrition_color);
-    //draw_custom_pbar(x, u.nutrition_bar_y, w, self.pad, light_gray, t.nutrition > water_fouled_threshhold ? nutrition_color : gg.backdrop_color, bias_nutrition(rn/100));
-    if(t.type == TILE_TYPE_LAKE) mark_pbar(self.x+self.pad, u.nutrition_bar_y, w, self.pad, bias_nutrition(water_fouled_threshhold/nutrition_max));
+                                 draw_nutrition_bar(          x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,                        nutrition_color);
+    if(t.type == TILE_TYPE_LAKE) draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,water_fouled_threshhold,black);
     gg.ctx.fillStyle = gg.font_color;
 
     if(t.fertilizer)
@@ -1293,15 +1291,6 @@ var inspector = function()
         gg.ctx.fillText("Runoff Fertilizer:",x,u.fertilizer_y);
       }
       draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
-      /*
-      draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",(t.fertilizer.state%fertilizer_nutrition)/fertilizer_nutrition);
-      x += self.pad*3;
-      for(var j = 0; (j+1)*fertilizer_nutrition < t.fertilizer.state; j++)
-      {
-        draw_custom_pbar(x,u.fertilizer_bar_y,self.pad*3,self.pad,"#D2C8BB","#704617",1);
-        x += self.pad*3;
-      }
-      */
     }
   }
 

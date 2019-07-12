@@ -21,6 +21,7 @@ var farmbit_names = [
 
 var nutrition_color = "#FF599D";
 var cloud_color = "#155D67";
+var sky_color = "#BBEDEA";
 
 var board_w = 50;
 var board_h = 50;
