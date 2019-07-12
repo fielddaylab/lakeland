@@ -1258,6 +1258,7 @@ var inspector = function()
     if(self.nutrition_delta_t)
     {
       self.nutrition_delta_t--;
+      /*
       var as = 50*gg.stage.s_mod;
       if(self.nutrition_delta_d < 0)
       {
@@ -1269,6 +1270,7 @@ var inspector = function()
         gg.ctx.fillStyle = green;
         gg.ctx.drawImage(up_img,x-as/2,u.nutrition_y+self.nutrition_delta_t-as/2,as,as);
       }
+      */
     }
     self.known_nutrition = n;
 

@@ -121,7 +121,7 @@ var livestock_cost = 200;
 var fertilizer_cost = 200;
 var food_cost = 200;
 var sign_cost = 10;
-var skimmer_cost = 1000;
+var skimmer_cost = 500;
 var road_cost = 500;
 var free_money = 1000;
 

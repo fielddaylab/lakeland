@@ -221,11 +221,6 @@ var GamePlayScene = function()
     gg.ctx.font = (gg.font_size*1.5)+"px "+gg.font;
     gg.ctx.textAlign = "center";
     gg.b.draw();
-    for(var i = 0; i < gg.farmbits.length; i++)
-      gg.farmbits[i].draw();
-    gg.ctx.textAlign = "left";
-    for(var i = 0; i < gg.items.length; i++)
-      gg.items[i].draw();
     gg.bar.draw();
     gg.nutrition_toggle.draw();
     gg.shop.draw();

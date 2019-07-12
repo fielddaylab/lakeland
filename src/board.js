@@ -2811,20 +2811,6 @@ var board = function()
     {
       self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x,y,gg.ctx);
     }
-    var a;
-    if(t.type == TILE_TYPE_LAKE)
-    {
-      if(t.nutrition < water_fouled_threshhold)
-        a = max(0,bias0(bias0(t.nutrition/water_fouled_threshhold))*0.8);
-      else
-        a = min(1,0.8+bias1(bias1((t.nutrition-water_fouled_threshhold)/(nutrition_max-water_fouled_threshhold)))*0.2);
-      if(a > 0.05)
-      {
-        gg.ctx.globalAlpha = a;
-        gg.ctx.drawImage(tile_bloom_img,x,y,w,h);
-        gg.ctx.globalAlpha = 1;
-      }
-    }
     /*
     if(t.known_nutrition_t)
     {
@@ -2927,6 +2913,18 @@ var board = function()
         self.atlas.drawWholeSprite(self.atlas_i[t.type]+off,x-xd/2,y-yd,w+xd,h+yd,gg.ctx);
         break;
       case TILE_TYPE_LAKE:
+        var a;
+        if(t.nutrition < water_fouled_threshhold)
+          a = max(0,bias0(bias0(t.nutrition/water_fouled_threshhold))*0.8);
+        else
+          a = min(1,0.8+bias1(bias1((t.nutrition-water_fouled_threshhold)/(nutrition_max-water_fouled_threshhold)))*0.2);
+        if(a > 0.05)
+        {
+          gg.ctx.globalAlpha = a;
+          gg.ctx.drawImage(tile_bloom_img,x,y,w,h);
+          gg.ctx.globalAlpha = 1;
+        }
+        break;
       case TILE_TYPE_SHORE:
       case TILE_TYPE_ROCK:
       case TILE_TYPE_FOREST:
@@ -3024,7 +3022,6 @@ var board = function()
         if(x < -tw || x > gg.canvas.width) { i++; continue; }
         var t = self.tiles[i];
         self.draw_tile_ontop_fast(t,x,dy,tw,dth,xd,yd);
-        self.draw_tile_overlay(t,x,dy,tw,dth);
         i++;
       }
     }
@@ -3084,33 +3081,7 @@ var board = function()
       gg.ctx.globalAlpha = 1;
     }
 
-    //non-nutrition particles
-    {
-      /*
-      for(var i = self.buy_pt.length-1; i >= 0; i--)
-      {
-        self.buy_pt[i]++;
-        if(self.buy_pt > particle_t)
-        {
-          self.buy_ptt.splice(i,1);
-          self.buy_pn.splice(i,1);
-          self.buy_pt.splice(i,1);
-        }
-      }
-      for(var i = self.sell_pt.length-1; i >= 0; i--)
-      {
-        self.sell_pt[i]++;
-        if(self.sell_pt > particle_t)
-        {
-          self.sell_ptt.splice(i,1);
-          self.sell_pn.splice(i,1);
-          self.sell_pt.splice(i,1);
-        }
-      }
-      */
-    }
-
-    //buy preview
+    //owned land
     {
       var t;
       switch(gg.shop.selected_buy)
@@ -3153,154 +3124,160 @@ var board = function()
         }
         break;
       }
+      gg.ctx.globalAlpha = 1;
     }
 
-    gg.ctx.globalAlpha = 1;
     gg.ctx.imageSmoothingEnabled = 1;
 
-    if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE && !gg.shop.selected_buy)
+    //cursor (+ sign ring if sign selected)
     {
-      t = gg.inspector.detailed;
-      gg.ctx.drawImage(icon_cursor_img,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
-
-      if(t.type == TILE_TYPE_SIGN)
+      if(gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE && !gg.shop.selected_buy)
       {
-        gg.ctx.strokeStyle = red;
-        gg.ctx.lineWidth = 2;
-        gg.ctx.beginPath();
-        gg.ctx.arc(self.x+t.tx*w+w/2,self.y+self.h-(t.ty+1)*h+h/2,w*2,0,twopi);
-        gg.ctx.stroke();
-      }
+        t = gg.inspector.detailed;
+        gg.ctx.drawImage(icon_cursor_img,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
 
+        if(t.type == TILE_TYPE_SIGN)
+        {
+          gg.ctx.strokeStyle = red;
+          gg.ctx.lineWidth = 2;
+          gg.ctx.beginPath();
+          gg.ctx.arc(self.x+t.tx*w+w/2,self.y+self.h-(t.ty+1)*h+h/2,w*2,0,twopi);
+          gg.ctx.stroke();
+        }
+      }
     }
 
-    //if(gg.inspector.quick_type    == INSPECTOR_CONTENT_TILE) { t = gg.inspector.quick;    gg.ctx.strokeStyle = green; gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h); }
-    if(self.hover_t && gg.shop.selected_buy)
+    //people
+    for(var i = 0; i < gg.farmbits.length; i++)
+      gg.farmbits[i].draw();
+
+    //items
+    for(var i = 0; i < gg.items.length; i++)
+      gg.items[i].draw();
+
+    //tile overlays (clocks)
     {
-      t = self.hover_t;
-      var cursor = icon_cursor_img;
-      if(self.hover_t_placable)
+      i = 0;
+      ny = floor(self.y);
+      for(var ty = self.th-1; ty >= 0; ty--)
       {
-        var o = self.scratch_tile;
-        o.type = buy_to_tile(gg.shop.selected_buy);
-        o.tx = t.tx;
-        o.ty = t.ty;
-        o.og_type = t.og_type;
-
-        var w = self.w/self.tw;
-        var h = self.h/self.th;
-        var ny = round(self.y+self.h-((o.ty+1)*h));
-        var  x = round(self.x+       ((o.tx  )*w));
-
-        if(o.type != TILE_TYPE_NULL)
-        {
-          if(gg.shop.selected_buy == BUY_TYPE_SIGN)
-          {
-            gg.ctx.strokeStyle = red;
-            gg.ctx.lineWidth = 2;
-            gg.ctx.beginPath();
-            gg.ctx.arc(x+w/2,ny+h/2,w*2,0,twopi);
-            gg.ctx.stroke();
-          }
-
-          gg.ctx.globalAlpha = 0.5;
-          self.draw_tile(o,x,ny,w,h);
-          gg.ctx.globalAlpha = 1;
-        }
-        else
-        {
-          var it = self.scratch_item;
-          it.type = buy_to_item(gg.shop.selected_buy);
-          if(it.type != ITEM_TYPE_NULL)
-          {
-            it.tile = t;
-            gg.b.tiles_tw(it.tile,it);
-            screenSpace(gg.cam, gg.canvas, it);
-
-            gg.ctx.globalAlpha = 0.5;
-            it.draw();
-            gg.ctx.globalAlpha = 1;
-          }
-        }
-
-        if(gg.shop.buy_cost(gg.shop.selected_buy) > gg.money) gg.ctx.fillStyle = red;
-        else gg.ctx.fillStyle = gg.font_color;
-        gg.ctx.font = gg.font_size+"px "+gg.font;
-        gg.ctx.textAlign = "center";
-        gg.ctx.fillText("$"+gg.shop.buy_cost(gg.shop.selected_buy),x+w/2,ny+h+gg.font_size);
-      }
-      else
-        cursor = icon_ncursor_img;
-      //gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
-      gg.ctx.drawImage(cursor,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
-    }
-
-    if(debug_pathfinding && gg.inspector.detailed_type == INSPECTOR_CONTENT_TILE)
-    {
-      gg.ctx.strokeStyle = green;
-      var l = 20*gg.stage.s_mod;
-      var g = 1;
-      var d = gg.inspector.detailed;
-      var i = 0;
-      for(var ty = 0; ty < self.th; ty++)
-      {
-        var y = self.y+self.h-(ty*h)-h/4;
-        if(y < 0 || y > gg.canvas.height) { i += self.tw; continue; }
+        y = ny;
+        ny = floor(self.y+self.h-ty*h);
+        th = ny-y;
+        dth = th+dhd;
+        dy = y-dhd;
+        //overlay
+        nx = floor(self.x+(0*w));
+        i = self.tiles_i(0,ty);
         for(var tx = 0; tx < self.tw; tx++)
         {
-          var t = d.directions[i];
-          var x = self.x+tx*w+w/2;
-          if(x < 0 || x > gg.canvas.width) { i++; continue; }
-          var dx;
-          var dy;
-          switch(d.directions[i])
-          {
-            case DIRECTION_NULL: dx =  0;   dy =  0;   break;
-            case DIRECTION_R:    dx =  1;   dy =  0;   break;
-            case DIRECTION_DR:   dx =  0.7; dy = -0.7; break;
-            case DIRECTION_D:    dx =  0;   dy = -1;   break;
-            case DIRECTION_DL:   dx = -0.7; dy = -0.7; break;
-            case DIRECTION_L:    dx = -1;   dy =  0;   break;
-            case DIRECTION_UL:   dx = -0.7; dy =  0.7; break;
-            case DIRECTION_U:    dx =  0;   dy =  1;   break;
-            case DIRECTION_UR:   dx =  0.7; dy =  0.7; break;
-          }
-          //drawArrow(x,y,x+dx*l,y-dy*l,g,gg.ctx);
-          drawLine(x,y,x+dx*l,y-dy*l,gg.ctx);
+          x = nx;
+          nx = floor(self.x+((tx+1)*w));
+          tw = nx-x;
+          if(x < -tw || x > gg.canvas.width) { i++; continue; }
+          var t = self.tiles[i];
+          self.draw_tile_overlay(t,x,dy,tw,dth);
           i++;
         }
       }
     }
 
-    if(self.raining)
+    //buy preview
     {
-      gg.ctx.fillStyle = blue;
-      var s = 3*gg.stage.s_mod;
-      var hs = s/2;
-      if(gg.speed == SPEED_PAUSE || gg.advisors.owns_time)
+      if(self.hover_t && gg.shop.selected_buy)
       {
-        var x = 0;
-        var y = 0;
-        for(var i = 0; i < 1000; i++)
+        t = self.hover_t;
+        var cursor = icon_cursor_img;
+        if(self.hover_t_placable)
         {
-          x = Math.sin(i)*10000;
-          x = (x-Math.floor(x))*self.w;
-          y = Math.sin(i+1000)*10000;
-          y = (y-Math.floor(y))*self.h;
-          gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+          var o = self.scratch_tile;
+          o.type = buy_to_tile(gg.shop.selected_buy);
+          o.tx = t.tx;
+          o.ty = t.ty;
+          o.og_type = t.og_type;
+
+          var w = self.w/self.tw;
+          var h = self.h/self.th;
+          var ny = round(self.y+self.h-((o.ty+1)*h));
+          var  x = round(self.x+       ((o.tx  )*w));
+
+          if(o.type != TILE_TYPE_NULL)
+          {
+            if(gg.shop.selected_buy == BUY_TYPE_SIGN)
+            {
+              gg.ctx.strokeStyle = red;
+              gg.ctx.lineWidth = 2;
+              gg.ctx.beginPath();
+              gg.ctx.arc(x+w/2,ny+h/2,w*2,0,twopi);
+              gg.ctx.stroke();
+            }
+
+            gg.ctx.globalAlpha = 0.5;
+            self.draw_tile(o,x,ny,w,h);
+            gg.ctx.globalAlpha = 1;
+          }
+          else
+          {
+            var it = self.scratch_item;
+            it.type = buy_to_item(gg.shop.selected_buy);
+            if(it.type != ITEM_TYPE_NULL)
+            {
+              it.tile = t;
+              gg.b.tiles_tw(it.tile,it);
+              screenSpace(gg.cam, gg.canvas, it);
+
+              gg.ctx.globalAlpha = 0.5;
+              it.draw();
+              gg.ctx.globalAlpha = 1;
+            }
+          }
+
+          if(gg.shop.buy_cost(gg.shop.selected_buy) > gg.money) gg.ctx.fillStyle = red;
+          else gg.ctx.fillStyle = gg.font_color;
+          gg.ctx.font = gg.font_size+"px "+gg.font;
+          gg.ctx.textAlign = "center";
+          gg.ctx.fillText("$"+gg.shop.buy_cost(gg.shop.selected_buy),x+w/2,ny+h+gg.font_size);
         }
+        else
+          cursor = icon_ncursor_img;
+        //gg.ctx.strokeRect(self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
+        gg.ctx.drawImage(cursor,self.x+t.tx*w,self.y+self.h-(t.ty+1)*h,w,h);
       }
-      else
+    }
+
+    //rain
+    {
+      if(self.raining)
       {
-        for(var i = 0; i < 1000; i++)
+        gg.ctx.fillStyle = blue;
+        var s = 3*gg.stage.s_mod;
+        var hs = s/2;
+        if(gg.speed == SPEED_PAUSE || gg.advisors.owns_time)
         {
-          var x = rand()*self.w;
-          var y = rand()*self.h;
-          gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+          var x = 0;
+          var y = 0;
+          for(var i = 0; i < 1000; i++)
+          {
+            x = Math.sin(i)*10000;
+            x = (x-Math.floor(x))*self.w;
+            y = Math.sin(i+1000)*10000;
+            y = (y-Math.floor(y))*self.h;
+            gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+          }
+        }
+        else
+        {
+          for(var i = 0; i < 1000; i++)
+          {
+            var x = rand()*self.w;
+            var y = rand()*self.h;
+            gg.ctx.fillRect(self.x+x-hs,self.y+y-hs,s,s*2);
+          }
         }
       }
     }
 
+    //clouds
     {
       /*
       gg.ctx.strokeStyle = red;
@@ -3318,11 +3295,16 @@ var board = function()
       gg.ctx.flobalAlpha = 1;
     }
 
-    if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 10;
-    for(var i = 0; i < self.spewing_road; i++)
-      gg.ctx.drawImage(self.tile_img(TILE_TYPE_ROAD),self.hover_x,self.hover_y-self.min_draw_th/4-i*self.min_draw_th/10,self.min_draw_tw,self.min_draw_th);
-    if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 0;
+    //road?
+    {
+      if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 10;
+      for(var i = 0; i < self.spewing_road; i++)
+        gg.ctx.drawImage(self.tile_img(TILE_TYPE_ROAD),self.hover_x,self.hover_y-self.min_draw_th/4-i*self.min_draw_th/10,self.min_draw_tw,self.min_draw_th);
+      if(gg.shop.selected_buy == BUY_TYPE_ROAD) self.spewing_road = 0;
+    }
+
   }
+
 }
 
 var item = function()

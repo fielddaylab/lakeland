@@ -1,9 +1,18 @@
+- note growth max on dot bar
+- note bloom max on dot bar
+- handle many lines of fertilizer on dot bar
+- note "state" next to "growth" indicator on farm (ie- "not growing, bc needs water")
+- amortize flow across ticks
+- allow building on top of (to destroy) roads
+- allow building a road (to destroy) signs?
+- money particles
+- bounce growth timer at a rate corresponding to nutrition
+
 - "place food" should be trigger to seek out hungry people to eat it
 - introduce timer when first waiting for farm to grow
 - if you mark second corn (during sell tutorial) to "sell", popup saying "woah, you'll need _some_ corn to feed your people"
 
 - pace tuts w/ achievements (wait a bit before popping up advisor)
-- timers on "out to market" signs
 
 - display "currently exporting dudes"
 - if quickbuy house- skip appropriate tut
