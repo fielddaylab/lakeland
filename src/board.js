@@ -2547,6 +2547,7 @@ var board = function()
 
           }
         }
+        else gg.shop.error_loc_t = 1;
       }
     }
     else
@@ -3243,11 +3244,12 @@ var board = function()
             }
           }
 
-          if(gg.shop.buy_cost(gg.shop.selected_buy) > gg.money) gg.ctx.fillStyle = red;
+          var offy = 0;
+          if(gg.shop.buy_cost(gg.shop.selected_buy) > gg.money) { gg.ctx.fillStyle = red; offy = tink(min(gg.shop.error_cost_t/50,1))*-50*gg.stage.s_mod; }
           else gg.ctx.fillStyle = gg.font_color;
           gg.ctx.font = gg.font_size+"px "+gg.font;
           gg.ctx.textAlign = "center";
-          gg.ctx.fillText("$"+gg.shop.buy_cost(gg.shop.selected_buy),x+w/2,ny+h+gg.font_size);
+          gg.ctx.fillText("$"+gg.shop.buy_cost(gg.shop.selected_buy),x+w/2,ny+h+gg.font_size+offy);
         }
         else
           cursor = icon_ncursor_img;

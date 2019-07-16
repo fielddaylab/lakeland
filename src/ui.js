@@ -238,6 +238,8 @@ var shop = function()
   self.selected_buy = 0;
   self.last_selected_buy = 0;
   self.selected_t = self.transition_t+1;
+  self.error_cost_t = 0;
+  self.error_loc_t = 0;
   self.deselect = function()
   {
     self.selected_buy = 0;
@@ -373,7 +375,7 @@ var shop = function()
   self.confirm_buy = function()
   {
     var c = self.buy_cost(self.selected_buy);
-    if(gg.money < c) return 0;
+    if(gg.money < c) { self.error_cost_t = 1; return 0; }
     gg.money -= c;
     self.deselect();
     return 1;
@@ -457,6 +459,8 @@ var shop = function()
   {
     self.open_t++;
     self.selected_t++;
+    self.error_cost_t++;
+    self.error_loc_t++;
     if(self.selected_buy) self.keep_open();
     if(self.open)
     {
