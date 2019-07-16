@@ -7,6 +7,7 @@
 - money particles
 - correctly align arrows
 - remove washout where unnecessary
+- ppl don't eat milk if it's already on board and marked food
 
 - "buy from shop" clickthroughs to placement if valid; no good
 

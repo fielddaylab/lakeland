@@ -456,6 +456,7 @@ var shop = function()
     }
     else
       if(check && self.cancel_btn.active) check = !filter.filter(self.cancel_btn);
+    //if(!check) gg.ignore_single_board = 1;
     return !check;
   }
 
@@ -4278,6 +4279,7 @@ var advisors = function()
     function(evt) //click
     {
       if(self.evt_within_popup(evt)) return 1;
+      if(self.stable_thread_t < 30) return 1;
 
       var b = gg.b;
       if(b.hover_t)
