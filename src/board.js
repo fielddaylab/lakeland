@@ -1050,7 +1050,7 @@ var board = function()
   self.up_pt = [];
   self.up_px = [];
   self.up_py = [];
-  self.down_ptt = [];
+  self.down_pti = [];
   self.down_pt = [];
   self.down_px = [];
   self.down_py = [];
@@ -1068,9 +1068,9 @@ var board = function()
     self.up_px.push(x);
     self.up_py.push(y);
   }
-  self.down_p = function(t,x,y)
+  self.down_p = function(i,x,y)
   {
-    self.down_ptt.push(t);
+    self.down_pti.push(i);
     self.down_pt.push(0);
     self.down_px.push(x);
     self.down_py.push(y);
@@ -2703,7 +2703,7 @@ var board = function()
         self.down_pt[i]++;
         if(self.down_pt[i] > particle_t)
         {
-          self.down_ptt.splice(i,1);
+          self.down_pti.splice(i,1);
           self.down_pt.splice(i,1);
           self.down_px.splice(i,1);
           self.down_py.splice(i,1);
@@ -2743,8 +2743,8 @@ var board = function()
       {
         if(gg.items[i].type == ITEM_TYPE_FERTILIZER)
         {
-          var t = gg.items[i].tile;
-          if(rand() < 0.2)  self.down_p(t,rand(),rand());
+          var i = gg.items[i];
+          if(rand() < 0.2) self.down_p(i,rand(),rand());
         }
       }
     }
@@ -3042,6 +3042,7 @@ var board = function()
     //nutrition
     if(self.nutrition_view)
     {
+    /*
       i = 0;
       ny = floor(self.y);
       for(var ty = self.th-1; ty >= 0; ty--)
@@ -3066,6 +3067,7 @@ var board = function()
           i++;
         }
       }
+*/
 
       //nutrition particles
       {
@@ -3082,9 +3084,8 @@ var board = function()
         for(var i = self.down_pt.length-1; i >= 0; i--)
         {
           gg.ctx.globalAlpha = 1-(self.down_pt[i]/particle_t);
-          var t = self.down_ptt[i];
-          self.screen_tile(t);
-          gg.ctx.fillRect(t.x+self.down_px[i]*t.w-hs,t.y+self.down_py[i]*t.h-hs+(self.down_pt[i]/particle_t)*t.h,s,s);
+          var it = self.down_pti[i];
+          gg.ctx.fillRect(it.x+self.down_px[i]*it.w-hs,it.y+self.down_py[i]*it.h-hs+(self.down_pt[i]/particle_t)*it.h,s,s);
         }
       }
 

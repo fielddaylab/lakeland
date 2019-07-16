@@ -1020,8 +1020,14 @@ var inspector = function()
       else
         gg.ctx.fillText("Soil Nutrition:",x,u.nutrition_y);
 
-                                   draw_nutrition_bar(          x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,                        nutrition_color);
-      if(t.type == TILE_TYPE_LAKE) draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,t.nutrition,water_fouled_threshhold,vlight_gray);
+                                   draw_nutrition_bar(          x,u.nutrition_bar_y,self.w-self.pad*2,min(t.nutrition,water_fouled_threshhold), nutrition_color);
+      if(t.type == TILE_TYPE_LAKE)
+      {
+        draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,min(t.nutrition,water_fouled_threshhold),water_fouled_threshhold,vlight_gray);
+        //this is too clever for its own good
+        draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,min(t.nutrition,water_fouled_threshhold),t.nutrition,green);
+        draw_remaining_nutrition_bar(x,u.nutrition_bar_y,self.w-self.pad*2,max(t.nutrition,water_fouled_threshhold),water_fouled_threshhold+food_nutrition,light_green);
+      }
 
       gg.ctx.fillStyle = gg.font_color;
       if(t.fertilizer)
