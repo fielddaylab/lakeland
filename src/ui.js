@@ -935,11 +935,17 @@ var inspector = function()
         case TILE_TYPE_LAND:
         {
           gg.ctx.drawImage(vignette_land_img,self.x,self.vignette_y,self.w,self.vignette_h);
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_ROCK:
         {
           gg.ctx.drawImage(vignette_rock_img,self.x,self.vignette_y,self.w,self.vignette_h);
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_GRAVE:
@@ -968,6 +974,9 @@ var inspector = function()
             self.img_vignette(tile_bloom_img,1);
             gg.ctx.globalAlpha = 1;
           }
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_SHORE:
@@ -979,6 +988,9 @@ var inspector = function()
         case TILE_TYPE_FOREST:
         {
           gg.ctx.drawImage(vignette_forest_img,self.x,self.vignette_y,self.w,self.vignette_h);
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_HOME:
@@ -1016,6 +1028,9 @@ var inspector = function()
           }
           gg.ctx.globalAlpha = 1;
         */
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_LIVESTOCK:
@@ -1028,6 +1043,9 @@ var inspector = function()
             case 2:  self.img_vignette(tile_livestock_imgs[2],1); break;
             default: self.img_vignette(tile_livestock_imgs[3],1); break;
           }
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_ROAD:
