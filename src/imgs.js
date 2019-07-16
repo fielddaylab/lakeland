@@ -195,57 +195,84 @@ for(var c = 0; c < 5; c++)
 
 var null_img = GenIcon(10,10);
 
-var icon_cursor_img = GenImg("assets/icon_cursor.png");
-var icon_fertilizer_img = GenImg("assets/icon_fertilizer.png");
-var icon_food_img = GenImg("assets/icon_food.png");
-var icon_food_sell_img = GenImg("assets/icon_food_sell.png");
-var icon_milk_img = GenImg("assets/icon_milk.png");
-var icon_milk_sell_img = GenImg("assets/icon_milk_sell.png");
-var icon_money_img = GenImg("assets/icon_money.png");
-var icon_poop_img = GenImg("assets/icon_poop.png");
+var icon_money_img      = GenImg("assets/icon_money.png");
+var icon_cursor_img     = GenImg("assets/icon_cursor.png");
 
-var tile_bloom_img = GenImg("assets/tile_bloom.png");
-var tile_fertilizer_img = GenImg("assets/tile_fertilizer.png");
-var tile_poop_img = GenImg("assets/tile_poop.png");
-var tile_milk_img = GenImg("assets/tile_milk.png");
-var tile_farm_img = GenImg("assets/tile_farm.png");
-var tile_food_img = GenImg("assets/tile_food.png");
-var tile_forest_img = GenImg("assets/tile_forest.png");
-var tile_land_img = GenImg("assets/tile_land_t0_d0_f0.png");
-var tile_grave_img = GenImg("assets/tile_grave.png");
-var tile_home_img = GenImg("assets/tile_home.png");
-var tile_lake_img = GenImg("assets/tile_lake.png");
-var tile_livestock_img = GenImg("assets/tile_livestock_0.png");
-var tile_money_img = GenImg("assets/tile_money.png");
-var tile_out_img = GenImg("assets/tile_out.png");
-var tile_road_img = GenImg("assets/tile_road.png");
-var tile_rock_img = GenImg("assets/tile_rock.png");
-var tile_shore_img = GenImg("assets/tile_shore.png");
-var tile_sign_img = GenImg("assets/tile_sign.png");
-var tile_skull_img = GenImg("assets/tile_skull.png");
-var tile_water_img = GenImg("assets/tile_water.png");
+var icon_fertilizer_img           = GenImg("assets/icon_fertilizer.png");
+var icon_fertilizer_nutrition_img = GenImg("assets/icon_fertilizer_nutrition.png");
 
-var advisor_mayor_img = GenImg("assets/advisor_mayor.png");
+var icon_food_img       = GenImg("assets/icon_food.png");
+var icon_food_sell_img  = GenImg("assets/icon_food_sell.png");
+var icon_food_feed_img  = GenImg("assets/icon_food_feed.png");
+var icon_milk_img       = GenImg("assets/icon_milk.png");
+var icon_milk_sell_img  = GenImg("assets/icon_milk_sell.png");
+var icon_poop_img       = GenImg("assets/icon_poop.png");
+var icon_poop_sell_img  = GenImg("assets/icon_poop_sell.png");
+
+var tile_bloom_img                = GenImg("assets/tile_bloom.png");
+var tile_fertilizer_img           = GenImg("assets/tile_fertilizer.png");
+var tile_fertilizer_nutrition_img = GenImg("assets/tile_fertilizer_nutrition.png");
+var tile_food_img                 = GenImg("assets/tile_food.png");
+var tile_food_sell_img            = GenImg("assets/tile_food_sell.png");
+var tile_milk_img                 = GenImg("assets/tile_milk.png");
+var tile_milk_sell_img            = GenImg("assets/tile_milk_sell.png");
+var tile_poop_img                 = GenImg("assets/tile_poop.png");
+var tile_poop_sell_img            = GenImg("assets/tile_poop_sell.png");
+var tile_water_img                = GenImg("assets/tile_water.png");
+
+var tile_farm_img       = GenImg("assets/tile_farm.png");
+var tile_forest_img     = GenImg("assets/tile_forest.png");
+var tile_land_img       = GenImg("assets/tile_land_t0_d0_f0.png");
+var tile_grave_img      = GenImg("assets/tile_grave.png");
+var tile_home_img       = GenImg("assets/tile_home.png");
+var tile_lake_img       = GenImg("assets/tile_lake.png");
+var tile_livestock_img  = GenImg("assets/tile_livestock_0.png");
+var tile_money_img      = GenImg("assets/tile_money.png");
+var tile_out_img        = GenImg("assets/tile_out.png");
+var tile_road_img       = GenImg("assets/tile_road.png");
+var tile_rock_img       = GenImg("assets/tile_rock.png");
+var tile_shore_img      = GenImg("assets/tile_shore.png");
+var tile_sign_img       = GenImg("assets/tile_sign.png");
+var tile_skull_img      = GenImg("assets/tile_skull.png");
+
+var vignette_land      = GenImg("assets/vignette_land.png");
+var vignette_lake      = GenImg("assets/vignette_lake.png");
+var vignette_forest    = GenImg("assets/vignette_forest.png");
+var vignette_rock      = GenImg("assets/vignette_rock.png");
+var vignette_farm      = GenImg("assets/vignette_farm.png");
+var vignette_livestock = GenImg("assets/vignette_livestock.png");
+
+var vignette_overlay_corn           = GenImg("assets/vignette_overlay_corn.png");
+var vignette_overlay_corn_nutrition = GenImg("assets/vignette_overlay_corn_nutrition.png");
+var vignette_overlay_cob            = GenImg("assets/vignette_overlay_cob.png");
+var vignette_overlay_cob_nutrition  = GenImg("assets/vignette_overlay_cob_nutrition.png");
+
+var advisor_mayor_img    = GenImg("assets/advisor_mayor.png");
 var advisor_business_img = GenImg("assets/advisor_business.png");
-var advisor_farmer_img = GenImg("assets/advisor_farmer.png");
+var advisor_farmer_img   = GenImg("assets/advisor_farmer.png");
 
-var advisor_panel_mayor_img = GenImg("assets/advisor_panel_mayor.png");
+var advisor_panel_mayor_img    = GenImg("assets/advisor_panel_mayor.png");
 var advisor_panel_business_img = GenImg("assets/advisor_panel_business.png");
-var advisor_panel_farmer_img = GenImg("assets/advisor_panel_farmer.png");
+var advisor_panel_farmer_img   = GenImg("assets/advisor_panel_farmer.png");
 
-var badge_cow_img = GenImg("assets/badge_cow.png");
+var badge_cow_img     = GenImg("assets/badge_cow.png");
 var badge_farmbit_img = GenImg("assets/badge_farmbit.png");
-var badge_money_img = GenImg("assets/badge_money.png");
+var badge_money_img   = GenImg("assets/badge_money.png");
 
 var button_achievement_img = GenImg("assets/button_achievement.png");
-var button_close_img = GenImg("assets/button_close.png");
-var button_next_img = GenImg("assets/button_next.png");
+var button_close_img       = GenImg("assets/button_close.png");
+var button_next_img        = GenImg("assets/button_next.png");
 
-var clouds_img = GenImg("assets/clouds.png");
-var cow_img = GenImg("assets/cow.png");
+var clouds_img  = GenImg("assets/clouds.png");
+var cow_img     = GenImg("assets/cow.png");
 var farmbit_img = GenImg("assets/farmbit.png");
 
-var play_img = GenImg("assets/play.png");
+var play_img  = GenImg("assets/play.png");
 var pause_img = GenImg("assets/pause.png");
-var fast_img = GenImg("assets/fast.png");
+var fast_img  = GenImg("assets/fast.png");
+
+var achievement_pop_imgs   = []; for(var i = 0; i < 4; i++) achievement_pop_imgs.push(  GenImg("assets/achievement_pop_"+i+".png"));
+var achievement_farm_imgs  = []; for(var i = 0; i < 4; i++) achievement_farm_imgs.push( GenImg("assets/achievement_farm_"+i+".png"));
+var achievement_money_imgs = []; for(var i = 0; i < 4; i++) achievement_money_imgs.push(GenImg("assets/achievement_money_"+i+".png"));
+var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_imgs.push(GenImg("assets/achievement_bloom_"+i+".png"));
 
