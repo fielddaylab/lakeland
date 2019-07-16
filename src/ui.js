@@ -928,61 +928,115 @@ var inspector = function()
     //gg.ctx.fillStyle = white;
     //fillRRect(self.x,self.y,self.w+self.pad,self.h,self.pad,gg.ctx);
 
-    self.img_vignette(gg.b.tile_img(t.og_type),1);
-    if(t.type == TILE_TYPE_LIVESTOCK)
+    //vignette
     {
-      switch(t.val)
+      switch(t.type)
       {
-        case 0:  self.img_vignette(tile_livestock_imgs[0],1); break;
-        case 1:  self.img_vignette(tile_livestock_imgs[1],1); break;
-        case 2:  self.img_vignette(tile_livestock_imgs[2],1); break;
-        default: self.img_vignette(tile_livestock_imgs[3],1); break;
+        case TILE_TYPE_LAND:
+        {
+          gg.ctx.drawImage(vignette_land_img,self.x,self.vignette_y,self.w,self.vignette_h);
+        }
+        break;
+        case TILE_TYPE_ROCK:
+        {
+          gg.ctx.drawImage(vignette_rock_img,self.x,self.vignette_y,self.w,self.vignette_h);
+        }
+        break;
+        case TILE_TYPE_GRAVE:
+        {
+          self.img_vignette(gg.b.tile_img(t.og_type),1);
+          self.img_vignette(gg.b.tile_img(t.type),1);
+        }
+        break;
+        case TILE_TYPE_SIGN:
+        {
+          self.img_vignette(gg.b.tile_img(t.og_type),1);
+          self.img_vignette(gg.b.tile_img(t.type),1);
+        }
+        break;
+        case TILE_TYPE_LAKE:
+        {
+          gg.ctx.drawImage(vignette_lake_img,self.x,self.vignette_y,self.w,self.vignette_h);
+          var a = 0;
+          if(t.nutrition < water_fouled_threshhold)
+            a = max(0,bias0(bias0(t.nutrition/water_fouled_threshhold))*0.8);
+          else
+            a = min(1,0.8+bias1(bias1((t.nutrition-water_fouled_threshhold)/(nutrition_max-water_fouled_threshhold)))*0.2);
+          if(a > 0.05)
+          {
+            gg.ctx.globalAlpha = a;
+            self.img_vignette(tile_bloom_img,1);
+            gg.ctx.globalAlpha = 1;
+          }
+        }
+        break;
+        case TILE_TYPE_SHORE:
+        {
+          self.img_vignette(gg.b.tile_img(t.og_type),1);
+          self.img_vignette(gg.b.tile_img(t.type),1);
+        }
+        break;
+        case TILE_TYPE_FOREST:
+        {
+          gg.ctx.drawImage(vignette_forest_img,self.x,self.vignette_y,self.w,self.vignette_h);
+        }
+        break;
+        case TILE_TYPE_HOME:
+        {
+          self.img_vignette(gg.b.tile_img(t.og_type),1);
+          self.img_vignette(gg.b.tile_img(t.type),1);
+        }
+        break;
+        case TILE_TYPE_FARM:
+        {
+          gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
+        /*
+          gg.ctx.globalAlpha = 0.2;
+          gg.ctx.fillStyle = nutrition_color;
+          var vp = 0.8;
+          var vy = self.vignette_y+self.vignette_h*vp;
+          var x = self.vignette_x;
+          var w = self.vignette_w*0.1;
+          var p;
+          //nutrition
+          p = min(1,(t.nutrition/(nutrition_max/4)));
+          gg.ctx.fillRect(x,vy,w,self.vignette_h*(1-vp)*p);
+          //growth;
+          p = t.val/farm_nutrition_req;
+          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p),w,vp*self.vignette_h*p);
+          //delineator
+          gg.ctx.strokeStyle = black;
+          drawLine(x,vy,x+w,vy,gg.ctx);
+          //poop
+          if(t.fertilizer)
+          {
+          gg.ctx.fillStyle = brown;
+          p = t.fertilizer.state/fertilizer_nutrition;
+          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p*0.2),w,vp*self.vignette_h*p*0.2);
+          }
+          gg.ctx.globalAlpha = 1;
+        */
+        }
+        break;
+        case TILE_TYPE_LIVESTOCK:
+        {
+          gg.ctx.drawImage(vignette_livestock_img,self.x,self.vignette_y,self.w,self.vignette_h);
+          switch(t.val)
+          {
+            case 0:  self.img_vignette(tile_livestock_imgs[0],1); break;
+            case 1:  self.img_vignette(tile_livestock_imgs[1],1); break;
+            case 2:  self.img_vignette(tile_livestock_imgs[2],1); break;
+            default: self.img_vignette(tile_livestock_imgs[3],1); break;
+          }
+        }
+        break;
+        case TILE_TYPE_ROAD:
+        {
+          self.img_vignette(gg.b.tile_img(t.og_type),1);
+          self.img_vignette(gg.b.tile_img(t.type),1);
+        }
+        break;
       }
-    }
-    else self.img_vignette(gg.b.tile_img(t.type),1);
-
-    if(t.type == TILE_TYPE_LAKE)
-    {
-      var a = 0;
-      if(t.nutrition < water_fouled_threshhold)
-        a = max(0,bias0(bias0(t.nutrition/water_fouled_threshhold))*0.8);
-      else
-        a = min(1,0.8+bias1(bias1((t.nutrition-water_fouled_threshhold)/(nutrition_max-water_fouled_threshhold)))*0.2);
-      if(a > 0.05)
-      {
-        gg.ctx.globalAlpha = a;
-        self.img_vignette(tile_bloom_img,1);
-        gg.ctx.globalAlpha = 1;
-      }
-    }
-    if(t.type == TILE_TYPE_FARM)
-    {
-    /*
-      gg.ctx.globalAlpha = 0.2;
-      gg.ctx.fillStyle = nutrition_color;
-      var vp = 0.8;
-      var vy = self.vignette_y+self.vignette_h*vp;
-      var x = self.vignette_x;
-      var w = self.vignette_w*0.1;
-      var p;
-      //nutrition
-      p = min(1,(t.nutrition/(nutrition_max/4)));
-      gg.ctx.fillRect(x,vy,w,self.vignette_h*(1-vp)*p);
-      //growth;
-      p = t.val/farm_nutrition_req;
-      gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p),w,vp*self.vignette_h*p);
-      //delineator
-      gg.ctx.strokeStyle = black;
-      drawLine(x,vy,x+w,vy,gg.ctx);
-      //poop
-      if(t.fertilizer)
-      {
-      gg.ctx.fillStyle = brown;
-      p = t.fertilizer.state/fertilizer_nutrition;
-      gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p*0.2),w,vp*self.vignette_h*p*0.2);
-      }
-      gg.ctx.globalAlpha = 1;
-    */
     }
 
     //title
