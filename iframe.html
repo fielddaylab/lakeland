@@ -5,11 +5,15 @@
 <link rel="icon" type="image/png" sizes="16x16" href="webimg/favicon-16x16.png">
 <meta charset="utf-8"></meta>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+<script type="text/javascript" src="src/platform.js"></script>
+<script type="text/javascript" src="src/utils.js"></script>
+<script type="text/javascript" src="src/simplelog.js"></script>
+<script type="text/javascript" src="src/logging.js"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-72694027-11"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag(){my_logger.gtag(arguments); dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'UA-72694027-11');
 </script>
@@ -36,8 +40,6 @@ html
 
 }
 </style>
-<script type="text/javascript" src="src/platform.js"></script>
-<script type="text/javascript" src="src/utils.js"></script>
 <script type="text/javascript" src="src/stage.js"></script>
 <script type="text/javascript" src="src/game.js"></script>
 <script type="text/javascript" src="src/input.js"></script>

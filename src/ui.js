@@ -132,10 +132,10 @@ var bar = function()
     setBB(self.vfast_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
   }
 
-  self.pause_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
-  self.play_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
-  self.fast_btn  = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
-  self.vfast_btn = new ButtonBox(0,0,0,0,function(){ if(gg.speed == SPEED_VFAST) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_VFAST; });
+  self.pause_btn = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_PAUSE); if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
+  self.play_btn  = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_PLAY); if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
+  self.fast_btn  = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_FAST); if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
+  self.vfast_btn = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_VFAST); if(gg.speed == SPEED_VFAST) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_VFAST; });
   self.resize();
 
   self.pause_btn.active = 0;
@@ -200,7 +200,10 @@ var nutrition_toggle = function()
     setBB(self.toggle_btn, self.x,self.y,self.w,self.h);
   }
 
-  self.toggle_btn = new ButtonBox(0,0,0,0,function(){ gg.b.nutrition_view = !gg.b.nutrition_view; });
+  self.toggle_btn = new ButtonBox(0,0,0,0,function(){ 
+    gg.b.nutrition_view = !gg.b.nutrition_view; 
+    my_logger.toggle_nutrition();
+  });
   self.resize();
 
   self.toggle_btn.active = 0;
@@ -365,6 +368,7 @@ var shop = function()
 
   self.select = function(buy)
   {
+    my_logger.select_buy();
     self.selected_buy = buy;
     self.last_selected_buy = self.selected_buy;
     self.selected_t = 0;
@@ -380,7 +384,7 @@ var shop = function()
   }
 
   self.money_display = new BB();
-  self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open; self.open_t = 0;});
+  self.tab = new ButtonBox(0,0,0,0,function(){self.open = !self.open; self.open_t = 0; my_logger.toggle_shop();});
   var b;
   self.btns = [];
   self.descriptions = [];
@@ -419,7 +423,7 @@ var shop = function()
     b.cost = -free_money;
     b.active = 0;
   }
-  b = new ButtonBox(0,0,0,0,function(){ self.deselect(); });
+  b = new ButtonBox(0,0,0,0,function(){ my_logger.cancel_buy(self.selected_buy); self.deselect(); });
   {
     self.cancel_btn = b;
     b.buy = BUY_TYPE_NULL;
@@ -873,6 +877,7 @@ var inspector = function()
   {
     self.detailed = t;
     self.detailed_type = INSPECTOR_CONTENT_TILE;
+    my_logger.select_tile(t);
   }
 
   self.draw_tile = function(t)
@@ -1244,13 +1249,13 @@ var inspector = function()
         else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL;
         else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[0] = MARK_FEED;
         else { t.marks[0]++; if(t.marks[0] == MARK_COUNT) t.marks[0] = MARK_USE; }
-      })) return 1;
+      })) {my_logger.tile_use_select(t); return 1;}
       if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){
              if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE;
         else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL;
         else if(between(evt.doX,u.autosell_2_x,u.autosell_3_x)) t.marks[1] = MARK_FEED;
         else { t.marks[1]++; if(t.marks[1] == MARK_COUNT) t.marks[1] = MARK_USE; }
-      })) return 1;
+      })) {my_logger.tile_use_select(t); return 1;}
     }
     if(t.type == TILE_TYPE_LIVESTOCK)
     {
@@ -1258,12 +1263,12 @@ var inspector = function()
              if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[0] = MARK_USE;
         else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[0] = MARK_SELL;
         else { t.marks[0]++; if(t.marks[0] == MARK_FEED) t.marks[0] = MARK_USE; }
-      })) return 1;
+      })) {my_logger.tile_use_select(t); return 1;}
       if(clicker.consumeif(self.x,u.autosell_1_y,self.w,u.autosell_h,function(evt){
              if(between(evt.doX,u.autosell_0_x,u.autosell_1_x)) t.marks[1] = MARK_USE;
         else if(between(evt.doX,u.autosell_1_x,u.autosell_2_x)) t.marks[1] = MARK_SELL;
         else { t.marks[1]++; if(t.marks[1] == MARK_FEED) t.marks[1] = MARK_USE; }
-      })) return 1;
+      })) {my_logger.tile_use_select(t); return 1;}
     }
 
     return 0;
@@ -1271,6 +1276,7 @@ var inspector = function()
 
   self.select_item = function(it)
   {
+    if(self.detailed !== it) my_logger.select_item(it);
     if(it.type == ITEM_TYPE_FERTILIZER)
     {
       self.select_tile(it.tile);
@@ -1419,6 +1425,7 @@ var inspector = function()
         else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL;
         else if(between(evt.doX,u.switch_2_x,u.switch_3_x)) it.mark = MARK_FEED;
         else { it.mark++; if(it.mark == MARK_COUNT) it.mark = MARK_USE; }
+        my_logger.item_use_select(it)
       });
     else
       clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){
@@ -1426,6 +1433,7 @@ var inspector = function()
              if(between(evt.doX,u.switch_0_x,u.switch_1_x)) it.mark = MARK_USE;
         else if(between(evt.doX,u.switch_1_x,u.switch_2_x)) it.mark = MARK_SELL;
         else { it.mark++; if(it.mark == MARK_FEED) it.mark = MARK_USE; }
+        my_logger.item_use_select(it)
       });
 
     if(clicked)
@@ -1465,6 +1473,7 @@ var inspector = function()
 
   self.select_farmbit = function(f)
   {
+    my_logger.select_farmbit(f);
     self.detailed = f;
     self.detailed_type = INSPECTOR_CONTENT_FARMBIT;
   }
@@ -1622,7 +1631,7 @@ var achievements = function()
     self.open_btn.x = self.pad;
     self.open_btn.y = self.pad;
   }
-  self.open_btn = new ButtonBox(0,0,0,0,function(){ if(!gg.advisors.thread) self.open = !self.open; self.open_t = 0; });
+  self.open_btn = new ButtonBox(0,0,0,0,function(){ if(!gg.advisors.thread){ self.open = !self.open; my_logger.toggle_achievements();} self.open_t = 0; });
   self.resize();
 
   self.triggers = [];
@@ -1684,6 +1693,7 @@ var achievements = function()
   {
     self.open = 0;
     self.open_t = 0;
+    my_logger.toggle_achievements();
   }
 
   self.tick = function()
@@ -1698,6 +1708,7 @@ var achievements = function()
         t.local = 1;
         t.global = 1;
         self.notifs.push(t);
+        my_logger.achievement(t);
         self.notif_ts.push(0);
       }
     }
@@ -1877,12 +1888,14 @@ var advisors = function()
 
   self.skip_tutorial = function()
   {
+    my_logger.skip_tutorial();
     //self.skip_btn.active = 0;
     var t;
 
     //finish cur thread
     if(self.thread)
     {
+      my_logger.toggle_blurbs();
       t = self.thread;
       t[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_END]();
       for(var j = (self.thread_i+1)*THREADF_TYPE_COUNT; j < t.length; j+=THREADF_TYPE_COUNT)
@@ -1894,6 +1907,7 @@ var advisors = function()
         }
       }
     }
+    my_logger.toggle_blurbs();
     self.owns_ui = 0;
     self.owns_time = 0;
     self.thread = 0;
@@ -2078,6 +2092,7 @@ var advisors = function()
     gg.cam.wx = lerp(gg.cam.wx,t.wx,0.05);
     gg.cam.wy = lerp(gg.cam.wy,t.wy,0.05);
     gg.b.set_cam();
+    my_logger.camera_move(t);
   }
   self.popup = function(type)
   {
@@ -2168,6 +2183,7 @@ var advisors = function()
 
   self.push_blurb = function(txt)
   {
+    my_logger.blurb(txt);
     var fmt = textToLines(self.font, self.popup_w, txt, gg.ctx);
     switch(self.advisor)
     {
@@ -2179,6 +2195,7 @@ var advisors = function()
 
   self.push_record = function(txt)
   {
+//  my_logger.record(txt);
     var fmt = textToLines(self.font, self.popup_w, txt, gg.ctx);
     switch(self.advisor)
     {

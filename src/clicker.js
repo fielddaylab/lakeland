@@ -20,6 +20,7 @@ var Clicker = function(init)
   function click(evt)
   {
     doSetPosOnEvent(evt);
+    my_logger.add_click(evt.doX,evt.doY);
     evts.push(evt);
     evt.preventDefault();
   }

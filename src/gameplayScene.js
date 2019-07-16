@@ -144,6 +144,7 @@ var GamePlayScene = function()
     }
     var game_times = times;
     if(gg.advisors.owns_time) times *= 0;
+    my_logger.update_time(times);
     gg.t_mod_twelve_pi += 0.01*times;
     if(gg.t_mod_twelve_pi > twelvepi) gg.t_mod_twelve_pi -= twelvepi;
 
