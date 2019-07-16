@@ -2237,6 +2237,8 @@ var board = function()
         for(var yd = -shore_d; yd <= shore_d; yd++)
         {
           st = self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd));
+          var d = xd*xd+yd*yd;
+          if(d == 1 && st.type != TILE_TYPE_SHORE && st.type != TILE_TYPE_LAKE) { st.type = TILE_TYPE_LAND; st.og_type = TILE_TYPE_LAND; }
           if(st.type == TILE_TYPE_LAND) st.shoreline = 1;
         }
     }
@@ -3042,7 +3044,6 @@ var board = function()
     //nutrition
     if(self.nutrition_view)
     {
-    /*
       i = 0;
       ny = floor(self.y);
       for(var ty = self.th-1; ty >= 0; ty--)
@@ -3067,7 +3068,6 @@ var board = function()
           i++;
         }
       }
-*/
 
       //nutrition particles
       {
