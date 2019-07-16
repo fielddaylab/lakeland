@@ -2246,6 +2246,7 @@ var board = function()
     self.inc_bounds();
     self.hovering = 0;
     self.scratch_item = new item();
+    my_logger.startgame();
   }
 
   self.own_tiles = function(t, own_d)
@@ -2405,6 +2406,7 @@ var board = function()
       gg.cam.wx = self.cam_sx + (self.drag_x-evt.doX)/gg.canvas.width*gg.cam.ww;
       gg.cam.wy = self.cam_sy - (self.drag_y-evt.doY)/gg.canvas.height*gg.cam.wh;
       self.set_cam();
+      my_logger.camera_move();
     }
   }
   self.dragFinish = function(evt)
@@ -2424,6 +2426,7 @@ var board = function()
     {
       if(self.hover_t)
       {
+        my_logger.place_item(self);
         if(self.placement_valid(self.hover_t,gg.shop.selected_buy))
         {
           switch(gg.shop.selected_buy)
@@ -2592,8 +2595,9 @@ var board = function()
     if(self.autorain)
     {
       self.rain_t++;
-      if(self.rain_t > 4000) self.raining = 1;
-      if(self.rain_t > 5000) { self.raining = 0; self.rain_t = 0; }
+      if(self.rain_t > 4000) {self.raining = 1; }
+      if(self.rain_t > 5000) { self.raining = 0; self.rain_t = 0;}
+      my_logger.raining();
     }
 
     self.visit_t++;
@@ -3496,6 +3500,7 @@ var farmbit = function()
     self.emote_c = e;
     self.emote_w = gg.ctx.measureText(e).width;
     self.emote_t = 0;
+    my_logger.emote(self);
   }
 
   self.anim_side = FARMBIT_ANIM_FRONT;
@@ -3594,6 +3599,7 @@ var farmbit = function()
 
   self.die = function()
   {
+    my_logger.farmbit_death(self);
     self.abandon_job(1);
     var t = self.tile;
     if(self.home) t = self.home;
