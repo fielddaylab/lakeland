@@ -3042,9 +3042,6 @@ var board = function()
     //nutrition
     if(self.nutrition_view)
     {
-      gg.ctx.globalAlpha = 0.5;
-      //gg.ctx.fillStyle = white;
-      //gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
       i = 0;
       ny = floor(self.y);
       for(var ty = self.th-1; ty >= 0; ty--)
