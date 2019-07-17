@@ -3465,7 +3465,7 @@ var farmbit = function()
   self.h = 0;
 
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
-  self.color = 0;//randIntBelow(6);
+  self.color = randIntBelow(farmbit_colors);
   self.last_img = farmbit_imgs[self.color][FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
@@ -3506,10 +3506,7 @@ var farmbit = function()
   self.anim_side = FARMBIT_ANIM_FRONT;
   self.anim_anim = FARMBIT_ANIM_IDLE;
   self.anim_frame = 0;
-  self.anim_frame_l = [];
-  self.anim_frame_l[FARMBIT_ANIM_IDLE] = 1;
-  self.anim_frame_l[FARMBIT_ANIM_WALK] = 3;
-  self.anim_frame_l[FARMBIT_ANIM_SWIM] = 2;
+  self.anim_frame_l = farmbit_anim_nframes;
   self.anim_frame_t = randIntBelow(self.anim_frame_l[self.anim_anim]);
 
   self.walk_mod = function()

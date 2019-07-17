@@ -36,7 +36,7 @@ var IntroScene = function()
 
   self.draw = function()
   {
-    gg.ctx.font = "30px LeagueSpartan";
+    gg.ctx.font = floor(20*gg.stage.s_mod)+"px LeagueSpartan";
     gg.ctx.globalAlpha = 1;
     gg.ctx.fillStyle = white;
     gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);

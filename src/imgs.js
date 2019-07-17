@@ -246,11 +246,13 @@ farmbit_anim_names[FARMBIT_ANIM_SWIM] = "swim";
 
 var farmbit_anim_nframes = [];
 farmbit_anim_nframes[FARMBIT_ANIM_IDLE] = 1;
-farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 5;
+farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 3;
 farmbit_anim_nframes[FARMBIT_ANIM_SWIM] = 2;
 
+var farmbit_colors = 1;//5;
+
 var farmbit_imgs = [];
-for(var c = 0; c < 5; c++)
+for(var c = 0; c < farmbit_colors; c++)
 {
   farmbit_imgs[c] = [];
   for(var a = 0; a < FARMBIT_ANIM_COUNT; a++)
