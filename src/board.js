@@ -3506,8 +3506,11 @@ var farmbit = function()
   self.anim_side = FARMBIT_ANIM_FRONT;
   self.anim_anim = FARMBIT_ANIM_IDLE;
   self.anim_frame = 0;
-  self.anim_frame_l = 4;
-  self.anim_frame_t = randIntBelow(self.anim_frame_l);
+  self.anim_frame_l = [];
+  self.anim_frame_l[FARMBIT_ANIM_IDLE] = 1;
+  self.anim_frame_l[FARMBIT_ANIM_WALK] = 3;
+  self.anim_frame_l[FARMBIT_ANIM_SWIM] = 2;
+  self.anim_frame_t = randIntBelow(self.anim_frame_l[self.anim_anim]);
 
   self.walk_mod = function()
   {
@@ -3695,7 +3698,7 @@ var farmbit = function()
   self.tick = function()
   {
     self.anim_frame_t++;
-    if(self.anim_frame_t > self.anim_frame_l)
+    if(self.anim_frame_t > self.anim_frame_l[self.anim_anim])
     {
       self.anim_frame = (self.anim_frame+1)%farmbit_anim_nframes[self.anim_anim];
       self.anim_frame_t = 0;
