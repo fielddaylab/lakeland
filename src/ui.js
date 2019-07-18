@@ -1700,7 +1700,7 @@ var achievements = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = gg.canvas.width/2;
+    self.w = gg.canvas.width/3;
     self.h = self.w;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = gg.canvas.height/2-self.h/2;
@@ -1725,21 +1725,26 @@ var achievements = function()
   self.notifs = [];
   self.notif_ts = [];
 
+var achievement_pop_imgs   = []; for(var i = 0; i < 4; i++) achievement_pop_imgs.push(  GenImg("assets/achievement_pop_"+i+".png"));
+var achievement_farm_imgs  = []; for(var i = 0; i < 4; i++) achievement_farm_imgs.push( GenImg("assets/achievement_farm_"+i+".png"));
+var achievement_money_imgs = []; for(var i = 0; i < 4; i++) achievement_money_imgs.push(GenImg("assets/achievement_money_"+i+".png"));
+var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_imgs.push(GenImg("assets/achievement_bloom_"+i+".png"));
+
   var t;
-  t = self.pushtrigger("Exist", "Get a visitor.",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length;       },0);
-  t = self.pushtrigger("Group", "3 Workers",         farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 3;  },t);
-  t = self.pushtrigger("Town",  "A small community", farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 5;  },t);
-  t = self.pushtrigger("City",  "10 Townmembers",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 10; },t);
+  t = self.pushtrigger("Exist", "Get a visitor.",    achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
+  t = self.pushtrigger("Group", "3 Workers",         achievement_pop_imgs[1], achievement_pop_imgs[1], function(){ return gg.farmbits.length >= 3;  },t);
+  t = self.pushtrigger("Town",  "A small community", achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
+  t = self.pushtrigger("City",  "10 Townmembers",    achievement_pop_imgs[3], achievement_pop_imgs[3], function(){ return gg.farmbits.length >= 10; },t);
 
-  t = self.pushtrigger("Farmer",   "Own a farm!",      tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
-  t = self.pushtrigger("Farmers",  "Get three farms",  tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
-  t = self.pushtrigger("Farmtown", "5 Farms!",         tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
-  t = self.pushtrigger("MegaFarm", "10 Farm Industry", tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
+  t = self.pushtrigger("Farmer",   "Own a farm!",      achievement_farm_imgs[0], achievement_farm_imgs[0], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
+  t = self.pushtrigger("Farmers",  "Get three farms",  achievement_farm_imgs[1], achievement_farm_imgs[1], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
+  t = self.pushtrigger("Farmtown", "5 Farms!",         achievement_farm_imgs[2], achievement_farm_imgs[2], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
+  t = self.pushtrigger("MegaFarm", "10 Farm Industry", achievement_farm_imgs[3], achievement_farm_imgs[3], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
 
-  t = self.pushtrigger("Paycheck",    "$500",   icon_money_img, icon_money_img, function(){ return gg.money > 500;   },0);
-  t = self.pushtrigger("Thousandair", "$1000",  icon_money_img, icon_money_img, function(){ return gg.money > 1000;  },t);
-  t = self.pushtrigger("Stability",   "$5000",  icon_money_img, icon_money_img, function(){ return gg.money > 5000;  },t);
-  t = self.pushtrigger("Riches",      "$10000", icon_money_img, icon_money_img, function(){ return gg.money > 10000; },t);
+  t = self.pushtrigger("Paycheck",    "$500",   achievement_money_imgs[0], achievement_money_imgs[0], function(){ return gg.money > 500;   },0);
+  t = self.pushtrigger("Thousandair", "$1000",  achievement_money_imgs[1], achievement_money_imgs[1], function(){ return gg.money > 1000;  },t);
+  t = self.pushtrigger("Stability",   "$5000",  achievement_money_imgs[2], achievement_money_imgs[2], function(){ return gg.money > 5000;  },t);
+  t = self.pushtrigger("Riches",      "$10000", achievement_money_imgs[3], achievement_money_imgs[3], function(){ return gg.money > 10000; },t);
 
   var n_bloomed = function(n)
   {
@@ -1754,10 +1759,10 @@ var achievements = function()
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom","Algae destroys one tile",       tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom","You have an algae problem", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom","Algae destroys one tile",       achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom","You have an algae problem", achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -1812,15 +1817,16 @@ var achievements = function()
     {
       gg.ctx.fillStyle = white;
       fillRBB(self,self.pad,gg.ctx);
-      var rows = 5;
-      var cols = 5;
-      var s = ((self.w-self.pad)/5)-self.pad;
+      var rows = 4;
+      var cols = 4;
+      var s = ((self.w-self.pad)/cols)-self.pad;
       var x = self.x+self.pad;
       var y = self.y+self.pad;
       gg.ctx.fillStyle = gray;
       var t = self.nullt;
-      var fs = gg.font_size;
+      var fs = gg.font_size*3/4;
       gg.ctx.font = fs+"px "+gg.font;
+      gg.ctx.fillStyle = black;
       for(var i = 0; i < rows; i++)
       {
         x = self.x+self.pad;
@@ -1828,12 +1834,9 @@ var achievements = function()
         {
           t = self.triggers[i*cols+j];
           if(!t) continue
-          if(t.local) gg.ctx.fillStyle = red;
-          else        { gg.ctx.fillStyle = gray; gg.ctx.globalAlpha = 0.5; }
-          fillRRect(x,y,s,s,self.pad,gg.ctx);
+          if(!t.local) gg.ctx.globalAlpha = 0.5;
           if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
-          gg.ctx.fillStyle = black;
           gg.ctx.fillText(t.name,x+s/2,y+s);
           x += s+self.pad;
           gg.ctx.globalAlpha = 1;
