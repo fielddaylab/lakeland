@@ -625,7 +625,21 @@ var shop = function()
       self.cancel_btn.y = y;
       self.cancel_btn.x = self.x+self.pad;
       gg.ctx.textAlign = "center";
-      self.draw_btn(self.cancel_btn,description_offx);
+      //self.draw_btn(self.cancel_btn,description_offx); //copied and edited below
+      {
+        var bb = self.cancel_btn;
+        var offx = description_offx;
+        if(!bb.active) return;
+        var old_x = bb.x;
+        bb.x += self.x+offx;
+        gg.ctx.fillStyle = gg.backdrop_color;
+        fillRBB(bb,self.pad,gg.ctx);
+        gg.ctx.fillStyle = gg.font_color;
+
+        gg.ctx.fillText(bb.name,bb.x+bb.w/2, bb.y+bb.h-self.pad);
+        bb.x = old_x;
+      }
+
     }
 
     gg.ctx.textAlign = "left";
