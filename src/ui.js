@@ -1692,7 +1692,7 @@ var achievements = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = gg.canvas.width/3;
+    self.w = gg.canvas.width/2.5;
     self.h = self.w;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = gg.canvas.height/2-self.h/2;
@@ -1716,11 +1716,6 @@ var achievements = function()
 
   self.notifs = [];
   self.notif_ts = [];
-
-var achievement_pop_imgs   = []; for(var i = 0; i < 4; i++) achievement_pop_imgs.push(  GenImg("assets/achievement_pop_"+i+".png"));
-var achievement_farm_imgs  = []; for(var i = 0; i < 4; i++) achievement_farm_imgs.push( GenImg("assets/achievement_farm_"+i+".png"));
-var achievement_money_imgs = []; for(var i = 0; i < 4; i++) achievement_money_imgs.push(GenImg("assets/achievement_money_"+i+".png"));
-var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_imgs.push(GenImg("assets/achievement_bloom_"+i+".png"));
 
   var t;
   t = self.pushtrigger("Exist", "Get a visitor.",    achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
@@ -1827,7 +1822,11 @@ var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_im
           t = self.triggers[i*cols+j];
           if(!t) continue
           if(!t.local) gg.ctx.globalAlpha = 0.5;
-          if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
+          if(t.local && t.onimg)
+          {
+            gg.ctx.drawImage(t.onimg,x,y,s,s);
+            gg.ctx.drawImage(button_achievement_img,x+s/2+s/8,y+s/2+s/8,s/4,s/4);
+          }
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
           gg.ctx.fillText(t.name,x+s/2,y+s);
           x += s+self.pad;
@@ -1841,7 +1840,7 @@ var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_im
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
       var w = 150*gg.stage.s_mod;
-      var h = gg.font_size*8;
+      var h = gg.font_size*9;
       var x = gg.canvas.width/2-w/2;
       var y = gg.canvas.height/2-h/2;
       var pad = gg.font_size;
@@ -1856,13 +1855,14 @@ var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_im
       fillSelectiveRRect(x,y+h*3/5,w,h*2/5,0,0,1,1,pad,gg.ctx);
       gg.ctx.stroke();
       gg.ctx.fillStyle = white;
-      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3);
-      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size);
+      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3+gg.font_size/2);
+      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size+gg.font_size/2);
       gg.ctx.fillStyle = "#18315B";
       gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
       gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
       var imgs = w/2;
       gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
+      gg.ctx.drawImage(button_achievement_img,gg.canvas.width/2+imgs/8,y+imgs/6,imgs/4,imgs/4);
     }
   }
 

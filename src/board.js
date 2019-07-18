@@ -1804,6 +1804,28 @@ var board = function()
       case ITEM_TYPE_FERTILIZER: return tile_fertilizer_img; break;
     }
   }
+  self.item_sell_img = function(type)
+  {
+    switch(type)
+    {
+      case ITEM_TYPE_WATER:      return tile_water_sell_img;      break;
+      case ITEM_TYPE_FOOD:       return tile_food_sell_img;       break;
+      case ITEM_TYPE_POOP:       return tile_poop_sell_img;       break;
+      case ITEM_TYPE_MILK:       return tile_milk_sell_img;       break;
+      case ITEM_TYPE_FERTILIZER: return tile_fertilizer_sell_img; break;
+    }
+  }
+  self.item_feed_img = function(type)
+  {
+    switch(type)
+    {
+      case ITEM_TYPE_WATER:      return tile_water_feed_img;      break;
+      case ITEM_TYPE_FOOD:       return tile_food_feed_img;       break;
+      case ITEM_TYPE_POOP:       return tile_poop_feed_img;       break;
+      case ITEM_TYPE_MILK:       return tile_milk_feed_img;       break;
+      case ITEM_TYPE_FERTILIZER: return tile_fertilizer_feed_img; break;
+    }
+  }
   self.item_name = function(type)
   {
     switch(type)
@@ -3417,26 +3439,26 @@ var item = function()
     if(self.offscreen) return;
     var y = self.y-self.h/4;
     var h = self.h+self.h/4;
-    switch(self.type)
+    var img;
+    switch(self.mark)
     {
-      case ITEM_TYPE_WATER:gg.ctx.drawImage(tile_water_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_FOOD: gg.ctx.drawImage(tile_food_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_POOP: gg.ctx.drawImage(tile_poop_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_MILK: gg.ctx.drawImage(tile_milk_img,self.x,y,self.w,h); break;
-      case ITEM_TYPE_FERTILIZER:
-      {
-        gg.ctx.globalAlpha = 0.5;
-        if(gg.b.nutrition_view)
-        {
-          gg.b.draw_nutrition(0.999,self.x,y,self.w,h);
-          //gg.ctx.fillStyle = nutrition_color;
-          //gg.ctx.fillRect(self.x,y,self.w,h);
-        }
-        else gg.ctx.drawImage(tile_fertilizer_img,self.x,y,self.w,h);
-        gg.ctx.globalAlpha = 1;
-      }
-      break;
+      case MARK_USE: img = gg.b.item_img(self.type); break;
+      case MARK_SELL: img = gg.b.item_sell_img(self.type); break;
+      case MARK_FEED: img = gg.b.item_feed_img(self.type); break;
     }
+    if(self.type == ITEM_TYPE_FERTILIZER)
+    {
+      gg.ctx.globalAlpha = 0.5;
+      if(gg.b.nutrition_view)
+      {
+        gg.b.draw_nutrition(0.999,self.x,y,self.w,h);
+        //gg.ctx.fillStyle = nutrition_color;
+        //gg.ctx.fillRect(self.x,y,self.w,h);
+      }
+      else gg.ctx.drawImage(img,self.x,y,self.w,h);
+      gg.ctx.globalAlpha = 1;
+    }
+    else gg.ctx.drawImage(img,self.x,y,self.w,h)
     if(self.mark == MARK_SELL)
     {
       gg.ctx.fillStyle = black;
@@ -4371,8 +4393,8 @@ var farmbit = function()
     {
       if(self.job_type == JOB_TYPE_EXPORT && self.job_state == JOB_STATE_ACT)
       {
-        gg.ctx.drawImage(tile_out_img,self.x,self.y,self.w,self.h);
-        gg.b.timer_atlas.blitWholeSprite(gg.b.timer_atlas_i(self.job_state_t/export_t,1+(1/(gg.b.timer_colors-1))),self.x,self.y-self.h/2,gg.ctx);
+        gg.ctx.drawImage(tile_out_img,self.x-self.w/4,self.y,self.w+self.w/4,self.h+self.h/2);
+        gg.b.timer_atlas.blitWholeSprite(gg.b.timer_atlas_i(self.job_state_t/export_t,1+(1/(gg.b.timer_colors-1))),self.x-self.w/3,self.y-self.h/2,gg.ctx);
       }
       return;
     }

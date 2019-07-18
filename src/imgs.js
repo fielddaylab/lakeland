@@ -363,6 +363,7 @@ var tile_fertilizer_img           = GenImg("assets/tile_fertilizer.png");
 var tile_fertilizer_nutrition_img = GenImg("assets/tile_fertilizer_nutrition.png");
 var tile_food_img                 = GenImg("assets/tile_food.png");
 var tile_food_sell_img            = GenImg("assets/tile_food_sell.png");
+var tile_food_feed_img            = GenImg("assets/tile_food_feed.png");
 var tile_milk_img                 = GenImg("assets/tile_milk.png");
 var tile_milk_sell_img            = GenImg("assets/tile_milk_sell.png");
 var tile_poop_img                 = GenImg("assets/tile_poop.png");
