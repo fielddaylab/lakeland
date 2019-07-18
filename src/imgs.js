@@ -81,8 +81,7 @@ for(var i = 0; i < livestock_fill_levels; i++)
 
 var nutrition_imgs = [];
 {
-
-  var s = 200;
+  var s = 100;
   var ds = s/(nutrition_overlay_levels*nutrition_overlay_dots_per_level);
   ds *= 2;
   var dds;
@@ -156,7 +155,7 @@ var nutrition_imgs = [];
 var vignette_nutrition_imgs = [];
 {
 
-  var s = 200; //h: (w=h*4;)
+  var s = 50; //h: (w=h*4;)
   var ds = s/(vignette_nutrition_overlay_levels*vignette_nutrition_overlay_dots_per_level);
   ds *= 2;
   var dds;
@@ -230,7 +229,7 @@ var vignette_nutrition_imgs = [];
 var vignette_layer_nutrition_imgs = [];
 {
 
-  var s = 200; //h*2: (w=h*8;)
+  var s = 20; //h*2: (w=h*8;)
   var ds = s/(vignette_nutrition_overlay_levels*vignette_nutrition_overlay_dots_per_level);
   ds *= 2;
   var dds;
