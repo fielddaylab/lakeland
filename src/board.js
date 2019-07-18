@@ -3068,7 +3068,7 @@ var board = function()
           tw = nx-x;
           if(x < -tw || x > gg.canvas.width) { i++; continue; }
           var t = self.tiles[i];
-          a = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          a = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           self.draw_nutrition_fast(a,x,dy,tw,dth);
           i++;
         }
