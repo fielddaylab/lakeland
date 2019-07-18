@@ -1783,7 +1783,7 @@ var achievements = function()
 
   self.tick = function()
   {
-    if(gg.advisors.thread == gg.advisors.first_thread) return;
+    if(gg.advisors.thread) return;
     var t;
     for(var i = 0; i < self.triggers.length; i++)
     {
