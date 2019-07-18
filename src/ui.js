@@ -32,27 +32,6 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
-var bias_nutrition = function(t)
-{
-  t = 1-t;
-  t *= t;
-  t *= t;
-  t *= t;
-  return 1-t;
-}
-
-var draw_switch = function(x,y,w,h,on)
-{
-  gg.ctx.strokeStyle = gg.font_color;
-  gg.ctx.fillStyle = gg.backdrop_color;
-  fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
-  gg.ctx.stroke();
-  if(on) { x = x+w/2; gg.ctx.fillStyle = green; }
-  else gg.ctx.fillStyle = red;
-  fillRRect(x,y,w/2,h,h/4,gg.ctx);
-  gg.ctx.stroke();
-}
-
 var draw_nutrition_bar = function(x,y,w,n,color)
 {
   var ox = x;
@@ -192,8 +171,8 @@ var nutrition_toggle = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = 40*gg.stage.s_mod;
-    self.h = self.w;
+    self.w = 80*gg.stage.s_mod;
+    self.h = self.w/2;
     self.x = gg.canvas.width-self.w-self.pad;
     self.y = self.pad;
 
@@ -217,9 +196,11 @@ var nutrition_toggle = function()
 
   self.draw = function()
   {
-    gg.ctx.lineWidth = 2;
     if(self.toggle_btn.active)
-      draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,gg.b.nutrition_view);
+    {
+      if(gg.b.nutrition_view) gg.ctx.drawImage(ntoggle_on,self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h);
+      else                    gg.ctx.drawImage(ntoggle_off,self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h);
+    }
   }
 
 }
@@ -936,16 +917,26 @@ var inspector = function()
         {
           gg.ctx.drawImage(vignette_land_img,self.x,self.vignette_y,self.w,self.vignette_h);
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_ROCK:
         {
           gg.ctx.drawImage(vignette_rock_img,self.x,self.vignette_y,self.w,self.vignette_h);
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_GRAVE:
@@ -975,8 +966,13 @@ var inspector = function()
             gg.ctx.globalAlpha = 1;
           }
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
-          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/4,self.w,self.vignette_h/4);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/5,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/5-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_SHORE:
@@ -989,8 +985,13 @@ var inspector = function()
         {
           gg.ctx.drawImage(vignette_forest_img,self.x,self.vignette_y,self.w,self.vignette_h);
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_HOME:
@@ -1002,35 +1003,21 @@ var inspector = function()
         case TILE_TYPE_FARM:
         {
           gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
-        /*
-          gg.ctx.globalAlpha = 0.2;
-          gg.ctx.fillStyle = nutrition_color;
-          var vp = 0.8;
-          var vy = self.vignette_y+self.vignette_h*vp;
-          var x = self.vignette_x;
-          var w = self.vignette_w*0.1;
-          var p;
-          //nutrition
-          p = min(1,(t.nutrition/(nutrition_max/4)));
-          gg.ctx.fillRect(x,vy,w,self.vignette_h*(1-vp)*p);
-          //growth;
-          p = t.val/farm_nutrition_req;
-          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p),w,vp*self.vignette_h*p);
-          //delineator
-          gg.ctx.strokeStyle = black;
-          drawLine(x,vy,x+w,vy,gg.ctx);
-          //poop
+
+          var g = t.val/farm_nutrition_req;
+          if(t.state == TILE_STATE_FARM_GROWN) g = 1;
+          var offy = self.vignette_y+0.0*self.vignette_h;
+          var h = vignette_overlay_corn_img.height*self.vignette_w/vignette_overlay_corn_img.width;
+          gg.ctx.drawImage(vignette_overlay_corn_img,0,0,vignette_overlay_corn_img.width,vignette_overlay_corn_img.height*g,self.vignette_x,offy+(1-g)*h,self.vignette_w,g*h);
+
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
           if(t.fertilizer)
           {
-          gg.ctx.fillStyle = brown;
-          p = t.fertilizer.state/fertilizer_nutrition;
-          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p*0.2),w,vp*self.vignette_h*p*0.2);
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
           }
-          gg.ctx.globalAlpha = 1;
-        */
-          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
-          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_LIVESTOCK:
@@ -1044,8 +1031,13 @@ var inspector = function()
             default: self.img_vignette(tile_livestock_imgs[3],1); break;
           }
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_ROAD:
@@ -1700,7 +1692,7 @@ var achievements = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = gg.canvas.width/2;
+    self.w = gg.canvas.width/2.5;
     self.h = self.w;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = gg.canvas.height/2-self.h/2;
@@ -1726,20 +1718,20 @@ var achievements = function()
   self.notif_ts = [];
 
   var t;
-  t = self.pushtrigger("Exist", "Get a visitor.",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length;       },0);
-  t = self.pushtrigger("Group", "3 Workers",         farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 3;  },t);
-  t = self.pushtrigger("Town",  "A small community", farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 5;  },t);
-  t = self.pushtrigger("City",  "10 Townmembers",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 10; },t);
+  t = self.pushtrigger("Exist", "Get a visitor.",    achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
+  t = self.pushtrigger("Group", "3 Workers",         achievement_pop_imgs[1], achievement_pop_imgs[1], function(){ return gg.farmbits.length >= 3;  },t);
+  t = self.pushtrigger("Town",  "A small community", achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
+  t = self.pushtrigger("City",  "10 Townmembers",    achievement_pop_imgs[3], achievement_pop_imgs[3], function(){ return gg.farmbits.length >= 10; },t);
 
-  t = self.pushtrigger("Farmer",   "Own a farm!",      tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
-  t = self.pushtrigger("Farmers",  "Get three farms",  tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
-  t = self.pushtrigger("Farmtown", "5 Farms!",         tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
-  t = self.pushtrigger("MegaFarm", "10 Farm Industry", tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
+  t = self.pushtrigger("Farmer",   "Own a farm!",      achievement_farm_imgs[0], achievement_farm_imgs[0], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
+  t = self.pushtrigger("Farmers",  "Get three farms",  achievement_farm_imgs[1], achievement_farm_imgs[1], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
+  t = self.pushtrigger("Farmtown", "5 Farms!",         achievement_farm_imgs[2], achievement_farm_imgs[2], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
+  t = self.pushtrigger("MegaFarm", "10 Farm Industry", achievement_farm_imgs[3], achievement_farm_imgs[3], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
 
-  t = self.pushtrigger("Paycheck",    "$500",   icon_money_img, icon_money_img, function(){ return gg.money > 500;   },0);
-  t = self.pushtrigger("Thousandair", "$1000",  icon_money_img, icon_money_img, function(){ return gg.money > 1000;  },t);
-  t = self.pushtrigger("Stability",   "$5000",  icon_money_img, icon_money_img, function(){ return gg.money > 5000;  },t);
-  t = self.pushtrigger("Riches",      "$10000", icon_money_img, icon_money_img, function(){ return gg.money > 10000; },t);
+  t = self.pushtrigger("Paycheck",    "$500",   achievement_money_imgs[0], achievement_money_imgs[0], function(){ return gg.money > 500;   },0);
+  t = self.pushtrigger("Thousandair", "$1000",  achievement_money_imgs[1], achievement_money_imgs[1], function(){ return gg.money > 1000;  },t);
+  t = self.pushtrigger("Stability",   "$5000",  achievement_money_imgs[2], achievement_money_imgs[2], function(){ return gg.money > 5000;  },t);
+  t = self.pushtrigger("Riches",      "$10000", achievement_money_imgs[3], achievement_money_imgs[3], function(){ return gg.money > 10000; },t);
 
   var n_bloomed = function(n)
   {
@@ -1754,10 +1746,10 @@ var achievements = function()
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom","Algae destroys one tile",       tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom","You have an algae problem", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom","Algae destroys one tile",       achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom","You have an algae problem", achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -1812,15 +1804,16 @@ var achievements = function()
     {
       gg.ctx.fillStyle = white;
       fillRBB(self,self.pad,gg.ctx);
-      var rows = 5;
-      var cols = 5;
-      var s = ((self.w-self.pad)/5)-self.pad;
+      var rows = 4;
+      var cols = 4;
+      var s = ((self.w-self.pad)/cols)-self.pad;
       var x = self.x+self.pad;
       var y = self.y+self.pad;
       gg.ctx.fillStyle = gray;
       var t = self.nullt;
-      var fs = gg.font_size;
+      var fs = gg.font_size*3/4;
       gg.ctx.font = fs+"px "+gg.font;
+      gg.ctx.fillStyle = black;
       for(var i = 0; i < rows; i++)
       {
         x = self.x+self.pad;
@@ -1828,12 +1821,13 @@ var achievements = function()
         {
           t = self.triggers[i*cols+j];
           if(!t) continue
-          if(t.local) gg.ctx.fillStyle = red;
-          else        { gg.ctx.fillStyle = gray; gg.ctx.globalAlpha = 0.5; }
-          fillRRect(x,y,s,s,self.pad,gg.ctx);
-          if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
+          if(!t.local) gg.ctx.globalAlpha = 0.5;
+          if(t.local && t.onimg)
+          {
+            gg.ctx.drawImage(t.onimg,x,y,s,s);
+            gg.ctx.drawImage(button_achievement_img,x+s/2+s/8,y+s/2+s/8,s/4,s/4);
+          }
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
-          gg.ctx.fillStyle = black;
           gg.ctx.fillText(t.name,x+s/2,y+s);
           x += s+self.pad;
           gg.ctx.globalAlpha = 1;
@@ -1846,7 +1840,7 @@ var achievements = function()
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
       var w = 150*gg.stage.s_mod;
-      var h = gg.font_size*8;
+      var h = gg.font_size*9;
       var x = gg.canvas.width/2-w/2;
       var y = gg.canvas.height/2-h/2;
       var pad = gg.font_size;
@@ -1861,13 +1855,14 @@ var achievements = function()
       fillSelectiveRRect(x,y+h*3/5,w,h*2/5,0,0,1,1,pad,gg.ctx);
       gg.ctx.stroke();
       gg.ctx.fillStyle = white;
-      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3);
-      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size);
+      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3+gg.font_size/2);
+      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size+gg.font_size/2);
       gg.ctx.fillStyle = "#18315B";
       gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
       gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
-      var imgs = w/4;
+      var imgs = w/2;
       gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
+      gg.ctx.drawImage(button_achievement_img,gg.canvas.width/2+imgs/8,y+imgs/6,imgs/4,imgs/4);
     }
   }
 
