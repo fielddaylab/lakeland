@@ -420,6 +420,9 @@ var play_img  = GenImg("assets/play.png");
 var pause_img = GenImg("assets/pause.png");
 var fast_img  = GenImg("assets/fast.png");
 
+var ntoggle_on = GenImg("assets/nutrition_on.png");
+var ntoggle_off = GenImg("assets/nutrition_off.png");
+
 var achievement_pop_imgs   = []; for(var i = 0; i < 4; i++) achievement_pop_imgs.push(  GenImg("assets/achievement_pop_"+i+".png"));
 var achievement_farm_imgs  = []; for(var i = 0; i < 4; i++) achievement_farm_imgs.push( GenImg("assets/achievement_farm_"+i+".png"));
 var achievement_money_imgs = []; for(var i = 0; i < 4; i++) achievement_money_imgs.push(GenImg("assets/achievement_money_"+i+".png"));

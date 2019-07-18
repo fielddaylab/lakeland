@@ -32,27 +32,6 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
-var bias_nutrition = function(t)
-{
-  t = 1-t;
-  t *= t;
-  t *= t;
-  t *= t;
-  return 1-t;
-}
-
-var draw_switch = function(x,y,w,h,on)
-{
-  gg.ctx.strokeStyle = gg.font_color;
-  gg.ctx.fillStyle = gg.backdrop_color;
-  fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
-  gg.ctx.stroke();
-  if(on) { x = x+w/2; gg.ctx.fillStyle = green; }
-  else gg.ctx.fillStyle = red;
-  fillRRect(x,y,w/2,h,h/4,gg.ctx);
-  gg.ctx.stroke();
-}
-
 var draw_nutrition_bar = function(x,y,w,n,color)
 {
   var ox = x;
@@ -192,8 +171,8 @@ var nutrition_toggle = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = 40*gg.stage.s_mod;
-    self.h = self.w;
+    self.w = 80*gg.stage.s_mod;
+    self.h = self.w/2;
     self.x = gg.canvas.width-self.w-self.pad;
     self.y = self.pad;
 
@@ -217,9 +196,11 @@ var nutrition_toggle = function()
 
   self.draw = function()
   {
-    gg.ctx.lineWidth = 2;
     if(self.toggle_btn.active)
-      draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,gg.b.nutrition_view);
+    {
+      if(gg.b.nutrition_view) gg.ctx.drawImage(ntoggle_on,self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h);
+      else                    gg.ctx.drawImage(ntoggle_off,self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h);
+    }
   }
 
 }
@@ -1880,7 +1861,7 @@ var achievement_bloom_imgs = []; for(var i = 0; i < 4; i++) achievement_bloom_im
       gg.ctx.fillStyle = "#18315B";
       gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
       gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
-      var imgs = w/4;
+      var imgs = w/2;
       gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
     }
   }
