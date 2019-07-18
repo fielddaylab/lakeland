@@ -1022,32 +1022,13 @@ var inspector = function()
         case TILE_TYPE_FARM:
         {
           gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
-        /*
-          gg.ctx.globalAlpha = 0.2;
-          gg.ctx.fillStyle = nutrition_color;
-          var vp = 0.8;
-          var vy = self.vignette_y+self.vignette_h*vp;
-          var x = self.vignette_x;
-          var w = self.vignette_w*0.1;
-          var p;
-          //nutrition
-          p = min(1,(t.nutrition/(nutrition_max/4)));
-          gg.ctx.fillRect(x,vy,w,self.vignette_h*(1-vp)*p);
-          //growth;
-          p = t.val/farm_nutrition_req;
-          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p),w,vp*self.vignette_h*p);
-          //delineator
-          gg.ctx.strokeStyle = black;
-          drawLine(x,vy,x+w,vy,gg.ctx);
-          //poop
-          if(t.fertilizer)
-          {
-          gg.ctx.fillStyle = brown;
-          p = t.fertilizer.state/fertilizer_nutrition;
-          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p*0.2),w,vp*self.vignette_h*p*0.2);
-          }
-          gg.ctx.globalAlpha = 1;
-        */
+
+          var g = t.val/farm_nutrition_req;
+          if(t.state == TILE_STATE_FARM_GROWN) g = 1;
+          var offy = self.vignette_y+0.0*self.vignette_h;
+          var h = vignette_overlay_corn_img.height*self.vignette_w/vignette_overlay_corn_img.width;
+          gg.ctx.drawImage(vignette_overlay_corn_img,0,0,vignette_overlay_corn_img.width,vignette_overlay_corn_img.height*g,self.vignette_x,offy+(1-g)*h,self.vignette_w,g*h);
+
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
           var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
