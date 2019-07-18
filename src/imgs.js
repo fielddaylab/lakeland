@@ -211,7 +211,7 @@ var vignette_nutrition_imgs = [];
     {
       img = GenIcon(s*4,s);
       vignette_nutrition_imgs[i*vignette_nutrition_overlay_frames+j] = img;
-      img.context.drawImage(vignette_nutrition_imgs[i*vignette_nutrition_overlay_frames],rand0()*ds,rand0()*ds,s*4,s);
+      img.context.drawImage(vignette_nutrition_imgs[i*vignette_nutrition_overlay_frames],rand0()*ds*4,rand0()*ds*4,s*4,s);
     }
   }
 
@@ -229,7 +229,7 @@ var vignette_nutrition_imgs = [];
 var vignette_layer_nutrition_imgs = [];
 {
 
-  var s = 20; //h*2: (w=h*8;)
+  var s = 40; //h*2: (w=h*8;)
   var ds = s/(vignette_nutrition_overlay_levels*vignette_nutrition_overlay_dots_per_level);
   ds *= 2;
   var dds;
@@ -285,7 +285,7 @@ var vignette_layer_nutrition_imgs = [];
     {
       img = GenIcon(s*4,s/4);
       vignette_layer_nutrition_imgs[i*vignette_nutrition_overlay_frames+j] = img;
-      img.context.drawImage(vignette_layer_nutrition_imgs[i*vignette_nutrition_overlay_frames],rand0()*ds,rand0()*ds,s*4,s/4);
+      img.context.drawImage(vignette_layer_nutrition_imgs[i*vignette_nutrition_overlay_frames],rand0()*ds*2,rand0()*ds*2,s*4,s/4);
     }
   }
 
@@ -409,9 +409,10 @@ var badge_cow_img     = GenImg("assets/badge_cow.png");
 var badge_farmbit_img = GenImg("assets/badge_farmbit.png");
 var badge_money_img   = GenImg("assets/badge_money.png");
 
-var button_achievement_img = GenImg("assets/button_achievement.png");
-var button_close_img       = GenImg("assets/button_close.png");
-var button_next_img        = GenImg("assets/button_next.png");
+var button_achievement_img   = GenImg("assets/button_achievement.png");
+var button_close_img         = GenImg("assets/button_close.png");
+var button_next_img          = GenImg("assets/button_next.png");
+var button_skip_tutorial_img = GenImg("assets/skip_tutorial.png");
 
 var clouds_img  = GenImg("assets/clouds.png");
 var cow_img     = GenImg("assets/cow.png");

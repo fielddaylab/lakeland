@@ -2690,8 +2690,7 @@ var advisors = function()
     {
       gg.ctx.textAlign = "left";
       gg.ctx.fillStyle = black;
-      gg.ctx.fillText("(skip tutorial)",self.skip_btn.x,self.skip_btn.y+self.skip_btn.h);
-      //gg.ctx.fillRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
+      gg.ctx.drawImage(button_skip_tutorial_img,self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
     }
   }
 
