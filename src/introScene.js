@@ -21,7 +21,7 @@ var IntroScene = function()
   var t = 0;
   var txt_len = 200;
   var txts = [
-    "You set out to form a new town called \"Lakeland\"",
+    "You set out to form a new town called \"Lakeland.\"",
     "Your people love to play in the water.",
     "Grow your town without destroying their lakes.",
   ];
