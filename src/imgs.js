@@ -323,7 +323,7 @@ farmbit_anim_nframes[FARMBIT_ANIM_IDLE] = 1;
 farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 3;
 farmbit_anim_nframes[FARMBIT_ANIM_SWIM] = 2;
 
-var farmbit_colors = 1;//5;
+var farmbit_colors = 5;
 
 var farmbit_imgs = [];
 for(var c = 0; c < farmbit_colors; c++)
