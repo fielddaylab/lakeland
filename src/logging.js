@@ -1,9 +1,8 @@
-var Logger = function(init){
+window.Logger = function(init){
   self = this;
   self.mySlog = new slog("USDA",1);
-
+  var pako = require('pako');
   //Constants
-  self.GAMESTATE_LOG_INTERVAL = 10*60;
   self.NUTRITION_DIFFERENCE = 2;
 
   ENUM = 0;
@@ -56,26 +55,26 @@ var Logger = function(init){
     self.buy_hovers = [];
   }
   //TODO ask about potentially only adjusting nutritions if it is a difference of two or more
-  self.prev_nutritions = null;
-  self.set_prev_nutritions = function(nutritions){
-    self.prev_nutritions = nutritions;
-  }
-  self.get_prev_nutritions = function(){
-    return self.prev_nutritions;
-  }
-  self.update_nutritions = function(){
-    new_nutritions = self.nutrition_array();
-    delta_nutrition = self.arraysSubtract(self.prev_nutritions,new_nutritions);
-    changed_tiles = gg.b.tiles.filter(function(x,index){return Math.abs(delta_nutrition[index]) >= self.NUTRITION_DIFFERENCE});
-    self.set_prev_nutritions(self.prev_nutritions.map(function(x,index){
-      if (Math.abs(delta_nutrition[index]) >= self.NUTRITION_DIFFERENCE) {
-        return new_nutritions[index]
-      } else {
-        return x
-      }
-    }));
-    return changed_tiles.map(function(t){return self.tile_data_short(t)});
-  }
+  // self.prev_nutritions = null;
+  // self.set_prev_nutritions = function(nutritions){
+  //   self.prev_nutritions = nutritions;
+  // }
+  // self.get_prev_nutritions = function(){
+  //   return self.prev_nutritions;
+  // }
+  // self.update_nutritions = function(){
+  //   new_nutritions = self.nutrition_array();
+  //   delta_nutrition = self.arraysSubtract(self.prev_nutritions,new_nutritions);
+  //   changed_tiles = gg.b.tiles.filter(function(x,index){return Math.abs(delta_nutrition[index]) >= self.NUTRITION_DIFFERENCE});
+  //   self.set_prev_nutritions(self.prev_nutritions.map(function(x,index){
+  //     if (Math.abs(delta_nutrition[index]) >= self.NUTRITION_DIFFERENCE) {
+  //       return new_nutritions[index]
+  //     } else {
+  //       return x
+  //     }
+  //   }));
+  //   return changed_tiles.map(function(t){return self.tile_data_short(t)});
+  // }
 
   self.click_history = [] //matrix of x,y,time columns
   self.add_click = function(X,Y) {
@@ -163,24 +162,16 @@ var Logger = function(init){
   }
 
   self.time = 0;
-  self.last_gamestate_log_time = 0;
   self.update_time = function(time){
     self.time += time;
-    if(Math.floor((self.time-self.last_gamestate_log_time) / self.GAMESTATE_LOG_INTERVAL)){
-      self.last_gamestate_log_time = self.time;
-      if(self.farmbit_array().length) self.gamestate_log();
-    }
   }
 
 
 
   //Logging
-  self.gamestate_log = function(){
-    self.send_log(self.gamestate(), self.LOG_CATEGORY_GAMESTATE);
-  }
-  self.startgame = function(){
+  self.startgame = function(){x
     self.set_prev_center_txty(gg.b.center_tile.tx,gg.b.center_tile.ty);
-    self.prev_nutritions = self.nutrition_array();
+//  self.prev_nutritions = self.nutrition_array();
     tile_states = gg.b.tiles.map(function(x) {return x.state});
     tile_nutritions = self.nutrition_array();
     log_data = {
@@ -190,7 +181,7 @@ var Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
   }
   self.endgame = function(){
-    log_data = self.gamestate();
+    // log_data = self.old_gamestate();
     self.send_log(log_data, self.LOG_CATEGORY_ENDGAME);
   }
   self.gtag = function(arguments){
@@ -273,6 +264,7 @@ var Logger = function(init){
     };
     self.reset_buy_hovers();
     self.send_log(log_data, self.LOG_CATEGORY_PLACEITEM);
+    self.new_gamestate();
   }
   self.cancel_buy = function(buy){
    var log_data = {
@@ -302,13 +294,13 @@ var Logger = function(init){
   }
 
   self.blurb = function(txt){
-    if(self.log_blurbs){
-     var log_data = {
-//        blurb: txt,
-//        advisor: gg.advisors.advisor
-      }
-      self.send_log(log_data, self.LOG_CATEGORY_BLURB);
-    }
+//     if(self.log_blurbs){
+//      var log_data = {
+// //        blurb: txt,
+// //        advisor: gg.advisors.advisor
+//       }
+//       self.send_log(log_data, self.LOG_CATEGORY_BLURB);
+//     }
   }
   self.record = function(txt){
   //  var log_data = {
@@ -343,32 +335,32 @@ var Logger = function(init){
   }
 
   //Helpers:
-  self.gamestate = function(){
-    var now = Date.now();
-    var gamestate = {
-      farmbits: self.farmbit_array(),
-      items: self.item_array(),
-      tile_nutritions: self.update_nutritions(),
-      tile_marks: self.tile_mark_array(),
-      tile_vals: self.tile_val_array(),
-      money_per_min: Math.floor(gg.advisors.money_rate*60*60),
-      people_supported: gg.advisors.people_supported,
-      money: gg.money,
-      speed: gg.speed,
-      raining: gg.b.raining,
-      curr_selection_type: gg.inspector.detailed_type,
-      curr_selection_data: self.detailed_data(gg.inspector.detailed),
-      camera_center: self.prev_center_txty,
-      click_history: self.flush_click_history(now),
-      timestamp: now,
-      num_achievements: self.get_num_achievements(),
-      num_checkpoints_completed: self.get_num_checkpoints_completed(),
-      gametime: self.time,
-      camera_history: self.flush_camera_history(now),
-      emote_history: self.flush_emote_history(now)
-    };
-    return gamestate;
-  }
+  // self.old_gamestate = function(){
+  //   var now = Date.now();
+  //   var gamestate = {
+  //     farmbits: self.farmbit_array(),
+  //     items: self.item_array(),
+  //     tile_nutritions: self.update_nutritions(),
+  //     tile_marks: self.tile_mark_array(),
+  //     tile_vals: self.tile_val_array(),
+  //     money_per_min: Math.floor(gg.advisors.money_rate*60*60),
+  //     people_supported: gg.advisors.people_supported,
+  //     money: gg.money,
+  //     speed: gg.speed,
+  //     raining: gg.b.raining,
+  //     curr_selection_type: gg.inspector.detailed_type,
+  //     curr_selection_data: self.detailed_data(),
+  //     camera_center: self.prev_center_txty,
+  //     click_history: self.flush_click_history(now),
+  //     timestamp: now,
+  //     num_achievements: self.get_num_achievements(),
+  //     num_checkpoints_completed: self.get_num_checkpoints_completed(),
+  //     gametime: self.time,
+  //     camera_history: self.flush_camera_history(now),
+  //     emote_history: self.flush_emote_history(now)
+  //   };
+  //   return gamestate;
+  // }
   self.tile_data = function(t){
     return {
       tile: self.tile_data_short(t),
@@ -395,42 +387,115 @@ var Logger = function(init){
       success: gg.money >= gg.shop.buy_cost(buy)
     };
   }
+  // self.tile_data_short = function(t){
+  //   return [t.tx, t.ty, t.type, Math.floor(t.nutrition/nutrition_percent)];
+  // }
+  // self.farmbit_data_short = function(f){
+  //   return [f.tile.tx,f.tile.ty,f.job_state,f.job_type,
+  //     Math.floor(f.fullness/max_fullness*10),
+  //     Math.floor(f.energy/max_energy*10),
+  //     Math.floor(f.joy/max_joy*10),
+  //     Math.floor(f.fulfillment/max_fulfillment*10)
+  //   ];
+  // }
   self.tile_data_short = function(t){
-    return [t.tx, t.ty, t.type, Math.floor(t.nutrition/nutrition_percent)];
+    return Array.from(self.uint8_tile_array([t]));
   }
   self.farmbit_data_short = function(f){
-    return [f.tile.tx,f.tile.ty,f.job_state,Math.floor(f.fullness/max_fullness*10),Math.floor(f.joy/max_joy*10)];
+    return Array.from(self.uint8_farmbit_array([f]));
   }
   self.item_data_short = function(it){
-    return [it.tile.tx,it.tile.ty,it.thing,it.mark];
+    return Array.from(self.uint8_item_array([it]));
   }
+  self.uint8_tile_array = function(ts){
+    if (ts === undefined) ts = gg.b.tiles;
+    var VARS_PER_ENTRY = 4;
+    var uint8arr = new Uint8Array(ts.length*VARS_PER_ENTRY);
+    for (var i = 0; i < ts.length; i++){
+      var j = 0;
+      uint8arr[VARS_PER_ENTRY*i+j] = ts[i].val/nutrition_max*255;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = ts[i].nutrition/nutrition_max*255;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = ts[i].og_type;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = ts[i].type;j++;
+    }
+    return uint8arr;
+  }
+  self.uint8_farmbit_array = function(fs){
+    if (fs === undefined) fs = gg.farmbits;
+    var VARS_PER_ENTRY = 8;
+    var uint8arr = new Uint8Array(fs.length*VARS_PER_ENTRY);
+    for (var i = 0; i < fs.length; i++){
+      var j = 0;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wx;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_state;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_type;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].fullness/max_fullness*255;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].energy/max_energy*255;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].joy/max_joy*255;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].fulfillment/max_fulfillment*255;j++;
+    }
+    return uint8arr;
+  }
+  self.uint8_item_array = function(its){
+    if (its === undefined) its = gg.items; else its = [its];
+    var VARS_PER_ENTRY = 4;
+    var uint8arr = new Uint8Array(its.length*VARS_PER_ENTRY);
+    for (var i = 0; i < its.length; i++){
+      var j = 0;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].wx;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].type;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].mark;j++;
+    }
+    return uint8arr;
+  }
+  self.new_gamestate = function(){
+    var gamestate = {
+      tiles: pako.deflate(self.uint8_tile_array()).join(),
+      farmbits: pako.deflate(self.uint8_farmbit_array()).join(),
+      items: pako.deflate(self.uint8_item_array()).join(),
+      money: gg.money,
+      speed: gg.speed,
+      num_achievements: self.get_num_achievements(),
+      num_checkpoints_completed: self.get_num_checkpoints_completed(),
+      raining: gg.b.raining,
+      curr_selection_type: gg.inspector.detailed_type,
+      curr_selection_data: self.detailed_data(),
+      camera_center: self.prev_center_txty,
+    };
+    self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
+  }
+  // self.item_data_short = function(it){
+  //   return [it.tile.tx,it.tile.ty,it.thing,it.mark];
+  // }
 
-  self.farmbit_array = function(){
-    return gg.farmbits.map(self.farmbit_data_short);
-  }
+  // self.farmbit_array = function(){
+  //   return gg.farmbits.map(self.farmbit_data_short);
+  // }
 
-  self.item_array = function(){
-    return gg.items.map(self.item_data_short);
-  }
+  // self.item_array = function(){
+  //   return gg.items.map(self.item_data_short);
+  // }
   self.nutrition_array = function(){
     return gg.b.tiles.map(function(x) {return Math.floor(x.nutrition/nutrition_percent)});
   }
-  self.tile_mark_array = function(){
-    var interesting_tiles = gg.b.tiles.filter(function(x){
-      return !self.arraysEqual(x.marks, [1,1,1,1])
-    });
-    return interesting_tiles.map(function(x) {
-      return [x.tile.tx, x.tile.ty,x.tile.type].concat(x.marks);
-    });
-  }
-  self.tile_val_array = function(){
-    var interesting_tiles = gg.b.tiles.filter(function(x){
-      return x.val
-    });
-    return interesting_tiles.map(function(x) {
-      return [x.tile.tx, x.tile.ty,x.tile.type].concat(Math.floor(x.val/1000));
-    });
-  }
+  // self.tile_mark_array = function(){
+  //   var interesting_tiles = gg.b.tiles.filter(function(x){
+  //     return !self.arraysEqual(x.marks, [1,1,1,1])
+  //   });
+  //   return interesting_tiles.map(function(x) {
+  //     return [x.tile.tx, x.tile.ty,x.tile.type].concat(x.marks);
+  //   });
+  // }
+  // self.tile_val_array = function(){
+  //   var interesting_tiles = gg.b.tiles.filter(function(x){
+  //     return x.val
+  //   });
+  //   return interesting_tiles.map(function(x) {
+  //     return [x.tile.tx, x.tile.ty,x.tile.type].concat(Math.floor(x.val/1000));
+  //   });
+  // }
 
   self.detailed_data = function(){
     switch(gg.inspector.detailed_type){
@@ -465,7 +530,67 @@ var Logger = function(init){
     })
   }
 
+  // self.abbreviate_tile = function(t){
+  //   return {
+  //     val: t.val,
+  //     nutrition: t.nutrition,
+  //     // tx: t.tx,
+  //     // ty: t.ty,
+  //     og_type: t.og_type,
+  //     type: t.type
+  //   };
+  // }
+  // self.abbreviate_tile_array = function(t){
+  //   return new Uint8Array([t.val/nutrition_max*255, t.nutrition/nutrition_max*255, t.og_type, t.type]);
+  // }
+  // self.abbreviate_tiles = function(){
+  //   return {
+  //     val: new Uint8Array(gg.b.tiles.map(t => t.val/nutrition_max*255)),
+  //     nutrition: new Uint8Array(gg.b.tiles.map(t => t.nutrition/nutrition_max*255)),
+  //     og_type: new Uint8Array(gg.b.tiles.map(t => t.og_type)),
+  //     type: new Uint8Array(gg.b.tiles.map(t => t.type))
+  //   }
+  // }
+  // self.abbreviate_tiles_2 = function(){
+  //   tiles = gg.b.tiles.map(t => [t.val/nutrition_max*255, t.nutrition/nutrition_max*255, t.og_type, t.type]);
+  //   flattened_tiles = [].concat.apply([],tiles);
+  //   uint8 = new Uint8Array(flattened_tiles);
+  //   deflated = pako.deflate(uint8);
+  //   return deflated;
+  // }
+  
+
+  // self.compress_uint8object = function(obj){
+  //   var keys = Object.keys(obj);
+  //   ret = {};
+  //   for (const key of keys) {
+  //     ret[key] = pako.deflate(obj[key]);
+  //   }
+  //   return ret;
+  // }
+  // self.stringify_uint8object = function(obj){
+  //   var keys = Object.keys(obj);
+  //   ret = {};
+  //   for (const key of keys) {
+  //     ret[key] = obj[key].join();
+  //   }
+  //   return ret;
+  // }
+  // self.shrink_gamestate_array = function(abbreviated_array){
+  //   return self.stringify_uint8object(self.compress_uint8object(abbreviated_array))
+  // }
+  self.deflate_and_tostr = function(uint8arr){
+    return pako.deflate(uint8arr).join()
+  }
+  self.deflate = function(input){
+    return pako.deflate(input);
+  }
+  self.inflate = function(input){
+    return pako.inflate(input);
+  }
+
+  
+
 }
 
-var my_logger = new Logger();
-// window.addEventListener("beforeunload", my_logger.endgame());
+window.my_logger = new window.Logger();
