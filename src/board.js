@@ -2268,7 +2268,6 @@ var board = function()
     self.inc_bounds();
     self.hovering = 0;
     self.scratch_item = new item();
-    my_logger.startgame();
   }
 
   self.own_tiles = function(t, own_d)
@@ -2448,7 +2447,7 @@ var board = function()
     {
       if(self.hover_t)
       {
-        my_logger.place_item(self);
+        my_logger.buy_item(self);
         if(self.placement_valid(self.hover_t,gg.shop.selected_buy))
         {
           switch(gg.shop.selected_buy)

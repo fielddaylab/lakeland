@@ -129,6 +129,7 @@ var GamePlayScene = function()
     gg.achievements = new achievements();
     gg.advisors = new advisors();
     self.readied = 1;
+    my_logger.startgame();
   };
 
   gg.t_mod_twelve_pi = 0;
