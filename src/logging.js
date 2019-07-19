@@ -198,18 +198,19 @@ window.Logger = function(init){
       camera_center: self.prev_center_txty,
       gametime: self.time,
       timestamp: now,
-      camera_history: self.flush_camera_history(now),
-      emote_history: self.flush_emote_history(now)
     };
     self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
+    self.history();
   }
   self.history = function(){
     var now = Date.now();
-    var log_data = {
-      camera_history: self.flush_camera_history(now),
-      emote_history: self.flush_emote_history(now)
-    };
-    self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+    if (self.camera_history.length || self.emote_history.length){
+      var log_data = {
+        camera_history: self.flush_camera_history(now),
+        emote_history: self.flush_emote_history(now)
+      };
+      self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+    }
   }
   self.endgame = function(){
     // log_data = self.old_gamestate();
@@ -611,13 +612,13 @@ window.Logger = function(init){
     pako.gzip(arr)
     console.timeEnd("gzip")
 
-    console.time("deflate")
-    pako.deflate(arr)
-    console.timeEnd("deflate")
+    // console.time("deflate")
+    // pako.deflate(arr)
+    // console.timeEnd("deflate")
 
-    console.time("deflateRaw")
-    pako.deflateRaw(arr)
-    console.timeEnd("deflateRaw")
+    // console.time("deflateRaw")
+    // pako.deflateRaw(arr)
+    // console.timeEnd("deflateRaw")
 
   }
 
