@@ -6,7 +6,6 @@ var MenuScene = function()
   {
     if(self.clicker) self.clicker.detach(); self.clicker = new Clicker({source:gg.canvas});
   }
-  self.resize();
 
   self.killinput = function()
   {
@@ -16,6 +15,7 @@ var MenuScene = function()
   self.begin_btn;
   self.ready = function()
   {
+    self.resize();
     self.begin_btn = new ButtonBox(100,100,100,100,function(){ gg.game.nextScene(); });
   };
 

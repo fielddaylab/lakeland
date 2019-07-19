@@ -4,6 +4,7 @@ var LoadingScene = function()
 
   self.resize = function()
   {
+    if(self.keyer) self.keyer.detach(); self.keyer = new Keyer({source:gg.canvas});
   }
 
   var pad;
@@ -209,6 +210,9 @@ var LoadingScene = function()
 
   self.tick = function()
   {
+    self.keyer.filterkey(function(evt){ if(evt.keyCode == 32) gg.game.nextScene(); });
+    if(self.keyer) self.keyer.flush();
+
     //font main-thread loaded test
     for(var i = 0; i < font_srcs.length; i++)
     {
@@ -299,6 +303,7 @@ var LoadingScene = function()
   {
     imgs = [];//just used them to cache assets in browser; let garbage collector handle 'em.
     loading_imgs = [];//just used them to cache assets in browser; let garbage collector handle 'em.
+    if(self.keyer) self.keyer.detach(); self.keyer = null;
   };
 };
 
