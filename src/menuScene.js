@@ -21,7 +21,7 @@ var MenuScene = function()
 
   self.tick = function()
   {
-    gg.game.nextScene(); return;
+    //gg.game.nextScene(); return;
     self.clicker.filter(self.begin_btn);
     if(self.clicker) self.clicker.flush();
   };

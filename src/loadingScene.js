@@ -91,6 +91,90 @@ var LoadingScene = function()
 
     //put asset paths in img_srcs
     //img_srcs.push("assets/img.jpg");
+    for(var c = 0; c < farmbit_colors; c++)
+    {
+      for(var a = 0; a < FARMBIT_ANIM_COUNT; a++)
+      {
+        var name = farmbit_anim_names[a];
+        for(var s = 0; s < 2; s++)
+        {
+          var side = s ? "back" : "front";
+          for(var f = 0; f < farmbit_anim_nframes[a]; f++)
+            img_srcs.push("assets/farmbit_"+c+"_"+name+"_"+side+"_"+f+".png");
+        }
+      }
+    }
+    img_srcs.push("assets/icon_money.png");
+    img_srcs.push("assets/icon_cursor.png");
+    img_srcs.push("assets/icon_fertilizer.png");
+    img_srcs.push("assets/icon_fertilizer_nutrition.png");
+    img_srcs.push("assets/icon_food.png");
+    img_srcs.push("assets/icon_food_sell.png");
+    img_srcs.push("assets/icon_food_feed.png");
+    img_srcs.push("assets/icon_milk.png");
+    img_srcs.push("assets/icon_milk_sell.png");
+    img_srcs.push("assets/icon_poop.png");
+    img_srcs.push("assets/icon_poop_sell.png");
+    img_srcs.push("assets/tile_bloom.png");
+    img_srcs.push("assets/tile_fertilizer.png");
+    img_srcs.push("assets/tile_fertilizer_nutrition.png");
+    img_srcs.push("assets/tile_food.png");
+    img_srcs.push("assets/tile_food_sell.png");
+    img_srcs.push("assets/tile_food_feed.png");
+    img_srcs.push("assets/tile_milk.png");
+    img_srcs.push("assets/tile_milk_sell.png");
+    img_srcs.push("assets/tile_poop.png");
+    img_srcs.push("assets/tile_poop_sell.png");
+    img_srcs.push("assets/tile_water.png");
+    img_srcs.push("assets/tile_farm.png");
+    img_srcs.push("assets/tile_forest.png");
+    img_srcs.push("assets/tile_land_t0_d0_f0.png");
+    img_srcs.push("assets/tile_grave.png");
+    img_srcs.push("assets/tile_home.png");
+    img_srcs.push("assets/tile_lake.png");
+    img_srcs.push("assets/tile_livestock_0.png");
+    img_srcs.push("assets/tile_money.png");
+    img_srcs.push("assets/tile_out.png");
+    img_srcs.push("assets/tile_road.png");
+    img_srcs.push("assets/tile_rock.png");
+    img_srcs.push("assets/tile_shore.png");
+    img_srcs.push("assets/tile_sign.png");
+    img_srcs.push("assets/tile_skull.png");
+    img_srcs.push("assets/vignette_land.png");
+    img_srcs.push("assets/vignette_lake.png");
+    img_srcs.push("assets/vignette_forest.png");
+    img_srcs.push("assets/vignette_rock.png");
+    img_srcs.push("assets/vignette_farm.png");
+    img_srcs.push("assets/vignette_livestock.png");
+    img_srcs.push("assets/vignette_overlay_corn.png");
+    img_srcs.push("assets/vignette_overlay_corn_nutrition.png");
+    img_srcs.push("assets/vignette_overlay_cob.png");
+    img_srcs.push("assets/vignette_overlay_cob_nutrition.png");
+    img_srcs.push("assets/advisor_mayor.png");
+    img_srcs.push("assets/advisor_business.png");
+    img_srcs.push("assets/advisor_farmer.png");
+    img_srcs.push("assets/advisor_panel_mayor.png");
+    img_srcs.push("assets/advisor_panel_business.png");
+    img_srcs.push("assets/advisor_panel_farmer.png");
+    img_srcs.push("assets/badge_cow.png");
+    img_srcs.push("assets/badge_farmbit.png");
+    img_srcs.push("assets/badge_money.png");
+    img_srcs.push("assets/button_achievement.png");
+    img_srcs.push("assets/button_close.png");
+    img_srcs.push("assets/button_next.png");
+    img_srcs.push("assets/skip_tutorial.png");
+    img_srcs.push("assets/clouds.png");
+    img_srcs.push("assets/cow.png");
+    img_srcs.push("assets/farmbit.png");
+    img_srcs.push("assets/play.png");
+    img_srcs.push("assets/pause.png");
+    img_srcs.push("assets/fast.png");
+    img_srcs.push("assets/nutrition_on.png");
+    img_srcs.push("assets/nutrition_off.png");
+    for(var i = 0; i < 4; i++) img_srcs.push("assets/achievement_pop_"+i+".png");
+    for(var i = 0; i < 4; i++) img_srcs.push("assets/achievement_farm_"+i+".png");
+    for(var i = 0; i < 4; i++) img_srcs.push("assets/achievement_money_"+i+".png");
+    for(var i = 0; i < 4; i++) img_srcs.push("assets/achievement_bloom_"+i+".png");
     for(var i = 0; i < img_srcs.length; i++)
     {
       imgs[i] = new Image();
