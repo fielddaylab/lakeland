@@ -125,7 +125,7 @@ window.Logger = function(init){
   }
   self.flush_emote_history = function(now){
     ret = self.emote_history.map(function(x){
-      x[length(x)-1] -= now;
+      x[x.length-1] -= now;
       return x;
     });
     self.emote_history = [];
@@ -207,6 +207,7 @@ window.Logger = function(init){
     var now = Date.now();
     if (self.camera_history.length || self.emote_history.length){
       var log_data = {
+        client_time: now,
         camera_history: self.flush_camera_history(now),
         emote_history: self.flush_emote_history(now)
       };

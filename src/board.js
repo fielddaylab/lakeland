@@ -3521,7 +3521,7 @@ var farmbit = function()
     self.emote_c = e;
     self.emote_w = gg.ctx.measureText(e).width;
     self.emote_t = 0;
-    my_logger.emote(self);
+    my_logger.emote(self,e);
   }
 
   self.anim_side = FARMBIT_ANIM_FRONT;
