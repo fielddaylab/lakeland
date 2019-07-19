@@ -32,27 +32,6 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
-var bias_nutrition = function(t)
-{
-  t = 1-t;
-  t *= t;
-  t *= t;
-  t *= t;
-  return 1-t;
-}
-
-var draw_switch = function(x,y,w,h,on)
-{
-  gg.ctx.strokeStyle = gg.font_color;
-  gg.ctx.fillStyle = gg.backdrop_color;
-  fillRRect(x,y+h/4,w,h/2,h/4,gg.ctx);
-  gg.ctx.stroke();
-  if(on) { x = x+w/2; gg.ctx.fillStyle = green; }
-  else gg.ctx.fillStyle = red;
-  fillRRect(x,y,w/2,h,h/4,gg.ctx);
-  gg.ctx.stroke();
-}
-
 var draw_nutrition_bar = function(x,y,w,n,color)
 {
   var ox = x;
@@ -192,8 +171,8 @@ var nutrition_toggle = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = 40*gg.stage.s_mod;
-    self.h = self.w;
+    self.w = 80*gg.stage.s_mod;
+    self.h = self.w/2;
     self.x = gg.canvas.width-self.w-self.pad;
     self.y = self.pad;
 
@@ -217,9 +196,11 @@ var nutrition_toggle = function()
 
   self.draw = function()
   {
-    gg.ctx.lineWidth = 2;
     if(self.toggle_btn.active)
-      draw_switch(self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h,gg.b.nutrition_view);
+    {
+      if(gg.b.nutrition_view) gg.ctx.drawImage(ntoggle_on,self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h);
+      else                    gg.ctx.drawImage(ntoggle_off,self.toggle_btn.x,self.toggle_btn.y,self.toggle_btn.w,self.toggle_btn.h);
+    }
   }
 
 }
@@ -644,7 +625,21 @@ var shop = function()
       self.cancel_btn.y = y;
       self.cancel_btn.x = self.x+self.pad;
       gg.ctx.textAlign = "center";
-      self.draw_btn(self.cancel_btn,description_offx);
+      //self.draw_btn(self.cancel_btn,description_offx); //copied and edited below
+      {
+        var bb = self.cancel_btn;
+        var offx = description_offx;
+        if(!bb.active) return;
+        var old_x = bb.x;
+        bb.x += self.x+offx;
+        gg.ctx.fillStyle = gg.backdrop_color;
+        fillRBB(bb,self.pad,gg.ctx);
+        gg.ctx.fillStyle = gg.font_color;
+
+        gg.ctx.fillText(bb.name,bb.x+bb.w/2, bb.y+bb.h-self.pad);
+        bb.x = old_x;
+      }
+
     }
 
     gg.ctx.textAlign = "left";
@@ -936,16 +931,26 @@ var inspector = function()
         {
           gg.ctx.drawImage(vignette_land_img,self.x,self.vignette_y,self.w,self.vignette_h);
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_ROCK:
         {
           gg.ctx.drawImage(vignette_rock_img,self.x,self.vignette_y,self.w,self.vignette_h);
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_GRAVE:
@@ -975,8 +980,13 @@ var inspector = function()
             gg.ctx.globalAlpha = 1;
           }
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
-          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/4,self.w,self.vignette_h/4);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/5,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*2/5-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_SHORE:
@@ -989,8 +999,13 @@ var inspector = function()
         {
           gg.ctx.drawImage(vignette_forest_img,self.x,self.vignette_y,self.w,self.vignette_h);
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_HOME:
@@ -1002,35 +1017,21 @@ var inspector = function()
         case TILE_TYPE_FARM:
         {
           gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
-        /*
-          gg.ctx.globalAlpha = 0.2;
-          gg.ctx.fillStyle = nutrition_color;
-          var vp = 0.8;
-          var vy = self.vignette_y+self.vignette_h*vp;
-          var x = self.vignette_x;
-          var w = self.vignette_w*0.1;
-          var p;
-          //nutrition
-          p = min(1,(t.nutrition/(nutrition_max/4)));
-          gg.ctx.fillRect(x,vy,w,self.vignette_h*(1-vp)*p);
-          //growth;
-          p = t.val/farm_nutrition_req;
-          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p),w,vp*self.vignette_h*p);
-          //delineator
-          gg.ctx.strokeStyle = black;
-          drawLine(x,vy,x+w,vy,gg.ctx);
-          //poop
+
+          var g = t.val/farm_nutrition_req;
+          if(t.state == TILE_STATE_FARM_GROWN) g = 1;
+          var offy = self.vignette_y+0.0*self.vignette_h;
+          var h = vignette_overlay_corn_img.height*self.vignette_w/vignette_overlay_corn_img.width;
+          gg.ctx.drawImage(vignette_overlay_corn_img,0,0,vignette_overlay_corn_img.width,vignette_overlay_corn_img.height*g,self.vignette_x,offy+(1-g)*h,self.vignette_w,g*h);
+
+          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
+          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
           if(t.fertilizer)
           {
-          gg.ctx.fillStyle = brown;
-          p = t.fertilizer.state/fertilizer_nutrition;
-          gg.ctx.fillRect(x,vy-(vp*self.vignette_h*p*0.2),w,vp*self.vignette_h*p*0.2);
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
           }
-          gg.ctx.globalAlpha = 1;
-        */
-          var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
-          gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
         }
         break;
         case TILE_TYPE_LIVESTOCK:
@@ -1044,8 +1045,13 @@ var inspector = function()
             default: self.img_vignette(tile_livestock_imgs[3],1); break;
           }
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
-          var vnt = min(bias1(t.nutrition/(nutrition_max/4)),0.99);
+          var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
           gg.ctx.drawImage(vignette_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4,self.w,self.vignette_h/4);
+          if(t.fertilizer)
+          {
+            vnt = bias1(min(t.fertilizer.state/(nutrition_max/2),0.99));
+            gg.ctx.drawImage(vignette_layer_nutrition_imgs[vignette_nutrition_overlay_ii(vnt,frame)],self.x,self.vignette_y+self.vignette_h*3/4-self.vignette_h/16,self.w,self.vignette_h/16);
+          }
         }
         break;
         case TILE_TYPE_ROAD:
@@ -1700,7 +1706,7 @@ var achievements = function()
   {
     self.pad = 10*gg.stage.s_mod;
 
-    self.w = gg.canvas.width/2;
+    self.w = gg.canvas.width/2.5;
     self.h = self.w;
     self.x = gg.canvas.width/2-self.w/2;
     self.y = gg.canvas.height/2-self.h/2;
@@ -1726,20 +1732,20 @@ var achievements = function()
   self.notif_ts = [];
 
   var t;
-  t = self.pushtrigger("Exist", "Get a visitor.",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length;       },0);
-  t = self.pushtrigger("Group", "3 Workers",         farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 3;  },t);
-  t = self.pushtrigger("Town",  "A small community", farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 5;  },t);
-  t = self.pushtrigger("City",  "10 Townmembers",    farmbit_img, farmbit_img, function(){ return gg.farmbits.length >= 10; },t);
+  t = self.pushtrigger("Exist", "Get a visitor.",    achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
+  t = self.pushtrigger("Group", "3 Workers",         achievement_pop_imgs[1], achievement_pop_imgs[1], function(){ return gg.farmbits.length >= 3;  },t);
+  t = self.pushtrigger("Town",  "A small community", achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
+  t = self.pushtrigger("City",  "10 Townmembers",    achievement_pop_imgs[3], achievement_pop_imgs[3], function(){ return gg.farmbits.length >= 10; },t);
 
-  t = self.pushtrigger("Farmer",   "Own a farm!",      tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
-  t = self.pushtrigger("Farmers",  "Get three farms",  tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
-  t = self.pushtrigger("Farmtown", "5 Farms!",         tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
-  t = self.pushtrigger("MegaFarm", "10 Farm Industry", tile_farm_img, tile_farm_img, function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
+  t = self.pushtrigger("Farmer",   "Own a farm!",      achievement_farm_imgs[0], achievement_farm_imgs[0], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
+  t = self.pushtrigger("Farmers",  "Get three farms",  achievement_farm_imgs[1], achievement_farm_imgs[1], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 3;  },t);
+  t = self.pushtrigger("Farmtown", "5 Farms!",         achievement_farm_imgs[2], achievement_farm_imgs[2], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 5;  },t);
+  t = self.pushtrigger("MegaFarm", "10 Farm Industry", achievement_farm_imgs[3], achievement_farm_imgs[3], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length >= 10; },t);
 
-  t = self.pushtrigger("Paycheck",    "$500",   icon_money_img, icon_money_img, function(){ return gg.money > 500;   },0);
-  t = self.pushtrigger("Thousandair", "$1000",  icon_money_img, icon_money_img, function(){ return gg.money > 1000;  },t);
-  t = self.pushtrigger("Stability",   "$5000",  icon_money_img, icon_money_img, function(){ return gg.money > 5000;  },t);
-  t = self.pushtrigger("Riches",      "$10000", icon_money_img, icon_money_img, function(){ return gg.money > 10000; },t);
+  t = self.pushtrigger("Paycheck",    "$500",   achievement_money_imgs[0], achievement_money_imgs[0], function(){ return gg.money > 500;   },0);
+  t = self.pushtrigger("Thousandair", "$1000",  achievement_money_imgs[1], achievement_money_imgs[1], function(){ return gg.money > 1000;  },t);
+  t = self.pushtrigger("Stability",   "$5000",  achievement_money_imgs[2], achievement_money_imgs[2], function(){ return gg.money > 5000;  },t);
+  t = self.pushtrigger("Riches",      "$10000", achievement_money_imgs[3], achievement_money_imgs[3], function(){ return gg.money > 10000; },t);
 
   var n_bloomed = function(n)
   {
@@ -1754,10 +1760,10 @@ var achievements = function()
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom","Algae destroys one tile",       tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom","You have an algae problem", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", tile_bloom_img,tile_bloom_img,function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom","Algae destroys one tile",       achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom","You have an algae problem", achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -1777,7 +1783,7 @@ var achievements = function()
 
   self.tick = function()
   {
-    if(gg.advisors.thread == gg.advisors.first_thread) return;
+    if(gg.advisors.thread) return;
     var t;
     for(var i = 0; i < self.triggers.length; i++)
     {
@@ -1812,15 +1818,16 @@ var achievements = function()
     {
       gg.ctx.fillStyle = white;
       fillRBB(self,self.pad,gg.ctx);
-      var rows = 5;
-      var cols = 5;
-      var s = ((self.w-self.pad)/5)-self.pad;
+      var rows = 4;
+      var cols = 4;
+      var s = ((self.w-self.pad)/cols)-self.pad;
       var x = self.x+self.pad;
       var y = self.y+self.pad;
       gg.ctx.fillStyle = gray;
       var t = self.nullt;
-      var fs = gg.font_size;
+      var fs = gg.font_size*3/4;
       gg.ctx.font = fs+"px "+gg.font;
+      gg.ctx.fillStyle = black;
       for(var i = 0; i < rows; i++)
       {
         x = self.x+self.pad;
@@ -1828,12 +1835,13 @@ var achievements = function()
         {
           t = self.triggers[i*cols+j];
           if(!t) continue
-          if(t.local) gg.ctx.fillStyle = red;
-          else        { gg.ctx.fillStyle = gray; gg.ctx.globalAlpha = 0.5; }
-          fillRRect(x,y,s,s,self.pad,gg.ctx);
-          if(t.local && t.onimg) gg.ctx.drawImage(t.onimg,x,y,s,s);
+          if(!t.local) gg.ctx.globalAlpha = 0.5;
+          if(t.local && t.onimg)
+          {
+            gg.ctx.drawImage(t.onimg,x,y,s,s);
+            gg.ctx.drawImage(button_achievement_img,x+s/2+s/8,y+s/2+s/8,s/4,s/4);
+          }
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
-          gg.ctx.fillStyle = black;
           gg.ctx.fillText(t.name,x+s/2,y+s);
           x += s+self.pad;
           gg.ctx.globalAlpha = 1;
@@ -1846,7 +1854,7 @@ var achievements = function()
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
       var w = 150*gg.stage.s_mod;
-      var h = gg.font_size*8;
+      var h = gg.font_size*9;
       var x = gg.canvas.width/2-w/2;
       var y = gg.canvas.height/2-h/2;
       var pad = gg.font_size;
@@ -1861,13 +1869,14 @@ var achievements = function()
       fillSelectiveRRect(x,y+h*3/5,w,h*2/5,0,0,1,1,pad,gg.ctx);
       gg.ctx.stroke();
       gg.ctx.fillStyle = white;
-      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3);
-      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size);
+      gg.ctx.fillText("Achievement",gg.canvas.width/2,y+h*1/3+gg.font_size/2);
+      gg.ctx.fillText("unlocked!",  gg.canvas.width/2,y+h*1/3+gg.font_size+gg.font_size/2);
       gg.ctx.fillStyle = "#18315B";
       gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
       gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
-      var imgs = w/4;
+      var imgs = w/2;
       gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
+      gg.ctx.drawImage(button_achievement_img,gg.canvas.width/2+imgs/8,y+imgs/6,imgs/4,imgs/4);
     }
   }
 
@@ -1922,16 +1931,10 @@ var advisors = function()
 
   self.mayor_history        = [];
   self.mayor_fmt_history    = [];
-  self.mayor_records        = [];
-  self.mayor_fmt_records    = [];
   self.business_history     = [];
   self.business_fmt_history = [];
-  self.business_records     = [];
-  self.business_fmt_records = [];
   self.farmer_history       = [];
   self.farmer_fmt_history   = [];
-  self.farmer_records       = [];
-  self.farmer_fmt_records   = [];
 
   self.owns_ui = 0;
   self.owns_time = 0;
@@ -2272,18 +2275,6 @@ var advisors = function()
     }
   }
 
-  self.push_record = function(txt)
-  {
-//  my_logger.record(txt);
-    var fmt = textToLines(self.font, self.popup_w, txt, gg.ctx);
-    switch(self.advisor)
-    {
-      case ADVISOR_TYPE_MAYOR:    self.mayor_records.push(txt);    self.mayor_fmt_records.push(fmt);    break;
-      case ADVISOR_TYPE_BUSINESS: self.business_records.push(txt); self.business_fmt_records.push(fmt); break;
-      case ADVISOR_TYPE_FARMER:   self.farmer_records.push(txt);   self.farmer_fmt_records.push(fmt);   break;
-    }
-  }
-
   self.jmp = function(i)
   {
     self.thread[self.thread_i*THREADF_TYPE_COUNT+THREADF_TYPE_END]();
@@ -2592,14 +2583,15 @@ var advisors = function()
       if(self.farmer_active)
       {
         gg.ctx.drawImage(advisor_panel_farmer_img,x,y,w,h*1.05);
-        gg.ctx.fillText("Farms support",x+w/2,y+fs*3+self.pad/2);
-        gg.ctx.fillText(fdisp(self.people_supported, 1)+" people",x+w/2,y+fs*4+self.pad);
+        //gg.ctx.fillText("Farms support",x+w/2,y+fs*3+self.pad/2);
+        //gg.ctx.fillText(fdisp(self.people_supported, 1)+" people",x+w/2,y+fs*4+self.pad);
         //gg.ctx.fillText(fdisp(self.livestock_supported, 1)+" livestock",x+w/2,y+fs*4+self.pad);
         //gg.ctx.fillText("sustainable",x+w/2,y+fs*4+self.pad/2+fs);
         //gg.ctx.fillText(fdisp(potential_rate) +" food/min (potential)",  x,y+fs*5);
         //gg.ctx.fillText(fdisp(production_rate)+" food/min (production)", x,y+fs*6);
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
-        //gg.ctx.fillText(gg.food+" food", x,y);
+        gg.ctx.fillText(gg.food+" food", x+w/2, y+fs*3+self.pad/2);
+        gg.ctx.fillText("available", x+w/2, y+fs*4+self.pad);
       }
       x += w*1.1;
     }
@@ -2614,12 +2606,11 @@ var advisors = function()
       y = y-(10-10*bounceup(t)+100)*gg.stage.s_mod;
       var txt_fmt;
       var fmt_history;
-      var fmt_records;
       switch(self.advisor)
       {
-        case ADVISOR_TYPE_MAYOR:    fmt_records = self.mayor_fmt_records;    fmt_history = self.mayor_fmt_history;   break;
-        case ADVISOR_TYPE_BUSINESS: fmt_records = self.business_fmt_records; fmt_history = self.business_fmt_history; break;
-        case ADVISOR_TYPE_FARMER:   fmt_records = self.farmer_fmt_records;   fmt_history = self.farmer_fmt_history;  break;
+        case ADVISOR_TYPE_MAYOR:    fmt_history = self.mayor_fmt_history;   break;
+        case ADVISOR_TYPE_BUSINESS: fmt_history = self.business_fmt_history; break;
+        case ADVISOR_TYPE_FARMER:   fmt_history = self.farmer_fmt_history;  break;
       }
       txt_fmt = fmt_history[fmt_history.length-1];
       var h = self.pad+self.title_font_size+self.pad+self.font_size*txt_fmt.length+self.pad;
@@ -2678,14 +2669,6 @@ var advisors = function()
       ty += self.pad+self.font_size;
       ty += self.preview_off_y+(self.drag_preview_cur_y-self.drag_preview_start_y);
       gg.ctx.fillStyle = self.fgc;
-      for(var j = 0; j < fmt_records.length; j++)
-      {
-        txt_fmt = fmt_records[fmt_records.length-1-j];
-        for(var i = 0; i < txt_fmt.length; i++)
-          gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
-        ty += (self.pad+self.font_size)*txt_fmt.length;
-        if(ty > y+h+self.font_size) break;
-      }
       gg.ctx.restore();
       strokeRRect(x-w/3,y+(self.target_popup_h-self.popup_h),w+w/3,self.popup_h,self.pad,gg.ctx); //copied from fillrrect above
 
@@ -2695,8 +2678,7 @@ var advisors = function()
     {
       gg.ctx.textAlign = "left";
       gg.ctx.fillStyle = black;
-      gg.ctx.fillText("(skip tutorial)",self.skip_btn.x,self.skip_btn.y+self.skip_btn.h);
-      //gg.ctx.fillRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
+      gg.ctx.drawImage(button_skip_tutorial_img,self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
     }
   }
 
@@ -2724,7 +2706,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("I can't stay here any longer- good luck."); self.push_record("I'm out! You've killed too many.");}, //begin
+    function(){ self.push_blurb("I can't stay here any longer. Good luck."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2764,7 +2746,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("I can't stay here any longer- good luck."); self.push_record("I'm out! You've killed too many.");}, //begin
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2804,7 +2786,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("I can't stay here any longer- good luck."); self.push_record("I'm out! You've killed too many.");}, //begin
+    function(){ self.push_blurb("I can't stay here any longer- good luck."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -2822,10 +2804,9 @@ var advisors = function()
 
   var tut_rain = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Looks like it's about to rain!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Welp, looks like rain."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -2849,10 +2830,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("There it goes-"); }, //begin
+    function(){ self.push_blurb("Keep an eye on your soil."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -2860,10 +2840,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Don't worry, it shouldn't last too long."); }, //begin
+    function(){ self.push_blurb("The rain might wash away some nutrients from your farm."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -2871,21 +2850,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("It might shift around some nutrients,"); }, //begin
+    function(){ self.push_blurb("Don't worry. It's nothin' a little manure can't fix!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("But that's nothing some more manure can't fix!"); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -2909,10 +2876,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Told you it wouldn't last long!"); }, //begin
+    function(){ self.push_blurb("Okey dokey, rain's over."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -2920,10 +2886,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Back to work, everybody!"); self.push_record("Rain will shift around fertilizer and nutrients in the soil- You'll have to add more fertilizer to get it back!"); }, //begin
+    function(){ self.push_blurb("Back to work, everybody!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -2948,11 +2913,10 @@ var advisors = function()
         if(t.nutrition < nutrition_desperate) { self.heap.t = t; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Your farm has used up all the nutrition at its tile!");
+      self.push_blurb("Uh oh. Looks like your farm ate up all the nutrients in the soil.");
     },
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -2964,10 +2928,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("This farm will grow very slowly"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You won't be growin' much at this rate."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -2979,10 +2942,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Maybe you can produce more fertilizer?"); self.push_record("When farm nutrients get low, they will produce crop very slowly. Add fertilizer to give them a boost.");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("See if you can get ahold of more fertilizer!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -3009,11 +2971,10 @@ var advisors = function()
         if(gg.b.tile_in_bounds(t) && t.nutrition > water_fouled_threshhold) { self.heap.t = t; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Uh oh. Looks like there's an algae bloom starting!");
+      self.push_blurb("Ope. Looks like there's an algae bloom starting.");
     },
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var t = self.heap.t;
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -3025,10 +2986,51 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Let's be careful to not make this worse!"); self.push_record("Your lake is so nutrient rich, it's causing an algae bloom! Yuck!");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Aw, for cripe's sake... it's gonna ruin the lake!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
+      var t = self.heap.t;
+      gg.b.screen_tile(t);
+      self.camtotile(t);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(t.x+t.w,t.y+t.h/2);
+    },
+    self.adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("This is all my sister's fault! Always goin' on about farms."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      var t = self.heap.t;
+      gg.b.screen_tile(t);
+      self.camtotile(t);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(t.x+t.w,t.y+t.h/2);
+    },
+    self.adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Sure, people need to eat. I guess. But at what cost?!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      var t = self.heap.t;
+      gg.b.screen_tile(t);
+      self.camtotile(t);
+      self.popup(TEXT_TYPE_DISMISS);
+      self.arrow(t.x+t.w,t.y+t.h/2);
+    },
+    self.adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You gotta stop the bloom from gettin' any worse!"); }, //begin
+    ffunc, //tick
+    function(){ //draw
       var t = self.heap.t;
       gg.b.screen_tile(t);
       self.camtotile(t);
@@ -3077,11 +3079,10 @@ var advisors = function()
         if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Ew- now "+f.name+" is swimming in algae bloom.");
+      self.push_blurb("Aw jeez. Now "+f.name+" is swimming in the algae bloom.");
     },
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3091,10 +3092,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("This will make them sad."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That's gonna make 'em sad!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3104,10 +3104,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Quick! Put up some signs to keep people away from the gross water!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3117,10 +3116,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.skimmer_btn.active = 1; self.push_blurb("Or, if you can afford it, clean the lake!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.skimmer_btn.active = 1; self.push_blurb("Or if you can make enough money, clean the lake!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3130,10 +3128,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That way everyone stays happy and ready to work!"); self.push_record("You can use signs to keep your townspeople away from gross water.");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Or if you can make enough money, clean the lake. That'll do the trick!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3160,11 +3157,10 @@ var advisors = function()
         if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Ew- "+f.name+" is swimming in algae bloom.");
+      self.push_blurb("Aw jeez. "+f.name+" is swimming in the algae bloom.");
     },
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3174,10 +3170,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("This will make them sad."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Gross lakes make people sad!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3187,10 +3182,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Build signs to keep them away from the gross water!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Put up some signs to keep people away from the gross water!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3200,10 +3194,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That way everyone stays happy and ready to work!"); self.push_record("You can use signs to keep your townspeople away from gross water.");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That way everybody stays happy!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(f.x+f.w,f.y+f.h/2);
@@ -3220,7 +3213,7 @@ var advisors = function()
 
   var tut_death = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Oh no! One of your townspeople have died!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Cripe's sake! What happened?!"); },//begin
     noop, //tick
     function() { //draw
       self.wash();
@@ -3231,7 +3224,7 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("It's your responsibility to make sure there is enough edible food to go around"); }, //begin
+    function(){ self.push_blurb("Ya gotta make sure you've got enough food to go around, friend!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3242,7 +3235,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Maybe you need more farms? Or more fertilizer?"); self.push_record("A townsperson has died of hunger. Make sure you're producing enough food!");}, //begin
+    function(){ self.push_blurb("And... uh... if ya don't mind, let's not mention this little mishap to my sister."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3259,10 +3252,9 @@ var advisors = function()
 
   var tut_unattended_farm = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("One of your farms is ready for harvest."); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Whatcha waitin' for? You've got food ready to harvest!"); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3270,10 +3262,9 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("A field unharvested is a field that isn't producing more food!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Your farm can't grow anything new 'til somebody harvests it."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3281,10 +3272,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Consider finding more townspeople to increase your town's efficiency."); self.push_record("If your farms aren't being harvested, consider building more housing to encourage population growth!");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("It might be time for you to bring in more people."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3298,10 +3288,9 @@ var advisors = function()
 
   var tut_unused_fertilizer = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("There's some unused manure laying around."); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Jeez louise. You've got unused manure just laying around."); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3309,10 +3298,9 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That will slowly leech nutrients into the soil-"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Unused manure will leech nutrients into the soil."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3320,10 +3308,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("See if you can free up some people to fertilize your farms, so those nutrients get put to good use!"); self.push_record("Unused fertilizer will leech nutrients into the surrounding soil, even if that soil isn't farmland!");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You need to free up some people, or all that manure will go to waste!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3337,10 +3324,9 @@ var advisors = function()
 
   var tut_flooded_fertilizer = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Oh no, it's raining and there's still fresh fertilizer on your farms!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Oh no!!! It's raining and there's still fresh fertilizer on your farms!"); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3348,10 +3334,9 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("The rain might wash that fertilizer away."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("The rain might wash the fertilizer right into our beautiful lakes!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3359,10 +3344,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Sadly, there's not much you can do to prevent it..."); self.push_record("Rain pushes fertilizer off of your farms. It's an unfortunate waste of nutrients...");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Sadly, there's nothin' much we can do."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3376,10 +3360,9 @@ var advisors = function()
 
   var tut_mass_sadness = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Your townspeople are very sad!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Oh no. Your townspeople are very sad!"); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3390,7 +3373,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I'm sure they'd like to play in the water,"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3401,7 +3383,6 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("but maybe your lakes are overrun with disgusting algae?"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3409,10 +3390,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Find a way to keep them happy!"); self.push_record("The people of Lakeland need to swim to maintain morale! If your lake is gross, they won't work."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Find a way to keep them happy!");  }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3429,7 +3409,6 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'long_travel'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Some of your townspeople are taking a long time to deliver goods."); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3437,10 +3416,9 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.road_btn.active = 1; self.push_blurb("Consider building some roads to cut down on travel time!"); self.push_record("Roads make for MUCH faster transportation. It could be the difference that makes for an efficient farming pipeline!");}, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.road_btn.active = 1; self.push_blurb("Consider building some roads to cut down on travel time!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3457,7 +3435,6 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Oh no, you've lost another one!"); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3468,7 +3445,6 @@ var advisors = function()
     function(){ self.push_blurb("A gravestone will remember them forever"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3485,7 +3461,6 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_member'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Someone else has moved in!"); },//begin
     noop, //tick
     function() { //draw
-      self.wash();
       self.popup(TEXT_TYPE_DIRECT);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3496,7 +3471,6 @@ var advisors = function()
     function(){ self.push_blurb("Your town continues to grow!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
@@ -3532,7 +3506,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Better luck next time!"); self.push_record("You have no more townmembers! Your town has failed.");}, //begin
+    function(){ self.push_blurb("Better luck next time!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3549,10 +3523,9 @@ var advisors = function()
 
   var tut_poop = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); self.takeover_ui(); self.takeover_time(); self.push_blurb("You can use manure from livestock to reintroduce nutrition to the ground."); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'poop'}); self.takeover_ui(); self.takeover_time(); self.push_blurb("Ooh, fresh manure!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
@@ -3562,10 +3535,10 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("(your townmembers will do this automatically)"); }, //begin
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Your people will automatically use the manure to fertilize your farms."); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
@@ -3575,10 +3548,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Consider manure an added perk- it will save money on importing fertilizer for your farms!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That means you get to save money on fertilizer!"); }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
@@ -3588,10 +3560,9 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Buy more houses to grow your town!");self.push_record("Your townspeople will automatically use free manure to fertilize their farms. This is key to a profitable crop cycle!"); self.skip_btn.active = 0; }, //begin
+    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Buy more houses to grow your town!"); self.skip_btn.active = 0; }, //begin
     ffunc, //tick
     function(){ //draw
-      self.wash();
       self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
@@ -3675,7 +3646,7 @@ var advisors = function()
 
   var tut_livestock = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'livestock'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Good work!"); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'livestock'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Hot diggety! Now you're thinkin'!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3685,7 +3656,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("A Dairy farm can produce milk, which will sell for a great price!"); }, //begin
+
+    function(){ self.push_blurb("People love dairy! We're gonna make a pretty penny."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3695,7 +3667,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("But you'll have to feed your livestock if you want any output"); }, //begin
+    function(){ self.push_blurb("Make sure to keep your livestock fed."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3705,7 +3677,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Select some food, and toggle its switch to use it for \"feed\"."); }, //begin
+
+    function(){ self.push_blurb("Select some corn and mark it as \"feed\"."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3715,7 +3688,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Three feed should be enough to produce some milk!"); self.push_record("Feed your livestock to produce Milk."); }, //begin
+    function(){ self.push_blurb("Three feed should be enough to produce some milk!");  }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3732,7 +3705,7 @@ var advisors = function()
 
   var tut_buy_livestock = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_livestock'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("You seem to have corn production figured out."); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_livestock'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Your cornfields are lookin' good!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3742,7 +3715,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Why not expand into the world of Dairy?"); }, //begin
+    function(){ self.push_blurb("But you know what they say. Don't put your eggs in one basket."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3752,7 +3725,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Next, save up for some livestock."); self.push_record("Invest in livestock to start a dairy industry!");}, //begin
+
+    function(){ gg.shop.livestock_btn.active = 1; self.push_blurb("Save up to buy a dairy farm!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var b = gg.shop.livestock_btn;
@@ -3771,7 +3745,7 @@ var advisors = function()
 
   var tut_buy_fertilizer = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Hmmmm. Looks like your farms are eatin' up the nutrients in the soil."); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Hey there! How's the farm lookin'?"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3781,7 +3755,18 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.nutrition_toggle.toggle_btn.active = 1; self.takeover_ui(); self.takeover_time(); self.push_blurb("Click to toggle to nutrition view."); }, //begin
+
+    function(){ self.push_blurb("Hmmm. Looks like your farm's eatin' up all the nutrients in the soil."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ gg.nutrition_toggle.toggle_btn.active = 1; self.takeover_ui(); self.takeover_time(); self.push_blurb("Click to switch over to nutrition view."); }, //begin
     function(){ return gg.b.nutrition_view; }, //tick
     function(){ //draw
       self.wash();
@@ -3799,7 +3784,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("The red represents how fertile the soil is."); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("See? The red shows how fertile the soil is."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3809,7 +3794,17 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.shop.fertilizer_btn.active = 1; gg.money += fertilizer_cost; self.push_blurb("Buy some fertilizer. That should help!"); }, //begin
+    function(){ self.push_blurb("Your farm's not lookin' too good."); }, //begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ gg.shop.fertilizer_btn.active = 1; gg.money += fertilizer_cost; self.push_blurb("Buy some fertilizer!"); gg.shop.selected_buy = 0; }, //begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FERTILIZER); }, //tick
     function(){ //draw
       var b = gg.shop.fertilizer_btn;
@@ -3846,7 +3841,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     //can't build there
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Can't put fertilizer there!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Ope. Can't put fertilizer there!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3856,7 +3851,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That should make your farm grow faster!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("There ya go! Now your farm will grow faster!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3866,7 +3861,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("See if you can save up enough money to buy another farm."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("See if you can save up for another farm!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3911,7 +3906,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.takeover_ui(); self.takeover_time(); self.push_blurb("Holy cats... look at all that extra food, just sittin' there!"); }, //begin
+    function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.takeover_ui(); self.takeover_time(); self.push_blurb("Holy buckets. Look at all that food, just sittin' there!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var i = self.heap.i;
@@ -3923,7 +3918,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("You musta been talkin' to Joe and Flo."); },//begin
+    function(){ self.push_blurb("You musta been talkin' to Joe and Flo. They're ok, as far as siblings go."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3933,7 +3928,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Always goin' on about lakes and farms and whatnot."); },//begin
+
+    function(){ self.push_blurb("But there's more to life than lakes and farms! Ya know?"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3943,22 +3939,22 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Luckily, I'm here to help. You need to sell the surplus!"); },//begin
+    function(){ self.push_blurb("You need to make money! That's the bottom line."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I've got an easy three-point plan."); },//begin
     ffunc, //tick
     function(){ //draw
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("Don't worry. I've got a three-point plan!"); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -3979,7 +3975,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Bingo! Now click an item to select it."); },//begin
+    function(){ self.push_blurb("Bingo! Now click some corn to select it."); },//begin
     function(){ gg.speed = SPEED_PAUSE; return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
     function(){ //draw
       var i = self.heap.i;
@@ -3991,7 +3987,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Yahtzee! Now mark the item for sale on the right."); },//begin
+    function(){ self.push_blurb("You got it! Now mark the corn for sale on the right."); },//begin
     function(){ gg.speed = SPEED_PAUSE; var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4003,7 +3999,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("You did it! Easy as rhubarb cobbler!"); },//begin
+    function(){ self.push_blurb("There ya go! Easy as pie!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4013,7 +4009,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.takeover_ui(); self.takeover_time(); self.push_blurb((f ? f.name : 0)+" will export your item for sale!"); }, //begin
+    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.takeover_ui(); self.takeover_time(); self.push_blurb((f ? f.name : 0)+" will export your item."); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -4028,7 +4024,7 @@ var advisors = function()
     tfunc, //shouldsim
 
 
-    function(){ self.push_blurb("Now click Play to restart time!"); },//begin
+    function(){ self.push_blurb("Now click the Play button to keep'er movin'!"); },//begin
     function(){ return gg.speed > SPEED_PAUSE; }, //tick
     function(){ //draw
       var b = gg.bar.play_btn;
@@ -4048,7 +4044,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is scootin' to the next town to sell your item!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is scootin' to the next town to sell your item."); },//begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -4061,7 +4057,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("They'll be back soon with some cold, hard cash!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("They'll be back soon with some cash!"); },//begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -4074,15 +4070,6 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Just what every town needs. Good, old-fashioned trade."); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
 
     noop, //begin
     function(){ return !self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
@@ -4106,7 +4093,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You just made $"+item_worth_food+"!");  self.push_record("Click on items and mark them as 'FOR SALE' to signal your townspeople to take those items to the market."); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You just made $"+item_worth_food+"!"); gg.shop.selected_buy = 0; },//begin
     function(){ gg.shop.keep_open(); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4120,11 +4107,21 @@ var advisors = function()
     },
     tfunc, //shouldsim
 
+    function(){ self.push_blurb("Ope... my sister's comin'. I better skedaddle."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
   ];
 
   var tut_timewarp = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_FARMER); gg.bar.unlock_all(); self.push_blurb("Click up top to speed things up!"); self.push_record("You can use the time controls at the top of the screen to zoom through boring waiting periods."); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_FARMER); gg.bar.unlock_all(); self.push_blurb("Click up top to move things along!"); },//begin
     function() { return gg.speed > SPEED_PLAY; }, //tick
     function() { //draw
       self.wash();
@@ -4166,18 +4163,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You reap what you sow. That's my motto."); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
 
-
-    function(){ gg.money += farm_cost; gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm!"); }, //begin
+    function(){ gg.money += farm_cost; gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm!"); gg.shop.selected_buy = 0; }, //begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FARM); }, //tick
     function(){ //draw
       var b = gg.shop.farm_btn;
@@ -4214,7 +4201,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     //can't build there
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Can't build a farm there!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Ope. Can't build a farm there!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4225,7 +4212,7 @@ var advisors = function()
     ffunc, //shouldsim
 
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically take care of the farm!"); self.push_record("Buy farms to produce food for your people!"); }, //begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically take care of the farm!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -4247,7 +4234,7 @@ var advisors = function()
 
   var tut_buy_food = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_food'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.push_blurb("Good mornin', friend!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'buy_food'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.push_blurb("About time! I've been lookin' for ya."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4257,7 +4244,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.push_blurb("I'm Flo, your farm advisor. Looks like you could use some help."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("I'm Flo, your farm advisor."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4267,17 +4254,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.push_blurb("Cripes... not a single farm?!"); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.takeover_ui(); self.push_blurb("And look at your people, runnin' around like a chicken with... well, you know."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("Jeeze louise... not a single farm in your whole town?!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4297,7 +4274,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.push_blurb("'People love lakes.' Well, people also love not starvin' ta death, Joe."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("'People love dem lakes!' Well, people also love not starvin' ta death, Joe."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4307,7 +4284,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Ahem.. anyhow, let's get all your ducks in a row."); },//begin
+    function(){ self.push_blurb("Ahem. Anyhow, let's get all your ducks in a row."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4332,7 +4309,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.money += food_cost; gg.shop.food_btn.active = 1; self.push_blurb("Buy some food from the shop!"); }, //begin
+    function(){ gg.money += food_cost; gg.shop.food_btn.active = 1; self.push_blurb("Buy some food from the shop!"); gg.shop.selected_buy = 0; }, //begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FOOD); }, //tick
     function(){ //draw
       var b = gg.shop.food_btn;
@@ -4370,7 +4347,7 @@ var advisors = function()
     tfunc, //shouldsim
 
     //can't build there
-    function(){ self.takeover_ui(); self.push_blurb("Cripe's sake. You can't put food there!"); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("Ope. Can't put food there."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4383,8 +4360,7 @@ var advisors = function()
     function(){ //begin
       self.heap.f = gg.farmbits[0];
       var f = self.heap.f;
-      self.push_blurb((f ? f.name : 0)+" will eat it when they get hungry!");
-      self.push_record("Buy food to quickly feed your people.");
+      self.push_blurb((f ? f.name : 0)+" will eat it when they get hungry.");
       if(f && f.fullness > fullness_content+max_fullness/50)
         f.fullness = floor(fullness_content+max_fullness/50);
     },
@@ -4412,7 +4388,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Uh oh."); },//begin
+    function(){ self.push_blurb("Ope."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4423,7 +4399,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Looks like your town hasn't done so well..."); },//begin
+    function(){ self.push_blurb("Your people aren't lookin' so good."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4434,7 +4410,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("I think we can scrounge up enough investment to give you one more shot-"); },//begin
+
+    function(){ self.push_blurb("Aw, cheer up, friend..."); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4445,7 +4422,19 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.money += home_cost; self.push_blurb("Let's buy another house."); },//begin
+
+    function(){ self.push_blurb("I think I can scrounge up enough money to give you one more shot!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ gg.money += home_cost; self.push_blurb("Go on, buy another house!"); gg.shop.selected_buy = 0; },//begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4456,7 +4445,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Let's make this count!"); },//begin
+    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Try not to let all your people die this time. Just a little tip for ya."); },//begin
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4480,7 +4469,7 @@ var advisors = function()
       }
     },
     noop, //end
-    function(){ /*auto build a home here*/ self.push_blurb("Let's make this count!"); return false; }, //shouldsim
+    function(){ /*auto build a home here*/ self.push_blurb("Try not to let anybody die this time! Just a little insider tip for ya."); return false; }, //shouldsim
 
     //can't build there
     function(){ self.push_blurb("Can't build a house there!"); },//begin
@@ -4508,7 +4497,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; self.push_blurb("Waiting..."); }, //begin
+    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; self.push_blurb("Hopefully they won't mind the gravestone too much..."); }, //begin
     function(){ return self.bits_exist(1); }, //tick
     function(){ //draw
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
@@ -4540,7 +4529,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Good luck!"); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
+    function(){ self.push_blurb("Good luck, friend!"); self.skip_btn.active = 1; },//begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -4574,7 +4563,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Oh, hey there!"); },//begin
+    function(){ self.push_blurb("Oh, hey there, friend!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4594,18 +4583,8 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Looks like you're ready to get to buildin'."); },//begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
 
-
-    function(){ gg.money += home_cost; self.push_blurb("Why doncha buy your first house?"); },//begin
+    function(){ gg.money += home_cost; self.push_blurb("Why doncha buy your first house?"); gg.shop.selected_buy = 0; },//begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4616,7 +4595,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Put it near a lake. People love lakes!"); },//begin
+    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Put it near a lake. People love dem lakes!"); },//begin
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4640,7 +4619,7 @@ var advisors = function()
       }
     },
     noop, //end
-    function(){ /*auto build a home here*/ self.push_blurb("Put it near a lake. People love lakes!"); return false; }, //shouldsim
+    function(){ /*auto build a home here*/ self.push_blurb("Put it near a lake. People love dem lakes!"); return false; }, //shouldsim
 
     //can't build there
     function(){ self.push_blurb("Ope! Can't build a house there."); },//begin
@@ -4653,7 +4632,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.push_blurb("Nice goin', friend! Somebody oughta be movin' in real soon!"); },//begin
+    function(){ self.push_blurb("Somebody oughta be movin' in real soon!"); },//begin
     function(){ return self.bits_exist(1); }, //tick
     function(){
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
@@ -4701,7 +4680,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("It's your job ta keep the town happy!"); },//begin
+    function(){ self.push_blurb("Click on your townfolk ta see how they're doin'."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4711,7 +4690,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Click on your people ta see how they're doin'."); },//begin
+    function(){ self.push_blurb("It's your job ta keep'em alive and happy!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4722,7 +4701,7 @@ var advisors = function()
     tfunc, //shouldsim
 
 
-    function(){ self.push_blurb("Shouldn't be too hard. Like I said, people love dem lakes!"); self.push_record("Build houses to get more townspeople!"); self.skip_btn.active = 1; },//begin
+    function(){ self.push_blurb("Shouldn't be too hard. Like I said, people love dem lakes!"); self.skip_btn.active = 1; },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);

@@ -151,9 +151,9 @@ var nutrition_overlay_frames = 2;
 var nutrition_overlay_dots_per_level = 3;
 var nutrition_overlay_ii = function(t){ return floor(t*nutrition_overlay_levels); }
 
-var vignette_nutrition_overlay_levels = 30;
+var vignette_nutrition_overlay_levels = 60;
 var vignette_nutrition_overlay_frames = 2;
-var vignette_nutrition_overlay_dots_per_level = 5;
+var vignette_nutrition_overlay_dots_per_level = 3;
 var vignette_nutrition_overlay_ii = function(t,f){ return floor(t*vignette_nutrition_overlay_levels)*vignette_nutrition_overlay_frames+f; }
 
 //don't change

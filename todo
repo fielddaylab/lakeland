@@ -1,3 +1,23 @@
+- shop description
+- shop formatting
+- two advisors look very similar
+- once farm planted, it should say "now watch your farm grow!" to know you're g2g to wait
+- "op, didn't see you there" should start with "peter just harvested your farm"
+- click "an item" should be "click a corn"
+- "restart time" -> "resume time"
+- need white fertilizer assets
+- do the stats on the bottom matter?
+- add delay to "buy more houses to grow your town"
+- notification on first milk
+- dairy should have an indicator: "needs feed"
+- farm should have an indicator: "needs water"
+- farm/dairy should have an indicator: "needs harvesting/milking"
+- re-pop-up "your farm is low nutrition"
+
+
+
+
+
 - handle many lines of fertilizer on dot bar
 - incl faded "needs" in tile inspector; filled when needs met (farms: water, dairy: feed)
 - fade "production" according to ability to produce (farms: corn when harvestable; dairy: milk/poop when milkable)
