@@ -28,6 +28,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_BLURB              = ENUM; ENUM++;
   self.LOG_CATEGORY_CLICK              = ENUM; ENUM++;
   self.LOG_CATEGORY_RAINSTOPPED        = ENUM; ENUM++;
+  self.LOG_CATEGORY_HISTORY            = ENUM; ENUM++;
   self.LOG_CATEGORY_ENDGAME            = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT              = ENUM; ENUM++;
 
@@ -154,12 +155,12 @@ window.Logger = function(init){
     return self.num_checkpoints_completed;
   }
 
-  self.num_achievements = 0;
-  self.increment_num_achievements = function(){
-    self.num_achievements++;
-  }
-  self.get_num_achievements = function(){
-    return self.num_achievements;
+  self.achievements = null;
+  self.update_achievements = function(trigger){
+    for (var i = 0; i++; i < achievements.length)
+      if(trigger.name === gg.achievements.triggers[i].name) {
+        self.achievements[i] = 1; return;
+      }
   }
 
   self.time = 0;
@@ -172,6 +173,7 @@ window.Logger = function(init){
   //Logging
   self.startgame = function(){x
     self.set_prev_center_txty(gg.b.center_tile.tx,gg.b.center_tile.ty);
+    self.achievements = Array(gg.achievements.triggers.length).fill(0);
 //  self.prev_nutritions = self.nutrition_array();
     tile_states = gg.b.tiles.map(function(x) {return x.state});
     tile_nutritions = self.nutrition_array();
@@ -180,6 +182,35 @@ window.Logger = function(init){
       tile_nutritions: tile_nutritions
     };
     self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
+  }
+  self.new_gamestate = function(){
+    var now = Date.now();
+    var gamestate = {
+      tiles: pako.deflateRaw(self.uint8_tile_array()).join(),
+      farmbits: pako.deflateRaw(self.uint8_farmbit_array()).join(),
+      items: pako.deflateRaw(self.uint8_item_array()).join(),
+      money: gg.money,
+      speed: gg.speed,
+      achievements: self.achievements,
+      num_checkpoints_completed: self.get_num_checkpoints_completed(),
+      raining: gg.b.raining,
+      curr_selection_type: gg.inspector.detailed_type,
+      curr_selection_data: self.detailed_data(),
+      camera_center: self.prev_center_txty,
+      gametime: self.time,
+      timestamp: now,
+      camera_history: self.flush_camera_history(now),
+      emote_history: self.flush_emote_history(now)
+    };
+    self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
+  }
+  self.history = function(){
+    var now = Date.now();
+    var log_data = {
+      camera_history: self.flush_camera_history(now),
+      emote_history: self.flush_emote_history(now)
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
   }
   self.endgame = function(){
     // log_data = self.old_gamestate();
@@ -214,6 +245,27 @@ window.Logger = function(init){
     var log_data = self.buy_data(buy);
     self.send_log(log_data, self.LOG_CATEGORY_SELECTBUY);
   }
+  self.buy_item = function(){
+    var log_data = {
+       buy: gg.shop.selected_buy,
+       tile: self.tile_data_short(gg.b.hover_t),
+       success: gg.b.placement_valid(gg.b.hover_t,gg.shop.selected_buy),
+       buy_hovers: self.buy_hovers
+     };
+     self.reset_buy_hovers();
+     self.send_log(log_data, self.LOG_CATEGORY_PLACEITEM);
+     if (log_data.success) self.new_gamestate();
+   }
+   self.cancel_buy = function(buy){
+    var log_data = {
+       selected_buy: buy,
+       cost: gg.shop.buy_cost(buy),
+       curr_money: gg.money,
+       buy_hovers: self.buy_hovers
+     };
+     self.reset_buy_hovers();
+     self.send_log(log_data, self.LOG_CATEGORY_CANCEL_BUY)
+   }
 
   self.tile_use_select = function(t){
    var log_data = self.tile_data(t);
@@ -256,34 +308,12 @@ window.Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_SPEED);
   }
 
-  self.place_item = function(){
-   var log_data = {
-      buy: gg.shop.selected_buy,
-      tile: self.tile_data_short(gg.b.hover_t),
-      success: gg.b.placement_valid(gg.b.hover_t,gg.shop.selected_buy),
-      buy_hovers: self.buy_hovers
-    };
-    self.reset_buy_hovers();
-    self.send_log(log_data, self.LOG_CATEGORY_PLACEITEM);
-    self.new_gamestate();
-  }
-  self.cancel_buy = function(buy){
-   var log_data = {
-      selected_buy: buy,
-      cost: gg.shop.buy_cost(buy),
-      curr_money: gg.money,
-      buy_hovers: self.buy_hovers
-    };
-    self.reset_buy_hovers();
-    self.send_log(log_data, self.LOG_CATEGORY_CANCEL_BUY)
-  }
-
   self.achievement = function(trigger){
    var log_data = {
       name: trigger.name
     };
     self.send_log(log_data, self.LOG_CATEGORY_ACHIEVEMENT);
-    self.increment_num_achievements();
+    self.update_achievements();
   }
 
   self.farmbit_death = function(f){
@@ -330,12 +360,12 @@ window.Logger = function(init){
       event_custom: category,
       event_data_complex: JSON.stringify(log_data)
     };
-    // self.mySlog.log(formatted_log_data);
+    self.mySlog.log(formatted_log_data);
     log_data.category = category;
     console.log(log_data);
   }
 
-  //Helpers:
+  Helpers:
   // self.old_gamestate = function(){
   //   var now = Date.now();
   //   var gamestate = {
@@ -354,7 +384,7 @@ window.Logger = function(init){
   //     camera_center: self.prev_center_txty,
   //     click_history: self.flush_click_history(now),
   //     timestamp: now,
-  //     num_achievements: self.get_num_achievements(),
+  //     num_achievements: self.get_num_achievements(), -- deprecated
   //     num_checkpoints_completed: self.get_num_checkpoints_completed(),
   //     gametime: self.time,
   //     camera_history: self.flush_camera_history(now),
@@ -450,22 +480,6 @@ window.Logger = function(init){
       uint8arr[VARS_PER_ENTRY*i+j] = its[i].mark;j++;
     }
     return uint8arr;
-  }
-  self.new_gamestate = function(){
-    var gamestate = {
-      tiles: pako.deflate(self.uint8_tile_array()).join(),
-      farmbits: pako.deflate(self.uint8_farmbit_array()).join(),
-      items: pako.deflate(self.uint8_item_array()).join(),
-      money: gg.money,
-      speed: gg.speed,
-      num_achievements: self.get_num_achievements(),
-      num_checkpoints_completed: self.get_num_checkpoints_completed(),
-      raining: gg.b.raining,
-      curr_selection_type: gg.inspector.detailed_type,
-      curr_selection_data: self.detailed_data(),
-      camera_center: self.prev_center_txty,
-    };
-    self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
   }
   // self.item_data_short = function(it){
   //   return [it.tile.tx,it.tile.ty,it.thing,it.mark];
@@ -588,6 +602,24 @@ window.Logger = function(init){
   }
   self.inflate = function(input){
     return pako.inflate(input);
+  }
+  self.pako_speed_tests = function(){
+    console.time("get tile array")
+    arr = self.uint8_tile_array()
+    console.timeEnd("get tile array")
+
+    console.time("gzip")
+    pako.gzip(arr)
+    console.timeEnd("gzip")
+
+    console.time("deflate")
+    pako.deflate(arr)
+    console.timeEnd("deflate")
+
+    console.time("deflateRaw")
+    pako.deflateRaw(arr)
+    console.timeEnd("deflateRaw")
+
   }
 
   
