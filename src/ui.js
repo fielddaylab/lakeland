@@ -3642,6 +3642,15 @@ var advisors = function()
     },
     tfunc, //shouldsim
 
+    //breather
+    noop, //begin
+    function(){ return self.time_passed(80); }, //tick
+    noop, //draw
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
   ];
 
   var tut_livestock = [
@@ -4009,7 +4018,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.takeover_ui(); self.takeover_time(); self.push_blurb((f ? f.name : 0)+" will export your item."); }, //begin
+    function(){ self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.takeover_ui(); self.takeover_time(); self.push_blurb((f ? f.name : 0)+" will export that food."); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -4022,7 +4031,6 @@ var advisors = function()
     ffunc, //click
     noop, //end
     tfunc, //shouldsim
-
 
     function(){ self.push_blurb("Now click the Play button to keep'er movin'!"); },//begin
     function(){ return gg.speed > SPEED_PAUSE; }, //tick
@@ -4044,7 +4052,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is scootin' to the next town to sell your item."); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is scootin' to the next town to sell your corn."); },//begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -4069,7 +4077,6 @@ var advisors = function()
     ffunc, //click
     noop, //end
     tfunc, //shouldsim
-
 
     noop, //begin
     function(){ return !self.bits_job(JOB_TYPE_EXPORT,JOB_STATE_ACT); }, //tick
@@ -4119,6 +4126,42 @@ var advisors = function()
 
   ];
 
+  var tut_successful_harvest = [
+
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'successful_harvest'}); self.takeover_ui(); self.takeover_time(); self.push_blurb("And there you have it!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" now has a lifetime supply of food!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("(If they can keep the farm running!)"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    function() { //end
+      self.pool_thread(function(){ return 1; }, tut_sell_food);
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'successful_harvest'});
+    },
+    tfunc, //shouldsim
+  ];
+
   var tut_timewarp = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'timewarp'}); self.set_advisor(ADVISOR_TYPE_FARMER); gg.bar.unlock_all(); self.push_blurb("Click up top to move things along!"); },//begin
@@ -4134,7 +4177,7 @@ var advisors = function()
     ffunc, //click
     function() { //end
       gg.speed = SPEED_FAST;
-      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_sell_food);
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_successful_harvest);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
     },
     tfunc, //shouldsim
@@ -4143,7 +4186,15 @@ var advisors = function()
 
   var tut_build_a_farm = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is all full up!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'build_a_farm'}); }, //begin
+    function(){ return self.time_passed(20); }, //tick
+    noop, //draw
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){  self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" is all full up!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4211,8 +4262,37 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically take care of the farm!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    ffunc, //shouldsim
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically take care of the farm!"); }, //begin
+    noop,//begin
+    function(){ return self.heap.t.state == TILE_STATE_FARM_PLANTED; }, //tick
+    noop, //draw
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    ffunc, //shouldsim
+
+    //can't build there
+    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb("Great work "+(f ? f.name : 0)+"!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    ffunc, //shouldsim
+
+
+    function(){ self.push_blurb("Now, we wait."); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
