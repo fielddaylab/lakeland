@@ -1354,7 +1354,6 @@ var board = function()
           ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
           ctx.fillStyle = white;
           ctx.fill();
-          ctx.stroke();
           ctx.fillStyle = fillColor;
           ctx.beginPath();
           ctx.moveTo(x+timer_c,y+timer_c);
@@ -1362,6 +1361,9 @@ var board = function()
           ctx.arc(x+timer_c,y+timer_c,timer_r,0-halfpi,twopi*((j+1)/self.timer_progressions)-halfpi);
           ctx.lineTo(x+timer_c,y+timer_c);
           ctx.fill();
+          ctx.beginPath();
+          ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+          ctx.stroke();
           self.timer_atlas.commitSprite();
           x += timer_s;
         }
@@ -3435,37 +3437,34 @@ var item = function()
   self.draw = function()
   {
     if(self.offscreen) return;
+    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
     var y = self.y-self.h/4;
     var h = self.h+self.h/4;
     var img;
     switch(self.mark)
     {
-      case MARK_USE: img = gg.b.item_img(self.type); break;
+      case MARK_USE:  img = gg.b.item_img(self.type); break;
       case MARK_SELL: img = gg.b.item_sell_img(self.type); break;
       case MARK_FEED: img = gg.b.item_feed_img(self.type); break;
     }
     if(self.type == ITEM_TYPE_FERTILIZER)
     {
-      gg.ctx.globalAlpha = 0.5;
-      if(gg.b.nutrition_view)
+      if(gg.b.nutrition_view) gg.ctx.drawImage(tile_fertilizer_nutrition_img,self.x,y,self.w,h);
+      else
       {
-        gg.b.draw_nutrition(0.999,self.x,y,self.w,h);
-        //gg.ctx.fillStyle = nutrition_color;
-        //gg.ctx.fillRect(self.x,y,self.w,h);
+        gg.ctx.globalAlpha = 0.5;
+        gg.ctx.drawImage(img,self.x,y,self.w,h);
+        gg.ctx.globalAlpha = 1;
       }
-      else gg.ctx.drawImage(img,self.x,y,self.w,h);
-      gg.ctx.globalAlpha = 1;
     }
     else gg.ctx.drawImage(img,self.x,y,self.w,h)
     if(self.mark == MARK_SELL)
     {
       gg.ctx.fillStyle = black;
       gg.ctx.font = gg.font_size+"px "+gg.font;
-      gg.ctx.fillText("4SALE",self.x,self.y+self.h/3);
-      gg.ctx.fillText("$"+worth_for_item(self.type),self.x,self.y+self.h);
+      gg.ctx.textAlign = "center";
+      gg.ctx.fillText("+$"+worth_for_item(self.type),self.x+self.w/2,self.y+self.h+gg.font_size);
     }
-
-    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
   }
 }
 
