@@ -2838,8 +2838,8 @@ var board = function()
       var yoff = 0;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.textAlign = "left"; gg.ctx.font = gg.font_size+"px "+gg.font; gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.textAlign = "left"; gg.ctx.font = gg.font_size+"px "+gg.font; gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.drawImage(tile_water_img,x-w/8,y-h/8,w/2,h/2); break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.drawImage(tile_food_img, x-w/8,y-h/8,w/2,h/2); break;
         case TILE_STATE_FARM_PLANTED:
           if(t.fx_t < clock_bounce_t)
           {
@@ -2850,9 +2850,14 @@ var board = function()
           break;
       }
     }
-    if(t.type == TILE_TYPE_LIVESTOCK && t.state == TILE_STATE_LIVESTOCK_DIGESTING)
+    if(t.type == TILE_TYPE_LIVESTOCK)
     {
-      self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x-w/4,y,gg.ctx);
+      switch(t.state)
+      {
+        case TILE_STATE_LIVESTOCK_EATING: gg.ctx.drawImage(tile_food_img, x-w/8,y-h/8,w/2,h/2); break;
+        case TILE_STATE_LIVESTOCK_DIGESTING: self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x-w/4,y,gg.ctx); break;
+        case TILE_STATE_LIVESTOCK_MILKABLE: gg.ctx.drawImage(tile_milk_img, x-w/8,y-h/8,w/2,h/2); break;
+      }
     }
     /*
     if(t.known_nutrition_t)

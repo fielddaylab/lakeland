@@ -508,7 +508,7 @@ var shop = function()
       }
       else
       {
-        var s = self.tab.w/2;
+        var s = self.tab.w/3;
         gg.ctx.drawImage(icon_money_img,self.tab.x+(self.tab.w+self.pad-s)/2,self.tab.y+self.pad/2,s,s);
         var fs = self.money_display.h*0.3;
         gg.ctx.font = fs+"px "+gg.font;
