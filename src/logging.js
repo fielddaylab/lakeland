@@ -199,7 +199,7 @@ window.Logger = function(init){
 
 
   //Logging
-  self.startgame = function(){x
+  self.startgame = function(){
     self.set_prev_center_txty(gg.b.center_tile.tx,gg.b.center_tile.ty);
     self.achievements = Array(gg.achievements.triggers.length).fill(0);
 //  self.prev_nutritions = self.nutrition_array();
@@ -209,6 +209,9 @@ window.Logger = function(init){
       tile_states: tile_states,
       tile_nutritions: tile_nutritions
     };
+    window.onbeforeunload = function(){
+      my_logger.endgame();
+    }
     self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
   }
   self.new_gamestate = function(){
@@ -230,8 +233,8 @@ window.Logger = function(init){
     };
     self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
   }
-  self.history = function(){
-    if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH){
+  self.history = function(force=false){
+    if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH || force){
       var now = Date.now();
       var log_data = {
         client_time: now,
@@ -243,6 +246,8 @@ window.Logger = function(init){
   }
   self.endgame = function(){
     // log_data = self.old_gamestate();
+    self.history(true);
+    self.new_gamestate();
     self.send_log(log_data, self.LOG_CATEGORY_ENDGAME);
   }
   self.gtag = function(arguments){
