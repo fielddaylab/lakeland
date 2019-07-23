@@ -580,7 +580,7 @@ var fullness_job_for_b = function(b)
     b.job_state = JOB_STATE_GET;
     return 1;
   }
-  it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_MILK,MARK_FEED);
+  it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_MILK,MARK_USE);
   if(it)
   {
     b.go_idle();
@@ -2692,12 +2692,12 @@ var board = function()
             var it = new item();
             it.type = ITEM_TYPE_POOP;
             it.tile = t;
+            it.mark = t.marks[1];
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
-
-            if(!b_for_job(JOB_TYPE_FERTILIZE, 0, it))
-              ; //do nothing- all atempts present in if
+            if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
+            else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_FERTILIZE, 0, it))) ;
           }
           else if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t >= milkable_t)
           {
