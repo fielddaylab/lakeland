@@ -43,13 +43,21 @@ var IntroScene = function()
     gg.ctx.fillStyle = white;
     gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
     gg.ctx.fillStyle = black;
-    var i = floor(t/txt_len);
-    gg.ctx.textAlign = "center";
-    gg.ctx.fillStyle = black;
-    var p = (t-(i*txt_len))/txt_len;
-         if(p < 0.1) gg.ctx.globalAlpha = p*10;
-    else if(p > 0.9) gg.ctx.globalAlpha = 1-((p-0.9)*10);
-    gg.ctx.fillText(txts[i],gg.canvas.width/2,gg.canvas.height/2);
+    if(t == 1)
+    {
+      gg.ctx.textAlign = "left";
+      gg.ctx.fillText("Generating Lakeland...",10,gg.canvas.height-10);
+    }
+    else
+    {
+      var i = floor(t/txt_len);
+      gg.ctx.textAlign = "center";
+      gg.ctx.fillStyle = black;
+      var p = (t-(i*txt_len))/txt_len;
+           if(p < 0.1) gg.ctx.globalAlpha = p*10;
+      else if(p > 0.9) gg.ctx.globalAlpha = 1-((p-0.9)*10);
+      gg.ctx.fillText(txts[i],gg.canvas.width/2,gg.canvas.height/2);
+    }
   };
 
   self.cleanup = function()

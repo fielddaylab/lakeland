@@ -83,10 +83,6 @@ var GamePlayScene = function()
       gg.advisors.resize();
     }
 
-    gg.font = "LeagueSpartan";
-    gg.font_size = 14*gg.stage.s_mod;
-    gg.font_color = "#17315B";
-    gg.backdrop_color = "#A0DEDB";
   }
 
   self.killinput = function()
