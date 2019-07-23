@@ -4435,7 +4435,6 @@ var farmbit = function()
     */
 
     self.pad = gg.stage.s_mod*10;
-    gg.ctx.font = gg.font_size+"px "+gg.font;
     if(self.emote_c)
     {
       var t = self.emote_t/self.emote_l;
@@ -4444,8 +4443,16 @@ var farmbit = function()
       else              gg.ctx.globalAlpha = 1;
 
       var y = self.y-(20-(30-bounceup(t)*30))*gg.stage.s_mod;
-      gg.ctx.fillStyle = white;
-      fillRRect(self.x+self.w/2-self.emote_w/2-self.pad,y-gg.font_size-self.pad,self.emote_w+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
+      if(self.emote_c.length > 2) //emoji length == 2
+      {
+        gg.ctx.font = gg.font_size+"px "+gg.font;
+        gg.ctx.fillStyle = white;
+        fillRRect(self.x+self.w/2-self.emote_w/2-self.pad,y-gg.font_size-self.pad,self.emote_w+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
+      }
+      else
+      {
+        gg.ctx.font = (gg.font_size*1.5)+"px "+gg.font;
+      }
       gg.ctx.fillStyle = black;
       gg.ctx.fillText(self.emote_c,self.x+self.w/2,y);
     }
