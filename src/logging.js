@@ -185,9 +185,9 @@ window.Logger = function(init){
   self.new_gamestate = function(){
     var now = Date.now();
     var gamestate = {
-      tiles: pako.deflateRaw(self.uint8_tile_array()).join(),
-      farmbits: pako.deflateRaw(self.uint8_farmbit_array()).join(),
-      items: pako.deflateRaw(self.uint8_item_array()).join(),
+      tiles: pako.gzip(self.uint8_tile_array()).join(),
+      farmbits: pako.gzip(self.uint8_farmbit_array()).join(),
+      items: pako.gzip(self.uint8_item_array()).join(),
       money: gg.money,
       speed: gg.speed,
       achievements: self.achievements,
@@ -402,7 +402,7 @@ window.Logger = function(init){
   self.item_data = function(it){
     return {
       item: self.item_data_short(it),
-      marks: it.marks,
+      mark: it.mark,
     };
   }
   self.farmbit_data = function(f){
