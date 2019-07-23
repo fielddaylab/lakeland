@@ -3529,6 +3529,7 @@ var farmbit = function()
   }
 
   self.anim_side = FARMBIT_ANIM_FRONT;
+  self.anim_dir = FARMBIT_ANIM_RIGHT;
   self.anim_anim = FARMBIT_ANIM_IDLE;
   self.anim_frame = 0;
   self.anim_frame_l = farmbit_anim_nframes;
@@ -4405,12 +4406,10 @@ var farmbit = function()
     }
 
     var anim = self.anim_anim;
-    if(self.tile.type == TILE_TYPE_LAKE)                                         
+    if(self.tile.type == TILE_TYPE_LAKE)
     {
-      if(anim !== FARMBIT_ANIM_SWIM){
-        my_logger.emote_swim(self);
-      }
-      anim = FARMBIT_ANIM_SWIM; 
+      if(anim != FARMBIT_ANIM_SWIM) my_logger.emote_swim(self);
+      anim = FARMBIT_ANIM_SWIM;
     }
     else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_IDLE;
     //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
