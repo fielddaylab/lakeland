@@ -101,6 +101,7 @@ var GamePlayScene = function()
   self.ready = function()
   {
     self.resize();
+    if(self.readied) return;
 
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
 
@@ -234,6 +235,7 @@ var GamePlayScene = function()
     if(gg.clicker) gg.clicker.detach(); gg.clicker = null;
     if(gg.dragger) gg.dragger.detach(); gg.dragger = null;
     if(gg.keyer)   gg.keyer.detach();   gg.keyer   = null;
+    self.readied = 0;
   };
 
 };

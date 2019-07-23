@@ -6,7 +6,6 @@ var IntroScene = function()
   {
     if(self.keyer) self.keyer.detach(); self.keyer = new Keyer({source:gg.canvas});
   }
-  self.resize();
 
   self.killinput = function()
   {
@@ -15,6 +14,8 @@ var IntroScene = function()
 
   self.ready = function()
   {
+    self.resize();
+    t = 0;
 
   };
 
@@ -29,6 +30,7 @@ var IntroScene = function()
   self.tick = function()
   {
     t++;
+    if(t == 2) gg.game.scenes[3].ready();
     if(t > txts.length*txt_len) gg.game.nextScene();
     else self.keyer.filterkey(function(evt){ if(evt.keyCode == 32) gg.game.nextScene(); });
     if(self.keyer) self.keyer.flush();
