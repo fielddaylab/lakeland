@@ -2163,7 +2163,9 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    drawArrow(x-30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
+    var w = 30*gg.stage.s_mod;
+    var h = 20*gg.stage.s_mod;
+    gg.ctx.drawImage(arrow_img,x-w,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
   self.arrow = function(x,y)
@@ -2171,7 +2173,9 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    drawArrow(x+30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
+    var w = 30*gg.stage.s_mod;
+    var h = 20*gg.stage.s_mod;
+    gg.ctx.drawImage(arrow_img,x,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
   self.camtotile = function(t)

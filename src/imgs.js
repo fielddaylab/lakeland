@@ -414,6 +414,7 @@ var button_close_img         = GenImg("assets/button_close.png");
 var button_next_img          = GenImg("assets/button_next.png");
 var button_skip_tutorial_img = GenImg("assets/skip_tutorial.png");
 
+var arrow_img   = GenImg("assets/arrow.png");
 var clouds_img  = GenImg("assets/clouds.png");
 var cow_img     = GenImg("assets/cow.png");
 var farmbit_img = GenImg("assets/farmbit.png");
