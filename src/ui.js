@@ -251,7 +251,7 @@ var shop = function()
 
     btn_x = self.pad;
     btn_y += btn_s/2+self.pad;
-    setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s/2);
+    setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s/2-self.pad);
     for(var i = 0; i < self.btns.length; i+=2)
     {
                                  setBB(self.btns[i],   btn_x,btn_y,btn_s,btn_s); btn_x += btn_s+self.pad;
@@ -1817,11 +1817,12 @@ var achievements = function()
     if(self.open)
     {
       gg.ctx.fillStyle = white;
-      fillRRect(self.x,self.y-gg.font_size,selef.w,self.h+gg.font_size,self.pad,gg.ctx);
+      fillRRect(self.x,self.y-gg.font_size*2,self.w,self.h+gg.font_size*2+self.pad,self.pad,gg.ctx);
       gg.ctx.fillStyle = black;
+      gg.ctx.drawImage(button_close_img,self.x+self.w-self.pad,self.y-gg.font_size,self.pad*2,self.pad*2);
       var fs = gg.font_size;
       gg.ctx.font = fs+"px "+gg.font;
-      gg.ctx.fillText("Achievements",self.x+self.w/2,self.y+self.pad+fs);
+      gg.ctx.fillText("Achievements",self.x+self.w/2,self.y);
       var rows = 4;
       var cols = 4;
       var s = ((self.w-self.pad)/cols)-self.pad;

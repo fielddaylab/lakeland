@@ -2443,6 +2443,7 @@ var board = function()
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
   {
+    if(gg.achievements.open) { gg.achievements.open = 0; return; }
     if(self.spewing_road) return;
 
     if(gg.shop.selected_buy)
@@ -2837,8 +2838,8 @@ var board = function()
       var yoff = 0;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.textAlign = "left"; gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.textAlign = "left"; gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.textAlign = "left"; gg.ctx.font = gg.font_size+"px "+gg.font; gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.textAlign = "left"; gg.ctx.font = gg.font_size+"px "+gg.font; gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
         case TILE_STATE_FARM_PLANTED:
           if(t.fx_t < clock_bounce_t)
           {
@@ -4319,6 +4320,7 @@ var farmbit = function()
 
   self.draw = function()
   {
+    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
     gg.ctx.globalAlpha = 1;
     if(debug_jobs)
     {
@@ -4457,7 +4459,6 @@ var farmbit = function()
     }
     gg.ctx.globalAlpha = 1;
 
-    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
   }
 }
 
