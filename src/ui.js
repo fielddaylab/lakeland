@@ -1016,13 +1016,13 @@ var inspector = function()
         break;
         case TILE_TYPE_FARM:
         {
-          gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
-
           var g = t.val/farm_nutrition_req;
           if(t.state == TILE_STATE_FARM_GROWN) g = 1;
           var offy = self.vignette_y+0.0*self.vignette_h;
           var h = vignette_overlay_corn_img.height*self.vignette_w/vignette_overlay_corn_img.width;
           gg.ctx.drawImage(vignette_overlay_corn_img,0,0,vignette_overlay_corn_img.width,vignette_overlay_corn_img.height*g,self.vignette_x,offy+(1-g)*h,self.vignette_w,g*h);
+
+          gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
 
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
           var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
@@ -1817,7 +1817,11 @@ var achievements = function()
     if(self.open)
     {
       gg.ctx.fillStyle = white;
-      fillRBB(self,self.pad,gg.ctx);
+      fillRRect(self.x,self.y-gg.font_size,selef.w,self.h+gg.font_size,self.pad,gg.ctx);
+      gg.ctx.fillStyle = black;
+      var fs = gg.font_size;
+      gg.ctx.font = fs+"px "+gg.font;
+      gg.ctx.fillText("Achievements",self.x+self.w/2,self.y+self.pad+fs);
       var rows = 4;
       var cols = 4;
       var s = ((self.w-self.pad)/cols)-self.pad;
@@ -1825,7 +1829,7 @@ var achievements = function()
       var y = self.y+self.pad;
       gg.ctx.fillStyle = gray;
       var t = self.nullt;
-      var fs = gg.font_size*3/4;
+      fs = gg.font_size*3/4;
       gg.ctx.font = fs+"px "+gg.font;
       gg.ctx.fillStyle = black;
       for(var i = 0; i < rows; i++)
@@ -1899,7 +1903,7 @@ var advisors = function()
     self.title_font_size = self.font_size*1.5;
     self.title_font = self.title_font_size+"px "+gg.font;
 
-    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-50, 200, 50);
+    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-25*gg.stage.s_mod, 100*gg.stage.s_mod, 25*gg.stage.s_mod);
   }
   self.skip_btn = new ButtonBox(0,0,0,0,function(){ self.skip_tutorial(); });
   self.skip_btn.active = 0;
@@ -3765,7 +3769,7 @@ var advisors = function()
     tfunc, //shouldsim
 
 
-    function(){ self.push_blurb("Hmmm. Looks like your farm's eatin' up all the nutrients in the soil."); }, //begin
+    function(){ self.push_blurb("Hmmm. Looks like your farm is eatin' up all the nutrients in the soil."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4514,7 +4518,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.money += home_cost; self.push_blurb("Go on, buy another house!"); gg.shop.selected_buy = 0; },//begin
+    function(){ gg.money += home_cost; gg.money += fertilizer_cost; self.push_blurb("Go on, buy another house!"); gg.shop.selected_buy = 0; },//begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
