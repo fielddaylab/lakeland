@@ -2618,7 +2618,6 @@ var board = function()
       self.rain_t++;
       if(self.rain_t > 4000) {self.raining = 1; }
       if(self.rain_t > 5000) { self.raining = 0; self.rain_t = 0;}
-      my_logger.raining();
     }
 
     self.visit_t++;
@@ -4283,6 +4282,7 @@ var farmbit = function()
               if(gg.inspector.detailed == self || gg.inspector.detailed == self.item)
                 gg.inspector.deselect();
               self.item.offscreen = 1;
+              my_logger.emote_sale(self);
             }
           }
             break;
@@ -4399,7 +4399,13 @@ var farmbit = function()
     }
 
     var anim = self.anim_anim;
-    if(self.tile.type == TILE_TYPE_LAKE)                                         anim = FARMBIT_ANIM_SWIM;
+    if(self.tile.type == TILE_TYPE_LAKE)                                         
+    {
+      if(anim !== FARMBIT_ANIM_SWIM){
+        my_logger.emote_swim(self);
+      }
+      anim = FARMBIT_ANIM_SWIM; 
+    }
     else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_IDLE;
     //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
     else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
