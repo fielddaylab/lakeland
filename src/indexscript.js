@@ -2,6 +2,19 @@ var g;
 var urlp = jsonFromURL();
 var game_width  = 880;
 var game_height = 660;
+function fullscreen()
+{
+  var el = document.body;
+  var requestMethod = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if(requestMethod) requestMethod.call(el);
+}
+function unfullscreen()
+{
+  var el = document;
+  var exitMethod = el.exitFullscreen || el.webkitExitFullscreen || el.mozCancelFullScreen || el.msExitFullscreen;
+  if(exitMethod) exitMethod.call(el);
+}
+
 function size_containers(w,h)
 {
   var stage_container_container = document.getElementById("stage_container_container");
