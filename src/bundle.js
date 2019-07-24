@@ -22,8 +22,8 @@ window.Logger = function(init){
   self.LOG_CATEGORY_TOGGLEACHIEVEMENTS  = ENUM; ENUM++;
   self.LOG_CATEGORY_SKIPTUTORIAL        = ENUM; ENUM++;
   self.LOG_CATEGORY_SPEED               = ENUM; ENUM++;
-  self.LOG_CATEGORY_PLACEITEM           = ENUM; ENUM++;
-  self.LOG_CATEGORY_CANCEL_BUY          = ENUM; ENUM++;
+  self.LOG_CATEGORY_BUY           = ENUM; ENUM++;
+  self.LOG_CATEGORY_CANCELBUY           = ENUM; ENUM++;
   self.LOG_CATEGORY_ACHIEVEMENT         = ENUM; ENUM++;
   self.LOG_CATEGORY_FARMBITDEATH        = ENUM; ENUM++;
   self.LOG_CATEGORY_BLURB               = ENUM; ENUM++;
@@ -215,7 +215,7 @@ window.Logger = function(init){
     }
     self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
   }
-  self.new_gamestate = function(){
+  self.gamestate = function(){
     var now = Date.now();
     var gamestate = {
       tiles: pako.gzip(self.uint8_tile_array()).join(),
@@ -248,7 +248,7 @@ window.Logger = function(init){
   self.endgame = function(){
     // log_data = self.old_gamestate();
     self.history(true);
-    self.new_gamestate();
+    self.gamestate();
     self.send_log(log_data, self.LOG_CATEGORY_ENDGAME);
   }
   self.gtag = function(arguments){
@@ -288,8 +288,8 @@ window.Logger = function(init){
        buy_hovers: self.buy_hovers
      };
      self.reset_buy_hovers();
-     self.send_log(log_data, self.LOG_CATEGORY_PLACEITEM);
-     if (log_data.success) self.new_gamestate();
+     self.send_log(log_data, self.LOG_CATEGORY_BUY);
+     if (log_data.success) self.gamestate();
    }
    self.cancel_buy = function(buy){
     var log_data = {
@@ -299,7 +299,7 @@ window.Logger = function(init){
        buy_hovers: self.buy_hovers
      };
      self.reset_buy_hovers();
-     self.send_log(log_data, self.LOG_CATEGORY_CANCEL_BUY)
+     self.send_log(log_data, self.LOG_CATEGORY_CANCELBUY)
    }
 
   self.tile_use_select = function(t){
