@@ -2804,7 +2804,7 @@ var advisors = function()
 
   var tut_rain = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Welp, looks like rain."); }, //begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Aw heck. Looks like rain."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -2840,17 +2840,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("The rain might wash away some nutrients from your farm."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("Don't worry. It's nothin' a little manure can't fix!"); }, //begin
+    function(){ self.push_blurb("The rain might move around some nutrients."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -2876,7 +2866,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Okey dokey, rain's over."); }, //begin
+    function(){ self.push_blurb("Finally."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -2886,7 +2876,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Back to work, everybody!"); }, //begin
+    function(){ self.push_blurb("Take a look at your soil real quick there."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -2898,6 +2888,16 @@ var advisors = function()
       gg.b.autorain = 1;
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
     },
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("You might need more fertilizer!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
     tfunc, //shouldsim
 
   ];
@@ -2913,7 +2913,7 @@ var advisors = function()
         if(t.nutrition < nutrition_desperate) { self.heap.t = t; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Uh oh. Looks like your farm ate up all the nutrients in the soil.");
+      self.push_blurb("Oy. Look at that soil.");
     },
     ffunc, //tick
     function(){ //draw
@@ -2928,7 +2928,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You won't be growin' much at this rate."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Your farm is growin' super slow."); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -2942,7 +2942,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("See if you can get ahold of more fertilizer!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You need more fertilizer!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -2971,7 +2971,7 @@ var advisors = function()
         if(gg.b.tile_in_bounds(t) && t.nutrition > water_fouled_threshhold) { self.heap.t = t; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Ope. Looks like there's an algae bloom starting.");
+      self.push_blurb("Uh oh. Looks like you've got an algae bloom growin'.");
     },
     ffunc, //tick
     function(){ //draw
@@ -2986,7 +2986,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Aw, for cripe's sake... it's gonna ruin the lake!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Cripe's sake... it's gonna ruin the lake!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3000,7 +3000,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("This is all my sister's fault! Always goin' on about farms."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("This is all Flo's fault! Her and that dang fertilizer."); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3014,7 +3014,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Sure, people need to eat. I guess. But at what cost?!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Sure, people need to eat. But at what cost?!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3028,7 +3028,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You gotta stop the bloom from gettin' any worse!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("You gotta stop that algae bloom from gettin' worse!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -3079,7 +3079,7 @@ var advisors = function()
         if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Aw jeez. Now "+f.name+" is swimming in the algae bloom.");
+      self.push_blurb("Aw jeez. Now "+f.name+" is swimmin' in the algae bloom.");
     },
     ffunc, //tick
     function(){ //draw
@@ -3092,7 +3092,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("That's gonna make 'em sad!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Gross water makes people sad!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -3104,7 +3104,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Quick! Put up some signs to keep people away from the gross water!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Put up some signs to keep people away from the algae blooms!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -3128,7 +3128,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Or if you can make enough money, clean the lake. That'll do the trick!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Or if you can make enough money, clean the lake!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -3157,7 +3157,7 @@ var advisors = function()
         if(f.tile.type == TILE_TYPE_LAKE && f.tile.nutrition > water_fouled_threshhold) { self.heap.f = f; break; }
       }
       self.takeover_ui(); self.takeover_time();
-      self.push_blurb("Aw jeez. "+f.name+" is swimming in the algae bloom.");
+      self.push_blurb("Aw jeez. Now "+f.name+" is swimmin' in the algae bloom.");
     },
     ffunc, //tick
     function(){ //draw
@@ -3170,7 +3170,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Gross lakes make people sad!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Gross water makes people sad!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -3182,7 +3182,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Put up some signs to keep people away from the gross water!"); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); gg.shop.sign_btn.active = 1; self.push_blurb("Put up some signs to keep people away from the algae blooms!"); }, //begin
     ffunc, //tick
     function(){ //draw
       var f = self.heap.f;
@@ -3224,7 +3224,7 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Ya gotta make sure you've got enough food to go around, friend!"); }, //begin
+    function(){ self.push_blurb("Make sure you've got enough food for everybody!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3235,7 +3235,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("And... uh... if ya don't mind, let's not mention this little mishap to my sister."); }, //begin
+    function(){ self.push_blurb("And... uh... let's not mention this little mishap to my sister."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -3262,7 +3262,7 @@ var advisors = function()
     noop,
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Your farm can't grow anything new 'til somebody harvests it."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("It might be time to bring in more people."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3272,7 +3272,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("It might be time for you to bring in more people."); }, //begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Your farm's not gonna harvest itself!"); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3895,7 +3895,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Ope! Didn't see ya there!"); },//begin
+    function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Oh, hiya! Didn't see ya there!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3927,7 +3927,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("You musta been talkin' to Joe and Flo. They're ok, as far as siblings go."); },//begin
+    function(){ self.push_blurb("You musta been talkin' to Joe and Flo."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3938,7 +3938,7 @@ var advisors = function()
     tfunc, //shouldsim
 
 
-    function(){ self.push_blurb("But there's more to life than lakes and farms! Ya know?"); },//begin
+    function(){ self.push_blurb("Take it from me, friend. There's more to life than lakes and farms."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -3948,7 +3948,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("You need to make money! That's the bottom line."); },//begin
+    function(){ self.push_blurb("If you wanna grow your town, you need more money!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4128,7 +4128,7 @@ var advisors = function()
 
   var tut_successful_harvest = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'successful_harvest'}); self.takeover_ui(); self.takeover_time(); self.push_blurb("And there you have it!"); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'successful_harvest'}); self.takeover_ui(); self.takeover_time(); self.push_blurb("There ya go!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4138,7 +4138,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" now has a lifetime supply of food!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" has a lifetime supply of food!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4148,7 +4148,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("(If they can keep the farm running!)"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Make sure they've got what they need to keep the farm runnin'."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4159,6 +4159,16 @@ var advisors = function()
       self.pool_thread(function(){ return 1; }, tut_sell_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'successful_harvest'});
     },
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("I'll come back and check on you soon!"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
     tfunc, //shouldsim
   ];
 
@@ -4262,7 +4272,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will automatically take care of the farm!"); },//begin
+    function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; var f = self.heap.f; self.push_blurb((f ? f.name : 0)+" will take care of the farm!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4281,7 +4291,7 @@ var advisors = function()
     ffunc, //shouldsim
 
     //can't build there
-    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb("Great work "+(f ? f.name : 0)+"!"); },//begin
+    function(){ self.takeover_ui(); self.takeover_time(); var f = self.heap.f; self.push_blurb("Nice goin', "+(f ? f.name : 0)+"!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4292,7 +4302,7 @@ var advisors = function()
     ffunc, //shouldsim
 
 
-    function(){ self.push_blurb("Now, we wait."); }, //begin
+    function(){ self.push_blurb("Now we wait."); }, //begin
     ffunc, //tick
     function(){ //draw
       var t = self.heap.t;
@@ -4344,7 +4354,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.push_blurb("You musta been takin' advice from my brother."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("You musta been takin' advice from my brother, Joe."); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4401,7 +4411,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); self.push_blurb("Put it anywhere on the map."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("Put it on the map. Anyplace you like."); },//begin
     function(){ self.camtotile(gg.b.center_tile); return self.items_exist(ITEM_TYPE_FOOD,1); }, //tick
     function(){ self.popup(TEXT_TYPE_DIRECT); }, //draw
     noop, //qclick
@@ -4549,7 +4559,7 @@ var advisors = function()
       }
     },
     noop, //end
-    function(){ /*auto build a home here*/ self.push_blurb("Try not to let anybody die this time! Just a little insider tip for ya."); return false; }, //shouldsim
+    function(){ /*auto build a home here*/ self.push_blurb("Try not to let'em die this time! Just a little tip for ya."); return false; }, //shouldsim
 
     //can't build there
     function(){ self.push_blurb("Can't build a house there!"); },//begin
@@ -4562,7 +4572,7 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    function(){ self.push_blurb("Someone should move in soon!"); },//begin
+    function(){ self.push_blurb("Someone should be movin' in soon!"); },//begin
     function(){ return self.bits_exist(1); }, //tick
     function(){
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
@@ -4577,7 +4587,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; self.push_blurb("Hopefully they won't mind the gravestone too much..."); }, //begin
+    function(){ if(gg.b.visit_t < 800) gg.b.visit_t = 800; self.push_blurb("You betcha!"); }, //begin
     function(){ return self.bits_exist(1); }, //tick
     function(){ //draw
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
@@ -4643,7 +4653,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Oh, hey there, friend!"); },//begin
+    function(){ self.push_blurb("Oh, hey there!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
