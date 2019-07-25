@@ -307,6 +307,10 @@ var FARMBIT_ANIM_FRONT = ENUM; ENUM++;
 var FARMBIT_ANIM_BACK  = ENUM; ENUM++;
 
 ENUM = 0;
+var FARMBIT_ANIM_RIGHT = ENUM; ENUM++;
+var FARMBIT_ANIM_LEFT  = ENUM; ENUM++;
+
+ENUM = 0;
 var FARMBIT_ANIM_IDLE  = ENUM; ENUM++;
 var FARMBIT_ANIM_WALK  = ENUM; ENUM++;
 var FARMBIT_ANIM_SWIM  = ENUM; ENUM++;
@@ -414,6 +418,7 @@ var button_close_img         = GenImg("assets/button_close.png");
 var button_next_img          = GenImg("assets/button_next.png");
 var button_skip_tutorial_img = GenImg("assets/skip_tutorial.png");
 
+var arrow_img   = GenImg("assets/arrow.png");
 var clouds_img  = GenImg("assets/clouds.png");
 var cow_img     = GenImg("assets/cow.png");
 var farmbit_img = GenImg("assets/farmbit.png");
@@ -421,6 +426,7 @@ var farmbit_img = GenImg("assets/farmbit.png");
 var play_img  = GenImg("assets/play.png");
 var pause_img = GenImg("assets/pause.png");
 var fast_img  = GenImg("assets/fast.png");
+var faster_img  = GenImg("assets/faster.png");
 
 var ntoggle_on = GenImg("assets/nutrition_on.png");
 var ntoggle_off = GenImg("assets/nutrition_off.png");

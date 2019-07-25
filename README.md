@@ -1,0 +1,548 @@
+# usda
+## Logging Events
+
+### Event Categories
+0. [gamestate](#gamestate)
+1. [startgame](#startgame)
+2. [checkpoint](#checkpoint)
+3. [selecttile](#selecttile)
+4. [selectfarmbit](#selectfarmbit)
+5. [selectitem](#selectitem)
+6. [selectbuy](#selectbuy)
+7. [buy](#buy)
+8. [cancelbuy](#cancelbuy)
+9. [tileuseselect](#tileuseselect)
+10. [itemuseselect](#itemuseselect)
+11. [togglenutrition](#togglenutrition)
+12. [toggleshop](#toggleshop)
+13. [toggleachievements](#toggleachievements)
+14. [skiptutorial](#skiptutorial)
+15. [speed](#speed)
+16. [achievement](#achievement)
+17. [farmbitdeath](#farmbitdeath)
+18. [blurb](#blurb)
+19. [click](#click)
+20. [rainstopped](#rainstopped)
+21. [history](#history)
+22. [endgame](#endgame)
+
+### Enumerators and Constants
+1. [Emotes](#Emotes)
+1. [Buys](#Buys)
+1. [Names](#Names)
+1. [Speed](#SpeedConst)
+1. [Achievements](#Achievements)
+1. [Thing Type](#Thing_Type)
+1. [Tile Type](#TileStates)
+1. [Tile Type](#TileType)
+1. [Job Type](#JobType)
+1. [Item Type](#ItemType)
+1. [Job State](#JobState)
+1. [Farmbit State](#FarmbitState)
+1. [Farmbit Need](#FarmbitNeed)
+1. [Direction](#Direction)
+1. [Mark](#Mark)
+
+### Data Structures
+1. [Camera Move](#CameraMove)
+1. [Data Short](#DataShort)
+1. [Data Matrices](#DataMatrices)
+
+### Built With
+1. [Browserify, Pako](#BuiltWith)
+
+<a name="gamestate"/>
+
+## Event Categories
+#### gamestate (index=0)
+| Key | Value | Description |
+| --- | --- | --- |
+| tiles | pako.gzip(uint8_tile_array()).join() | Gzipped tile [data matrix](#DataMatrices).   |
+| farmbits | pako.gzip(uint8_farmbit_array()).join() | Gzipped farmbit [data matrix](#DataMatrices).   |
+| items | pako.gzip(uint8_item_array()).join() |Gzipped item [data matrix](#DataMatrices).  |
+| money | gg.money | current money  |
+| speed | gg.speed |  current game speed (see [Speed](#SpeedConst)) |
+| achievements | achievements |A boolean array of whether the player has gotten the [achievement](#Achievements) at that index.   |
+| num_checkpoints_completed | get_num_checkpoints_completed() | Number of tutorials completed.   |
+| raining | gg.b.raining | Boolean - currently raining or not.  |
+| curr_selection_type | gg.inspector.detailed_type |Selection [thing type](#Thing_Type) index.   |
+| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type.  |
+| camera_center | prev_center_txty | Tile that the game is currently centered on.  |
+| gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
+| timestamp | now | Client time.  | 
+
+<a name="startgame"/>
+
+#### startgame (index=1)
+| Key | Value | Description |
+| --- | --- | --- |
+| tile_states | tile_states | 2500 element array of tile state indices.  |
+| tile_nutritions | tile_nutritions |   2500 element array of tile nutritions on a scale 0-255. | 
+
+<a name="checkpoint"/>
+
+#### checkpoint (index=2)
+Checkpoints are the google analytics events.
+
+| Key | Value | Description |
+| --- | --- | --- |
+| event_category | arguments[2]  | Usually (always?) begin or end |
+| event_label  |  arguments[2]  | ex. "build_a_house" |
+| event_type  | arguments[1]  | Usually (always?) tutorial |
+
+<a name="selecttile"/>
+
+#### selecttile (index=3)
+| Key | Value | Description |
+| --- | --- | --- |
+| tile | tile_data_short(t) | See [Data Short](#DataShort).  |
+| marks | t.marks | Tile [mark indices](#Mark).  | 
+
+<a name="selectfarmbit"/>
+
+#### selectfarmbit (index=4)
+| Key | Value | Description |
+| --- | --- | --- |
+| farmbit | farmbit_data_short(f) | See [Data Short](#DataShort).  | 
+
+<a name="selectitem"/>
+
+#### selectitem (index=5)
+| Key | Value | Description |
+| --- | --- | --- |
+| item | item_data_short(it) | See [Data Short](#DataShort).   |
+| mark | it.mark | Item [mark index](#Mark).  | 
+
+<a name="selectbuy"/>
+
+#### selectbuy (index=6)
+| Key | Value | Description |
+| --- | --- | --- |
+| buy | buy | [Buy index](#Buys).   |
+| cost | gg.shop.buy_cost(buy) | Cost of buy  |
+| curr_money | gg.money | Current money  |
+| success | gg.money>=gg.shop.buy_cost(buy) | Whether the buy can be selected or not. (Cannot select a buy that cannot be paid for.)  |
+
+<a name="buy"/>
+
+#### buy (index=7)
+Note: Buys are logged whether the buy was a success or not.
+
+| Key | Value | Description |
+| --- | --- | --- |
+| buy | gg.shop.selected_buy | [Buy index](#Buys).  |
+| tile | tile_data_short(gg.b.hover_t) | [Data Short](#DataShort) for the tile the buy will be placed on.   |
+| success | gg.b.placement_valid(gg.b.hover_tgg.shop.selected_buy) | Boolean. Whether the buy can be put on the tile. If not, buy fails.  |
+| buy_hovers | buy_hovers |  List of [Data Short](#DataShort) for each hovered tile since either selectbuy log or the previous buy log. | 
+
+<a name="cancelbuy"/>
+
+#### cancelbuy (index=8)
+| Key | Value | Description |
+| --- | --- | --- |
+| selected_buy | buy | [Buy index](#Buys).  |
+| cost | gg.shop.buy_cost(buy) | Cost of buy.  |
+| curr_money | gg.money | Current money.  |
+| buy_hovers | buy_hovers |    List of [Data Short](#DataShort) for each hovered tile since either selectbuy log or the previous buy log. | 
+
+<a name="tileuseselect"/>
+
+#### tileuseselect (index=9)
+| Key | Value | Description |
+| --- | --- | --- |
+| tile | tile_data_short(t) | See [Data Short](#DataShort).  |
+| marks | t.marks |  Tile [mark indices](#Mark). | 
+
+<a name="itemuseselect"/>
+
+#### itemuseselect (index=10)
+| Key | Value | Description |
+| --- | --- | --- |
+| item | item_data_short(it) | See [Data Short](#DataShort).  |
+| mark | it.mark | Item [mark index](#Mark).  |
+
+<a name="togglenutrition"/>
+
+#### togglenutrition (index=11)
+| Key | Value | Description |
+| --- | --- | --- |
+| to_state | gg.b.nutrition_view | 1 if nutrition view is being turned on, 0 if turned off.  |
+| tile_nutritions | nutrition_array() |  2500 element array of tile nutritions on a scale 0-255. | 
+
+<a name="toggleshop"/>
+
+#### toggleshop (index=12)
+| Key | Value | Description |
+| --- | --- | --- |
+| shop_open | gg.shop.open | 1 if the shop view is being opened, 0 if closed.  | 
+
+<a name="toggleachievements"/>
+
+#### toggleachievements (index=13)
+| Key | Value | Description |
+| --- | --- | --- |
+| achievements_open | gg.achievements.open | 1 if the achievement view is being opened, 0 if closed.  | 
+
+
+<a name="skiptutorial"/>
+
+#### skiptutorial (index=14)
+Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipped or not.
+
+| Key | Value | Description |
+| --- | --- | --- |
+|(none)  |   | Event itself indicates that the player skipped a tutorial (the tutorial skipped is the last tutorial event logged). |
+
+<a name="speed"/>
+
+#### speed (index=15)
+| Key | Value | Description |
+| --- | --- | --- |
+| cur_speed | gg.speed | From [speed](#SpeedConst) index.  |
+| clicked_speed | speed | To [speed](#SpeedConst) index.  | 
+
+<a name="achievement"/>
+
+#### achievement (index=16)
+| Key | Value | Description |
+| --- | --- | --- |
+| achievement | i | [Achievement](#Achievements) index.  | 
+
+<a name="farmbitdeath"/>
+
+#### farmbitdeath (index=17)
+| Key | Value | Description |
+| --- | --- | --- |
+| farmbit | farmbit_data_short(f) |  See [Data Short](#DataShort). |
+| grave | tile_data_short(f.home) | Tile data short of dead farmbit's home.  | 
+
+<a name="blurb"/>
+
+#### blurb (index=18)
+Note: a blurb is an utterance from an advisor.
+
+| Key | Value | Description |
+| --- | --- | --- |
+|(none)  |   | Event itself indicates that the player clicked to the next blurb in a tutorial etc. (the tutorial itself is the last tutorial event logged). |
+
+
+<a name="click"/>
+
+#### click (index=19)
+| Key | Value | Description |
+| --- | --- | --- |
+|(not currently implemented)  |   |  |
+
+
+<a name="rainstopped"/>
+
+#### rainstopped (index=20)
+| Key | Value | Description |
+| --- | --- | --- |
+|(none)  |   | Log itself indicates that it was raining and the raining has now stopped. |
+
+<a name="history"/>
+
+#### history (index=21)
+| Key | Value | Description |
+| --- | --- | --- |
+| client_time | now |   |
+| camera_history | flush_camera_history(now) | List of [camera moves](#CameraMove) since last history log. |
+| emote_history | flush_emote_history(now) | List of 10 element sublists [[farmbit](#DataShort), [emote index](#Emotes), time before client_time (negative number)] emotes since last history log.  | 
+
+<a name="endgame"/>
+
+#### endgame (index=22)
+| Key | Value | Description |
+| --- | --- | --- |
+|(none)  |   | Log itself indicates the player has left the game page. Seperate history and gamestate logs are sent.  |
+
+
+## Enumerators and Constants
+<a name="Emotes"/>
+
+#### Emotes 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| fullness_motivated_txt | "i'm hungry" |
+|1| fullness_desperate_txt | "i need food" |
+|2| energy_desperate_txt | "i need a nap!" |
+|3| joy_motivated_txt | "i want to play in the water" |
+|4| joy_desperate_txt | "i'm so sad" |
+|5| puke_txt | "🤮" |
+|6| yum_txt | "😋" |
+|7| tired_txt | "😴" |
+|8| happy_txt | "🙂" |
+|9| swim_txt | "swim" |
+|10| sale_txt | "sale" |
+
+<a name="Buys"/>
+
+#### Buys 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| home | |
+|2| food | |
+|3| farm | |
+|4| fertilizer | |
+|5| livestock | |
+|6| skimmer | |
+|7| sign | |
+|8| road  | |
+
+<a name="Names"/>
+
+#### Names 
+| Index | Name | Description |
+| --- | --- | --- | 
+| 0 | Peter | |
+| 1 | Paul | |
+| 2 | Mary | |
+| 3 | John | |
+| 4 | George | |
+| 5 | Ringo | |
+| 6 | Yoko | |
+| 7 | Stevie | |
+| 8 | Saanvi | |
+| 9 | Nethra | |
+| 10 | Meha | |
+| 11 | Sidney | |
+| 12 | Lucy | |
+| 13 | Belden | |
+| 14 | Henry | |
+| 15 | Alejandro | |
+| 16 | Victor | |
+| 17 | Richard | |
+
+<a name="SpeedConst"/>
+
+#### Speed 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| pause | x0 speed |
+|2| play | x1 speed |
+|3| fast | x4 speed |
+|4| vfast | x16 speed |
+
+<a name="Achievements"/>
+
+#### Achievements 
+Achievements is stored as a 16 element boolean array, true if the achievement has been gotten.
+
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| exist | get a visitor. |
+|1| group | 3 workers |
+|2| town | a small community |
+|3| city | 10 townmembers |
+|4| farmer | own a farm! |
+|5| farmers | get three farms |
+|6| farmtown | 5 farms! |
+|7| megafarm | 10 farm industry |
+|8| paycheck | $500 |
+|9| thousandair | $1000 |
+|10| stability | $5000 |
+|11| riches | $10000 |
+|12| bloom | algae destroys one tile |
+|13| bigbloom | algae spreads to 3 tiles |
+|14| hugebloom | you have an algae problem |
+|15| massivebloom | a whole lake destroyed"|
+
+
+<a name="Thing_Type"/>
+
+#### Thing_Type 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | Default |
+|1| tile | Gameboard tiles. Has state, type, and an array of 4 marks. Abbreviated as "t".|
+|2| item | Of type water, food, fertilizer, poop, milk. Has mark attribute. Abbreviated as "it".|
+|3| farmbit | Has name, state, job type, job state. Abbreviated as "f". |
+
+<a name="TileStates"/>
+
+#### Tile States
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| home_vacant | |
+|2| home_occupied | |
+|3| land_d0 | |
+|4| land_d1 | |
+|5| land_d2 | |
+|6| farm_unplanted | |
+|7| farm_planted | |
+|8| farm_grown | |
+|9| livestock_eating | |
+|10| livestock_digesting | |
+|11| livestock_milkable | |
+
+<a name="TileType"/>
+
+#### Tile Type
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| land | |
+|2| rock | |
+|3| grave | |
+|4| sign | |
+|5| lake | |
+|6| shore | |
+|7| forest | |
+|8| home | |
+|9| farm | |
+|10| livestock | |
+|11| road | |
+
+<a name="JobType"/>
+
+#### Job Type
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| idle | |
+|2| wait | |
+|3| eat | |
+|4| sleep | |
+|5| play | |
+|6| plant | |
+|7| harvest | |
+|8| feed | |
+|9| fertilize | |
+|10| milk | |
+|11| export | |
+
+<a name="ItemType"/>
+
+#### Item Type
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| water | |
+|2| food | |
+|3| poop | |
+|4| fertilizer | |
+|5| milk | |
+
+<a name="JobState"/>
+
+#### Job State
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| get | |
+|2| seek | |
+|3| act | |
+
+<a name="FarmbitState"/>
+
+#### Farmbit State
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| dire | |
+|2| desperate | |
+|3| motivated | |
+
+<a name="FarmbitNeed"/>
+
+#### Farmbit Need
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| fullness | |
+|2| energy | |
+|3| joy | |
+|4| fulfillment | |
+
+<a name="Direction"/>
+
+#### Direction
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| r | |
+|2| dr | |
+|3| d | |
+|4| dl | |
+|5| l | |
+|6| ul | |
+|7| u | |
+|8| ur | |
+
+<a name="Mark"/>
+
+#### Mark
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| use | |
+|2| sell | |
+|3| feed | |
+
+
+## Data Structures
+<a name="CameraMove"/>
+
+#### Camera Move 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| t.tx | center tile tx |
+|1| t.ty  |center tile ty |
+|2| auto |0/1 boolean for whether the move happened automatically |
+|3| time-now | time before client_time that the move happened (negative number) |
+<a name="DataShort"/>
+
+#### Data Short 
+These are each uint8 vectors. They are as follows:
+1. Tile
+
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| val/nutrition_max*255 | 0-255 representing a tile type dependent value. For example, this refers to growth for farms.|
+|1| nutrition/nutrition_max*255 | 0-255 representing nutrition of each tile. |
+|2| og_type | Original [tile type](#TileType) index. |
+|3| type | Current [tile type](#TileType) index. |
+|4| tx | Tile grid x coordinate. *(Not included in data matrix)* |
+|5| ty | Tile grid y coordinate. *(Not included in data matrix)* |
+2. Farmbit
+
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| tile.tx | Tile grid x coordinate of associated tile. |
+|1| tile.ty | Tile grid y coordinate of associated tile.|
+|2| name | Farmbit [name](#Names) index. |
+|3| job_state | Current [job state](#JobState) index, (null, get, seek, act). |
+|4| job_type | Current [job type](#JobType) index. |
+|5| fullness/max_fullness*255 | Measure of hunger from 0-255 |
+|6| energy/max_energy*255 |Measure of energy from 0-255 |
+|7| joy/max_joy*255 | Measure of joy from 0-255|
+|8| fulfillment/max_fulfillment*255 | Measure of fulfillment from 0-255 |
+3. Item
+
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| tile.tx |Tile grid x coordinate of associated tile. |
+|1| tile.ty |Tile grid y coordinate of associated tile. |
+|2| type | Item [type](#ItemType) index.|
+|3| mark | Item [mark](#Mark) index.|
+
+<a name="DataMatrices"/>
+
+#### Data Matrices 
+The gamestate log contains uint8 arrays of all tiles, farmbits, and items. 
+These arrays are concatenated data_short arrays, and can be thought of as matrices where the row (farmbit/tile/item instance)
+is index//vars_per_entry and the column is index%vars_per_entry.
+
+Note: The gamestate log of all tiles does not contain tile tx,ty. Row of the tile is derivable from 50*ty+tx.
+
+<a name="BuiltWith"/>
+
+## Built With
+The logging script (logging.js) was bundled (to bundle.js) using Browserify with Pako.
+
+* [Browserify](http://browserify.org) - Allows the use of Pako in the browser.
+* [Pako](http://github.com/nodeca/pako) - zlib port to javascript used to gzip gamestates.

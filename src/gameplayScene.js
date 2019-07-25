@@ -82,7 +82,6 @@ var GamePlayScene = function()
       gg.achievements.resize();
       gg.advisors.resize();
     }
-
   }
 
   self.killinput = function()
