@@ -4,46 +4,59 @@ window.Logger = function(init){
   var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
+  self.HISTORY_FLUSH_LENGTH = 50;
 
   ENUM = 0;
-  self.LOG_CATEGORY_GAMESTATE          = ENUM; ENUM++;
-  self.LOG_CATEGORY_STARTGAME          = ENUM; ENUM++;
-  self.LOG_CATEGORY_CHECKPOINT         = ENUM; ENUM++;
-  self.LOG_CATEGORY_SELECTTILE         = ENUM; ENUM++;
-  self.LOG_CATEGORY_SELECTFARMBIT      = ENUM; ENUM++;
-  self.LOG_CATEGORY_SELECTITEM         = ENUM; ENUM++;
-  self.LOG_CATEGORY_SELECTBUY          = ENUM; ENUM++;
-  self.LOG_CATEGORY_TILEUSESELECT      = ENUM; ENUM++;
-  self.LOG_CATEGORY_ITEMUSESELECT      = ENUM; ENUM++;
-  self.LOG_CATEGORY_TOGGLENUTRITION    = ENUM; ENUM++;
-  self.LOG_CATEGORY_TOGGLESHOP         = ENUM; ENUM++;
-  self.LOG_CATEGORY_TOGGLEACHIEVEMENTS = ENUM; ENUM++;
-  self.LOG_CATEGORY_SKIPTUTORIAL       = ENUM; ENUM++;
-  self.LOG_CATEGORY_SPEED              = ENUM; ENUM++;
-  self.LOG_CATEGORY_PLACEITEM          = ENUM; ENUM++;
-  self.LOG_CATEGORY_CANCEL_BUY         = ENUM; ENUM++;
-  self.LOG_CATEGORY_ACHIEVEMENT        = ENUM; ENUM++;
-  self.LOG_CATEGORY_FARMBITDEATH       = ENUM; ENUM++;
-  self.LOG_CATEGORY_BLURB              = ENUM; ENUM++;
-  self.LOG_CATEGORY_CLICK              = ENUM; ENUM++;
-  self.LOG_CATEGORY_RAINSTOPPED        = ENUM; ENUM++;
-  self.LOG_CATEGORY_HISTORY            = ENUM; ENUM++;
-  self.LOG_CATEGORY_ENDGAME            = ENUM; ENUM++;
-  self.LOG_CATEGORY_COUNT              = ENUM; ENUM++;
-
-  ENUM = 0;
-  self.LOG_EMOTE_NULL                  = ENUM; ENUM++;
-  self.LOG_EMOTE_FULLNESS_MOTIVATED    = ENUM; ENUM++;
-  self.LOG_EMOTE_FULLNESS_DESPERATE    = ENUM; ENUM++;
-  self.LOG_EMOTE_ENERGY_DESPERATE      = ENUM; ENUM++;
-  self.LOG_EMOTE_JOY_MOTIVATED         = ENUM; ENUM++;
-  self.LOG_EMOTE_JOY_DESPERATE         = ENUM; ENUM++;
-  self.LOG_EMOTE_COUNT                 = ENUM; ENUM++;
-  self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT    = "I'm hungry";
-  self.LOG_EMOTE_FULLNESS_DESPERATE_TXT    = "I NEED FOOD";
-  self.LOG_EMOTE_ENERGY_DESPERATE_TXT      = "I need a nap!";
-  self.LOG_EMOTE_JOY_MOTIVATED_TXT         = "I want to play in the water";
-  self.LOG_EMOTE_JOY_DESPERATE_TXT         = "I'M SO SAD";
+  self.LOG_CATEGORY_GAMESTATE           = ENUM; ENUM++;
+  self.LOG_CATEGORY_STARTGAME           = ENUM; ENUM++;
+  self.LOG_CATEGORY_CHECKPOINT          = ENUM; ENUM++;
+  self.LOG_CATEGORY_SELECTTILE          = ENUM; ENUM++;
+  self.LOG_CATEGORY_SELECTFARMBIT       = ENUM; ENUM++;
+  self.LOG_CATEGORY_SELECTITEM          = ENUM; ENUM++;
+  self.LOG_CATEGORY_SELECTBUY           = ENUM; ENUM++;
+  self.LOG_CATEGORY_TILEUSESELECT       = ENUM; ENUM++;
+  self.LOG_CATEGORY_ITEMUSESELECT       = ENUM; ENUM++;
+  self.LOG_CATEGORY_TOGGLENUTRITION     = ENUM; ENUM++;
+  self.LOG_CATEGORY_TOGGLESHOP          = ENUM; ENUM++;
+  self.LOG_CATEGORY_TOGGLEACHIEVEMENTS  = ENUM; ENUM++;
+  self.LOG_CATEGORY_SKIPTUTORIAL        = ENUM; ENUM++;
+  self.LOG_CATEGORY_SPEED               = ENUM; ENUM++;
+  self.LOG_CATEGORY_PLACEITEM           = ENUM; ENUM++;
+  self.LOG_CATEGORY_CANCEL_BUY          = ENUM; ENUM++;
+  self.LOG_CATEGORY_ACHIEVEMENT         = ENUM; ENUM++;
+  self.LOG_CATEGORY_FARMBITDEATH        = ENUM; ENUM++;
+  self.LOG_CATEGORY_BLURB               = ENUM; ENUM++;
+  self.LOG_CATEGORY_CLICK               = ENUM; ENUM++;
+  self.LOG_CATEGORY_RAINSTOPPED         = ENUM; ENUM++;
+  self.LOG_CATEGORY_HISTORY             = ENUM; ENUM++;
+  self.LOG_CATEGORY_ENDGAME             = ENUM; ENUM++;
+  self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
+ 
+  ENUM = 0; 
+  self.LOG_EMOTE_NULL                   = ENUM; ENUM++;
+  self.LOG_EMOTE_FULLNESS_MOTIVATED     = ENUM; ENUM++;
+  self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT = "I'm hungry";
+  self.LOG_EMOTE_FULLNESS_DESPERATE     = ENUM; ENUM++;
+  self.LOG_EMOTE_FULLNESS_DESPERATE_TXT = "I NEED FOOD";
+  self.LOG_EMOTE_ENERGY_DESPERATE       = ENUM; ENUM++;
+  self.LOG_EMOTE_ENERGY_DESPERATE_TXT   = "I need a nap!";
+  self.LOG_EMOTE_JOY_MOTIVATED          = ENUM; ENUM++;
+  self.LOG_EMOTE_JOY_MOTIVATED_TXT      = "I want to play in the water";
+  self.LOG_EMOTE_JOY_DESPERATE          = ENUM; ENUM++;
+  self.LOG_EMOTE_JOY_DESPERATE_TXT      = "I'M SO SAD";
+  self.LOG_EMOTE_PUKE                   = ENUM; ENUM++;
+  self.LOG_EMOTE_PUKE_TXT               = "🤮";
+  self.LOG_EMOTE_YUM                    = ENUM; ENUM++;
+  self.LOG_EMOTE_YUM_TXT                = "😋";
+  self.LOG_EMOTE_TIRED                  = ENUM; ENUM++;
+  self.LOG_EMOTE_TIRED_TXT              = "😴";
+  self.LOG_EMOTE_HAPPY                  = ENUM; ENUM++;
+  self.LOG_EMOTE_HAPPY_TXT              = "🙂";
+  self.LOG_EMOTE_SWIM                   = ENUM; ENUM++;
+  self.LOG_EMOTE_SWIM_TXT               = "SWIM";
+  self.LOG_EMOTE_SALE                   = ENUM; ENUM++;
+  self.LOG_EMOTE_SALE_TXT               = "SALE";
+  self.LOG_EMOTE_COUNT                  = ENUM; ENUM++;
    
 
 
@@ -101,6 +114,7 @@ window.Logger = function(init){
     if(!self.arraysEqual([t.tx,t.ty],self.prev_center_txty)){
       self.set_prev_center_txty(t.tx,t.ty);
       self.camera_history.push([t.tx,t.ty,auto,Date.now()]);
+      self.history();
     }
   }
   self.flush_camera_history = function(now){
@@ -120,11 +134,25 @@ window.Logger = function(init){
     else if(emote === self.LOG_EMOTE_ENERGY_DESPERATE_TXT  ) emote_id = self.LOG_EMOTE_ENERGY_DESPERATE;
     else if(emote === self.LOG_EMOTE_JOY_MOTIVATED_TXT     ) emote_id = self.LOG_EMOTE_JOY_MOTIVATED;
     else if(emote === self.LOG_EMOTE_JOY_DESPERATE_TXT     ) emote_id = self.LOG_EMOTE_JOY_DESPERATE;
-    if(emote_id) self.emote_history.push(self.farmbit_data_short(f).concat([emote_id,Date.now()]))
+    else if(emote === self.LOG_EMOTE_PUKE_TXT              ) emote_id = self.LOG_EMOTE_PUKE;
+    else if(emote === self.LOG_EMOTE_YUM_TXT              ) emote_id = self.LOG_EMOTE_YUM;
+    else if(emote === self.LOG_EMOTE_TIRED_TXT              ) emote_id = self.LOG_EMOTE_TIRED;
+    else if(emote === self.LOG_EMOTE_HAPPY_TXT              ) emote_id = self.LOG_EMOTE_HAPPY;
+    else if(emote === self.LOG_EMOTE_SWIM_TXT              ) emote_id = self.LOG_EMOTE_SWIM;
+    else if(emote === self.LOG_EMOTE_SALE_TXT              ) emote_id = self.LOG_EMOTE_SALE;
+
+    self.emote_history.push(self.farmbit_data_short(f).concat([emote_id,Date.now()]));
+    self.history();
+  }
+  self.emote_swim = function(f){
+    self.emote(f,self.LOG_EMOTE_SWIM_TXT);
+  }
+  self.emote_sale = function(f){
+    self.emote(f,self.LOG_EMOTE_SALE_TXT);
   }
   self.flush_emote_history = function(now){
     ret = self.emote_history.map(function(x){
-      x[length(x)-1] -= now;
+      x[x.length-1] -= now;
       return x;
     });
     self.emote_history = [];
@@ -165,6 +193,7 @@ window.Logger = function(init){
   self.time = 0;
   self.update_time = function(time){
     self.time += time;
+    self.raining();
   }
 
 
@@ -185,9 +214,9 @@ window.Logger = function(init){
   self.new_gamestate = function(){
     var now = Date.now();
     var gamestate = {
-      tiles: pako.deflateRaw(self.uint8_tile_array()).join(),
-      farmbits: pako.deflateRaw(self.uint8_farmbit_array()).join(),
-      items: pako.deflateRaw(self.uint8_item_array()).join(),
+      tiles: pako.gzip(self.uint8_tile_array()).join(),
+      farmbits: pako.gzip(self.uint8_farmbit_array()).join(),
+      items: pako.gzip(self.uint8_item_array()).join(),
       money: gg.money,
       speed: gg.speed,
       achievements: self.achievements,
@@ -198,18 +227,19 @@ window.Logger = function(init){
       camera_center: self.prev_center_txty,
       gametime: self.time,
       timestamp: now,
-      camera_history: self.flush_camera_history(now),
-      emote_history: self.flush_emote_history(now)
     };
     self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
   }
   self.history = function(){
-    var now = Date.now();
-    var log_data = {
-      camera_history: self.flush_camera_history(now),
-      emote_history: self.flush_emote_history(now)
-    };
-    self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+    if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH){
+      var now = Date.now();
+      var log_data = {
+        client_time: now,
+        camera_history: self.flush_camera_history(now),
+        emote_history: self.flush_emote_history(now)
+      };
+      self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+    }
   }
   self.endgame = function(){
     // log_data = self.old_gamestate();
@@ -342,9 +372,9 @@ window.Logger = function(init){
 
   self.raining = function(){
     if(!gg.b.raining && self.was_raining){
-      self.prev_nutritions = self.nutrition_array();
+      //self.prev_nutritions = self.nutrition_array();
      var log_data = {
-        nutrition: self.prev_nutritions
+      //  nutrition: self.prev_nutritions
       };
       self.send_log(log_data, self.LOG_CATEGORY_RAINSTOPPED);
     }
@@ -400,14 +430,13 @@ window.Logger = function(init){
   self.item_data = function(it){
     return {
       item: self.item_data_short(it),
-      marks: it.marks,
+      mark: it.mark,
     };
   }
   self.farmbit_data = function(f){
     return {
       farmbit: self.farmbit_data_short(f),
-      name: f.name,
-    };
+     };
   }
   self.buy_data = function(buy){
     return {
@@ -452,12 +481,13 @@ window.Logger = function(init){
   }
   self.uint8_farmbit_array = function(fs){
     if (fs === undefined) fs = gg.farmbits;
-    var VARS_PER_ENTRY = 8;
+    var VARS_PER_ENTRY = 9;
     var uint8arr = new Uint8Array(fs.length*VARS_PER_ENTRY);
     for (var i = 0; i < fs.length; i++){
       var j = 0;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wx;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = self.farmbit_name_index(fs[i].name); j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_state;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_type;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].fullness/max_fullness*255;j++;
@@ -518,6 +548,10 @@ window.Logger = function(init){
       case INSPECTOR_CONTENT_ITEM:      return self.item_data_short(gg.inspector.detailed);
       case INSPECTOR_CONTENT_FARMBIT:   return self.farmbit_data_short(gg.inspector.detailed);
     }
+  }
+
+  self.farmbit_name_index = function(name){
+    return farmbit_names.findIndex(element => element === name);
   }
 
   //Utils:
@@ -611,13 +645,13 @@ window.Logger = function(init){
     pako.gzip(arr)
     console.timeEnd("gzip")
 
-    console.time("deflate")
-    pako.deflate(arr)
-    console.timeEnd("deflate")
+    // console.time("deflate")
+    // pako.deflate(arr)
+    // console.timeEnd("deflate")
 
-    console.time("deflateRaw")
-    pako.deflateRaw(arr)
-    console.timeEnd("deflateRaw")
+    // console.time("deflateRaw")
+    // pako.deflateRaw(arr)
+    // console.timeEnd("deflateRaw")
 
   }
 

@@ -1,14 +1,20 @@
 var gg = {};
 var ENUM;
 
+var AUDIO = 1;
+
 var Game = function(init)
 {
   var self = this;
   gg.game = self;
+  gg.font = "LeagueSpartan";
+  gg.font_color = "#17315B";
+  gg.backdrop_color = "#A0DEDB";
 
   self.dpr = window.devicePixelRatio ? window.devicePixelRatio : 1;
   var sargs = {width:init.width,height:init.height,container:init.container,dpr:self.dpr,smoothing:1}
   gg.stage = new Stage(sargs);
+  gg.font_size = 14*gg.stage.s_mod;
   gg.canvas = gg.stage.canvas;
   gg.ctx = gg.stage.context;
 
@@ -33,6 +39,7 @@ var Game = function(init)
     {
       var sargs = {width:args.width,height:args.height,container:gg.stage.container,dpr:self.dpr,smoothing:1}
       gg.stage = new Stage(sargs);
+      gg.font_size = 14*gg.stage.s_mod;
     }
     gg.canvas = gg.stage.canvas;
     gg.ctx = gg.stage.context;
@@ -42,8 +49,7 @@ var Game = function(init)
   var prev_t;
   self.begin = function()
   {
-    //hack
-    self.scenes[scene_i].ready(); //this game readys every scene at once!
+    self.scenes[scene_i].ready();
 
     prev_t = performance.now();
     tick(prev_t);

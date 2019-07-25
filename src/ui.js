@@ -157,7 +157,7 @@ var bar = function()
     if(self.pause_btn.active) { if(gg.speed != SPEED_PAUSE) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(pause_img,self.pause_btn,gg.ctx); }
     if(self.play_btn.active)  { if(gg.speed != SPEED_PLAY)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(play_img, self.play_btn, gg.ctx); }
     if(self.fast_btn.active)  { if(gg.speed != SPEED_FAST)  gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(fast_img, self.fast_btn,gg.ctx); }
-    if(self.vfast_btn.active) { if(gg.speed != SPEED_VFAST) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(fast_img, self.vfast_btn,gg.ctx); }
+    if(self.vfast_btn.active) { if(gg.speed != SPEED_VFAST) gg.ctx.globalAlpha = 0.5; else gg.ctx.globalAlpha = 1; drawImageBB(faster_img, self.vfast_btn,gg.ctx); }
     gg.ctx.globalAlpha = 1;
   }
 
@@ -251,7 +251,7 @@ var shop = function()
 
     btn_x = self.pad;
     btn_y += btn_s/2+self.pad;
-    setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s/2);
+    setBB(self.cancel_btn, btn_x,btn_y,btn_s,btn_s/2-self.pad);
     for(var i = 0; i < self.btns.length; i+=2)
     {
                                  setBB(self.btns[i],   btn_x,btn_y,btn_s,btn_s); btn_x += btn_s+self.pad;
@@ -508,7 +508,7 @@ var shop = function()
       }
       else
       {
-        var s = self.tab.w/2;
+        var s = self.tab.w/3;
         gg.ctx.drawImage(icon_money_img,self.tab.x+(self.tab.w+self.pad-s)/2,self.tab.y+self.pad/2,s,s);
         var fs = self.money_display.h*0.3;
         gg.ctx.font = fs+"px "+gg.font;
@@ -746,7 +746,7 @@ var inspector = function()
       u.autosell_2_x = u.autosell_1_x+u.autosell_w;
       u.autosell_3_x = u.autosell_2_x+u.autosell_w;
 
-      u.autosell_h = self.pad*3;
+      u.autosell_h = self.pad*3.5;
       u.autosell_0_y = y;
       y += u.autosell_h;
       y += self.pad;
@@ -792,7 +792,7 @@ var inspector = function()
       u.autosell_1_x = u.autosell_0_x+u.autosell_w;
       u.autosell_2_x = u.autosell_1_x+u.autosell_w;
 
-      u.autosell_h = self.pad*3;
+      u.autosell_h = self.pad*3.5;
       u.autosell_0_y = y;
       y += u.autosell_h;
       y += self.pad;
@@ -816,7 +816,7 @@ var inspector = function()
       u.switch_y = y;
       y += self.pad;
       u.switch_y = y;
-      u.switch_h = self.pad*3;
+      u.switch_h = self.pad*3.5;
       y += u.switch_h;
       y += self.pad;
     }
@@ -837,7 +837,7 @@ var inspector = function()
       u.switch_y = y;
       y += self.pad;
       u.switch_y = y;
-      u.switch_h = self.pad*3;
+      u.switch_h = self.pad*3.5;
       y += u.switch_h;
       y += self.pad;
     }
@@ -1016,13 +1016,13 @@ var inspector = function()
         break;
         case TILE_TYPE_FARM:
         {
-          gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
-
           var g = t.val/farm_nutrition_req;
           if(t.state == TILE_STATE_FARM_GROWN) g = 1;
           var offy = self.vignette_y+0.0*self.vignette_h;
           var h = vignette_overlay_corn_img.height*self.vignette_w/vignette_overlay_corn_img.width;
           gg.ctx.drawImage(vignette_overlay_corn_img,0,0,vignette_overlay_corn_img.width,vignette_overlay_corn_img.height*g,self.vignette_x,offy+(1-g)*h,self.vignette_w,g*h);
+
+          gg.ctx.drawImage(vignette_farm_img,self.x,self.vignette_y,self.w,self.vignette_h);
 
           var frame = floor(gg.b.visit_t/10+self.x/3+self.y/7)%(vignette_nutrition_overlay_frames);
           var vnt = bias1(min(t.nutrition/(nutrition_max/4),0.99));
@@ -1188,56 +1188,56 @@ var inspector = function()
         gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
-        gg.ctx.drawImage(tile_food_img,self.x+self.pad,y,h,h);
+        gg.ctx.drawImage(tile_food_img,self.x+self.pad,y+self.pad/3,h,h);
         x = u.autosell_0_x;
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.autosell_w,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_farmbit_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_1_x;
         if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.autosell_w,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_2_x;
         if(t.marks[0] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.autosell_w,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_cow_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_cow_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = u.autosell_0_x;
-        gg.ctx.fillText("eat", x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
         x = u.autosell_1_x;
-        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
         x = u.autosell_2_x;
-        gg.ctx.fillText("feed",x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("feed",x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
 
         y = u.autosell_1_y;
-        gg.ctx.drawImage(tile_food_img,self.x+self.pad,y,h,h);
+        gg.ctx.drawImage(tile_food_img,self.x+self.pad,y+self.pad/3,h,h);
         x = u.autosell_0_x;
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.autosell_w,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_farmbit_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_1_x;
         if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.autosell_w,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_2_x;
         if(t.marks[1] == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.autosell_w,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_cow_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_cow_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = u.autosell_0_x;
-        gg.ctx.fillText("eat", x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
         x = u.autosell_1_x;
-        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
         x = u.autosell_2_x;
-        gg.ctx.fillText("feed",x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("feed",x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
       }
       else if(t.type == TILE_TYPE_LIVESTOCK)
       {
@@ -1254,45 +1254,45 @@ var inspector = function()
         gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
-        gg.ctx.drawImage(icon_milk_img,self.x+self.pad,y,h,h);
+        gg.ctx.drawImage(icon_milk_img,self.x+self.pad,y+self.pad/3,h,h);
         x = u.autosell_0_x;
         if(t.marks[0] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_farmbit_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_1_x;
         if(t.marks[0] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_2_x;
 
         gg.ctx.fillStyle = black;
         x = u.autosell_0_x;
-        gg.ctx.fillText("eat", x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
         x = u.autosell_1_x;
-        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
 
 
         y = u.autosell_1_y;
-        gg.ctx.drawImage(icon_poop_img,self.x+self.pad,y,h,h);
+        gg.ctx.drawImage(icon_poop_img,self.x+self.pad,y+self.pad/3,h,h);
         x = u.autosell_0_x;
         if(t.marks[1] == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(tile_farm_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(tile_farm_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_1_x;
         if(t.marks[1] == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_money_img,x+u.autosell_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.autosell_2_x;
 
         gg.ctx.fillStyle = black;
         x = u.autosell_0_x;
-        gg.ctx.fillText("fertilize", x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("fertilize", x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
         x = u.autosell_1_x;
-        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+u.autosell_w/2,y+self.font_size+self.pad*1.5);
       }
     }
 
@@ -1414,25 +1414,25 @@ var inspector = function()
         if(it.mark == MARK_USE) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.switch_w,h,1,0,0,1,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_farmbit_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_farmbit_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.switch_1_x;
         if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.switch_w,h,0,0,0,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_money_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
         x = u.switch_2_x;
         if(it.mark == MARK_FEED) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,u.switch_w,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_cow_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_cow_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = u.switch_0_x;
-        gg.ctx.fillText("eat", x+u.switch_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("eat", x+u.switch_w/2,y+self.font_size+self.pad*1.5);
         x = u.switch_1_x;
-        gg.ctx.fillText("sell",x+u.switch_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+u.switch_w/2,y+self.font_size+self.pad*1.5);
         x = u.switch_2_x;
-        gg.ctx.fillText("feed",x+u.switch_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("feed",x+u.switch_w/2,y+self.font_size+self.pad*1.5);
       }
       else
       {
@@ -1442,13 +1442,13 @@ var inspector = function()
         switch(it.type)
         {
           case ITEM_TYPE_WATER:
-            gg.ctx.drawImage(tile_farm_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+            gg.ctx.drawImage(tile_farm_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
             break;
           case ITEM_TYPE_MILK:
-            gg.ctx.drawImage(badge_farmbit_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+            gg.ctx.drawImage(badge_farmbit_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
             break;
           case ITEM_TYPE_POOP:
-            gg.ctx.drawImage(tile_farm_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+            gg.ctx.drawImage(tile_farm_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
             break;
           case ITEM_TYPE_FOOD:
             console.log("BROKEN");
@@ -1461,20 +1461,20 @@ var inspector = function()
         if(it.mark == MARK_SELL) gg.ctx.fillStyle = on; else gg.ctx.fillStyle = off;
         fillSelectiveRRect(x,y,w*3/8,h,0,1,1,0,self.pad,gg.ctx);
         gg.ctx.stroke();
-        gg.ctx.drawImage(badge_money_img,x+u.switch_w/2-img_s/2,y,img_s,img_s);
+        gg.ctx.drawImage(badge_money_img,x+u.switch_w/2-img_s/2,y+self.pad/3,img_s,img_s);
 
         gg.ctx.fillStyle = black;
         x = u.switch_0_x;
         switch(it.type)
         {
           case ITEM_TYPE_WATER:
-            gg.ctx.fillText("irrigate", x+u.switch_w/2,y+self.font_size+self.pad);
+            gg.ctx.fillText("irrigate", x+u.switch_w/2,y+self.font_size+self.pad*1.5);
             break;
           case ITEM_TYPE_MILK:
-            gg.ctx.fillText("eat", x+u.switch_w/2,y+self.font_size+self.pad);
+            gg.ctx.fillText("eat", x+u.switch_w/2,y+self.font_size+self.pad*1.5);
             break;
           case ITEM_TYPE_POOP:
-            gg.ctx.fillText("fertilize", x+u.switch_w/2,y+self.font_size+self.pad);
+            gg.ctx.fillText("fertilize", x+u.switch_w/2,y+self.font_size+self.pad*1.5);
             break;
           case ITEM_TYPE_FOOD:
             console.log("BROKEN");
@@ -1484,7 +1484,7 @@ var inspector = function()
             break;
         }
         x = u.switch_1_x;
-        gg.ctx.fillText("sell",x+u.switch_w/2,y+self.font_size+self.pad);
+        gg.ctx.fillText("sell",x+u.switch_w/2,y+self.font_size+self.pad*1.5);
 
         gg.ctx.font = self.font_size+"px "+gg.font;
       }
@@ -1817,7 +1817,12 @@ var achievements = function()
     if(self.open)
     {
       gg.ctx.fillStyle = white;
-      fillRBB(self,self.pad,gg.ctx);
+      fillRRect(self.x,self.y-gg.font_size*2,self.w,self.h+gg.font_size*2+self.pad,self.pad,gg.ctx);
+      gg.ctx.fillStyle = black;
+      gg.ctx.drawImage(button_close_img,self.x+self.w-self.pad,self.y-gg.font_size,self.pad*2,self.pad*2);
+      var fs = gg.font_size;
+      gg.ctx.font = fs+"px "+gg.font;
+      gg.ctx.fillText("Achievements",self.x+self.w/2,self.y);
       var rows = 4;
       var cols = 4;
       var s = ((self.w-self.pad)/cols)-self.pad;
@@ -1825,7 +1830,7 @@ var achievements = function()
       var y = self.y+self.pad;
       gg.ctx.fillStyle = gray;
       var t = self.nullt;
-      var fs = gg.font_size*3/4;
+      fs = gg.font_size*3/4;
       gg.ctx.font = fs+"px "+gg.font;
       gg.ctx.fillStyle = black;
       for(var i = 0; i < rows; i++)
@@ -1899,7 +1904,7 @@ var advisors = function()
     self.title_font_size = self.font_size*1.5;
     self.title_font = self.title_font_size+"px "+gg.font;
 
-    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-50, 200, 50);
+    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-25*gg.stage.s_mod, 100*gg.stage.s_mod, 25*gg.stage.s_mod);
   }
   self.skip_btn = new ButtonBox(0,0,0,0,function(){ self.skip_tutorial(); });
   self.skip_btn.active = 0;
@@ -2158,7 +2163,9 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    drawArrow(x-30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
+    var w = 30*gg.stage.s_mod;
+    var h = 20*gg.stage.s_mod;
+    gg.ctx.drawImage(arrow_img,x-w,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
   self.arrow = function(x,y)
@@ -2166,7 +2173,9 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    drawArrow(x+30*gg.stage.s_mod,y-29*gg.stage.s_mod,x,y,8*gg.stage.s_mod,gg.ctx);
+    var w = 30*gg.stage.s_mod;
+    var h = 20*gg.stage.s_mod;
+    gg.ctx.drawImage(arrow_img,x,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
   self.camtotile = function(t)
@@ -3765,7 +3774,7 @@ var advisors = function()
     tfunc, //shouldsim
 
 
-    function(){ self.push_blurb("Hmmm. Looks like your farm's eatin' up all the nutrients in the soil."); }, //begin
+    function(){ self.push_blurb("Hmmm. Looks like your farm is eatin' up all the nutrients in the soil."); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4524,7 +4533,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ gg.money += home_cost; self.push_blurb("Go on, buy another house!"); gg.shop.selected_buy = 0; },//begin
+    function(){ gg.money += home_cost; gg.money += fertilizer_cost; self.push_blurb("Go on, buy another house!"); gg.shop.selected_buy = 0; },//begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);

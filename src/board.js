@@ -580,7 +580,7 @@ var fullness_job_for_b = function(b)
     b.job_state = JOB_STATE_GET;
     return 1;
   }
-  it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_MILK,MARK_FEED);
+  it = closest_unlocked_marked_item_of_type(b.tile,ITEM_TYPE_MILK,MARK_USE);
   if(it)
   {
     b.go_idle();
@@ -1354,7 +1354,6 @@ var board = function()
           ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
           ctx.fillStyle = white;
           ctx.fill();
-          ctx.stroke();
           ctx.fillStyle = fillColor;
           ctx.beginPath();
           ctx.moveTo(x+timer_c,y+timer_c);
@@ -1362,6 +1361,9 @@ var board = function()
           ctx.arc(x+timer_c,y+timer_c,timer_r,0-halfpi,twopi*((j+1)/self.timer_progressions)-halfpi);
           ctx.lineTo(x+timer_c,y+timer_c);
           ctx.fill();
+          ctx.beginPath();
+          ctx.arc(x+timer_c,y+timer_c,timer_r,0,twopi);
+          ctx.stroke();
           self.timer_atlas.commitSprite();
           x += timer_s;
         }
@@ -2441,6 +2443,7 @@ var board = function()
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
   {
+    if(gg.achievements.open) { gg.achievements.open = 0; return; }
     if(self.spewing_road) return;
 
     if(gg.shop.selected_buy)
@@ -2618,7 +2621,6 @@ var board = function()
       self.rain_t++;
       if(self.rain_t > 4000) {self.raining = 1; }
       if(self.rain_t > 5000) { self.raining = 0; self.rain_t = 0;}
-      my_logger.raining();
     }
 
     self.visit_t++;
@@ -2690,12 +2692,12 @@ var board = function()
             var it = new item();
             it.type = ITEM_TYPE_POOP;
             it.tile = t;
+            it.mark = t.marks[1];
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
-
-            if(!b_for_job(JOB_TYPE_FERTILIZE, 0, it))
-              ; //do nothing- all atempts present in if
+            if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
+            else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_FERTILIZE, 0, it))) ;
           }
           else if(t.state == TILE_STATE_LIVESTOCK_DIGESTING && t.state_t >= milkable_t)
           {
@@ -2836,8 +2838,8 @@ var board = function()
       var yoff = 0;
       switch(t.state)
       {
-        case TILE_STATE_FARM_UNPLANTED: gg.ctx.textAlign = "left"; gg.ctx.fillStyle = red;   gg.ctx.fillText("x",x,y+h/3); break;
-        case TILE_STATE_FARM_GROWN:     gg.ctx.textAlign = "left"; gg.ctx.fillStyle = green; gg.ctx.fillText("✓",x,y+h/3); break;
+        case TILE_STATE_FARM_UNPLANTED: gg.ctx.drawImage(tile_water_img,x-w/8,y-h/8,w/2,h/2); break;
+        case TILE_STATE_FARM_GROWN:     gg.ctx.drawImage(tile_food_img, x-w/8,y-h/8,w/2,h/2); break;
         case TILE_STATE_FARM_PLANTED:
           if(t.fx_t < clock_bounce_t)
           {
@@ -2848,9 +2850,14 @@ var board = function()
           break;
       }
     }
-    if(t.type == TILE_TYPE_LIVESTOCK && t.state == TILE_STATE_LIVESTOCK_DIGESTING)
+    if(t.type == TILE_TYPE_LIVESTOCK)
     {
-      self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x-w/4,y,gg.ctx);
+      switch(t.state)
+      {
+        case TILE_STATE_LIVESTOCK_EATING: gg.ctx.drawImage(tile_food_img, x-w/8,y-h/8,w/2,h/2); break;
+        case TILE_STATE_LIVESTOCK_DIGESTING: self.timer_atlas.blitWholeSprite(self.timer_atlas_i(t.state_t/milkable_t,1+(1/(gg.b.timer_colors-1))),x-w/4,y,gg.ctx); break;
+        case TILE_STATE_LIVESTOCK_MILKABLE: gg.ctx.drawImage(tile_milk_img, x-w/8,y-h/8,w/2,h/2); break;
+      }
     }
     /*
     if(t.known_nutrition_t)
@@ -3436,37 +3443,34 @@ var item = function()
   self.draw = function()
   {
     if(self.offscreen) return;
+    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
     var y = self.y-self.h/4;
     var h = self.h+self.h/4;
     var img;
     switch(self.mark)
     {
-      case MARK_USE: img = gg.b.item_img(self.type); break;
+      case MARK_USE:  img = gg.b.item_img(self.type); break;
       case MARK_SELL: img = gg.b.item_sell_img(self.type); break;
       case MARK_FEED: img = gg.b.item_feed_img(self.type); break;
     }
     if(self.type == ITEM_TYPE_FERTILIZER)
     {
-      gg.ctx.globalAlpha = 0.5;
-      if(gg.b.nutrition_view)
+      if(gg.b.nutrition_view) gg.ctx.drawImage(tile_fertilizer_nutrition_img,self.x,y,self.w,h);
+      else
       {
-        gg.b.draw_nutrition(0.999,self.x,y,self.w,h);
-        //gg.ctx.fillStyle = nutrition_color;
-        //gg.ctx.fillRect(self.x,y,self.w,h);
+        gg.ctx.globalAlpha = 0.5;
+        gg.ctx.drawImage(img,self.x,y,self.w,h);
+        gg.ctx.globalAlpha = 1;
       }
-      else gg.ctx.drawImage(img,self.x,y,self.w,h);
-      gg.ctx.globalAlpha = 1;
     }
     else gg.ctx.drawImage(img,self.x,y,self.w,h)
     if(self.mark == MARK_SELL)
     {
       gg.ctx.fillStyle = black;
       gg.ctx.font = gg.font_size+"px "+gg.font;
-      gg.ctx.fillText("4SALE",self.x,self.y+self.h/3);
-      gg.ctx.fillText("$"+worth_for_item(self.type),self.x,self.y+self.h);
+      gg.ctx.textAlign = "center";
+      gg.ctx.fillText("+$"+worth_for_item(self.type),self.x+self.w/2,self.y+self.h+gg.font_size);
     }
-
-    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
   }
 }
 
@@ -3521,10 +3525,11 @@ var farmbit = function()
     self.emote_c = e;
     self.emote_w = gg.ctx.measureText(e).width;
     self.emote_t = 0;
-    my_logger.emote(self);
+    my_logger.emote(self,e);
   }
 
   self.anim_side = FARMBIT_ANIM_FRONT;
+  self.anim_dir = FARMBIT_ANIM_RIGHT;
   self.anim_anim = FARMBIT_ANIM_IDLE;
   self.anim_frame = 0;
   self.anim_frame_l = farmbit_anim_nframes;
@@ -4283,6 +4288,7 @@ var farmbit = function()
               if(gg.inspector.detailed == self || gg.inspector.detailed == self.item)
                 gg.inspector.deselect();
               self.item.offscreen = 1;
+              my_logger.emote_sale(self);
             }
           }
             break;
@@ -4320,6 +4326,7 @@ var farmbit = function()
 
   self.draw = function()
   {
+    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
     gg.ctx.globalAlpha = 1;
     if(debug_jobs)
     {
@@ -4399,7 +4406,11 @@ var farmbit = function()
     }
 
     var anim = self.anim_anim;
-    if(self.tile.type == TILE_TYPE_LAKE)                                         anim = FARMBIT_ANIM_SWIM;
+    if(self.tile.type == TILE_TYPE_LAKE)
+    {
+      if(anim != FARMBIT_ANIM_SWIM) my_logger.emote_swim(self);
+      anim = FARMBIT_ANIM_SWIM;
+    }
     else if(self.job_type == JOB_TYPE_IDLE && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_IDLE;
     //else if(self.job_type == JOB_TYPE_SLEEP && self.job_state == JOB_STATE_ACT)  anim = FARMBIT_ANIM_SLEEP;
     else if(self.job_state == JOB_STATE_GET || self.job_state == JOB_STATE_SEEK) anim = FARMBIT_ANIM_WALK;
@@ -4429,7 +4440,6 @@ var farmbit = function()
     */
 
     self.pad = gg.stage.s_mod*10;
-    gg.ctx.font = gg.font_size+"px "+gg.font;
     if(self.emote_c)
     {
       var t = self.emote_t/self.emote_l;
@@ -4438,14 +4448,21 @@ var farmbit = function()
       else              gg.ctx.globalAlpha = 1;
 
       var y = self.y-(20-(30-bounceup(t)*30))*gg.stage.s_mod;
-      gg.ctx.fillStyle = white;
-      fillRRect(self.x+self.w/2-self.emote_w/2-self.pad,y-gg.font_size-self.pad,self.emote_w+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
+      if(self.emote_c.length > 2) //emoji length == 2
+      {
+        gg.ctx.font = gg.font_size+"px "+gg.font;
+        gg.ctx.fillStyle = white;
+        fillRRect(self.x+self.w/2-self.emote_w/2-self.pad,y-gg.font_size-self.pad,self.emote_w+self.pad*2,gg.font_size+self.pad*2,self.pad,gg.ctx);
+      }
+      else
+      {
+        gg.ctx.font = (gg.font_size*1.5)+"px "+gg.font;
+      }
       gg.ctx.fillStyle = black;
       gg.ctx.fillText(self.emote_c,self.x+self.w/2,y);
     }
     gg.ctx.globalAlpha = 1;
 
-    if(gg.inspector.detailed == self) gg.ctx.drawImage(icon_cursor_img,self.x,self.y,self.w,self.h);
   }
 }
 
