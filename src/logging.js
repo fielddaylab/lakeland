@@ -469,7 +469,10 @@ window.Logger = function(init){
   //   ];
   // }
   self.tile_data_short = function(t){
-    return Array.from(self.uint8_tile_array([t]));
+    var ret = Array.from(self.uint8_tile_array([t]));
+    ret.push(t.tx);
+    ret.push(t.ty);
+    return ret;
   }
   self.farmbit_data_short = function(f){
     return Array.from(self.uint8_farmbit_array([f]));
@@ -496,8 +499,8 @@ window.Logger = function(init){
     var uint8arr = new Uint8Array(fs.length*VARS_PER_ENTRY);
     for (var i = 0; i < fs.length; i++){
       var j = 0;
-      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wx;j++;
-      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.tx;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.ty;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = self.farmbit_name_index(fs[i].name); j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_state;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_type;j++;
@@ -514,8 +517,8 @@ window.Logger = function(init){
     var uint8arr = new Uint8Array(its.length*VARS_PER_ENTRY);
     for (var i = 0; i < its.length; i++){
       var j = 0;
-      uint8arr[VARS_PER_ENTRY*i+j] = its[i].wx;j++;
-      uint8arr[VARS_PER_ENTRY*i+j] = its[i].wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].tile.tx;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].tile.ty;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = its[i].type;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = its[i].mark;j++;
     }
