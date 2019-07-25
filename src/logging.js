@@ -326,9 +326,14 @@ window.Logger = function(init){
   }
 
   self.achievement = function(trigger){
-   var log_data = {
-      name: trigger.name
-    };
+    var log_data = {};
+    for (var i = 0; i++; i < achievements.length)
+    if(trigger.name === gg.achievements.triggers[i].name) {
+      log_data = {
+        achievement: i
+      };
+      break;
+    }
     self.send_log(log_data, self.LOG_CATEGORY_ACHIEVEMENT);
     self.update_achievements();
   }
@@ -528,7 +533,7 @@ window.Logger = function(init){
   //   return gg.items.map(self.item_data_short);
   // }
   self.nutrition_array = function(){
-    return gg.b.tiles.map(function(x) {return Math.floor(x.nutrition/nutrition_percent)});
+    return gg.b.tiles.map(function(x) {return Math.floor(x.nutrition/nutrition_max*255)});
   }
   // self.tile_mark_array = function(){
   //   var interesting_tiles = gg.b.tiles.filter(function(x){
