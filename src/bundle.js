@@ -17,6 +17,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_SELECTBUY           = ENUM; ENUM++;
   self.LOG_CATEGORY_BUY                 = ENUM; ENUM++;
   self.LOG_CATEGORY_CANCELBUY           = ENUM; ENUM++;
+  self.LOG_CATEGORY_ROADBUILDS          = ENUM; ENUM++;
   self.LOG_CATEGORY_TILEUSESELECT       = ENUM; ENUM++;
   self.LOG_CATEGORY_ITEMUSESELECT       = ENUM; ENUM++;
   self.LOG_CATEGORY_TOGGLENUTRITION     = ENUM; ENUM++;
@@ -64,10 +65,44 @@ window.Logger = function(init){
   //Local variables, Getters and Setters
   self.buy_hovers = [];
   self.buy_hover = function(t){
-    self.buy_hovers.push(self.tile_data_short(t));
+    self.buy_hovers.push(self.tile_data_short(t).concat([Date.now()]));
   }
-  self.reset_buy_hovers = function(){
+
+  self.flush_buy_hovers = function(now){
+    ret = self.buy_hovers.map(function(x){
+      x[x.length-1] -= now;
+      return x;
+    });
     self.buy_hovers = [];
+    return ret;
+  }
+
+  self.road_hovers = [];
+  self.road_hover = function(){
+    self.road_hovers.push(self.tile_data_short(gg.b.hover_t).concat([Date.now()]));
+  }
+
+  self.flush_road_hovers = function(now){
+    ret = self.road_hovers.map(function(x){
+      x[x.length-1] -= now;
+      return x;
+    });
+    self.road_hovers = [];
+    return ret;
+  }
+
+  self.blurb_history = [];
+  self.blurb = function(txt){
+    if(self.log_blurbs) self.blurb_history.push(Date.now());
+  }
+
+  self.flush_blurb_history = function(now){
+    ret = self.blurb_history.map(function(x){
+      x -= now;
+      return x;
+    });
+    self.blurb_history = [];
+    return ret;
   }
   //TODO ask about potentially only adjusting nutritions if it is a difference of two or more
   // self.prev_nutritions = null;
@@ -97,7 +132,7 @@ window.Logger = function(init){
   }
   self.flush_click_history = function(now){
     ret = self.click_history.map(function(x){
-      x[2] -= now;
+      x[x.length-1] -= now;
       return x;
     });
     self.click_history = [];
@@ -120,7 +155,7 @@ window.Logger = function(init){
   }
   self.flush_camera_history = function(now){
     ret = self.camera_history.map(function(x){
-      x[3] -= now;
+      x[x.length-1] -= now;
       return x;
     });
     self.camera_history = [];
@@ -185,7 +220,7 @@ window.Logger = function(init){
 
   self.achievements = null;
   self.update_achievements = function(trigger){
-    for (var i = 0; i++; i < achievements.length)
+    for (var i = 0; i < gg.achievements.triggers.length;  i++)
       if(trigger.name === gg.achievements.triggers[i].name) {
         self.achievements[i] = 1; return;
       }
@@ -237,8 +272,11 @@ window.Logger = function(init){
 
   self.gtag = function(arguments){ // checkpoint
     if(arguments[0] === 'event'){
+     var now = Date.now();
      var log_data = arguments[2];
       log_data.event_type = arguments[1];
+      log_data.blurb_history = self.flush_blurb_history(now);
+      log_data.client_time = now;
       self.send_log(log_data, self.LOG_CATEGORY_CHECKPOINT);
       self.increment_num_checkpoints_completed();
     }
@@ -265,26 +303,40 @@ window.Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_SELECTBUY);
   }
   self.buy_item = function(){
+    var now = Date.now();
     var log_data = {
+       client_time: now,
        buy: gg.shop.selected_buy,
        tile: self.tile_data_short(gg.b.hover_t),
        success: gg.b.placement_valid(gg.b.hover_t,gg.shop.selected_buy),
-       buy_hovers: self.buy_hovers
+       buy_hovers: self.flush_buy_hovers(now)
      };
-     self.reset_buy_hovers();
+     if (log_data.success && gg.shop.selected_buy != BUY_TYPE_ROAD) self.gamestate();
      self.send_log(log_data, self.LOG_CATEGORY_BUY);
-     if (log_data.success) self.gamestate();
    }
    self.cancel_buy = function(buy){
+    var now = Date.now();
     var log_data = {
+       client_time: now,
        selected_buy: buy,
        cost: gg.shop.buy_cost(buy),
        curr_money: gg.money,
-       buy_hovers: self.buy_hovers
+       buy_hovers: self.flush_buy_hovers(now)
      };
-     self.reset_buy_hovers();
      self.send_log(log_data, self.LOG_CATEGORY_CANCELBUY)
    }
+  self.build_road = function(){
+    self.road_hover();
+    if (!gg.b.spewing_road) {
+      var now = Date.now();
+      var log_data = {
+         client_time: now,
+         road_builds: self.flush_road_hovers(now)
+       };
+       self.send_log(log_data, self.LOG_CATEGORY_ROADBUILDS);
+       self.gamestate();
+    }
+  }
 
   self.tile_use_select = function(t){
    var log_data = self.tile_data(t);
@@ -328,15 +380,17 @@ window.Logger = function(init){
 
   self.achievement = function(trigger){
     var log_data = {};
-    for (var i = 0; i++; i < achievements.length)
-    if(trigger.name === gg.achievements.triggers[i].name) {
-      log_data = {
-        achievement: i
-      };
-      break;
+    for (var i = 0; i < gg.achievements.triggers.length;  i++)
+    {
+      if(trigger.name === gg.achievements.triggers[i].name) {
+        log_data = {
+          achievement: i
+        };
+        break;
+      }
     }
     self.send_log(log_data, self.LOG_CATEGORY_ACHIEVEMENT);
-    self.update_achievements();
+    self.update_achievements(trigger);
   }
 
   self.farmbit_death = function(f){
@@ -347,7 +401,7 @@ window.Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_FARMBITDEATH)
   }
 
-  self.blurb = function(txt){
+//   self.blurb = function(txt){
 //     if(self.log_blurbs){
 //      var log_data = {
 // //        blurb: txt,
@@ -355,7 +409,7 @@ window.Logger = function(init){
 //       }
 //       self.send_log(log_data, self.LOG_CATEGORY_BLURB);
 //     }
-  }
+//   }
   self.record = function(txt){
   //  var log_data = {
   //     record: txt,
@@ -390,7 +444,7 @@ window.Logger = function(init){
     // log_data = self.old_gamestate();
     self.history(true);
     self.gamestate();
-    self.send_log(log_data, self.LOG_CATEGORY_ENDGAME);
+    self.send_log({}, self.LOG_CATEGORY_ENDGAME);
   }
 
   //Log Sender:
@@ -513,7 +567,7 @@ window.Logger = function(init){
     return uint8arr;
   }
   self.uint8_item_array = function(its){
-    if (its === undefined) its = gg.items; else its = [its];
+    if (its === undefined) its = gg.items;
     var VARS_PER_ENTRY = 4;
     var uint8arr = new Uint8Array(its.length*VARS_PER_ENTRY);
     for (var i = 0; i < its.length; i++){

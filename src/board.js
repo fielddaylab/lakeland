@@ -2394,6 +2394,7 @@ var board = function()
     {
       self.alterTile(self.hover_t,TILE_TYPE_ROAD);
       self.spewing_road--;
+      my_logger.build_road();
     }
   }
   self.unhover = function(evt)
@@ -2450,7 +2451,7 @@ var board = function()
     {
       if(self.hover_t)
       {
-        my_logger.buy_item(self);
+        my_logger.buy_item();
         if(self.placement_valid(self.hover_t,gg.shop.selected_buy))
         {
           switch(gg.shop.selected_buy)

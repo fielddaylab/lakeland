@@ -4,27 +4,28 @@
 ### Event Categories
 0. [gamestate](#gamestate)
 1. [startgame](#startgame)
-2. [checkpoint](#checkpoint)
-3. [selecttile](#selecttile)
-4. [selectfarmbit](#selectfarmbit)
-5. [selectitem](#selectitem)
-6. [selectbuy](#selectbuy)
-7. [buy](#buy)
-8. [cancelbuy](#cancelbuy)
-9. [tileuseselect](#tileuseselect)
-10. [itemuseselect](#itemuseselect)
-11. [togglenutrition](#togglenutrition)
-12. [toggleshop](#toggleshop)
-13. [toggleachievements](#toggleachievements)
-14. [skiptutorial](#skiptutorial)
-15. [speed](#speed)
-16. [achievement](#achievement)
-17. [farmbitdeath](#farmbitdeath)
-18. [blurb](#blurb)
-19. [click](#click)
-20. [rainstopped](#rainstopped)
-21. [history](#history)
-22. [endgame](#endgame)
+1. [checkpoint](#checkpoint)
+1. [selecttile](#selecttile)
+1. [selectfarmbit](#selectfarmbit)
+1. [selectitem](#selectitem)
+1. [selectbuy](#selectbuy)
+1. [buy](#buy)
+1. [cancelbuy](#cancelbuy)
+1. [roadbuilds](#roadbuilds)
+1. [tileuseselect](#tileuseselect)
+1. [itemuseselect](#itemuseselect)
+1. [togglenutrition](#togglenutrition)
+1. [toggleshop](#toggleshop)
+1. [toggleachievements](#toggleachievements)
+1. [skiptutorial](#skiptutorial)
+1. [speed](#speed)
+1. [achievement](#achievement)
+1. [farmbitdeath](#farmbitdeath)
+1. [blurb](#blurb)
+1. [click](#click)
+1. [rainstopped](#rainstopped)
+1. [history](#history)
+1. [endgame](#endgame)
 
 ### Enumerators and Constants
 1. [Emotes](#Emotes)
@@ -33,6 +34,9 @@
 1. [Speed](#SpeedConst)
 1. [Achievements](#Achievements)
 1. [Thing Type](#Thing_Type)
+1. [Inspector Content](#InspectorContent)
+1. [Text Type](#TextType)
+1. [Advisor Type](#AdvisorType)
 1. [Tile Type](#TileStates)
 1. [Tile Type](#TileType)
 1. [Job Type](#JobType)
@@ -63,13 +67,13 @@
 | money | gg.money | current money  |
 | speed | gg.speed |  current game speed (see [Speed](#SpeedConst)) |
 | achievements | achievements |A boolean array of whether the player has gotten the [achievement](#Achievements) at that index.   |
-| num_checkpoints_completed | get_num_checkpoints_completed() | Number of tutorials completed.   |
+| num_checkpoints_completed | get_num_checkpoints_completed() | Number of tutorials began + number of tutorial ended. Includes tutorials skipped.   |
 | raining | gg.b.raining | Boolean - currently raining or not.  |
-| curr_selection_type | gg.inspector.detailed_type |Selection [thing type](#Thing_Type) index.   |
+| curr_selection_type | gg.inspector.detailed_type |Current selection [inspector content](#InspectorContent) index. (Note that because the game currently (as of 7/25) logs gamestate only after buys, this will always be the type of tile.)  |
 | curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type.  |
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
-| timestamp | now | Client time.  | 
+| client_time | now | current client time  |
 
 <a name="startgame"/>
 
@@ -87,12 +91,16 @@ Checkpoints are the google analytics events.
 | Key | Value | Description |
 | --- | --- | --- |
 | event_category | arguments[2]  | Usually (always?) begin or end |
-| event_label  |  arguments[2]  | ex. "build_a_house" |
+| event_label  |  arguments[2]  | Tutorial name. For example, the name of the tutorial that teaches the player how to build a house is called "build_a_house" |
 | event_type  | arguments[1]  | Usually (always?) tutorial |
+| blurb_history | flush_blurb_history(now) |  List of client time relative to now for each blurb popup. (Blurbs are now logged here instead of the [blurb](#blurb) event.) | 
+| client_time | now | current client time  |
 
 <a name="selecttile"/>
 
 #### selecttile (index=3)
+Note selections may happen automatically by advisors in the tutorials.
+
 | Key | Value | Description |
 | --- | --- | --- |
 | tile | tile_data_short(t) | See [Data Short](#DataShort).  |
@@ -101,6 +109,8 @@ Checkpoints are the google analytics events.
 <a name="selectfarmbit"/>
 
 #### selectfarmbit (index=4)
+Note selections may happen automatically by advisors in the tutorials.
+
 | Key | Value | Description |
 | --- | --- | --- |
 | farmbit | farmbit_data_short(f) | See [Data Short](#DataShort).  | 
@@ -108,6 +118,8 @@ Checkpoints are the google analytics events.
 <a name="selectitem"/>
 
 #### selectitem (index=5)
+Note selections may happen automatically by advisors in the tutorials.
+
 | Key | Value | Description |
 | --- | --- | --- |
 | item | item_data_short(it) | See [Data Short](#DataShort).   |
@@ -121,7 +133,7 @@ Checkpoints are the google analytics events.
 | buy | buy | [Buy index](#Buys).   |
 | cost | gg.shop.buy_cost(buy) | Cost of buy  |
 | curr_money | gg.money | Current money  |
-| success | gg.money>=gg.shop.buy_cost(buy) | Whether the buy can be selected or not. (Cannot select a buy that cannot be paid for.)  |
+| success | gg.money>=gg.shop.buy_cost(buy) | Boolean. Whether the buy can be selected or not. (Cannot select a buy that cannot be paid for.)  |
 
 <a name="buy"/>
 
@@ -133,7 +145,9 @@ Note: Buys are logged whether the buy was a success or not.
 | buy | gg.shop.selected_buy | [Buy index](#Buys).  |
 | tile | tile_data_short(gg.b.hover_t) | [Data Short](#DataShort) for the tile the buy will be placed on.   |
 | success | gg.b.placement_valid(gg.b.hover_tgg.shop.selected_buy) | Boolean. Whether the buy can be put on the tile. If not, buy fails.  |
-| buy_hovers | buy_hovers |  List of [Data Short](#DataShort) for each hovered tile since either selectbuy log or the previous buy log. | 
+| buy_hovers | flush_buy_hovers(now) |  List of tile [Data Short](#DataShort) appended with client time before now for each hovered tile since either selectbuy log or the previous buy log. | 
+| client_time | now | current client time  |
+
 
 <a name="cancelbuy"/>
 
@@ -143,11 +157,20 @@ Note: Buys are logged whether the buy was a success or not.
 | selected_buy | buy | [Buy index](#Buys).  |
 | cost | gg.shop.buy_cost(buy) | Cost of buy.  |
 | curr_money | gg.money | Current money.  |
-| buy_hovers | buy_hovers |    List of [Data Short](#DataShort) for each hovered tile since either selectbuy log or the previous buy log. | 
+| buy_hovers | flush_buy_hovers(now) |  List of tile [Data Short](#DataShort) appended with client time before now for each hovered tile since either selectbuy log or the previous buy log. | 
+| client_time | now | current client time  |
+
+<a name="roadbuilds"/>
+
+#### roadbuilds (index=9)
+| road_builds | flush_road_hovers(now) |  List of tile [Data Short](#DataShort) appended with client time before now for each tile a road was built on. | 
+| client_time | now | current client time  |
 
 <a name="tileuseselect"/>
 
-#### tileuseselect (index=9)
+#### tileuseselect (index=10)
+Note that this log occurs even when the player selects the current use/mark, i.e. produced corn 1 sell->sell.
+
 | Key | Value | Description |
 | --- | --- | --- |
 | tile | tile_data_short(t) | See [Data Short](#DataShort).  |
@@ -155,7 +178,9 @@ Note: Buys are logged whether the buy was a success or not.
 
 <a name="itemuseselect"/>
 
-#### itemuseselect (index=10)
+#### itemuseselect (index=11)
+Note that this log occurs even when the player selects the current use/mark, i.e.corn sell->sell.
+
 | Key | Value | Description |
 | --- | --- | --- |
 | item | item_data_short(it) | See [Data Short](#DataShort).  |
@@ -163,7 +188,7 @@ Note: Buys are logged whether the buy was a success or not.
 
 <a name="togglenutrition"/>
 
-#### togglenutrition (index=11)
+#### togglenutrition (index=12)
 | Key | Value | Description |
 | --- | --- | --- |
 | to_state | gg.b.nutrition_view | 1 if nutrition view is being turned on, 0 if turned off.  |
@@ -171,14 +196,14 @@ Note: Buys are logged whether the buy was a success or not.
 
 <a name="toggleshop"/>
 
-#### toggleshop (index=12)
+#### toggleshop (index=13)
 | Key | Value | Description |
 | --- | --- | --- |
 | shop_open | gg.shop.open | 1 if the shop view is being opened, 0 if closed.  | 
 
 <a name="toggleachievements"/>
 
-#### toggleachievements (index=13)
+#### toggleachievements (index=14)
 | Key | Value | Description |
 | --- | --- | --- |
 | achievements_open | gg.achievements.open | 1 if the achievement view is being opened, 0 if closed.  | 
@@ -186,7 +211,7 @@ Note: Buys are logged whether the buy was a success or not.
 
 <a name="skiptutorial"/>
 
-#### skiptutorial (index=14)
+#### skiptutorial (index=15)
 Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipped or not.
 
 | Key | Value | Description |
@@ -195,7 +220,7 @@ Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipp
 
 <a name="speed"/>
 
-#### speed (index=15)
+#### speed (index=16)
 | Key | Value | Description |
 | --- | --- | --- |
 | cur_speed | gg.speed | From [speed](#SpeedConst) index.  |
@@ -203,14 +228,14 @@ Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipp
 
 <a name="achievement"/>
 
-#### achievement (index=16)
+#### achievement (index=17)
 | Key | Value | Description |
 | --- | --- | --- |
 | achievement | i | [Achievement](#Achievements) index.  | 
 
 <a name="farmbitdeath"/>
 
-#### farmbitdeath (index=17)
+#### farmbitdeath (index=18)
 | Key | Value | Description |
 | --- | --- | --- |
 | farmbit | farmbit_data_short(f) |  See [Data Short](#DataShort). |
@@ -218,7 +243,8 @@ Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipp
 
 <a name="blurb"/>
 
-#### blurb (index=18)
+#### blurb (index=19)
+(not currently implemented. See blurb_history under [checkpoint](#checkpoint).)
 Note: a blurb is an utterance from an advisor.
 
 | Key | Value | Description |
@@ -227,8 +253,9 @@ Note: a blurb is an utterance from an advisor.
 
 
 <a name="click"/>
+(not currently implemented)
 
-#### click (index=19)
+#### click (index=20)
 | Key | Value | Description |
 | --- | --- | --- |
 |(not currently implemented)  |   |  |
@@ -236,23 +263,23 @@ Note: a blurb is an utterance from an advisor.
 
 <a name="rainstopped"/>
 
-#### rainstopped (index=20)
+#### rainstopped (index=21)
 | Key | Value | Description |
 | --- | --- | --- |
 |(none)  |   | Log itself indicates that it was raining and the raining has now stopped. |
 
 <a name="history"/>
 
-#### history (index=21)
+#### history (index=22)
 | Key | Value | Description |
 | --- | --- | --- |
-| client_time | now |   |
+| client_time | now | current client time  |
 | camera_history | flush_camera_history(now) | List of [camera moves](#CameraMove) since last history log. |
 | emote_history | flush_emote_history(now) | List of 10 element sublists [[farmbit](#DataShort), [emote index](#Emotes), time before client_time (negative number)] emotes since last history log.  | 
 
 <a name="endgame"/>
 
-#### endgame (index=22)
+#### endgame (index=23)
 | Key | Value | Description |
 | --- | --- | --- |
 |(none)  |   | Log itself indicates the player has left the game page. Seperate history and gamestate logs are sent.  |
@@ -360,6 +387,36 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 |1| tile | Gameboard tiles. Has state, type, and an array of 4 marks. Abbreviated as "t".|
 |2| item | Of type water, food, fertilizer, poop, milk. Has mark attribute. Abbreviated as "it".|
 |3| farmbit | Has name, state, job type, job state. Abbreviated as "f". |
+
+<a name="InspectorContent"/>
+
+### Inspector Content
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| farmbit | |
+|2| item | |
+|3| tile | |
+
+<a name="TextType"/>
+
+### Text Type
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| observe | |
+|2| dismiss | |
+|3| direct | |
+
+<a name="AdvisorType"/>
+
+### Advisor Type
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| null | |
+|1| mayor | |
+|2| business | |
+|3| farmer | |
 
 <a name="TileStates"/>
 
@@ -476,10 +533,12 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 <a name="Mark"/>
 
 #### Mark
+Each tile contains an array of 4 marks and each item contains one mark.
+
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
-|1| use | |
+|1| use | Default mark.|
 |2| sell | |
 |3| feed | |
 
@@ -492,7 +551,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 | --- | --- | --- | 
 |0| t.tx | center tile tx |
 |1| t.ty  |center tile ty |
-|2| auto |0/1 boolean for whether the move happened automatically |
+|2| auto | boolean for whether the move happened automatically (1) or not (0)|
 |3| time-now | time before client_time that the move happened (negative number) |
 <a name="DataShort"/>
 
@@ -502,7 +561,7 @@ These are each uint8 vectors. They are as follows:
 
 | Index | Name | Description |
 | --- | --- | --- | 
-|0| val/nutrition_max*255 | 0-255 representing a tile type dependent value. For example, this refers to growth for farms.|
+|0| val/nutrition_max*255 | 0-255 representing a tile type dependent value if exists, 0 otherwise. For example, this refers to growth for farms and remains 0 for homes.|
 |1| nutrition/nutrition_max*255 | 0-255 representing nutrition of each tile. |
 |2| og_type | Original [tile type](#TileType) index. |
 |3| type | Current [tile type](#TileType) index. |
