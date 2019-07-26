@@ -1,5 +1,10 @@
 # usda
 ## Logging Events
+Each log is sent with a number of fields required by [simplelog](https://github.com/fielddaylab/simplelog). Simple log allows for a custom field called event_data_complex along with its category enumerator:
+  event_custom: category enumerator
+  event_data_complex: JSON.stringify(log_data)
+Each log_data is a JSON object for that specific category as defined below.
+
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -163,6 +168,8 @@ Note: Buys are logged whether the buy was a success or not.
 <a name="roadbuilds"/>
 
 #### roadbuilds (index=9)
+| Key | Value | Description |
+| --- | --- | --- |
 | road_builds | flush_road_hovers(now) |  List of tile [Data Short](#DataShort) appended with client time before now for each tile a road was built on. | 
 | client_time | now | current client time  |
 

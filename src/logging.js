@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("USDA",1);
+  self.mySlog = new slog("USDA",2);
   var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -455,8 +455,8 @@ window.Logger = function(init){
       event_data_complex: JSON.stringify(log_data)
     };
     self.mySlog.log(formatted_log_data);
-    log_data.category = category;
-    console.log(log_data);
+    //log_data.category = category;
+    //console.log(log_data);
   }
 
   Helpers:
