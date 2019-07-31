@@ -4320,7 +4320,6 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-
     function(){ self.push_blurb("Work before play. That's my motto."); }, //begin
     ffunc, //tick
     function(){ //draw
@@ -4330,6 +4329,11 @@ var advisors = function()
       var f = self.heap.f;
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
 
     function(){ self.push_blurb("Now we wait."); }, //begin
     ffunc, //tick
