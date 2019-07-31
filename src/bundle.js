@@ -1,7 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("USDA",1);
+  self.mySlog = new slog("USDA",2);
   var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -15,6 +15,9 @@ window.Logger = function(init){
   self.LOG_CATEGORY_SELECTFARMBIT       = ENUM; ENUM++;
   self.LOG_CATEGORY_SELECTITEM          = ENUM; ENUM++;
   self.LOG_CATEGORY_SELECTBUY           = ENUM; ENUM++;
+  self.LOG_CATEGORY_BUY                 = ENUM; ENUM++;
+  self.LOG_CATEGORY_CANCELBUY           = ENUM; ENUM++;
+  self.LOG_CATEGORY_ROADBUILDS          = ENUM; ENUM++;
   self.LOG_CATEGORY_TILEUSESELECT       = ENUM; ENUM++;
   self.LOG_CATEGORY_ITEMUSESELECT       = ENUM; ENUM++;
   self.LOG_CATEGORY_TOGGLENUTRITION     = ENUM; ENUM++;
@@ -22,8 +25,6 @@ window.Logger = function(init){
   self.LOG_CATEGORY_TOGGLEACHIEVEMENTS  = ENUM; ENUM++;
   self.LOG_CATEGORY_SKIPTUTORIAL        = ENUM; ENUM++;
   self.LOG_CATEGORY_SPEED               = ENUM; ENUM++;
-  self.LOG_CATEGORY_PLACEITEM           = ENUM; ENUM++;
-  self.LOG_CATEGORY_CANCEL_BUY          = ENUM; ENUM++;
   self.LOG_CATEGORY_ACHIEVEMENT         = ENUM; ENUM++;
   self.LOG_CATEGORY_FARMBITDEATH        = ENUM; ENUM++;
   self.LOG_CATEGORY_BLURB               = ENUM; ENUM++;
@@ -64,10 +65,44 @@ window.Logger = function(init){
   //Local variables, Getters and Setters
   self.buy_hovers = [];
   self.buy_hover = function(t){
-    self.buy_hovers.push(self.tile_data_short(t));
+    self.buy_hovers.push(self.tile_data_short(t).concat([Date.now()]));
   }
-  self.reset_buy_hovers = function(){
+
+  self.flush_buy_hovers = function(now){
+    ret = self.buy_hovers.map(function(x){
+      x[x.length-1] -= now;
+      return x;
+    });
     self.buy_hovers = [];
+    return ret;
+  }
+
+  self.road_hovers = [];
+  self.road_hover = function(){
+    self.road_hovers.push(self.tile_data_short(gg.b.hover_t).concat([Date.now()]));
+  }
+
+  self.flush_road_hovers = function(now){
+    ret = self.road_hovers.map(function(x){
+      x[x.length-1] -= now;
+      return x;
+    });
+    self.road_hovers = [];
+    return ret;
+  }
+
+  self.blurb_history = [];
+  self.blurb = function(txt){
+    if(self.log_blurbs) self.blurb_history.push(Date.now());
+  }
+
+  self.flush_blurb_history = function(now){
+    ret = self.blurb_history.map(function(x){
+      x -= now;
+      return x;
+    });
+    self.blurb_history = [];
+    return ret;
   }
   //TODO ask about potentially only adjusting nutritions if it is a difference of two or more
   // self.prev_nutritions = null;
@@ -97,7 +132,7 @@ window.Logger = function(init){
   }
   self.flush_click_history = function(now){
     ret = self.click_history.map(function(x){
-      x[2] -= now;
+      x[x.length-1] -= now;
       return x;
     });
     self.click_history = [];
@@ -120,7 +155,7 @@ window.Logger = function(init){
   }
   self.flush_camera_history = function(now){
     ret = self.camera_history.map(function(x){
-      x[3] -= now;
+      x[x.length-1] -= now;
       return x;
     });
     self.camera_history = [];
@@ -185,7 +220,7 @@ window.Logger = function(init){
 
   self.achievements = null;
   self.update_achievements = function(trigger){
-    for (var i = 0; i++; i < achievements.length)
+    for (var i = 0; i < gg.achievements.triggers.length;  i++)
       if(trigger.name === gg.achievements.triggers[i].name) {
         self.achievements[i] = 1; return;
       }
@@ -200,19 +235,7 @@ window.Logger = function(init){
 
 
   //Logging
-  self.startgame = function(){x
-    self.set_prev_center_txty(gg.b.center_tile.tx,gg.b.center_tile.ty);
-    self.achievements = Array(gg.achievements.triggers.length).fill(0);
-//  self.prev_nutritions = self.nutrition_array();
-    tile_states = gg.b.tiles.map(function(x) {return x.state});
-    tile_nutritions = self.nutrition_array();
-    log_data = {
-      tile_states: tile_states,
-      tile_nutritions: tile_nutritions
-    };
-    self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
-  }
-  self.new_gamestate = function(){
+  self.gamestate = function(){
     var now = Date.now();
     var gamestate = {
       tiles: pako.gzip(self.uint8_tile_array()).join(),
@@ -231,25 +254,29 @@ window.Logger = function(init){
     };
     self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
   }
-  self.history = function(){
-    if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH){
-      var now = Date.now();
-      var log_data = {
-        client_time: now,
-        camera_history: self.flush_camera_history(now),
-        emote_history: self.flush_emote_history(now)
-      };
-      self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+  self.startgame = function(){
+    self.set_prev_center_txty(gg.b.center_tile.tx,gg.b.center_tile.ty);
+    self.achievements = Array(gg.achievements.triggers.length).fill(0);
+//  self.prev_nutritions = self.nutrition_array();
+    tile_states = gg.b.tiles.map(function(x) {return x.state});
+    tile_nutritions = self.nutrition_array();
+    log_data = {
+      tile_states: tile_states,
+      tile_nutritions: tile_nutritions
+    };
+    window.onbeforeunload = function(){
+      my_logger.endgame();
     }
+    self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
   }
-  self.endgame = function(){
-    // log_data = self.old_gamestate();
-    self.send_log(log_data, self.LOG_CATEGORY_ENDGAME);
-  }
-  self.gtag = function(arguments){
+
+  self.gtag = function(arguments){ // checkpoint
     if(arguments[0] === 'event'){
+     var now = Date.now();
      var log_data = arguments[2];
       log_data.event_type = arguments[1];
+      log_data.blurb_history = self.flush_blurb_history(now);
+      log_data.client_time = now;
       self.send_log(log_data, self.LOG_CATEGORY_CHECKPOINT);
       self.increment_num_checkpoints_completed();
     }
@@ -276,26 +303,40 @@ window.Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_SELECTBUY);
   }
   self.buy_item = function(){
+    var now = Date.now();
     var log_data = {
+       client_time: now,
        buy: gg.shop.selected_buy,
        tile: self.tile_data_short(gg.b.hover_t),
        success: gg.b.placement_valid(gg.b.hover_t,gg.shop.selected_buy),
-       buy_hovers: self.buy_hovers
+       buy_hovers: self.flush_buy_hovers(now)
      };
-     self.reset_buy_hovers();
-     self.send_log(log_data, self.LOG_CATEGORY_PLACEITEM);
-     if (log_data.success) self.new_gamestate();
+     if (log_data.success && gg.shop.selected_buy != BUY_TYPE_ROAD) self.gamestate();
+     self.send_log(log_data, self.LOG_CATEGORY_BUY);
    }
    self.cancel_buy = function(buy){
+    var now = Date.now();
     var log_data = {
+       client_time: now,
        selected_buy: buy,
        cost: gg.shop.buy_cost(buy),
        curr_money: gg.money,
-       buy_hovers: self.buy_hovers
+       buy_hovers: self.flush_buy_hovers(now)
      };
-     self.reset_buy_hovers();
-     self.send_log(log_data, self.LOG_CATEGORY_CANCEL_BUY)
+     self.send_log(log_data, self.LOG_CATEGORY_CANCELBUY)
    }
+  self.build_road = function(){
+    self.road_hover();
+    if (!gg.b.spewing_road) {
+      var now = Date.now();
+      var log_data = {
+         client_time: now,
+         road_builds: self.flush_road_hovers(now)
+       };
+       self.send_log(log_data, self.LOG_CATEGORY_ROADBUILDS);
+       self.gamestate();
+    }
+  }
 
   self.tile_use_select = function(t){
    var log_data = self.tile_data(t);
@@ -333,17 +374,23 @@ window.Logger = function(init){
    var log_data = {
       cur_speed: gg.speed,
       clicked_speed: speed,
-      during_tutorial: gg.advisors.owns_time
     };
     self.send_log(log_data, self.LOG_CATEGORY_SPEED);
   }
 
   self.achievement = function(trigger){
-   var log_data = {
-      name: trigger.name
-    };
+    var log_data = {};
+    for (var i = 0; i < gg.achievements.triggers.length;  i++)
+    {
+      if(trigger.name === gg.achievements.triggers[i].name) {
+        log_data = {
+          achievement: i
+        };
+        break;
+      }
+    }
     self.send_log(log_data, self.LOG_CATEGORY_ACHIEVEMENT);
-    self.update_achievements();
+    self.update_achievements(trigger);
   }
 
   self.farmbit_death = function(f){
@@ -354,7 +401,7 @@ window.Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_FARMBITDEATH)
   }
 
-  self.blurb = function(txt){
+//   self.blurb = function(txt){
 //     if(self.log_blurbs){
 //      var log_data = {
 // //        blurb: txt,
@@ -362,7 +409,7 @@ window.Logger = function(init){
 //       }
 //       self.send_log(log_data, self.LOG_CATEGORY_BLURB);
 //     }
-  }
+//   }
   self.record = function(txt){
   //  var log_data = {
   //     record: txt,
@@ -382,6 +429,24 @@ window.Logger = function(init){
     self.update_raining();
   }
 
+  self.history = function(force=false){
+    if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH || force){
+      var now = Date.now();
+      var log_data = {
+        client_time: now,
+        camera_history: self.flush_camera_history(now),
+        emote_history: self.flush_emote_history(now)
+      };
+      self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+    }
+  }
+  self.endgame = function(){
+    // log_data = self.old_gamestate();
+    self.history(true);
+    self.gamestate();
+    self.send_log({}, self.LOG_CATEGORY_ENDGAME);
+  }
+
   //Log Sender:
   self.send_log = function(log_data,category){
     var formatted_log_data = {
@@ -391,8 +456,8 @@ window.Logger = function(init){
       event_data_complex: JSON.stringify(log_data)
     };
     self.mySlog.log(formatted_log_data);
-    log_data.category = category;
-    console.log(log_data);
+    //log_data.category = category;
+    //console.log(log_data);
   }
 
   Helpers:
@@ -441,7 +506,7 @@ window.Logger = function(init){
   }
   self.buy_data = function(buy){
     return {
-      name: gg.shop.buy_btn(buy).name,
+      buy: buy,
       cost: gg.shop.buy_cost(buy),
       curr_money: gg.money,
       success: gg.money >= gg.shop.buy_cost(buy)
@@ -459,7 +524,10 @@ window.Logger = function(init){
   //   ];
   // }
   self.tile_data_short = function(t){
-    return Array.from(self.uint8_tile_array([t]));
+    var ret = Array.from(self.uint8_tile_array([t]));
+    ret.push(t.tx);
+    ret.push(t.ty);
+    return ret;
   }
   self.farmbit_data_short = function(f){
     return Array.from(self.uint8_farmbit_array([f]));
@@ -486,8 +554,8 @@ window.Logger = function(init){
     var uint8arr = new Uint8Array(fs.length*VARS_PER_ENTRY);
     for (var i = 0; i < fs.length; i++){
       var j = 0;
-      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wx;j++;
-      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.tx;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = fs[i].tile.ty;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = self.farmbit_name_index(fs[i].name); j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_state;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = fs[i].job_type;j++;
@@ -499,13 +567,13 @@ window.Logger = function(init){
     return uint8arr;
   }
   self.uint8_item_array = function(its){
-    if (its === undefined) its = gg.items; else its = [its];
+    if (its === undefined) its = gg.items;
     var VARS_PER_ENTRY = 4;
     var uint8arr = new Uint8Array(its.length*VARS_PER_ENTRY);
     for (var i = 0; i < its.length; i++){
       var j = 0;
-      uint8arr[VARS_PER_ENTRY*i+j] = its[i].wx;j++;
-      uint8arr[VARS_PER_ENTRY*i+j] = its[i].wy;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].tile.tx;j++;
+      uint8arr[VARS_PER_ENTRY*i+j] = its[i].tile.ty;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = its[i].type;j++;
       uint8arr[VARS_PER_ENTRY*i+j] = its[i].mark;j++;
     }
@@ -523,7 +591,7 @@ window.Logger = function(init){
   //   return gg.items.map(self.item_data_short);
   // }
   self.nutrition_array = function(){
-    return gg.b.tiles.map(function(x) {return Math.floor(x.nutrition/nutrition_percent)});
+    return gg.b.tiles.map(function(x) {return Math.floor(x.nutrition/nutrition_max*255)});
   }
   // self.tile_mark_array = function(){
   //   var interesting_tiles = gg.b.tiles.filter(function(x){

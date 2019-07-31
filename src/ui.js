@@ -351,7 +351,7 @@ var shop = function()
 
   self.select = function(buy)
   {
-    my_logger.select_buy();
+    my_logger.select_buy(buy);
     self.selected_buy = buy;
     self.last_selected_buy = self.selected_buy;
     self.selected_t = 0;
