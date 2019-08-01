@@ -157,10 +157,10 @@ var GamePlayScene = function()
       if(check) check = !gg.inspector.filter(gg.clicker);
     }
     gg.dragger.filter(gg.advisors);
-    if(check) check = !gg.dragger.filter(gg.b);
+    if(check && gg.dragger) check = !gg.dragger.filter(gg.b);
     gg.ignore_single_board = 0;
 
-    gg.keyer.filter(keycatch);
+    if(gg.keyer) gg.keyer.filter(keycatch);
 
     screenSpace(gg.cam, gg.canvas, gg.b);
     gg.b.screen_bounds(gg.cam);
@@ -203,10 +203,10 @@ var GamePlayScene = function()
     gg.achievements.tick();
     gg.advisors.tick(game_times);
 
-    gg.clicker.flush();
-    gg.hoverer.flush();
-    gg.dragger.flush();
-    gg.keyer.flush();
+    if(gg.clicker) gg.clicker.flush();
+    if(gg.hoverer) gg.hoverer.flush();
+    if(gg.dragger) gg.dragger.flush();
+    if(gg.keyer) gg.keyer.flush();
   };
 
   self.draw = function()

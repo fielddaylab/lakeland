@@ -2691,126 +2691,6 @@ var advisors = function()
     }
   }
 
-  var tut_mayor_leave = [
-
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mayor_leave'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Too many people have died."); },//begin
-    noop, //tick
-    function() { //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_delay_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("I have failed as your mayor."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("I can't stay here any longer. Good luck, friend."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-      self.mayor_active = 0;
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    function() { //end
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'mayor_leave'});
-    },
-    tfunc, //shouldsim
-
-  ];
-
-  var tut_farmer_leave = [
-
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'farmer_leave'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Too many people have died."); },//begin
-    noop, //tick
-    function() { //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_delay_adv_thread, //qclick
-    ffunc, //click
-    noop,
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("I have failed as your farm advisor."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("I can't stay here any longer. Good luck."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-      self.farmer_active = 0;
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    function() { //end
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'farmer_leave'});
-    },
-    tfunc, //shouldsim
-
-  ];
-
-  var tut_business_leave = [
-
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'business_leave'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.push_blurb("Too many people have died."); },//begin
-    noop, //tick
-    function() { //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_delay_adv_thread, //qclick
-    ffunc, //click
-    noop,
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("I have failed as your business advisor."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    noop, //end
-    tfunc, //shouldsim
-
-    function(){ self.push_blurb("I can't stay here any longer. Good luck."); }, //begin
-    ffunc, //tick
-    function(){ //draw
-      self.wash();
-      self.popup(TEXT_TYPE_DISMISS);
-      self.mayor_active = 0;
-    },
-    self.confirm_adv_thread, //qclick
-    ffunc, //click
-    function() { //end
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'business_leave'});
-    },
-    tfunc, //shouldsim
-
-  ];
-
   var tut_rain = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'rain'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.push_blurb("Aw heck. Looks like rain."); }, //begin
@@ -3638,15 +3518,6 @@ var advisors = function()
         }
         return 0;
       }, tut_long_travel);
-      self.pool_thread(function(){
-        return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
-      }, tut_mayor_leave);
-      self.pool_thread(function(){
-        return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
-      }, tut_farmer_leave);
-      self.pool_thread(function(){
-        return gg.b.tile_groups[TILE_TYPE_GRAVE].length > 10;
-      }, tut_business_leave);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'poop'});
     },
     tfunc, //shouldsim
@@ -3790,7 +3661,7 @@ var advisors = function()
       self.wash();
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.larrow(b.x,b.y+b.h/2);
+      self.arrow(b.x,b.y+b.h/2);
       gg.nutrition_toggle.draw();
     },
     function(evt) //qclick
@@ -4491,6 +4362,129 @@ var advisors = function()
 
   ];
 
+  var tut_end_life = [
+
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'end_life'}); self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
+    function(){ return self.time_passed(100); }, //tick
+    noop, //draw
+    ffunc, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("Oh no."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_delay_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("We've done our best, but it looks like we might not recover from this one."); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+
+    function(){ self.push_blurb("What went wrong?"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+
+    function(){ self.push_blurb("Were you not able to create enough food?"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("Did your soil lose all its nutrition?"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("Did the lakes become too gross for your townspeople's liking?"); },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    noop, //end
+    tfunc, //shouldsim
+
+    function(){ self.push_blurb("I guess all there is left to do is hope to do better next time."); self.skip_btn.active = 1; },//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      self.popup(TEXT_TYPE_DISMISS);
+    },
+    self.confirm_adv_thread, //qclick
+    ffunc, //click
+    function() { //end
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'end_life'});
+      //remove other death notifs
+      for(var i = 0; i < self.trigger_threads.length; i++)
+      {
+             if(self.trigger_threads[i] == tut_another_death) {           self.triggers.splice(i,1); self.trigger_threads.splice(i,1); i--; }
+        else if(self.trigger_threads[i] == tut_death) { self.a_death = 0; self.triggers.splice(i,1); self.trigger_threads.splice(i,1); i--; }
+      }
+    },
+    tfunc, //shouldsim
+
+    //game over screen
+    noop,//begin
+    ffunc, //tick
+    function(){ //draw
+      self.wash();
+      gg.ctx.fillStyle = "#CBE585";
+      gg.ctx.strokeStyle = gg.font_color;
+      var w = 300*gg.stage.s_mod;
+      var h = 400*gg.stage.s_mod;
+      fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-h/2,w,h,self.pad,gg.ctx);
+      gg.ctx.stroke();
+      gg.ctx.fillStyle = gg.font_color;
+      gg.ctx.font = self.title_font;
+      gg.ctx.textAlign = "center";
+      gg.ctx.fillText("GAME OVER",gg.canvas.width/2,gg.canvas.height/2);
+      gg.ctx.font = self.font;
+      gg.ctx.fillText("Everyone Died",gg.canvas.width/2,gg.canvas.height/2+20*gg.stage.s_mod);
+      gg.ctx.fillText("Start Over",gg.canvas.width/2,gg.canvas.height/2+60*gg.stage.s_mod);
+    },
+    ffunc, //qclick
+    function(){gg.game.setScene(1); }, //click
+    noop, //end
+    tfunc, //shouldsim
+
+  ];
+
   var tut_extra_life = [
 
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'extra_life'}); self.set_advisor(ADVISOR_TYPE_MAYOR); }, //begin
@@ -4628,6 +4622,7 @@ var advisors = function()
       var f = self.heap.f;
       if(f) gg.inspector.select_farmbit(f);
       self.push_blurb((f ? f.name : 0)+" moved into your town!");
+      self.pool_thread(function(){ return gg.farmbits.length == 0 && gg.money < 1000 && !self.tiles_exist(TILE_TYPE_HOME,1); }, tut_end_life);
     },
     ffunc, //tick
     function(){ //draw
