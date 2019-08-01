@@ -3492,7 +3492,7 @@ var farmbit = function()
 
   self.name = farmbit_names[randIntBelow(farmbit_names.length)];
   self.color = randIntBelow(farmbit_colors);
-  self.last_img = farmbit_imgs[self.color][FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0];
+  self.last_img = farmbit_imgs[self.color][FARMBIT_ANIM_IDLE][FARMBIT_ANIM_FRONT][0][FARMBIT_ANIM_RIGHT];
   self.home = 0;
   self.job_type = JOB_TYPE_IDLE;
   self.job_subject = 0;
@@ -3574,6 +3574,10 @@ var farmbit = function()
     var mod = self.walk_mod();
     self.wx += dx*gg.b.walk_speed*mod;
     self.wy += dy*gg.b.walk_speed*mod;
+    if(dy > 0) self.anim_side = FARMBIT_ANIM_BACK;
+    else       self.anim_side = FARMBIT_ANIM_FRONT;
+    if(dx < 0) self.anim_dir = FARMBIT_ANIM_LEFT;
+    else       self.anim_dir = FARMBIT_ANIM_RIGHT;
     return 1;
   }
 
@@ -3826,6 +3830,11 @@ var farmbit = function()
                 }
                 if(good) break;
               }
+            }
+            else
+            {
+              self.anim_side = FARMBIT_ANIM_FRONT;
+              self.anim_dir = FARMBIT_ANIM_RIGHT;
             }
           }
             break;
@@ -4428,7 +4437,7 @@ var farmbit = function()
       }
       */
     }
-    self.last_img = farmbit_imgs[self.color][self.anim_anim][self.anim_side][self.anim_frame];
+    self.last_img = farmbit_imgs[self.color][self.anim_anim][self.anim_side][self.anim_frame][self.anim_dir];
     gg.ctx.drawImage(self.last_img,self.x,self.y-self.h/4,self.w,self.h+self.h/4);
 
     /*

@@ -341,7 +341,14 @@ for(var c = 0; c < farmbit_colors; c++)
       var side = s ? "back" : "front";
       farmbit_imgs[c][a][s] = [];
       for(var f = 0; f < farmbit_anim_nframes[a]; f++)
-        farmbit_imgs[c][a][s][f] = GenImg("assets/farmbit_"+c+"_"+name+"_"+side+"_"+f+".png");
+      {
+        farmbit_imgs[c][a][s][f] = [];
+        var img = new Image();
+        img.onload = (function(c,a,s,f,img){ return function(){img.onload = 0; var i = GenIcon(img.width,img.height); i.context.scale(-1,1); i.context.drawImage(img,img.width*-1,0,img.width,img.height); farmbit_imgs[c][a][s][f][FARMBIT_ANIM_LEFT] = i; console.log(i);}})(c,a,s,f,img);
+        farmbit_imgs[c][a][s][f][FARMBIT_ANIM_RIGHT] = img;
+        farmbit_imgs[c][a][s][f][FARMBIT_ANIM_LEFT]  = img;
+        img.src = "assets/farmbit_"+c+"_"+name+"_"+side+"_"+f+".png";
+      }
     }
   }
 }
