@@ -4468,7 +4468,7 @@ var advisors = function()
       gg.ctx.strokeStyle = gg.font_color;
       var w = 300*gg.stage.s_mod;
       var h = 400*gg.stage.s_mod;
-      fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-h/2,w,h,self.pad,gg.ctx);
+      fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-h/2,w,h*3/4,self.pad,gg.ctx);
       gg.ctx.stroke();
       gg.ctx.fillStyle = gg.font_color;
       gg.ctx.font = self.title_font;
@@ -4477,6 +4477,8 @@ var advisors = function()
       gg.ctx.font = self.font;
       gg.ctx.fillText("Everyone Died",gg.canvas.width/2,gg.canvas.height/2+20*gg.stage.s_mod);
       gg.ctx.fillText("Start Over",gg.canvas.width/2,gg.canvas.height/2+60*gg.stage.s_mod);
+      w = 100*gg.stage.s_mod;
+      gg.ctx.drawImage(tile_grave_img,gg.canvas.width/2-w/2,gg.canvas.height/2-h/2+20*gg.stage.s_mod,w,w*1.25);
     },
     ffunc, //qclick
     function(){gg.game.setScene(1); }, //click
