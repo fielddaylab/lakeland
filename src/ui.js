@@ -4072,7 +4072,9 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){  self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.heap.f = gg.farmbits[0]; self.push_blurb((self.heap.f ? self.heap.f.name : 0)+" is all full up!"); },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -4082,7 +4084,9 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("But you can't afford to keep buyin' food all the time."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -4093,7 +4097,10 @@ var advisors = function()
 
 
     function(){ gg.money += farm_cost; gg.shop.farm_btn.active = 1; self.push_blurb("Let's buy a farm!"); gg.shop.selected_buy = 0; }, //begin
-    function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_FARM); }, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+      gg.shop.keep_open(); return self.purchased(BUY_TYPE_FARM);
+    },
     function(){ //draw
       var b = gg.shop.farm_btn;
       self.popup(TEXT_TYPE_DIRECT);
@@ -4105,7 +4112,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Put it near your house!"); },//begin
-    function(){ return self.tiles_exist(TILE_TYPE_FARM,1); }, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+      return self.tiles_exist(TILE_TYPE_FARM,1);
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
     },
@@ -4130,7 +4140,9 @@ var advisors = function()
 
     //can't build there
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Ope. Can't build a farm there!"); },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -4140,7 +4152,9 @@ var advisors = function()
     ffunc, //shouldsim
 
     function(){ self.heap.t = gg.b.tile_groups[TILE_TYPE_FARM][0]; if(self.heap.t) { self.heap.t.nutrition = max(self.heap.t.nutrition, nutrition_content*4); } self.heap.f = gg.farmbits[0]; self.push_blurb((self.heap.f ? self.heap.f.name : 0)+" will take care of the farm."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -4157,7 +4171,6 @@ var advisors = function()
     noop, //end
     ffunc, //shouldsim
 
-    //can't build there
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("Nice goin', "+(self.heap.f ? self.heap.f.name : 0)+"!"); },//begin
     ffunc, //tick
     function(){ //draw
@@ -4673,7 +4686,6 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-
     function(){ gg.money += home_cost; self.push_blurb("Why doncha buy your first house?"); gg.shop.selected_buy = 0; },//begin
     function(){ gg.shop.keep_open(); return self.purchased(BUY_TYPE_HOME) || self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
@@ -4756,7 +4768,9 @@ var advisors = function()
       self.push_blurb((self.heap.f ? self.heap.f.name : 0)+" moved into your town!");
       self.pool_thread(function(){ return gg.farmbits.length == 0 && gg.money < 1000 && !self.tiles_exist(TILE_TYPE_HOME,1); }, tut_extra_life);
     },
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.camtotile(self.heap.f.tile);
       self.hilight(self.heap.f);
@@ -4769,7 +4783,9 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("Click on your people to see how they're doin'."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -4779,7 +4795,9 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("It's your job ta keep'em alive and happy!"); },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -4788,9 +4806,10 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-
     function(){ self.push_blurb("Shouldn't be too hard. Like I said, people love dem lakes!"); self.skip_btn.active = 1; },//begin
-    ffunc, //tick
+    function(){ //tick
+      if(self.heap.f.fullness <= fullness_motivated) self.heap.f.fullness = fullness_motivated+1;
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },

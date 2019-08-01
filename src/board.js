@@ -2157,6 +2157,7 @@ var board = function()
       self.tile_groups[t.type].push(t);
     }
 
+    /*
     //extra nutrition
     for(var i = 0; i < 50; i++)
     {
@@ -2168,6 +2169,7 @@ var board = function()
       t.nutrition *= t.nutrition;
       t.nutrition = floor(t.nutrition*nutrition_max);
     }
+    */
 
     //guarantee land nutrition
     {
@@ -2620,8 +2622,8 @@ var board = function()
     if(self.autorain)
     {
       self.rain_t++;
-      if(self.rain_t > 4000) {self.raining = 1; }
-      if(self.rain_t > 5000) { self.raining = 0; self.rain_t = 0;}
+      if(self.rain_t > 5000) {self.raining = 1; }
+      if(self.rain_t > 6000) { self.raining = 0; self.rain_t = 0;}
     }
 
     self.visit_t++;
