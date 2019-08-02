@@ -325,6 +325,10 @@ var farmbit_anim_nframes = [];
 farmbit_anim_nframes[FARMBIT_ANIM_IDLE] = 1;
 farmbit_anim_nframes[FARMBIT_ANIM_WALK] = 3;
 farmbit_anim_nframes[FARMBIT_ANIM_SWIM] = 2;
+var farmbit_anim_lframes = [];
+farmbit_anim_lframes[FARMBIT_ANIM_IDLE] = 1;
+farmbit_anim_lframes[FARMBIT_ANIM_WALK] = 3;
+farmbit_anim_lframes[FARMBIT_ANIM_SWIM] = 6;
 
 var farmbit_colors = 5;
 

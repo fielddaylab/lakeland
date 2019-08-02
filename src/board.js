@@ -3537,7 +3537,7 @@ var farmbit = function()
   self.anim_dir = FARMBIT_ANIM_RIGHT;
   self.anim_anim = FARMBIT_ANIM_IDLE;
   self.anim_frame = 0;
-  self.anim_frame_l = farmbit_anim_nframes;
+  self.anim_frame_l = farmbit_anim_lframes;
   self.anim_frame_t = randIntBelow(self.anim_frame_l[self.anim_anim]);
 
   self.walk_mod = function()

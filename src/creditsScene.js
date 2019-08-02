@@ -1,10 +1,8 @@
-var keycatch;
-
 var CreditsScene = function()
 {
   var self = this;
 
-  keycatch =
+  self.keycatch =
   {
     key:function(evt)
     {
@@ -204,7 +202,7 @@ var CreditsScene = function()
       gg.game.setScene(1);
 
     //if(gg.clicker) gg.clicker.filter();
-    if(gg.keyer) gg.keyer.filter(keycatch);
+    if(gg.keyer) gg.keyer.filter(self.keycatch);
 
     if(gg.clicker) gg.clicker.flush();
     if(gg.keyer) gg.keyer.flush();
