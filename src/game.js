@@ -18,7 +18,7 @@ var Game = function(init)
   gg.canvas = gg.stage.canvas;
   gg.ctx = gg.stage.context;
 
-  self.scenes = [new LoadingScene(), new MenuScene(), new IntroScene(), new GamePlayScene()];
+  self.scenes = [new LoadingScene(), new MenuScene(), new IntroScene(), new GamePlayScene(), new CreditsScene()];
   var scene_i = 0;
 
   self.resize_requested = 0;

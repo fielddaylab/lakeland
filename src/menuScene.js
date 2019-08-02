@@ -8,6 +8,7 @@ var MenuScene = function()
   }
 
   var continuable = 0;
+  var tocredits = 0;
   var next = 0;
   var next_t = 0;
 
@@ -18,6 +19,7 @@ var MenuScene = function()
 
   self.begin_btn;
   self.continue_btn;
+  self.credits_btn;
   self.audio_toggle;
   self.fullscreen_toggle;
 
@@ -31,6 +33,7 @@ var MenuScene = function()
     var y = 220*gg.stage.s_mod;
     self.continue_btn = new ButtonBox(x,y,w,h,function(evt){ if(!continuable) return; next = 1; }); y += h+10*gg.stage.s_mod;
     self.begin_btn    = new ButtonBox(x,y,w,h,function(){ next = 1; }); y += h+10*gg.stage.s_mod;
+    self.credits_btn  = new ButtonBox(x,y,w,h,function(){ tocredits = 1; next = 1; }); y += h+10*gg.stage.s_mod;
 
     var w = 30*gg.stage.s_mod;
     var h = 30*gg.stage.s_mod;
@@ -46,13 +49,14 @@ var MenuScene = function()
     if(next)
     {
       next_t += 0.01;
-      if(next_t >= 1) { gg.game.nextScene(); return; /*avoid flush*/ }
+      if(next_t >= 1) { if(!tocredits) gg.game.nextScene(); else gg.game.setScene(4); next = 0; next_t = 0; tocredits = 0; return; /*avoid flush*/ }
     }
     else
     {
       if(
         //!self.clicker.filter(self.continue_btn) &&
         !self.clicker.filter(self.begin_btn) &&
+        !self.clicker.filter(self.credits_btn) &&
         !self.clicker.filter(self.audio_toggle) &&
         !self.clicker.filter(self.fullscreen_toggle) &&
         false)
@@ -64,6 +68,7 @@ var MenuScene = function()
   self.draw = function()
   {
     var ctx = gg.ctx;
+    ctx.textAlign = "left";
     ctx.fillStyle = black;
     ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
     //ctx.drawImage(poster_img,0,0,gg.canvas.width,gg.canvas.height);
@@ -88,6 +93,8 @@ var MenuScene = function()
     if(!code_valid) ctx.globalAlpha = 0.1;
     ctx.drawImage(go_img,code_btn.x,code_btn.y,code_btn.w,code_btn.h);
     */
+    ctx.fillText("CREDITS",self.credits_btn.x+15,self.credits_btn.y+self.credits_btn.h-10);
+    if(self.credits_btn.hovering) ctx.fillRect(self.credits_btn.x+10,self.credits_btn.y+self.credits_btn.h,self.credits_btn.w-105,3);
     ctx.globalAlpha = 1;
 
 /*
