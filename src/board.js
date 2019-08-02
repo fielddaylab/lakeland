@@ -2171,6 +2171,7 @@ var board = function()
     }
     */
 
+/*
     //guarantee land nutrition
     {
       var n = 5;
@@ -2184,6 +2185,7 @@ var board = function()
         }
       }
     }
+*/
 
     //find sheds
     for(var i = 0; i < self.tiles.length; i++)
