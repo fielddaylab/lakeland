@@ -1826,13 +1826,11 @@ var achievements = function()
   var n_bloomed = function(n)
   {
     var found = 0;
-    for(var x = gg.b.bounds_tx; x < gg.b.bounds_tx+gg.b.bounds_tw; x++)
+    for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
     {
-      for(var y = gg.b.bounds_ty; y < gg.b.bounds_ty+gg.b.bounds_th; y++)
-      {
-        var t = gg.b.tiles_t(x,y);
-        if(t.type == TILE_TYPE_LAKE && t.nutrition > water_fouled_threshhold) { found++; if(found >= n) return 1; }
-      }
+      var t = gg.b.tile_groups[TILE_TYPE_LAKE][i];
+      if(gg.b.tile_in_bounds(t) && t.nutrition > water_fouled_threshhold)
+      { found++; if(found >= n) return 1; }
     }
     return 0;
   }
