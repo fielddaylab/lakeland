@@ -1834,10 +1834,10 @@ var achievements = function()
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom","Algae destroys one tile",       achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom","You have an algae problem", achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom",       "Algae Blooms",     achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom",    "3 Tiles of Algae", achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom",   "A lot of Algae",   achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","TOO MUCH ALGAE!",  achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
