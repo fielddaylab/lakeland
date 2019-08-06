@@ -4669,7 +4669,6 @@ var advisors = function()
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
       self.camtotile(t);
-      self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     }, //draw
@@ -4816,7 +4815,6 @@ var advisors = function()
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
       self.camtotile(t);
-      self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     }, //draw
