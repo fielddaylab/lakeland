@@ -1831,7 +1831,7 @@ var achievements = function()
       for(var y = gg.b.bounds_ty; y < gg.b.bounds_ty+gg.b.bounds_th; y++)
       {
         var t = gg.b.tiles_t(x,y);
-        if(t.type == TILE_TYPE_LAKE && t.nutrition > water_fouled_threshhold) { found++; if(found > n) return 1; }
+        if(t.type == TILE_TYPE_LAKE && t.nutrition > water_fouled_threshhold) { found++; if(found >= n) return 1; }
       }
     }
     return 0;
