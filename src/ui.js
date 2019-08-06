@@ -4283,7 +4283,7 @@ var advisors = function()
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
+      self.pool_thread(function(){ return self.time_passed(500); }, tut_timewarp);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
     },
     tfunc, //shouldsim
