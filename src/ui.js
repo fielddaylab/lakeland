@@ -598,7 +598,7 @@ var shop = function()
           gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Owned Land Near Water", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Owned Land Near Water", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_FOOD:
@@ -607,7 +607,7 @@ var shop = function()
           gg.ctx.fillText("Placeable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Anywhere", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Anywhere", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_FARM:
@@ -616,19 +616,19 @@ var shop = function()
           gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Owned Land", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Owned Land", x, y); y += title_fs*1.2;
           gg.ctx.font = title_font;
           gg.ctx.fillStyle = title_color;
           gg.ctx.fillText("Takes in:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Water & Nutrition", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Water & Nutrition", x, y); y += title_fs*1.2;
           gg.ctx.font = title_font;
           gg.ctx.fillStyle = title_color;
           gg.ctx.fillText("Spits out:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("2 Corn", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("2 Corn", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_FERTILIZER:
@@ -637,7 +637,7 @@ var shop = function()
           gg.ctx.fillText("Placeable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Farm", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Farm", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_LIVESTOCK:
@@ -646,19 +646,19 @@ var shop = function()
           gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Owned Land", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Owned Land", x, y); y += title_fs*1.2;
           gg.ctx.font = title_font;
           gg.ctx.fillStyle = title_color;
           gg.ctx.fillText("Takes in:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("3 Corn", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("3 Corn", x, y); y += title_fs*1.2;
           gg.ctx.font = title_font;
           gg.ctx.fillStyle = title_color;
           gg.ctx.fillText("Spits out:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Milk & Manure", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Milk & Manure", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_SKIMMER:
@@ -667,7 +667,7 @@ var shop = function()
           gg.ctx.fillText("Usable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Lakes", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Lakes", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_SIGN:
@@ -676,7 +676,7 @@ var shop = function()
           gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Land and Shoreline", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Land and Shoreline", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_ROAD:
@@ -685,7 +685,7 @@ var shop = function()
           gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
           gg.ctx.font = sub_font;
           gg.ctx.fillStyle = sub_color;
-          gg.ctx.fillText("Anywhere", x, y); y += sub_fs*1.1;
+          gg.ctx.fillText("Anywhere", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
       }
