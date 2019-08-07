@@ -1171,7 +1171,8 @@ var inspector = function()
 */
 
     var u = self.tile_ui[t.type];
-    gg.ctx.font = self.font_size+"px "+gg.font;
+    var fs = self.font_size;
+    gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "left";
     gg.ctx.fillStyle = gg.font_color;
     var x = self.x+self.pad;
@@ -1202,7 +1203,15 @@ var inspector = function()
           gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
         else
           gg.ctx.fillText("Runoff Fertilizer:",x,u.fertilizer_y);
-        draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
+        if(t.fertilizer.state > fertilizer_nutrition)
+        {
+          var n = floor(t.fertilizer.state/fertilizer_nutrition);
+          draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state-(n*fertilizer_nutrition),"#704617");
+          gg.ctx.fillStyle = gg.font_color;
+          gg.ctx.fillText("+"+n,x,u.fertilizer_y+fs*1.1);
+        }
+        else
+          draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
       }
       else if(t.type == TILE_TYPE_FARM)
         gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
