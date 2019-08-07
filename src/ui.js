@@ -2236,9 +2236,9 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    var w = 30*gg.stage.s_mod;
-    var h = 20*gg.stage.s_mod;
-    gg.ctx.drawImage(arrow_img,x-w,y-h/2,w,h);
+    var w = 60*gg.stage.s_mod;
+    var h = 40*gg.stage.s_mod;
+    gg.ctx.drawImage(larrow_img,x-w,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
   self.arrow = function(x,y)
@@ -2246,8 +2246,8 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    var w = 30*gg.stage.s_mod;
-    var h = 20*gg.stage.s_mod;
+    var w = 60*gg.stage.s_mod;
+    var h = 40*gg.stage.s_mod;
     gg.ctx.drawImage(arrow_img,x,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
@@ -3725,7 +3725,7 @@ var advisors = function()
       self.wash();
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x,b.y+b.h/2);
+      self.larrow(b.x,b.y+b.h/2);
       gg.nutrition_toggle.draw();
     },
     function(evt) //qclick
@@ -4012,7 +4012,6 @@ var advisors = function()
     function(){ //draw
       self.camtotile(self.heap.f.tile);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(self.heap.f.x+self.heap.f.w,self.heap.f.y+self.heap.f.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -4261,7 +4260,6 @@ var advisors = function()
       gg.b.screen_tile(t);
       self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -4275,7 +4273,6 @@ var advisors = function()
       gg.b.screen_tile(t);
       self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -4538,6 +4535,7 @@ var advisors = function()
       var w = 300*gg.stage.s_mod;
       var h = 400*gg.stage.s_mod;
       fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-h/2,w,h*3/4,self.pad,gg.ctx);
+      gg.ctx.lineWidth = self.pad/2;
       gg.ctx.stroke();
       gg.ctx.fillStyle = gg.font_color;
       gg.ctx.font = self.title_font;
