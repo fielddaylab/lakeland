@@ -85,7 +85,7 @@ var farm_nutrition_req = food_nutrition*2;
 var farm_nutrition_fertilize_threshhold = nutrition_percent*20;
 var fertilizer_nutrition = farm_nutrition_req*2;
 var water_fouled_threshhold = nutrition_percent*10;
-var livestock_produce_feed = 3;
+var livestock_feed_req = 3;
 
 var water_carryability = 0.2;
 var food_carryability = 0.8;

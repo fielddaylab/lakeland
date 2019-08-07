@@ -1225,14 +1225,6 @@ var inspector = function()
     {
       if(t.type == TILE_TYPE_FARM)
       {
-/*
-        x = self.x+self.pad;
-        gg.ctx.font = self.font_size+"px "+gg.font;
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Feed:",x,u.feed_y);
-        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val,                 "#704617");
-        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,food_nutrition*3,"#906637");
-*/
       }
       if(t.type == TILE_TYPE_LIVESTOCK)
       {
@@ -1241,8 +1233,15 @@ var inspector = function()
         gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
         gg.ctx.fillText("Feed:",x,u.feed_y);
-        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,                 "#704617");
-        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,3*food_nutrition,"#D09677");
+        var s = (self.w)/(livestock_feed_req*2);
+        for(var i = 0; i < livestock_feed_req; i++)
+        {
+          if(t.val > i) gg.ctx.drawImage(tile_food_img,x+s*2*i,u.feed_bar_y-s/2,s,s);
+          else { gg.ctx.globalAlpha = 0.4; gg.ctx.drawImage(tile_food_img,x+s*2*i,u.feed_bar_y-s/2,s,s); }
+        }
+        gg.ctx.globalAlpha = 1;
+        //draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,                                  "#704617");
+        //draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,livestock_feed_req*food_nutrition,"#D09677");
       }
     }
 
