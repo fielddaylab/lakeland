@@ -1232,7 +1232,7 @@ var inspector = function()
         x = self.x+self.pad;
         gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Feed:",x,u.feed_y);
+        gg.ctx.fillText("Required Feed:",x,u.feed_y);
         var s = (self.w)/(livestock_feed_req*2);
         for(var i = 0; i < livestock_feed_req; i++)
         {
@@ -4564,7 +4564,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Ope."); },//begin
+    function(){ self.push_blurb("Ope. Your last town member has died!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4621,7 +4621,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Put it anywhere on the map."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("Put it somewhere on the map."); },//begin
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4636,8 +4636,6 @@ var advisors = function()
           self.jmp(1);
         else
         {
-          for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 0;
-          b.hover_t.owned = 1;
           gg.b.click(evt);
           self.jmp(2);
         }
