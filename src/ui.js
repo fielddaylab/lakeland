@@ -3489,6 +3489,7 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       var i = self.items_exist(ITEM_TYPE_POOP,1);
+      self.camtotile(i.tile);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
@@ -3503,7 +3504,6 @@ var advisors = function()
     function(){ //draw
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -3515,7 +3515,6 @@ var advisors = function()
     function(){ //draw
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -3914,9 +3913,7 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I've got an easy three-point plan."); },//begin
     ffunc, //tick
     function(){ //draw
-      var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
