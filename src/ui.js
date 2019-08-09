@@ -3217,7 +3217,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Whatcha waitin' for? You've got crops ready!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3253,7 +3253,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Jeez louise. You've got manure just laying around."); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3289,7 +3289,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Cripes! There's still fresh fertilizer on your farms!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3325,7 +3325,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Aw, cripes. Look how sad everybody is!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3371,7 +3371,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'long_travel'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Your people are takin' too long to deliver goods."); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3397,7 +3397,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Aw heck. You lost another one!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3423,7 +3423,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_member'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Hooray! Somebody else moved in!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3450,7 +3450,7 @@ var advisors = function()
     noop, //tick
     function() { //draw
       self.wash();
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click

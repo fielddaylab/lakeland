@@ -449,6 +449,9 @@ larrow_img = img;
 img.src = "assets/arrow.png";
 }
 
+var menu_bg_img = GenImg("assets/menu_bg.jpg");
+var uncheck_img = GenImg("assets/checkbutton.png");
+var check_img   = GenImg("assets/checkbutton_on.png");
 var clouds_img  = GenImg("assets/clouds.png");
 var cow_img     = GenImg("assets/cow.png");
 var farmbit_img = GenImg("assets/farmbit.png");

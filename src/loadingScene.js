@@ -105,6 +105,9 @@ var LoadingScene = function()
         }
       }
     }
+    img_srcs.push("assets/menu_bg.jpg");
+    img_srcs.push("assets/checkbutton.png");
+    img_srcs.push("assets/checkbutton_on.png");
     img_srcs.push("assets/icon_money.png");
     img_srcs.push("assets/icon_cursor.png");
     img_srcs.push("assets/icon_fertilizer.png");
