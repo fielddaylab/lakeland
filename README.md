@@ -191,7 +191,7 @@ Note that this log occurs even when the player selects the current use/mark, i.e
 | Key | Value | Description |
 | --- | --- | --- |
 | item | item_data_short(it) | See [Data Short](#DataShort).  |
-| mark | it.mark | Item [mark index](#Mark).  |
+| prev_mark | self.prev_item_use | Item's previous [mark index](#Mark).  |
 
 <a name="togglenutrition"/>
 
@@ -397,7 +397,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="InspectorContent"/>
 
-### Inspector Content
+#### Inspector Content
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -407,7 +407,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="TextType"/>
 
-### Text Type
+#### Text Type
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -417,7 +417,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="AdvisorType"/>
 
-### Advisor Type
+#### Advisor Type
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |

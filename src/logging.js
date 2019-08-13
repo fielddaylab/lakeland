@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",2);
+  self.mySlog = new slog("LAKELAND",3);
   var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -231,6 +231,11 @@ window.Logger = function(init){
     self.raining();
   }
 
+  self.prev_item_use = 0;
+  self.set_prev_item_use = function(it){
+    self.prev_item_use = it.mark;
+  }
+
 
 
   //Logging
@@ -342,7 +347,9 @@ window.Logger = function(init){
     self.send_log(log_data, self.LOG_CATEGORY_TILEUSESELECT);
   }
   self.item_use_select = function(it){
-   var log_data = self.item_data_short(it);
+    var log_data = self.item_data_short(it);
+    log_data.prev_mark =   self.prev_item_use;
+    self.prev_item_use = 0;
     self.send_log(log_data, self.LOG_CATEGORY_ITEMUSESELECT)
   }
 
@@ -494,8 +501,7 @@ window.Logger = function(init){
   }
   self.item_data = function(it){
     return {
-      item: self.item_data_short(it),
-      mark: it.mark,
+      item: self.item_data_short(it)
     };
   }
   self.farmbit_data = function(f){

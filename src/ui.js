@@ -1502,7 +1502,7 @@ var inspector = function()
     var u = self.item_ui[it.type];
     if(!u) return 0;
     var clicked = 0;
-
+    my_logger.set_prev_item_use(it);
     if(it.type == ITEM_TYPE_FOOD)
       clicker.consumeif(self.x,u.switch_y,self.w,u.switch_h,function(evt){
         clicked = 1;
