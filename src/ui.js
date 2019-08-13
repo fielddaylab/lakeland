@@ -3848,7 +3848,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Oh, hiya! Didn't see ya there!"); },//begin
-    ffunc, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -3858,7 +3861,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I'm Bo, your business advisor."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -3867,8 +3873,11 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function() { self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.takeover_ui(); self.takeover_time(); self.push_blurb("Holy buckets. Look at all that food, just sittin' there!"); }, //begin
-    ffunc, //tick
+    function(){ self.heap.i = self.items_exist(ITEM_TYPE_FOOD,1); self.takeover_ui(); self.takeover_time(); self.push_blurb("Holy buckets. Look at all that food, just sittin' there!"); }, //begin
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
@@ -3880,7 +3889,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("You musta been talkin' to Joe and Flo."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -3891,7 +3903,10 @@ var advisors = function()
 
 
     function(){ self.push_blurb("Take it from me, friend. There's more to life than lakes and farms."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -3901,7 +3916,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("If you wanna grow your town, you need money!"); },//begin
-    ffunc, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -3911,7 +3929,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I've got an easy three-point plan."); },//begin
-    ffunc, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
     },
@@ -3921,7 +3942,11 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.takeover_time(); self.push_blurb("Step one: pause the game.");}, //begin
-    function(){ return (gg.speed == SPEED_PAUSE); }, //tick
+    function(){ //tick
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness++; //freeze current fullness so they don't eat it from under you
+      return (gg.speed == SPEED_PAUSE);
+    },
     function(){ //draw
       self.wash();
       var b = gg.bar.pause_btn;
@@ -3935,7 +3960,10 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("Bingo! Now click some corn to select it."); },//begin
-    function(){ gg.speed = SPEED_PAUSE; return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM; }, //tick
+    function(){ //tick
+      gg.speed = SPEED_PAUSE;
+      return gg.inspector.detailed_type == INSPECTOR_CONTENT_ITEM;
+    },
     function(){ //draw
       var i = self.heap.i;
       self.popup(TEXT_TYPE_DIRECT);
@@ -3947,7 +3975,12 @@ var advisors = function()
     tfunc, //shouldsim
 
     function(){ self.push_blurb("You got it! Now mark the corn for sale on the right."); },//begin
-    function(){ gg.speed = SPEED_PAUSE; var i = self.heap.i; gg.inspector.select_item(i); return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1); }, //tick
+    function(){ //tick
+      gg.speed = SPEED_PAUSE;
+      var i = self.heap.i;
+      gg.inspector.select_item(i);
+      return self.marked_items_exist(ITEM_TYPE_FOOD,MARK_SELL,1);
+    },
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
       var u = gg.inspector.item_ui[ITEM_TYPE_FOOD];
