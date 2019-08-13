@@ -6,10 +6,11 @@ Each log is sent with a number of fields required by [simplelog](https://github.
 Each log_data is a JSON object for that specific category as defined below.
 
 #### Change Log
-v1: Alpha
-v2: Original Version
-v3: Change itemusechange: remove mark, add prev_mark
-v4: Remove gzipping.
+Versions:
+1. Alpha
+2. Original Version
+3. Change itemusechange: remove mark, add prev_mark
+4. Remove gzipping.
 
 ### Event Categories
 0. [gamestate](#gamestate)
