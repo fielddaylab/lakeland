@@ -686,7 +686,7 @@ var fulfillment_job_for_b = function(b)
   var tp;
 
   //feed
-  t = closest_unlocked_valdeficient_tile_from_list(b.tile, livestock_produce_feed, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
+  t = closest_unlocked_valdeficient_tile_from_list(b.tile, livestock_feed_req, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
   if(t)
   {
     it = closest_unlocked_marked_item_of_type(t,ITEM_TYPE_FOOD,MARK_FEED);
@@ -885,7 +885,7 @@ var b_for_job = function(job_type, job_subject, job_object)
     {
       if(!job_subject && !job_object) return; //not going to waste time "looking to find some bit and some livestock and some food and get 'em goin"
 
-      if(!job_subject) job_subject = closest_unlocked_valdeficient_tile_from_list(job_object.tile, livestock_produce_feed, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
+      if(!job_subject) job_subject = closest_unlocked_valdeficient_tile_from_list(job_object.tile, livestock_feed_req, gg.b.tile_groups[TILE_TYPE_LIVESTOCK]);
       if(!job_subject) return 0;
 
       if(!job_object) job_object = closest_unlocked_marked_item_of_type(job_subject,ITEM_TYPE_FOOD,MARK_USE);
@@ -2687,10 +2687,10 @@ var board = function()
           break;
         case TILE_TYPE_LIVESTOCK:
         {
-          if(t.state == TILE_STATE_LIVESTOCK_EATING && t.val >= livestock_produce_feed)
+          if(t.state == TILE_STATE_LIVESTOCK_EATING && t.val >= livestock_feed_req)
           {
             t.state = TILE_STATE_LIVESTOCK_DIGESTING;
-            t.val -= livestock_produce_feed;
+            t.val -= livestock_feed_req;
             t.state_t = 0;
 
             //gen poop

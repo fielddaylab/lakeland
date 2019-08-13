@@ -564,58 +564,134 @@ var shop = function()
       }
 
       var fs = self.font_size;
-      gg.ctx.font = fs+"px "+gg.font;
+
+      var title_fs = self.font_size;
+      var title_font = title_fs+"px "+gg.font;
+      var title_color = gg.font_color;
+
+      var sub_fs = self.font_size*0.8;
+      var sub_font = sub_fs+"px "+gg.font;
+      var sub_color = gray;
+
       gg.ctx.textAlign = "left";
+      gg.ctx.font = title_font;
+      gg.ctx.fillStyle = title_color;
+
       var x = bb.x+description_offx+bb.w+self.pad;
-      var y = bb.y+fs;
-      gg.ctx.fillStyle = gg.font_color;
-      gg.ctx.fillText(self.buy_name(self.last_selected_buy), x, y); y += fs+self.pad;
+      var y = bb.y+title_fs;
+      gg.ctx.fillText(self.buy_name(self.last_selected_buy), x, y); y += title_fs+self.pad;
+      gg.ctx.fillText("Cost: ", x, y);
+      var cost_width = gg.ctx.measureText("Cost: ").width;
+      gg.ctx.font = sub_font;
       if(gg.money < self.buy_cost(self.last_selected_buy)) gg.ctx.fillStyle = red;
-      gg.ctx.fillText("Cost: $"+self.buy_cost(self.last_selected_buy), x, y); y += fs;
+      else gg.ctx.fillStyle = sub_color;
+      gg.ctx.fillText("$"+self.buy_cost(self.last_selected_buy), x+cost_width, y); y += title_fs;
       gg.ctx.fillStyle = gg.font_color;
       x = self.x+description_offx+self.pad;
-      y = bb.y+bb.h+self.pad+fs;
+      y = bb.y+bb.h+self.pad+title_fs;
 
       switch(self.last_selected_buy)
       {
         case BUY_TYPE_HOME:
-          gg.ctx.fillText("Buildable: Owned Land Near Water", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Owned Land Near Water", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_FOOD:
-          gg.ctx.fillText("Placeable: Anywhere", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Placeable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Anywhere", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_FARM:
-          gg.ctx.fillText("Buildable: Owned Land", x, y); y += fs*1.1;
-          gg.ctx.fillText("Takes in: Water & Nutrition", x, y); y += fs*1.1;
-          gg.ctx.fillText("Spits out: 2 Corn", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Owned Land", x, y); y += title_fs*1.2;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Takes in:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Water & Nutrition", x, y); y += title_fs*1.2;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Spits out:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("2 Corn", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_FERTILIZER:
-          gg.ctx.fillText("Placeable: Farm", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Placeable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Farm", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_LIVESTOCK:
-          gg.ctx.fillText("Buildable: Owned Land", x, y); y += fs*1.1;
-          gg.ctx.fillText("Takes in: 3 Corn", x, y); y += fs*1.1;
-          gg.ctx.fillText("Spits out: Milk & Manure", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Owned Land", x, y); y += title_fs*1.2;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Takes in:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("3 Corn", x, y); y += title_fs*1.2;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Spits out:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Milk & Manure", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_SKIMMER:
-          gg.ctx.fillText("Usable: Lakes", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Usable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Lakes", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_SIGN:
-          gg.ctx.fillText("Buildable: Land and Shoreline", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Land and Shoreline", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
         case BUY_TYPE_ROAD:
-          gg.ctx.fillText("Buildable: Anywhere", x, y); y += fs*1.1;
+          gg.ctx.font = title_font;
+          gg.ctx.fillStyle = title_color;
+          gg.ctx.fillText("Buildable:", x, y); y += title_fs*1.1;
+          gg.ctx.font = sub_font;
+          gg.ctx.fillStyle = sub_color;
+          gg.ctx.fillText("Anywhere", x, y); y += title_fs*1.2;
           y += self.pad;
           break;
       }
 
+      gg.ctx.font = title_font;
+      gg.ctx.fillStyle = title_color;
       for(var i = 0; i < self.descriptions[self.last_selected_buy].length; i++)
       {
         gg.ctx.fillText(self.descriptions[self.last_selected_buy][i], x, y); y += fs*1.1;
@@ -1095,7 +1171,8 @@ var inspector = function()
 */
 
     var u = self.tile_ui[t.type];
-    gg.ctx.font = self.font_size+"px "+gg.font;
+    var fs = self.font_size;
+    gg.ctx.font = fs+"px "+gg.font;
     gg.ctx.textAlign = "left";
     gg.ctx.fillStyle = gg.font_color;
     var x = self.x+self.pad;
@@ -1126,7 +1203,15 @@ var inspector = function()
           gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
         else
           gg.ctx.fillText("Runoff Fertilizer:",x,u.fertilizer_y);
-        draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
+        if(t.fertilizer.state > fertilizer_nutrition)
+        {
+          var n = floor(t.fertilizer.state/fertilizer_nutrition);
+          draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state-(n*fertilizer_nutrition),"#704617");
+          gg.ctx.fillStyle = gg.font_color;
+          gg.ctx.fillText("+"+n,x,u.fertilizer_y+fs*1.1);
+        }
+        else
+          draw_nutrition_bar(x,u.fertilizer_bar_y,self.w-self.pad*2,t.fertilizer.state,"#704617");
       }
       else if(t.type == TILE_TYPE_FARM)
         gg.ctx.fillText("Applied Fertilizer:",x,u.fertilizer_y);
@@ -1149,14 +1234,6 @@ var inspector = function()
     {
       if(t.type == TILE_TYPE_FARM)
       {
-/*
-        x = self.x+self.pad;
-        gg.ctx.font = self.font_size+"px "+gg.font;
-        gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Feed:",x,u.feed_y);
-        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val,                 "#704617");
-        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val,food_nutrition*3,"#906637");
-*/
       }
       if(t.type == TILE_TYPE_LIVESTOCK)
       {
@@ -1164,9 +1241,16 @@ var inspector = function()
         x = self.x+self.pad;
         gg.ctx.font = self.font_size+"px "+gg.font;
         gg.ctx.textAlign = "left";
-        gg.ctx.fillText("Feed:",x,u.feed_y);
-        draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,                 "#704617");
-        draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,3*food_nutrition,"#D09677");
+        gg.ctx.fillText("Required Feed:",x,u.feed_y);
+        var s = (self.w)/(livestock_feed_req*2);
+        for(var i = 0; i < livestock_feed_req; i++)
+        {
+          if(t.val > i) gg.ctx.drawImage(tile_food_img,x+s*2*i,u.feed_bar_y-s/2,s,s);
+          else { gg.ctx.globalAlpha = 0.4; gg.ctx.drawImage(tile_food_img,x+s*2*i,u.feed_bar_y-s/2,s,s); }
+        }
+        gg.ctx.globalAlpha = 1;
+        //draw_nutrition_bar(          x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,                                  "#704617");
+        //draw_remaining_nutrition_bar(x,u.feed_bar_y,self.w-self.pad*2,t.val*food_nutrition,livestock_feed_req*food_nutrition,"#D09677");
       }
     }
 
@@ -1750,20 +1834,18 @@ var achievements = function()
   var n_bloomed = function(n)
   {
     var found = 0;
-    for(var x = self.bounds_tx; x < self.bounds_tx+self.bounds_tw; x++)
+    for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_LAKE].length; i++)
     {
-      for(var y = self.bounds_ty; y < self.bounds_ty+self.bounds_th; y++)
-      {
-        var t = self.tiles_t(x,y);
-        if(t.type == TILE_TYPE_LAKE && t.nutrition > water_fouled_threshhold) { found++; if(found > n) return 1; }
-      }
+      var t = gg.b.tile_groups[TILE_TYPE_LAKE][i];
+      if(gg.b.tile_in_bounds(t) && t.nutrition > water_fouled_threshhold)
+      { found++; if(found >= n) return 1; }
     }
     return 0;
   }
-  t = self.pushtrigger("Bloom","Algae destroys one tile",       achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
-  t = self.pushtrigger("BigBloom","Algae spreads to 3 tiles",   achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
-  t = self.pushtrigger("HugeBloom","You have an algae problem", achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
-  t = self.pushtrigger("MassiveBloom","A whole lake destroyed", achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
+  t = self.pushtrigger("Bloom",       "Algae Blooms",     achievement_bloom_imgs[0], achievement_bloom_imgs[0], function(){ return n_bloomed(1); },0);
+  t = self.pushtrigger("BigBloom",    "3 Tiles of Algae", achievement_bloom_imgs[1], achievement_bloom_imgs[1], function(){ return n_bloomed(3); },t);
+  t = self.pushtrigger("HugeBloom",   "A lot of Algae",   achievement_bloom_imgs[2], achievement_bloom_imgs[2], function(){ return n_bloomed(10); },t);
+  t = self.pushtrigger("MassiveBloom","TOO MUCH ALGAE!",  achievement_bloom_imgs[3], achievement_bloom_imgs[3], function(){ return n_bloomed(30); },t);
 
   self.filter = function(filter)
   {
@@ -2163,9 +2245,9 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    var w = 30*gg.stage.s_mod;
-    var h = 20*gg.stage.s_mod;
-    gg.ctx.drawImage(arrow_img,x-w,y-h/2,w,h);
+    var w = 60*gg.stage.s_mod;
+    var h = 40*gg.stage.s_mod;
+    gg.ctx.drawImage(larrow_img,x-w,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
   self.arrow = function(x,y)
@@ -2173,8 +2255,8 @@ var advisors = function()
     var t = (self.stable_thread_t%100)/100;
     gg.ctx.globalAlpha = min(1,self.stable_thread_t/30);
     y = y-(10-10*bounceup(t))*gg.stage.s_mod;
-    var w = 30*gg.stage.s_mod;
-    var h = 20*gg.stage.s_mod;
+    var w = 60*gg.stage.s_mod;
+    var h = 40*gg.stage.s_mod;
     gg.ctx.drawImage(arrow_img,x,y-h/2,w,h);
     gg.ctx.globalAlpha = 1;
   }
@@ -3135,7 +3217,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unattended_farm'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Whatcha waitin' for? You've got crops ready!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3171,7 +3253,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'unused_fertilizer'}); self.set_advisor(ADVISOR_TYPE_FARMER); self.takeover_ui(); self.takeover_time(); self.push_blurb("Jeez louise. You've got manure just laying around."); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3207,7 +3289,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'flooded_fertilizer'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Cripes! There's still fresh fertilizer on your farms!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3243,7 +3325,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'mass_sadness'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.takeover_ui(); self.takeover_time(); self.push_blurb("Aw, cripes. Look how sad everybody is!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3289,7 +3371,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'long_travel'}); self.set_advisor(ADVISOR_TYPE_BUSINESS); self.takeover_ui(); self.takeover_time(); self.push_blurb("Your people are takin' too long to deliver goods."); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3315,7 +3397,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Aw heck. You lost another one!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3341,7 +3423,7 @@ var advisors = function()
     function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_member'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb("Hooray! Somebody else moved in!"); },//begin
     noop, //tick
     function() { //draw
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3368,7 +3450,7 @@ var advisors = function()
     noop, //tick
     function() { //draw
       self.wash();
-      self.popup(TEXT_TYPE_DIRECT);
+      self.popup(TEXT_TYPE_DISMISS);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -3407,6 +3489,7 @@ var advisors = function()
     ffunc, //tick
     function(){ //draw
       var i = self.items_exist(ITEM_TYPE_POOP,1);
+      self.camtotile(i.tile);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(i.x+i.w,i.y+i.h/2);
     },
@@ -3421,7 +3504,6 @@ var advisors = function()
     function(){ //draw
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -3433,7 +3515,6 @@ var advisors = function()
     function(){ //draw
       var i = self.items_exist(ITEM_TYPE_POOP,1);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -3652,7 +3733,7 @@ var advisors = function()
       self.wash();
       var b = gg.nutrition_toggle.toggle_btn;
       self.popup(TEXT_TYPE_DIRECT);
-      self.arrow(b.x,b.y+b.h/2);
+      self.larrow(b.x,b.y+b.h/2);
       gg.nutrition_toggle.draw();
     },
     function(evt) //qclick
@@ -3832,9 +3913,7 @@ var advisors = function()
     function(){ self.takeover_ui(); self.takeover_time(); self.push_blurb("I've got an easy three-point plan."); },//begin
     ffunc, //tick
     function(){ //draw
-      var i = self.heap.i;
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(i.x+i.w,i.y+i.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -3939,7 +4018,6 @@ var advisors = function()
     function(){ //draw
       self.camtotile(self.heap.f.tile);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(self.heap.f.x+self.heap.f.w,self.heap.f.y+self.heap.f.h/2);
     },
     self.confirm_adv_thread, //qclick
     ffunc, //click
@@ -4188,7 +4266,6 @@ var advisors = function()
       gg.b.screen_tile(t);
       self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
@@ -4202,12 +4279,11 @@ var advisors = function()
       gg.b.screen_tile(t);
       self.camtotile(t);
       self.popup(TEXT_TYPE_DISMISS);
-      self.arrow(t.x+t.w,t.y+t.h/2);
     },
     self.confirm_delay_adv_thread, //qclick
     ffunc, //click
     function() { //end
-      self.pool_thread(function(){ return self.time_passed(1000); }, tut_timewarp);
+      self.pool_thread(function(){ return self.time_passed(500); }, tut_timewarp);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
     },
     tfunc, //shouldsim
@@ -4465,6 +4541,7 @@ var advisors = function()
       var w = 300*gg.stage.s_mod;
       var h = 400*gg.stage.s_mod;
       fillRRect(gg.canvas.width/2-w/2,gg.canvas.height/2-h/2,w,h*3/4,self.pad,gg.ctx);
+      gg.ctx.lineWidth = self.pad/2;
       gg.ctx.stroke();
       gg.ctx.fillStyle = gg.font_color;
       gg.ctx.font = self.title_font;
@@ -4493,7 +4570,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb("Ope."); },//begin
+    function(){ self.push_blurb("Ope. Your last town member has died!"); },//begin
     ffunc, //tick
     function(){ //draw
       self.wash();
@@ -4550,7 +4627,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.takeover_ui(); for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 1; self.push_blurb("Put it anywhere on the map."); },//begin
+    function(){ self.takeover_ui(); self.push_blurb("Put it somewhere on the map."); },//begin
     function(){ return self.tiles_exist(TILE_TYPE_HOME,1); }, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DIRECT);
@@ -4565,8 +4642,6 @@ var advisors = function()
           self.jmp(1);
         else
         {
-          for(var i = 0; i < gg.b.tiles.length; i++) gg.b.tiles[i].owned = 0;
-          b.hover_t.owned = 1;
           gg.b.click(evt);
           self.jmp(2);
         }
@@ -4593,7 +4668,6 @@ var advisors = function()
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
       self.camtotile(t);
-      self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     }, //draw
@@ -4740,7 +4814,6 @@ var advisors = function()
       var t = gg.b.tile_groups[TILE_TYPE_HOME][0];
       gg.b.screen_tile(t);
       self.camtotile(t);
-      self.hilight(t);
       self.popup(TEXT_TYPE_DISMISS);
       self.arrow(t.x+t.w,t.y+t.h/2);
     }, //draw
