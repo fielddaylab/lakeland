@@ -13,7 +13,7 @@ var MenuScene = function()
 
     w = 240*gg.stage.s_mod;
     h = 50*gg.stage.s_mod;
-    x = 100*gg.stage.s_mod;
+    x = 60*gg.stage.s_mod;
     y = 220*gg.stage.s_mod;
     if(self.continue_btn){ self.continue_btn.x = x; self.continue_btn.y = y; self.continue_btn.w = w; self.continue_btn.h = h; } y += h+20*gg.stage.s_mod;
     if(self.begin_btn)   { self.begin_btn.x = x;    self.begin_btn.y = y;    self.begin_btn.w = w;    self.begin_btn.h = h;    } y += h+20*gg.stage.s_mod;
@@ -21,7 +21,7 @@ var MenuScene = function()
 
     w = 30*gg.stage.s_mod;
     h = 30*gg.stage.s_mod;
-    x = 100*gg.stage.s_mod;
+    x = 60*gg.stage.s_mod;
     y = gg.canvas.height-100*gg.stage.s_mod;
     if(self.audio_toggle)     { self.audio_toggle.x = x;      self.audio_toggle.y = y;      self.audio_toggle.w = w;      self.audio_toggle.h = h;      } x += 200*gg.stage.s_mod;
     if(self.fullscreen_toggle){ self.fullscreen_toggle.x = x; self.fullscreen_toggle.y = y; self.fullscreen_toggle.w = w; self.fullscreen_toggle.h = h; } x += 200*gg.stage.s_mod;
