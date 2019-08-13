@@ -5,6 +5,12 @@ Each log is sent with a number of fields required by [simplelog](https://github.
   event_data_complex: JSON.stringify(log_data)
 Each log_data is a JSON object for that specific category as defined below.
 
+#### Change Log
+Versions:
+1. Alpha
+2. Original Version
+3. Change itemusechange: remove mark, add prev_mark
+4. Remove gzipping.
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -66,9 +72,9 @@ Each log_data is a JSON object for that specific category as defined below.
 #### gamestate (index=0)
 | Key | Value | Description |
 | --- | --- | --- |
-| tiles | pako.gzip(uint8_tile_array()).join() | Gzipped tile [data matrix](#DataMatrices).   |
-| farmbits | pako.gzip(uint8_farmbit_array()).join() | Gzipped farmbit [data matrix](#DataMatrices).   |
-| items | pako.gzip(uint8_item_array()).join() |Gzipped item [data matrix](#DataMatrices).  |
+| tiles | uint8_tile_array().join() | Tile [data matrix](#DataMatrices).   |
+| farmbits | uint8_farmbit_array().join() | Farmbit [data matrix](#DataMatrices).   |
+| items | uint8_item_array().join() | Item [data matrix](#DataMatrices).  |
 | money | gg.money | current money  |
 | speed | gg.speed |  current game speed (see [Speed](#SpeedConst)) |
 | achievements | achievements |A boolean array of whether the player has gotten the [achievement](#Achievements) at that index.   |
@@ -609,6 +615,7 @@ Note: The gamestate log of all tiles does not contain tile tx,ty. Row of the til
 
 ## Built With
 The logging script (logging.js) was bundled (to bundle.js) using Browserify with Pako.
+NOTE: These are removed in v4.
 
 * [Browserify](http://browserify.org) - Allows the use of Pako in the browser.
 * [Pako](http://github.com/nodeca/pako) - zlib port to javascript used to gzip gamestates.
