@@ -463,7 +463,7 @@ window.Logger = function(init){
     };
     self.mySlog.log(formatted_log_data);
     log_data.category = category;
-    console.log(log_data);
+    //console.log(log_data);
   }
 
   Helpers:
