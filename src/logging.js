@@ -1,7 +1,7 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",3);
-  var pako = require('pako');
+  self.mySlog = new slog("LAKELAND",4);
+  //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
   self.HISTORY_FLUSH_LENGTH = 50;
@@ -242,9 +242,9 @@ window.Logger = function(init){
   self.gamestate = function(){
     var now = Date.now();
     var gamestate = {
-      tiles: pako.gzip(self.uint8_tile_array()).join(),
-      farmbits: pako.gzip(self.uint8_farmbit_array()).join(),
-      items: pako.gzip(self.uint8_item_array()).join(),
+      tiles: self.uint8_tile_array().join(), //pako.gzip(   self.uint8_tile_array()).join(),
+      farmbits: self.uint8_farmbit_array().join(), //pako.gzip(self.uint8_farmbit_array()).join(),
+      items: self.uint8_item_array().join(), //pako.gzip(   self.uint8_item_array()).join(),
       money: gg.money,
       speed: gg.speed,
       achievements: self.achievements,
@@ -462,8 +462,8 @@ window.Logger = function(init){
       event_data_complex: JSON.stringify(log_data)
     };
     self.mySlog.log(formatted_log_data);
-    //log_data.category = category;
-    //console.log(log_data);
+    log_data.category = category;
+    console.log(log_data);
   }
 
   Helpers:
@@ -701,23 +701,23 @@ window.Logger = function(init){
   // self.shrink_gamestate_array = function(abbreviated_array){
   //   return self.stringify_uint8object(self.compress_uint8object(abbreviated_array))
   // }
-  self.deflate_and_tostr = function(uint8arr){
-    return pako.deflate(uint8arr).join()
-  }
-  self.deflate = function(input){
-    return pako.deflate(input);
-  }
-  self.inflate = function(input){
-    return pako.inflate(input);
-  }
-  self.pako_speed_tests = function(){
-    console.time("get tile array")
-    arr = self.uint8_tile_array()
-    console.timeEnd("get tile array")
+  // self.deflate_and_tostr = function(uint8arr){
+  //   return pako.deflate(uint8arr).join()
+  // }
+  // self.deflate = function(input){
+  //   return pako.deflate(input);
+  // }
+  // self.inflate = function(input){
+  //   return pako.inflate(input);
+  // }
+  // self.pako_speed_tests = function(){
+  //   console.time("get tile array")
+  //   arr = self.uint8_tile_array()
+  //   console.timeEnd("get tile array")
 
-    console.time("gzip")
-    pako.gzip(arr)
-    console.timeEnd("gzip")
+  //   console.time("gzip")
+  //   pako.gzip(arr)
+  //   console.timeEnd("gzip")
 
     // console.time("deflate")
     // pako.deflate(arr)
@@ -727,7 +727,7 @@ window.Logger = function(init){
     // pako.deflateRaw(arr)
     // console.timeEnd("deflateRaw")
 
-  }
+//  }
 
   
 
