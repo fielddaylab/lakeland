@@ -2838,7 +2838,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb(loc[lang]["tut_Therainmightmovesomenutrientsaround."]); }, //begin
+    function(){ self.push_blurb(loc[lang]["tut_Phew.Rain'sover."]); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
