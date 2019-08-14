@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",4);
+  self.mySlog = new slog("LAKELAND",5);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -229,6 +229,20 @@ window.Logger = function(init){
   self.update_time = function(time){
     self.time += time;
     self.raining();
+    self.check_speed();
+  }
+
+  self.prev_speed = 2;
+  self.check_speed = function(){
+    if(gg.speed != self.prev_speed){
+      self.speed();
+      self.prev_speed = gg.speed;
+      self.manual_speed_bool = 0;
+    }
+  }
+  self.manual_speed_bool = 0;
+  self.manual_speed = function(){
+    self.manual_speed_bool = 1;
   }
 
   self.prev_item_use = 0;
@@ -376,10 +390,11 @@ window.Logger = function(init){
    var log_data = {};
     self.send_log(log_data, self.LOG_CATEGORY_SKIPTUTORIAL);
   }
-  self.speed = function(speed){
+  self.speed = function(){
    var log_data = {
       cur_speed: gg.speed,
-      clicked_speed: speed,
+      prev_speed: self.prev_speed,
+      manual: self.manual_speed_bool
     };
     self.send_log(log_data, self.LOG_CATEGORY_SPEED);
   }

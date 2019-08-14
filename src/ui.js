@@ -111,10 +111,10 @@ var bar = function()
     setBB(self.vfast_btn, btnx,btny,self.btnw,self.btnh); btnx += self.btnw+self.pad;
   }
 
-  self.pause_btn = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_PAUSE); if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
-  self.play_btn  = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_PLAY); if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
-  self.fast_btn  = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_FAST); if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
-  self.vfast_btn = new ButtonBox(0,0,0,0,function(){ my_logger.speed(SPEED_VFAST); if(gg.speed == SPEED_VFAST) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_VFAST; });
+  self.pause_btn = new ButtonBox(0,0,0,0,function(){ my_logger.manual_speed(); if(gg.speed == SPEED_PAUSE) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_PAUSE; });
+  self.play_btn  = new ButtonBox(0,0,0,0,function(){ my_logger.manual_speed(); if(gg.speed == SPEED_PLAY)  gg.speed = SPEED_PAUSE; else gg.speed = SPEED_PLAY;  });
+  self.fast_btn  = new ButtonBox(0,0,0,0,function(){ my_logger.manual_speed(); if(gg.speed == SPEED_FAST)  gg.speed = SPEED_PLAY;  else gg.speed = SPEED_FAST;  });
+  self.vfast_btn = new ButtonBox(0,0,0,0,function(){ my_logger.manual_speed(); if(gg.speed == SPEED_VFAST) gg.speed = SPEED_PLAY;  else gg.speed = SPEED_VFAST; });
   self.resize();
 
   self.pause_btn.active = 0;
