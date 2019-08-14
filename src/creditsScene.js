@@ -106,7 +106,7 @@ var CreditsScene = function()
       "",
       "Data Analytics",
       "",
-      "John Mcclosky",
+      "John McCloskey",
       "",
       "Luke Swanson",
       "",
