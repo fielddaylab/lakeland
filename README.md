@@ -11,6 +11,7 @@ Versions:
 2. Original Version
 3. Change itemusechange: remove mark, add prev_mark
 4. Remove gzipping.
+5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise.
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -240,7 +241,7 @@ Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipp
 | --- | --- | --- |
 | cur_speed | gg.speed | To [speed](#SpeedConst) index.  |
 | prev_speed | speed | From [speed](#SpeedConst) index.  | 
-| manual | manual_speed_bool | bool - 1 if speed was manually changed, 0 if not | 
+| manual | manual_speed_bool | bool: 1 if speed was manually changed, 0 if not | 
 
 <a name="achievement"/>
 
