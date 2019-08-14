@@ -39,11 +39,13 @@ Versions:
 1. [endgame](#endgame)
 
 ### Enumerators and Constants
+1. [Event Categories](#EventCategories)
 1. [Emotes](#Emotes)
 1. [Buys](#Buys)
 1. [Names](#Names)
 1. [Speed](#SpeedConst)
 1. [Achievements](#Achievements)
+1. [Tutorials](#Tutorials)
 1. [Thing Type](#Thing_Type)
 1. [Inspector Content](#InspectorContent)
 1. [Text Type](#TextType)
@@ -97,26 +99,7 @@ Versions:
 <a name="checkpoint"/>
 
 #### checkpoint (index=2)
-Checkpoints are the google analytics events. As of 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in no particular order):
-- buy_livestock
-- death
-- end_life
-- extra_life
-- final_death
-- flooded_fertilizer
-- gross
-- gross_again
-- livestock
-- long_travel
-- low_nutrients
-- mass_sadness
-- poop
-- rain
-- sell_food
-- successful_harvest
-- timewarp
-- unattended_farm
-- unused_fertilizer
+Checkpoints are the google analytics events. As of 8/14/19 these are always tutorial begins and ends. 
 
 | Key | Value | Description |
 | --- | --- | --- |
@@ -318,6 +301,38 @@ Note: a blurb is an utterance from an advisor.
 
 
 ## Enumerators and Constants
+
+<a name="EventCategories"/>
+
+#### Event Categories 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| gamestate| |
+|1| startgame| |
+|2| checkpoint| |
+|3| selecttile| |
+|4| selectfarmbit| |
+|5| selectitem| |
+|6| selectbuy| |
+|7| buy| |
+|8| cancelbuy| |
+|9| roadbuilds| |
+|10| tileuseselect| |
+|11| itemuseselect| |
+|12| togglenutrition| |
+|13| toggleshop| |
+|14| toggleachievements| |
+|15| skiptutorial| |
+|16| speed| |
+|17| achievement| |
+|18| farmbitdeath| |
+|19| blurb| |
+|20| click| |
+|21| rainstopped| |
+|22| history| |
+|23| endgame| |
+
+
 <a name="Emotes"/>
 
 #### Emotes 
@@ -408,6 +423,41 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 |13| bigbloom | algae spreads to 3 tiles |
 |14| hugebloom | you have an algae problem |
 |15| massivebloom | a whole lake destroyed"|
+
+
+<a name="Tutorials"/>
+
+#### Tutorials 
+There are 26 begins and 26 ends. In the constants for the feature extractor, these tutorials are assigned indices alphabetically:
+
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| another_death| |
+|1| another_member| |
+|2| bloom| |
+|3| build_a_farm| |
+|4| build_a_house| |
+|5| buy_fertilizer| |
+|6| buy_food| |
+|7| buy_livestock| |
+|8| death| |
+|9| end_life| |
+|10| extra_life| |
+|11| final_death| |
+|12| flooded_fertilizer| |
+|13| gross| |
+|14| gross_again| |
+|15| livestock| |
+|16| long_travel| |
+|17| low_nutrients| |
+|18| mass_sadness| |
+|19| poop| |
+|20| rain| |
+|21| sell_food| |
+|22| successful_harvest| |
+|23| timewarp| |
+|24| unattended_farm| |
+|25| unused_fertilizer| |
 
 
 <a name="Thing_Type"/>
