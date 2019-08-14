@@ -47,10 +47,11 @@ var MenuScene = function()
 
   self.ready = function()
   {
+    if(AUDIO && !gg.music_shouldbeplaying) gg.aud_wrangler.play_music();
     self.continue_btn = new ButtonBox(0,0,0,0,function(evt){ if(!continuable) return; next = 1; });
     self.begin_btn    = new ButtonBox(0,0,0,0,function(){ next = 1; });
     self.credits_btn  = new ButtonBox(0,0,0,0,function(){ tocredits = 1; next = 1; });
-    self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ return; audio.pause(); AUDIO = o; if(!o && !audio.paused) audio.pause(); if(o && audio.paused) playHandlePromise(audio,1); });
+    self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ AUDIO = o; if(AUDIO) gg.aud_wrangler.play_music(); else gg.aud_wrangler.stop_music(); });
     self.fullscreen_toggle = new ToggleBox(0,0,0,0,0,function(o){ /*hijack me from realtime!*/ if(o) fullscreen(); else unfullscreen(); });
     self.language_toggle = new ToggleBox(0,0,0,0,0,function(o){ if(o) lang = "es"; else lang = "en"; });
     self.resize();
