@@ -3041,7 +3041,7 @@ var advisors = function()
   var tut_gross_again = [
 
     function(){ //begin
-      gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'gross'});
+      gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'gross_again'});
       self.set_advisor(ADVISOR_TYPE_MAYOR);
       var f;
       for(var i = 0; i < gg.farmbits.length; i++)
@@ -3104,7 +3104,7 @@ var advisors = function()
     self.adv_thread, //qclick
     ffunc, //click
     function(){
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross'});
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'gross_again'});
       self.pool_thread(function(){ return self.time_passed(3000); }, tut_delay_gross_again);
     }, //end
     tfunc, //shouldsim
@@ -3446,7 +3446,7 @@ var advisors = function()
 
   var tut_final_death = [
 
-    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'another_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb(loc[lang]["tut_Jeezlouise.Igiveup."]); },//begin
+    function(){ gtag('event', 'tutorial', {'event_category':'begin', 'event_label':'final_death'}); self.set_advisor(ADVISOR_TYPE_MAYOR); self.push_blurb(loc[lang]["tut_Jeezlouise.Igiveup."]); },//begin
     noop, //tick
     function() { //draw
       self.wash();
@@ -3477,7 +3477,7 @@ var advisors = function()
     self.confirm_adv_thread, //qclick
     ffunc, //click
     function() { //end
-      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'another_death'});
+      gtag('event', 'tutorial', {'event_category':'end', 'event_label':'final_death'});
     },
     tfunc, //shouldsim
 
