@@ -97,33 +97,33 @@ Versions:
 <a name="checkpoint"/>
 
 #### checkpoint (index=2)
-Checkpoints are the google analytics events. As if 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in no particular order):
-- buy_livestock
-- end_life
-- final_death
-- successful_harvest
-- buy_food
-- sell_food
-- buy_fertilizer
-- build_a_farm
-- livestock
-- gross
-- build_a_house
-- death
-- gross_again
+Checkpoints are the google analytics events. As if 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in alphabetical order):
 - another_death
-- low_nutrients
 - another_member
-- timewarp
+- bloom
+- build_a_farm
+- build_a_house
+- buy_fertilizer
+- buy_food
+- buy_livestock
+- death
+- end_life
+- extra_life
+- final_death
+- flooded_fertilizer
+- gross
+- gross_again
+- livestock
+- long_travel
+- low_nutrients
+- mass_sadness
 - poop
 - rain
-- long_travel
-- bloom
-- mass_sadness
-- flooded_fertilizer
-- unused_fertilizer
+- sell_food
+- successful_harvest
+- timewarp
 - unattended_farm
-- extra_life
+- unused_fertilizer
 
 | Key | Value | Description |
 | --- | --- | --- |
