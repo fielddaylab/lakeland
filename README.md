@@ -97,7 +97,7 @@ Versions:
 <a name="checkpoint"/>
 
 #### checkpoint (index=2)
-Checkpoints are the google analytics events. As if 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in no particular order):
+Checkpoints are the google analytics events. As of 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in no particular order):
 - buy_livestock
 - end_life
 - final_death
