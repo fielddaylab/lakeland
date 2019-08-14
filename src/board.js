@@ -1764,35 +1764,35 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_TYPE_NULL:      return "Null";      break;
-      case TILE_TYPE_LAND:      return "Land";      break;
-      case TILE_TYPE_ROCK:      return "Rock";      break;
-      case TILE_TYPE_GRAVE:     return "Grave";     break;
-      case TILE_TYPE_SIGN:      return "Sign";      break;
-      case TILE_TYPE_LAKE:      return "Lake";      break;
-      case TILE_TYPE_SHORE:     return "Shore";     break;
-      case TILE_TYPE_FOREST:    return "Forest";    break;
-      case TILE_TYPE_HOME:      return "Home";      break;
-      case TILE_TYPE_FARM:      return "Farm";      break;
-      case TILE_TYPE_LIVESTOCK: return "Dairy";     break;
-      case TILE_TYPE_ROAD:      return "Road";      break;
-      case TILE_TYPE_COUNT:     return "Count";     break;
+      case TILE_TYPE_NULL:      return loc[lang]["tile_Null"];   break;
+      case TILE_TYPE_LAND:      return loc[lang]["tile_Land"];   break;
+      case TILE_TYPE_ROCK:      return loc[lang]["tile_Rock"];   break;
+      case TILE_TYPE_GRAVE:     return loc[lang]["tile_Grave"];  break;
+      case TILE_TYPE_SIGN:      return loc[lang]["tile_Sign"];   break;
+      case TILE_TYPE_LAKE:      return loc[lang]["tile_Lake"];   break;
+      case TILE_TYPE_SHORE:     return loc[lang]["tile_Shore"];  break;
+      case TILE_TYPE_FOREST:    return loc[lang]["tile_Forest"]; break;
+      case TILE_TYPE_HOME:      return loc[lang]["tile_Home"];   break;
+      case TILE_TYPE_FARM:      return loc[lang]["tile_Farm"];   break;
+      case TILE_TYPE_LIVESTOCK: return loc[lang]["tile_Dairy"];  break;
+      case TILE_TYPE_ROAD:      return loc[lang]["tile_Road"];   break;
+      case TILE_TYPE_COUNT:     return loc[lang]["tile_Count"];  break;
     }
   }
   self.state_name = function(type)
   {
     switch(type)
     {
-      case TILE_STATE_NULL:                return "Null";       break;
-      case TILE_STATE_HOME_VACANT:         return "Vacant";     break;
-      case TILE_STATE_HOME_OCCUPIED:       return "Occupied";   break;
-      case TILE_STATE_FARM_UNPLANTED:      return "Unplanted";  break;
-      case TILE_STATE_FARM_PLANTED:        return "Planted";    break;
-      case TILE_STATE_FARM_GROWN:          return "Grown";      break;
-      case TILE_STATE_LIVESTOCK_EATING:    return "Digesting";  break;
-      case TILE_STATE_LIVESTOCK_DIGESTING: return "Digesting";  break;
-      case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
-      case TILE_STATE_COUNT:               return "Null";       break;
+      case TILE_STATE_NULL:                return loc[lang]["tilestate_Null"];       break;
+      case TILE_STATE_HOME_VACANT:         return loc[lang]["tilestate_Vacant"];     break;
+      case TILE_STATE_HOME_OCCUPIED:       return loc[lang]["tilestate_Occupied"];   break;
+      case TILE_STATE_FARM_UNPLANTED:      return loc[lang]["tilestate_Unplanted"];  break;
+      case TILE_STATE_FARM_PLANTED:        return loc[lang]["tilestate_Planted"];    break;
+      case TILE_STATE_FARM_GROWN:          return loc[lang]["tilestate_Grown"];      break;
+      case TILE_STATE_LIVESTOCK_EATING:    return loc[lang]["tilestate_Digesting"];  break;
+      case TILE_STATE_LIVESTOCK_DIGESTING: return loc[lang]["tilestate_Digesting"];  break;
+      case TILE_STATE_LIVESTOCK_MILKABLE:  return loc[lang]["tilestate_Milkable"];   break;
+      case TILE_STATE_COUNT:               return loc[lang]["tilestate_Null"];       break;
     }
   }
   self.item_img = function(type)
@@ -1832,44 +1832,44 @@ var board = function()
   {
     switch(type)
     {
-      case ITEM_TYPE_NULL:       return "Null";       break;
-      case ITEM_TYPE_WATER:      return "Water";      break;
-      case ITEM_TYPE_FOOD:       return "Corn";       break;
-      case ITEM_TYPE_POOP:       return "Manure";     break;
-      case ITEM_TYPE_MILK:       return "Milk";       break;
-      case ITEM_TYPE_FERTILIZER: return "Fertilizer"; break;
-      case ITEM_TYPE_COUNT:      return "Count";      break;
+      case ITEM_TYPE_NULL:       return loc[lang]["item_Null"];       break;
+      case ITEM_TYPE_WATER:      return loc[lang]["item_Water"];      break;
+      case ITEM_TYPE_FOOD:       return loc[lang]["item_Corn"];       break;
+      case ITEM_TYPE_POOP:       return loc[lang]["item_Manure"];     break;
+      case ITEM_TYPE_MILK:       return loc[lang]["item_Milk"];       break;
+      case ITEM_TYPE_FERTILIZER: return loc[lang]["item_Fertilizer"]; break;
+      case ITEM_TYPE_COUNT:      return loc[lang]["item_Count"];      break;
     }
   }
   self.job_name = function(type)
   {
     switch(type)
     {
-      case JOB_TYPE_NULL:      return "Null";      break;
-      case JOB_TYPE_IDLE:      return "Idle";      break;
-      case JOB_TYPE_WAIT:      return "Wait";      break;
-      case JOB_TYPE_EAT:       return "Eat";       break;
-      case JOB_TYPE_SLEEP:     return "Sleep";     break;
-      case JOB_TYPE_PLAY:      return "Play";      break;
-      case JOB_TYPE_PLANT:     return "Plant";     break;
-      case JOB_TYPE_HARVEST:   return "Harvest";   break;
-      case JOB_TYPE_FERTILIZE: return "Fertilize"; break;
-      case JOB_TYPE_MILK:      return "Milk";      break;
-      case JOB_TYPE_EXPORT:    return "Export";    break;
-      case JOB_TYPE_COUNT:     return "Count";     break;
+      case JOB_TYPE_NULL:      return loc[lang]["job_Null"];      break;
+      case JOB_TYPE_IDLE:      return loc[lang]["job_Idle"];      break;
+      case JOB_TYPE_WAIT:      return loc[lang]["job_Wait"];      break;
+      case JOB_TYPE_EAT:       return loc[lang]["job_Eat"];       break;
+      case JOB_TYPE_SLEEP:     return loc[lang]["job_Sleep"];     break;
+      case JOB_TYPE_PLAY:      return loc[lang]["job_Play"];      break;
+      case JOB_TYPE_PLANT:     return loc[lang]["job_Plant"];     break;
+      case JOB_TYPE_HARVEST:   return loc[lang]["job_Harvest"];   break;
+      case JOB_TYPE_FERTILIZE: return loc[lang]["job_Fertilize"]; break;
+      case JOB_TYPE_MILK:      return loc[lang]["job_Milk"];      break;
+      case JOB_TYPE_EXPORT:    return loc[lang]["job_Export"];    break;
+      case JOB_TYPE_COUNT:     return loc[lang]["job_Count"];     break;
     }
   }
   self.job_state_name = function(state)
   {
     switch(state)
     {
-      case JOB_STATE_NULL:        return "Null";   break;
-      case JOB_STATE_GET:         return "Get";    break;
-      case JOB_STATE_SEEK:        return "Seek";   break;
-      case JOB_STATE_ACT:         return "Act";    break;
-      case JOB_STATE_IDLE_CHILL:  return "Chill";  break;
-      case JOB_STATE_IDLE_WANDER: return "Wander"; break;
-      case JOB_STATE_COUNT:       return "Null";   break;
+      case JOB_STATE_NULL:        return loc[lang]["jobstate_Null"];   break;
+      case JOB_STATE_GET:         return loc[lang]["jobstate_Get"];    break;
+      case JOB_STATE_SEEK:        return loc[lang]["jobstate_Seek"];   break;
+      case JOB_STATE_ACT:         return loc[lang]["jobstate_Act"];    break;
+      case JOB_STATE_IDLE_CHILL:  return loc[lang]["jobstate_Chill"];  break;
+      case JOB_STATE_IDLE_WANDER: return loc[lang]["jobstate_Wander"]; break;
+      case JOB_STATE_COUNT:       return loc[lang]["jobstate_Null"];   break;
     }
   }
 
