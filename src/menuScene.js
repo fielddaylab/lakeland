@@ -5,6 +5,27 @@ var MenuScene = function()
   self.resize = function()
   {
     if(self.clicker) self.clicker.detach(); self.clicker = new Clicker({source:gg.canvas});
+
+    var w = 0;
+    var h = 0;
+    var x = 0;
+    var y = 0;
+
+    w = 240*gg.stage.s_mod;
+    h = 50*gg.stage.s_mod;
+    x = 60*gg.stage.s_mod;
+    y = 220*gg.stage.s_mod;
+    if(self.continue_btn){ self.continue_btn.x = x; self.continue_btn.y = y; self.continue_btn.w = w; self.continue_btn.h = h; } y += h+20*gg.stage.s_mod;
+    if(self.begin_btn)   { self.begin_btn.x = x;    self.begin_btn.y = y;    self.begin_btn.w = w;    self.begin_btn.h = h;    } y += h+20*gg.stage.s_mod;
+    if(self.credits_btn) { self.credits_btn.x = x;  self.credits_btn.y = y;  self.credits_btn.w = w;  self.credits_btn.h = h;  } y += h+20*gg.stage.s_mod;
+
+    w = 30*gg.stage.s_mod;
+    h = 30*gg.stage.s_mod;
+    x = 60*gg.stage.s_mod;
+    y = gg.canvas.height-100*gg.stage.s_mod;
+    if(self.audio_toggle)     { self.audio_toggle.x = x;      self.audio_toggle.y = y;      self.audio_toggle.w = w;      self.audio_toggle.h = h;      } x += 250*gg.stage.s_mod;
+    if(self.fullscreen_toggle){ self.fullscreen_toggle.x = x; self.fullscreen_toggle.y = y; self.fullscreen_toggle.w = w; self.fullscreen_toggle.h = h; } x += 250*gg.stage.s_mod;
+    if(self.language_toggle)  { self.language_toggle.x = x;   self.language_toggle.y = y;   self.language_toggle.w = w;   self.language_toggle.h = h;   } x += 250*gg.stage.s_mod;
   }
 
   var continuable = 0;
@@ -22,26 +43,17 @@ var MenuScene = function()
   self.credits_btn;
   self.audio_toggle;
   self.fullscreen_toggle;
+  self.language_toggle;
 
   self.ready = function()
   {
+    self.continue_btn = new ButtonBox(0,0,0,0,function(evt){ if(!continuable) return; next = 1; });
+    self.begin_btn    = new ButtonBox(0,0,0,0,function(){ next = 1; });
+    self.credits_btn  = new ButtonBox(0,0,0,0,function(){ tocredits = 1; next = 1; });
+    self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ return; audio.pause(); AUDIO = o; if(!o && !audio.paused) audio.pause(); if(o && audio.paused) playHandlePromise(audio,1); });
+    self.fullscreen_toggle = new ToggleBox(0,0,0,0,0,function(o){ /*hijack me from realtime!*/ if(o) fullscreen(); else unfullscreen(); });
+    self.language_toggle = new ToggleBox(0,0,0,0,0,function(o){});
     self.resize();
-
-    var w = 240*gg.stage.s_mod;
-    var h = 50*gg.stage.s_mod;
-    var x = 20*gg.stage.s_mod;
-    var y = 220*gg.stage.s_mod;
-    self.continue_btn = new ButtonBox(x,y,w,h,function(evt){ if(!continuable) return; next = 1; }); y += h+10*gg.stage.s_mod;
-    self.begin_btn    = new ButtonBox(x,y,w,h,function(){ next = 1; }); y += h+10*gg.stage.s_mod;
-    self.credits_btn  = new ButtonBox(x,y,w,h,function(){ tocredits = 1; next = 1; }); y += h+10*gg.stage.s_mod;
-
-    var w = 30*gg.stage.s_mod;
-    var h = 30*gg.stage.s_mod;
-    var x = 100*gg.stage.s_mod;
-    var y = gg.canvas.height-100*gg.stage.s_mod;
-
-    self.audio_toggle      = new ToggleBox(x,y,w,h,AUDIO,function(o){ audio.pause(); AUDIO = o; if(!o && !audio.paused) audio.pause(); if(o && audio.paused) playHandlePromise(audio,1); }); x += 200*gg.stage.s_mod;
-    self.fullscreen_toggle = new ToggleBox(x,y,w,h,0,function(o){ /*hijack me from realtime!*/ if(o) fullscreen(); else unfullscreen(); }); x += 200*gg.stage.s_mod;
   };
 
   self.tick = function()
@@ -59,6 +71,7 @@ var MenuScene = function()
         !self.clicker.filter(self.credits_btn) &&
         !self.clicker.filter(self.audio_toggle) &&
         !self.clicker.filter(self.fullscreen_toggle) &&
+        !self.clicker.filter(self.language_toggle) &&
         false)
         ;
     }
@@ -69,15 +82,17 @@ var MenuScene = function()
   {
     var ctx = gg.ctx;
     ctx.textAlign = "left";
-    ctx.fillStyle = black;
-    ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+    ctx.drawImage(menu_bg_img,0,0,gg.canvas.width,gg.canvas.height);
+    //ctx.fillStyle = black;
+    //ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
     //ctx.drawImage(poster_img,0,0,gg.canvas.width,gg.canvas.height);
 
     var w = 300*gg.stage.s_mod;
     var h = 150*gg.stage.s_mod;
     //ctx.drawImage(logo_img,30,30,w,h);
 
-    ctx.font = gg.font_size+"px "+gg.font;
+    var fs = gg.font_size*2;
+    ctx.font = fs+"px "+gg.font;
     ctx.fillStyle = white;
     /*
     if(!continuable) ctx.fillStyle = "rgba(255,255,255,0.1)";
@@ -97,15 +112,15 @@ var MenuScene = function()
     if(self.credits_btn.hovering) ctx.fillRect(self.credits_btn.x+10,self.credits_btn.y+self.credits_btn.h,self.credits_btn.w-105,3);
     ctx.globalAlpha = 1;
 
-/*
     if(self.audio_toggle.on)      drawImageBB(  check_img,self.audio_toggle,ctx);
     else                          drawImageBB(uncheck_img,self.audio_toggle,ctx);
     if(self.fullscreen_toggle.on) drawImageBB(  check_img,self.fullscreen_toggle,ctx);
     else                          drawImageBB(uncheck_img,self.fullscreen_toggle,ctx);
-  */
-    ctx.font = gg.font_size+"px "+gg.font;
+    if(self.language_toggle.on)   drawImageBB(  check_img,self.language_toggle,ctx);
+    else                          drawImageBB(uncheck_img,self.language_toggle,ctx);
     ctx.fillText("MUSIC FX",self.audio_toggle.x+self.audio_toggle.w+5*gg.stage.s_mod,self.audio_toggle.y+self.audio_toggle.h-5*gg.stage.s_mod);
     ctx.fillText("FULLSCREEN",self.fullscreen_toggle.x+self.fullscreen_toggle.w+5*gg.stage.s_mod,self.fullscreen_toggle.y+self.fullscreen_toggle.h-5*gg.stage.s_mod);
+    ctx.fillText("LANGUAGE",self.language_toggle.x+self.language_toggle.w+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-5*gg.stage.s_mod);
 
     if(next)
     {

@@ -5,6 +5,12 @@ Each log is sent with a number of fields required by [simplelog](https://github.
   event_data_complex: JSON.stringify(log_data)
 Each log_data is a JSON object for that specific category as defined below.
 
+#### Change Log
+Versions:
+1. Alpha
+2. Original Version
+3. Change itemusechange: remove mark, add prev_mark
+4. Remove gzipping.
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -66,9 +72,9 @@ Each log_data is a JSON object for that specific category as defined below.
 #### gamestate (index=0)
 | Key | Value | Description |
 | --- | --- | --- |
-| tiles | pako.gzip(uint8_tile_array()).join() | Gzipped tile [data matrix](#DataMatrices).   |
-| farmbits | pako.gzip(uint8_farmbit_array()).join() | Gzipped farmbit [data matrix](#DataMatrices).   |
-| items | pako.gzip(uint8_item_array()).join() |Gzipped item [data matrix](#DataMatrices).  |
+| tiles | uint8_tile_array().join() | Tile [data matrix](#DataMatrices).   |
+| farmbits | uint8_farmbit_array().join() | Farmbit [data matrix](#DataMatrices).   |
+| items | uint8_item_array().join() | Item [data matrix](#DataMatrices).  |
 | money | gg.money | current money  |
 | speed | gg.speed |  current game speed (see [Speed](#SpeedConst)) |
 | achievements | achievements |A boolean array of whether the player has gotten the [achievement](#Achievements) at that index.   |
@@ -91,13 +97,39 @@ Each log_data is a JSON object for that specific category as defined below.
 <a name="checkpoint"/>
 
 #### checkpoint (index=2)
-Checkpoints are the google analytics events.
+Checkpoints are the google analytics events. As if 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in alphabetical order):
+- another_death
+- another_member
+- bloom
+- build_a_farm
+- build_a_house
+- buy_fertilizer
+- buy_food
+- buy_livestock
+- death
+- end_life
+- extra_life
+- final_death
+- flooded_fertilizer
+- gross
+- gross_again
+- livestock
+- long_travel
+- low_nutrients
+- mass_sadness
+- poop
+- rain
+- sell_food
+- successful_harvest
+- timewarp
+- unattended_farm
+- unused_fertilizer
 
 | Key | Value | Description |
 | --- | --- | --- |
-| event_category | arguments[2]  | Usually (always?) begin or end |
+| event_category | arguments[2]  | Always (as of 8/14/19) begin or end |
 | event_label  |  arguments[2]  | Tutorial name. For example, the name of the tutorial that teaches the player how to build a house is called "build_a_house" |
-| event_type  | arguments[1]  | Usually (always?) tutorial |
+| event_type  | arguments[1]  | Always (as of 8/14/19) tutorial |
 | blurb_history | flush_blurb_history(now) |  List of client time relative to now for each blurb popup. (Blurbs are now logged here instead of the [blurb](#blurb) event.) | 
 | client_time | now | current client time  |
 
@@ -191,7 +223,7 @@ Note that this log occurs even when the player selects the current use/mark, i.e
 | Key | Value | Description |
 | --- | --- | --- |
 | item | item_data_short(it) | See [Data Short](#DataShort).  |
-| mark | it.mark | Item [mark index](#Mark).  |
+| prev_mark | self.prev_item_use | Item's previous [mark index](#Mark).  |
 
 <a name="togglenutrition"/>
 
@@ -397,7 +429,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="InspectorContent"/>
 
-### Inspector Content
+#### Inspector Content
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -407,7 +439,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="TextType"/>
 
-### Text Type
+#### Text Type
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -417,7 +449,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="AdvisorType"/>
 
-### Advisor Type
+#### Advisor Type
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -609,6 +641,7 @@ Note: The gamestate log of all tiles does not contain tile tx,ty. Row of the til
 
 ## Built With
 The logging script (logging.js) was bundled (to bundle.js) using Browserify with Pako.
+NOTE: These are removed in v4.
 
 * [Browserify](http://browserify.org) - Allows the use of Pako in the browser.
 * [Pako](http://github.com/nodeca/pako) - zlib port to javascript used to gzip gamestates.

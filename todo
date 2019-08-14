@@ -1,43 +1,17 @@
-- not "ope, your town isn't doing so well"- needs to be "someone died!- your town isn't..."
 - should have an earlier repeated "your farm is low nutrition!"
 - if you sell your last corn, it should say "that's your last corn at the moment- if you sell it, people won't have anything to eat!"
-- make it rain even less often
-- quick look at your farms real quick
 
-- shop description
-- shop formatting
 - two advisors look very similar
 - need white fertilizer assets
 - do the stats on the bottom matter?
 - notification on first milk
-- dairy should have an indicator: "needs feed"
-- farm should have an indicator: "needs water"
-- farm/dairy should have an indicator: "needs harvesting/milking"
-- re-pop-up "your farm is low nutrition"
 
-
-
-- handle many lines of fertilizer on dot bar
-- incl faded "needs" in tile inspector; filled when needs met (farms: water, dairy: feed)
 - fade "production" according to ability to produce (farms: corn when harvestable; dairy: milk/poop when milkable)
 - amortize flow across ticks
 - allow building on top of (to destroy) roads
 - allow building a road (to destroy) signs?
 - money particles
-- correctly align arrows
-- remove washout where unnecessary
 - ppl don't eat milk if it's already on board and marked food
 
 - "buy from shop" clickthroughs to placement if valid; no good
-
-- "place food" should be trigger to seek out hungry people to eat it
-- introduce timer when first waiting for farm to grow
-- if you mark second corn (during sell tutorial) to "sell", popup saying "woah, you'll need _some_ corn to feed your people"
-
-- pace tuts w/ achievements (wait a bit before popping up advisor)
-
-- display "currently exporting dudes"
-- if quickbuy house- skip appropriate tut
-
-- randomize fulfillment priorities (equal chance to farm-related and export)
 
