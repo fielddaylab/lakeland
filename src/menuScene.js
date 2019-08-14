@@ -47,12 +47,13 @@ var MenuScene = function()
 
   self.ready = function()
   {
+    if(AUDIO && !gg.music_shouldbeplaying) gg.aud_wrangler.play_music();
     self.continue_btn = new ButtonBox(0,0,0,0,function(evt){ if(!continuable) return; next = 1; });
     self.begin_btn    = new ButtonBox(0,0,0,0,function(){ next = 1; });
     self.credits_btn  = new ButtonBox(0,0,0,0,function(){ tocredits = 1; next = 1; });
-    self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ return; audio.pause(); AUDIO = o; if(!o && !audio.paused) audio.pause(); if(o && audio.paused) playHandlePromise(audio,1); });
+    self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ AUDIO = o; if(AUDIO) gg.aud_wrangler.play_music(); else gg.aud_wrangler.stop_music(); });
     self.fullscreen_toggle = new ToggleBox(0,0,0,0,0,function(o){ /*hijack me from realtime!*/ if(o) fullscreen(); else unfullscreen(); });
-    self.language_toggle = new ToggleBox(0,0,0,0,0,function(o){});
+    self.language_toggle = new ToggleBox(0,0,0,0,0,function(o){ if(o) lang = "es"; else lang = "en"; });
     self.resize();
   };
 
@@ -116,11 +117,16 @@ var MenuScene = function()
     else                          drawImageBB(uncheck_img,self.audio_toggle,ctx);
     if(self.fullscreen_toggle.on) drawImageBB(  check_img,self.fullscreen_toggle,ctx);
     else                          drawImageBB(uncheck_img,self.fullscreen_toggle,ctx);
-    if(self.language_toggle.on)   drawImageBB(  check_img,self.language_toggle,ctx);
-    else                          drawImageBB(uncheck_img,self.language_toggle,ctx);
+                                  drawImageBB(uncheck_img,self.language_toggle,ctx);
+    fs = gg.font_size;
+    ctx.font = fs+"px "+gg.font;
+    if(self.language_toggle.on)   ctx.fillText("ES",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
+    else                          ctx.fillText("EN",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
+    fs = gg.font_size*2;
+    ctx.font = fs+"px "+gg.font;
     ctx.fillText("MUSIC FX",self.audio_toggle.x+self.audio_toggle.w+5*gg.stage.s_mod,self.audio_toggle.y+self.audio_toggle.h-5*gg.stage.s_mod);
     ctx.fillText("FULLSCREEN",self.fullscreen_toggle.x+self.fullscreen_toggle.w+5*gg.stage.s_mod,self.fullscreen_toggle.y+self.fullscreen_toggle.h-5*gg.stage.s_mod);
-    ctx.fillText("LANGUAGE",self.language_toggle.x+self.language_toggle.w+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-5*gg.stage.s_mod);
+    ctx.fillText(" LANGUAGE",self.language_toggle.x+self.language_toggle.w+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-5*gg.stage.s_mod);
 
     if(next)
     {

@@ -225,6 +225,7 @@ var LoadingScene = function()
     money_aud      = gg.aud_wrangler.register("assets/audio/money.mp3");
     road_aud       = gg.aud_wrangler.register("assets/audio/road.mp3");
     sign_aud       = gg.aud_wrangler.register("assets/audio/sign.mp3");
+    music_aud      = gg.aud_wrangler.register_music("assets/audio/music.mp3");
   };
 
   self.tick = function()
