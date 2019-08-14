@@ -2467,6 +2467,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_HOME);
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(house_aud);
               return;
             }
             break;
@@ -2502,6 +2503,7 @@ var board = function()
 
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(fertilizer_aud);
               return;
             }
             break;
@@ -2536,6 +2538,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(dairy_aud);
               return;
             }
             break;
@@ -2546,6 +2549,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_SIGN);
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(sign_aud);
               return;
             }
             break;
@@ -2573,6 +2577,7 @@ var board = function()
               else
                 self.spewing_road = roads_per_buy;
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(road_aud);
               return;
             }
             break;
@@ -3634,6 +3639,7 @@ var farmbit = function()
 
   self.die = function()
   {
+    gg.aud_wrangler.play(death_aud);
     my_logger.farmbit_death(self);
     self.abandon_job(1);
     var t = self.tile;
@@ -4314,6 +4320,7 @@ var farmbit = function()
               var t = self.job_subject;
 
               gg.money += worth_for_item(self.item.type);
+              gg.aud_wrangler.play(money_aud);
               gg.b.sell_p(t.tile,"+$"+worth_for_item(self.item.type));
 
               break_item(self.item);

@@ -13,7 +13,7 @@ var MenuScene = function()
 
     w = 240*gg.stage.s_mod;
     h = 50*gg.stage.s_mod;
-    x = 100*gg.stage.s_mod;
+    x = 60*gg.stage.s_mod;
     y = 220*gg.stage.s_mod;
     if(self.continue_btn){ self.continue_btn.x = x; self.continue_btn.y = y; self.continue_btn.w = w; self.continue_btn.h = h; } y += h+20*gg.stage.s_mod;
     if(self.begin_btn)   { self.begin_btn.x = x;    self.begin_btn.y = y;    self.begin_btn.w = w;    self.begin_btn.h = h;    } y += h+20*gg.stage.s_mod;
@@ -21,10 +21,11 @@ var MenuScene = function()
 
     w = 30*gg.stage.s_mod;
     h = 30*gg.stage.s_mod;
-    x = 100*gg.stage.s_mod;
+    x = 60*gg.stage.s_mod;
     y = gg.canvas.height-100*gg.stage.s_mod;
-    if(self.audio_toggle)     { self.audio_toggle.x = x;      self.audio_toggle.y = y;      self.audio_toggle.w = w;      self.audio_toggle.h = h;      } x += 200*gg.stage.s_mod;
-    if(self.fullscreen_toggle){ self.fullscreen_toggle.x = x; self.fullscreen_toggle.y = y; self.fullscreen_toggle.w = w; self.fullscreen_toggle.h = h; } x += 200*gg.stage.s_mod;
+    if(self.audio_toggle)     { self.audio_toggle.x = x;      self.audio_toggle.y = y;      self.audio_toggle.w = w;      self.audio_toggle.h = h;      } x += 250*gg.stage.s_mod;
+    if(self.fullscreen_toggle){ self.fullscreen_toggle.x = x; self.fullscreen_toggle.y = y; self.fullscreen_toggle.w = w; self.fullscreen_toggle.h = h; } x += 250*gg.stage.s_mod;
+    if(self.language_toggle)  { self.language_toggle.x = x;   self.language_toggle.y = y;   self.language_toggle.w = w;   self.language_toggle.h = h;   } x += 250*gg.stage.s_mod;
   }
 
   var continuable = 0;
@@ -42,6 +43,7 @@ var MenuScene = function()
   self.credits_btn;
   self.audio_toggle;
   self.fullscreen_toggle;
+  self.language_toggle;
 
   self.ready = function()
   {
@@ -50,6 +52,7 @@ var MenuScene = function()
     self.credits_btn  = new ButtonBox(0,0,0,0,function(){ tocredits = 1; next = 1; });
     self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ return; audio.pause(); AUDIO = o; if(!o && !audio.paused) audio.pause(); if(o && audio.paused) playHandlePromise(audio,1); });
     self.fullscreen_toggle = new ToggleBox(0,0,0,0,0,function(o){ /*hijack me from realtime!*/ if(o) fullscreen(); else unfullscreen(); });
+    self.language_toggle = new ToggleBox(0,0,0,0,0,function(o){});
     self.resize();
   };
 
@@ -68,6 +71,7 @@ var MenuScene = function()
         !self.clicker.filter(self.credits_btn) &&
         !self.clicker.filter(self.audio_toggle) &&
         !self.clicker.filter(self.fullscreen_toggle) &&
+        !self.clicker.filter(self.language_toggle) &&
         false)
         ;
     }
@@ -112,8 +116,11 @@ var MenuScene = function()
     else                          drawImageBB(uncheck_img,self.audio_toggle,ctx);
     if(self.fullscreen_toggle.on) drawImageBB(  check_img,self.fullscreen_toggle,ctx);
     else                          drawImageBB(uncheck_img,self.fullscreen_toggle,ctx);
+    if(self.language_toggle.on)   drawImageBB(  check_img,self.language_toggle,ctx);
+    else                          drawImageBB(uncheck_img,self.language_toggle,ctx);
     ctx.fillText("MUSIC FX",self.audio_toggle.x+self.audio_toggle.w+5*gg.stage.s_mod,self.audio_toggle.y+self.audio_toggle.h-5*gg.stage.s_mod);
     ctx.fillText("FULLSCREEN",self.fullscreen_toggle.x+self.fullscreen_toggle.w+5*gg.stage.s_mod,self.fullscreen_toggle.y+self.fullscreen_toggle.h-5*gg.stage.s_mod);
+    ctx.fillText("LANGUAGE",self.language_toggle.x+self.language_toggle.w+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-5*gg.stage.s_mod);
 
     if(next)
     {

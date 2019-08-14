@@ -1,3 +1,13 @@
+var cow_aud;
+var dairy_aud;
+var death_aud;
+var fertilizer_aud;
+var house_aud;
+var lake_aud;
+var money_aud;
+var road_aud;
+var sign_aud;
+
 var LoadingScene = function()
 {
   var self = this;
@@ -204,11 +214,17 @@ var LoadingScene = function()
     }
     fontLoaded(); //call once to prevent 0/0 != 100% bug
 
-    //put asset paths in audio_srcs
-    //audio_srcs.push("assets/audio.mp3");
     gg.aud_wrangler = new AudWrangler();
-    for(var i = 0; i < audio_srcs.length; i++)
-      gg.aud_wrangler.register(audio_srcs[i]);
+    //must declare variables globally. yikes.
+    cow_aud        = gg.aud_wrangler.register("assets/audio/cow.mp3");
+    dairy_aud      = gg.aud_wrangler.register("assets/audio/dairy.wav");
+    death_aud      = gg.aud_wrangler.register("assets/audio/death.wav");
+    fertilizer_aud = gg.aud_wrangler.register("assets/audio/fertilizer.wav");
+    house_aud      = gg.aud_wrangler.register("assets/audio/house.mp3");
+    lake_aud       = gg.aud_wrangler.register("assets/audio/lake.wav");
+    money_aud      = gg.aud_wrangler.register("assets/audio/money.mp3");
+    road_aud       = gg.aud_wrangler.register("assets/audio/road.mp3");
+    sign_aud       = gg.aud_wrangler.register("assets/audio/sign.mp3");
   };
 
   self.tick = function()
