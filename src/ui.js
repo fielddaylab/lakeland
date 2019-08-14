@@ -2172,6 +2172,7 @@ var advisors = function()
         t == tut_buy_food ||
         t == tut_build_a_farm ||
         t == tut_timewarp ||
+        t == tut_successful_harvest ||
         t == tut_sell_food ||
         t == tut_buy_fertilizer ||
         t == tut_buy_livestock ||
@@ -2837,7 +2838,7 @@ var advisors = function()
     noop, //end
     tfunc, //shouldsim
 
-    function(){ self.push_blurb(loc[lang]["tut_herainmightmovesomenutrientsaround."]); }, //begin
+    function(){ self.push_blurb(loc[lang]["tut_Therainmightmovesomenutrientsaround."]); }, //begin
     ffunc, //tick
     function(){ //draw
       self.popup(TEXT_TYPE_DISMISS);
@@ -4931,6 +4932,5 @@ var advisors = function()
 
   self.first_thread = tut_build_a_house;
   self.pool_thread(tfunc,self.first_thread);
-
 }
 

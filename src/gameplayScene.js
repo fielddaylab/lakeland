@@ -100,6 +100,7 @@ var GamePlayScene = function()
 
     gg.cam = {wx:0,wy:0,ww:gg.canvas.width,wh:gg.canvas.height};
 
+    gg.farmbits = [];
     gg.b = new board();
     gg.b.init();
     gg.ignore_single_board = 0; //flag to ignore a single input
@@ -110,7 +111,6 @@ var GamePlayScene = function()
     gg.hungry = 0;
     gg.food = 0;
     gg.items = [];
-    gg.farmbits = [];
     for(var i = 0; i < farmbits_start_n; i++)
     {
       gg.farmbits[i] = new farmbit();
@@ -126,6 +126,13 @@ var GamePlayScene = function()
     gg.advisors = new advisors();
     self.readied = 1;
     my_logger.startgame();
+
+    if(gg.continue_ls)
+    {
+      gg.advisors.skip_all_tutorials();
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness = max_fullness;
+    }
   };
 
   gg.t_mod_twelve_pi = 0;
