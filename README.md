@@ -97,13 +97,39 @@ Versions:
 <a name="checkpoint"/>
 
 #### checkpoint (index=2)
-Checkpoints are the google analytics events.
+Checkpoints are the google analytics events. As if 8/14/19 these are always tutorial begins and ends. There are 26 begins and 26 ends. The tutorial names are as follows (in no particular order):
+- buy_livestock
+- end_life
+- final_death
+- successful_harvest
+- buy_food
+- sell_food
+- buy_fertilizer
+- build_a_farm
+- livestock
+- gross
+- build_a_house
+- death
+- gross_again
+- another_death
+- low_nutrients
+- another_member
+- timewarp
+- poop
+- rain
+- long_travel
+- bloom
+- mass_sadness
+- flooded_fertilizer
+- unused_fertilizer
+- unattended_farm
+- extra_life
 
 | Key | Value | Description |
 | --- | --- | --- |
-| event_category | arguments[2]  | Usually (always?) begin or end |
+| event_category | arguments[2]  | Always (as of 8/14/19) begin or end |
 | event_label  |  arguments[2]  | Tutorial name. For example, the name of the tutorial that teaches the player how to build a house is called "build_a_house" |
-| event_type  | arguments[1]  | Usually (always?) tutorial |
+| event_type  | arguments[1]  | Always (as of 8/14/19) tutorial |
 | blurb_history | flush_blurb_history(now) |  List of client time relative to now for each blurb popup. (Blurbs are now logged here instead of the [blurb](#blurb) event.) | 
 | client_time | now | current client time  |
 
