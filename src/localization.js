@@ -4,6 +4,12 @@ var loc = [];
 lang = "en";
 loc[lang] = [];
 
+loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "You set out to form a new town called \"Lakeland.\"";
+loc[lang]["intro_Yourpeoplelovetoplayinthewater."] = "Your people love to play in the water.";
+loc[lang]["intro_Growyourtownwithoutdestroyingtheirlakes."] = "Grow your town without destroying their lakes.";
+
+loc[lang]["GeneratingLakeland..."] = "Generating Lakeland...";
+
 loc[lang]["tile_Null"]   = "Null";
 loc[lang]["tile_Land"]   = "Land";
 loc[lang]["tile_Rock"]   = "Rock";
@@ -308,6 +314,11 @@ loc[lang]["tut_herainmightmovesomenutrientsaround."] = "The rain might move some
 loc[lang]["tut_Phew.Rain'sover."] = "Phew. Rain's over.";
 loc[lang]["tut_Keepaneyeonyoursoil."] = "Keep an eye on your soil.";
 loc[lang]["tut_Awheck.Lookslikerain."] = "Aw heck. Looks like rain.";
+
+lang = "es";
+loc[lang] = [];
+
+loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "Te propusiste formar una nueva ciudad llamada \"Lakeland\".";
 
 lang = "en";
 
