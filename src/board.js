@@ -2706,6 +2706,7 @@ var board = function()
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
+            my_logger.increment_poop_produced();
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
             else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_FERTILIZE, 0, it))) ;
           }
@@ -4094,6 +4095,7 @@ var farmbit = function()
               gg.b.tiles_tw(it.tile,it);
               kick_item(it);
               gg.items.push(it);
+              my_logger.increment_food_produced();
               if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
               else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
               else if(!(it.mark == MARK_FEED && b_for_job(JOB_TYPE_FEED, 0, it))) ;
@@ -4265,6 +4267,7 @@ var farmbit = function()
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
+            my_logger.increment_milk_produced();
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
             else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
 

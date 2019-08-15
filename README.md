@@ -12,6 +12,7 @@ Versions:
 3. Change itemusechange: remove mark, add prev_mark
 4. Remove gzipping.
 5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise.
+6. Add num milk/food/poop produced into the gamestate log
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -88,6 +89,9 @@ Versions:
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
 | client_time | now | current client time  |
+| num_food_produced | num_food_produced | total number of food produced (not bought) since the start of the game |
+| num_poop_produced | num_poop_produced | total number of poop produced (not bought) since the start of the game |
+| num_milk_produced | num_milk_produced | total number of milk produced (not bought) since the start of the game |
 
 <a name="startgame"/>
 
@@ -437,10 +441,10 @@ There are 26 begins and 26 ends. In the constants for the feature extractor, the
 |0| another_death| |
 |1| another_member| |
 |2| bloom| |
-|3| build_a_farm| |
-|4| build_a_house| |
-|5| buy_fertilizer| |
-|6| buy_food| |
+|3| build_a_farm| tutorial 3 |
+|4| build_a_house| tutorial 1 |
+|5| buy_fertilizer| tutorial 6 |
+|6| buy_food| tutorial 2|
 |7| buy_livestock| |
 |8| death| |
 |9| end_life| |
@@ -449,15 +453,15 @@ There are 26 begins and 26 ends. In the constants for the feature extractor, the
 |12| flooded_fertilizer| |
 |13| gross| |
 |14| gross_again| |
-|15| livestock| |
+|15| livestock| tutorial 7 |
 |16| long_travel| |
 |17| low_nutrients| |
 |18| mass_sadness| |
-|19| poop| |
+|19| poop| tutorial 8 |
 |20| rain| |
-|21| sell_food| |
+|21| sell_food| tutorial 5 |
 |22| successful_harvest| |
-|23| timewarp| |
+|23| timewarp| tutorial 4 |
 |24| unattended_farm| |
 |25| unused_fertilizer| |
 

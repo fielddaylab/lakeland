@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",5);
+  self.mySlog = new slog("LAKELAND",6);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -250,7 +250,20 @@ window.Logger = function(init){
     self.prev_item_use = it.mark;
   }
 
-
+  self.num_food_produced = 0;
+  self.num_poop_produced = 0;
+  self.num_milk_produced = 0;
+  self.increment_food_produced = function(){
+    self.num_food_produced++;
+  }
+  self.increment_poop_produced = function(){
+    self.num_poop_produced++;
+  }
+  self.increment_milk_produced = function(){
+    self.num_milk_produced++;
+  }
+  
+  
 
   //Logging
   self.gamestate = function(){
@@ -269,6 +282,9 @@ window.Logger = function(init){
       camera_center: self.prev_center_txty,
       gametime: self.time,
       timestamp: now,
+      num_food_produced: self.num_food_produced,
+      num_poop_produced: self.num_poop_produced,
+      num_milk_produced: self.num_milk_produced,
     };
     self.send_log(gamestate, self.LOG_CATEGORY_GAMESTATE);
   }
@@ -478,7 +494,7 @@ window.Logger = function(init){
     };
     self.mySlog.log(formatted_log_data);
     log_data.category = category;
-    //console.log(log_data);
+    console.log(log_data);
   }
 
   Helpers:
