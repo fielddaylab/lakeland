@@ -445,7 +445,7 @@ There are 26 begins and 26 ends. In the constants for the feature extractor, the
 |4| build_a_house| tutorial 1 |
 |5| buy_fertilizer| tutorial 6 |
 |6| buy_food| tutorial 2|
-|7| buy_livestock| |
+|7| buy_livestock //last tutorial that all players will encounter (we think)| |
 |8| death| |
 |9| end_life| |
 |10| extra_life| |
