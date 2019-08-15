@@ -656,7 +656,10 @@ window.Logger = function(init){
   }
 
   self.farmbit_name_index = function(name){
-    return farmbit_names.findIndex(element => element === name);
+    for(var i = 0; i < farmbit_names.length; i++)
+      if(farmbit_names[i] == name) return i;
+    return 0;
+    //return farmbit_names.findIndex(element => element === name);
   }
 
   //Utils:
