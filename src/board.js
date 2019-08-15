@@ -1412,6 +1412,9 @@ var board = function()
   self.null_tile = new tile();
   self.scratch_tile = new tile();
   self.tiles = [];
+  self.og_types = []; //for serialization
+  self.stamp_nutrition = []; //for serialization
+  self.structure_deltas = []; //for serialization
   self.center_tile = 0;
   self.tile_groups = [];
   self.tiles_i = function(tx,ty)
@@ -1764,35 +1767,35 @@ var board = function()
   {
     switch(type)
     {
-      case TILE_TYPE_NULL:      return "Null";      break;
-      case TILE_TYPE_LAND:      return "Land";      break;
-      case TILE_TYPE_ROCK:      return "Rock";      break;
-      case TILE_TYPE_GRAVE:     return "Grave";     break;
-      case TILE_TYPE_SIGN:      return "Sign";      break;
-      case TILE_TYPE_LAKE:      return "Lake";      break;
-      case TILE_TYPE_SHORE:     return "Shore";     break;
-      case TILE_TYPE_FOREST:    return "Forest";    break;
-      case TILE_TYPE_HOME:      return "Home";      break;
-      case TILE_TYPE_FARM:      return "Farm";      break;
-      case TILE_TYPE_LIVESTOCK: return "Dairy";     break;
-      case TILE_TYPE_ROAD:      return "Road";      break;
-      case TILE_TYPE_COUNT:     return "Count";     break;
+      case TILE_TYPE_NULL:      return loc[lang]["tile_Null"];   break;
+      case TILE_TYPE_LAND:      return loc[lang]["tile_Land"];   break;
+      case TILE_TYPE_ROCK:      return loc[lang]["tile_Rock"];   break;
+      case TILE_TYPE_GRAVE:     return loc[lang]["tile_Grave"];  break;
+      case TILE_TYPE_SIGN:      return loc[lang]["tile_Sign"];   break;
+      case TILE_TYPE_LAKE:      return loc[lang]["tile_Lake"];   break;
+      case TILE_TYPE_SHORE:     return loc[lang]["tile_Shore"];  break;
+      case TILE_TYPE_FOREST:    return loc[lang]["tile_Forest"]; break;
+      case TILE_TYPE_HOME:      return loc[lang]["tile_Home"];   break;
+      case TILE_TYPE_FARM:      return loc[lang]["tile_Farm"];   break;
+      case TILE_TYPE_LIVESTOCK: return loc[lang]["tile_Dairy"];  break;
+      case TILE_TYPE_ROAD:      return loc[lang]["tile_Road"];   break;
+      case TILE_TYPE_COUNT:     return loc[lang]["tile_Count"];  break;
     }
   }
   self.state_name = function(type)
   {
     switch(type)
     {
-      case TILE_STATE_NULL:                return "Null";       break;
-      case TILE_STATE_HOME_VACANT:         return "Vacant";     break;
-      case TILE_STATE_HOME_OCCUPIED:       return "Occupied";   break;
-      case TILE_STATE_FARM_UNPLANTED:      return "Unplanted";  break;
-      case TILE_STATE_FARM_PLANTED:        return "Planted";    break;
-      case TILE_STATE_FARM_GROWN:          return "Grown";      break;
-      case TILE_STATE_LIVESTOCK_EATING:    return "Digesting";  break;
-      case TILE_STATE_LIVESTOCK_DIGESTING: return "Digesting";  break;
-      case TILE_STATE_LIVESTOCK_MILKABLE:  return "Milkable";   break;
-      case TILE_STATE_COUNT:               return "Null";       break;
+      case TILE_STATE_NULL:                return loc[lang]["tilestate_Null"];       break;
+      case TILE_STATE_HOME_VACANT:         return loc[lang]["tilestate_Vacant"];     break;
+      case TILE_STATE_HOME_OCCUPIED:       return loc[lang]["tilestate_Occupied"];   break;
+      case TILE_STATE_FARM_UNPLANTED:      return loc[lang]["tilestate_Unplanted"];  break;
+      case TILE_STATE_FARM_PLANTED:        return loc[lang]["tilestate_Planted"];    break;
+      case TILE_STATE_FARM_GROWN:          return loc[lang]["tilestate_Grown"];      break;
+      case TILE_STATE_LIVESTOCK_EATING:    return loc[lang]["tilestate_Digesting"];  break;
+      case TILE_STATE_LIVESTOCK_DIGESTING: return loc[lang]["tilestate_Digesting"];  break;
+      case TILE_STATE_LIVESTOCK_MILKABLE:  return loc[lang]["tilestate_Milkable"];   break;
+      case TILE_STATE_COUNT:               return loc[lang]["tilestate_Null"];       break;
     }
   }
   self.item_img = function(type)
@@ -1832,44 +1835,44 @@ var board = function()
   {
     switch(type)
     {
-      case ITEM_TYPE_NULL:       return "Null";       break;
-      case ITEM_TYPE_WATER:      return "Water";      break;
-      case ITEM_TYPE_FOOD:       return "Corn";       break;
-      case ITEM_TYPE_POOP:       return "Manure";     break;
-      case ITEM_TYPE_MILK:       return "Milk";       break;
-      case ITEM_TYPE_FERTILIZER: return "Fertilizer"; break;
-      case ITEM_TYPE_COUNT:      return "Count";      break;
+      case ITEM_TYPE_NULL:       return loc[lang]["item_Null"];       break;
+      case ITEM_TYPE_WATER:      return loc[lang]["item_Water"];      break;
+      case ITEM_TYPE_FOOD:       return loc[lang]["item_Corn"];       break;
+      case ITEM_TYPE_POOP:       return loc[lang]["item_Manure"];     break;
+      case ITEM_TYPE_MILK:       return loc[lang]["item_Milk"];       break;
+      case ITEM_TYPE_FERTILIZER: return loc[lang]["item_Fertilizer"]; break;
+      case ITEM_TYPE_COUNT:      return loc[lang]["item_Count"];      break;
     }
   }
   self.job_name = function(type)
   {
     switch(type)
     {
-      case JOB_TYPE_NULL:      return "Null";      break;
-      case JOB_TYPE_IDLE:      return "Idle";      break;
-      case JOB_TYPE_WAIT:      return "Wait";      break;
-      case JOB_TYPE_EAT:       return "Eat";       break;
-      case JOB_TYPE_SLEEP:     return "Sleep";     break;
-      case JOB_TYPE_PLAY:      return "Play";      break;
-      case JOB_TYPE_PLANT:     return "Plant";     break;
-      case JOB_TYPE_HARVEST:   return "Harvest";   break;
-      case JOB_TYPE_FERTILIZE: return "Fertilize"; break;
-      case JOB_TYPE_MILK:      return "Milk";      break;
-      case JOB_TYPE_EXPORT:    return "Export";    break;
-      case JOB_TYPE_COUNT:     return "Count";     break;
+      case JOB_TYPE_NULL:      return loc[lang]["job_Null"];      break;
+      case JOB_TYPE_IDLE:      return loc[lang]["job_Idle"];      break;
+      case JOB_TYPE_WAIT:      return loc[lang]["job_Wait"];      break;
+      case JOB_TYPE_EAT:       return loc[lang]["job_Eat"];       break;
+      case JOB_TYPE_SLEEP:     return loc[lang]["job_Sleep"];     break;
+      case JOB_TYPE_PLAY:      return loc[lang]["job_Play"];      break;
+      case JOB_TYPE_PLANT:     return loc[lang]["job_Plant"];     break;
+      case JOB_TYPE_HARVEST:   return loc[lang]["job_Harvest"];   break;
+      case JOB_TYPE_FERTILIZE: return loc[lang]["job_Fertilize"]; break;
+      case JOB_TYPE_MILK:      return loc[lang]["job_Milk"];      break;
+      case JOB_TYPE_EXPORT:    return loc[lang]["job_Export"];    break;
+      case JOB_TYPE_COUNT:     return loc[lang]["job_Count"];     break;
     }
   }
   self.job_state_name = function(state)
   {
     switch(state)
     {
-      case JOB_STATE_NULL:        return "Null";   break;
-      case JOB_STATE_GET:         return "Get";    break;
-      case JOB_STATE_SEEK:        return "Seek";   break;
-      case JOB_STATE_ACT:         return "Act";    break;
-      case JOB_STATE_IDLE_CHILL:  return "Chill";  break;
-      case JOB_STATE_IDLE_WANDER: return "Wander"; break;
-      case JOB_STATE_COUNT:       return "Null";   break;
+      case JOB_STATE_NULL:        return loc[lang]["jobstate_Null"];   break;
+      case JOB_STATE_GET:         return loc[lang]["jobstate_Get"];    break;
+      case JOB_STATE_SEEK:        return loc[lang]["jobstate_Seek"];   break;
+      case JOB_STATE_ACT:         return loc[lang]["jobstate_Act"];    break;
+      case JOB_STATE_IDLE_CHILL:  return loc[lang]["jobstate_Chill"];  break;
+      case JOB_STATE_IDLE_WANDER: return loc[lang]["jobstate_Wander"]; break;
+      case JOB_STATE_COUNT:       return loc[lang]["jobstate_Null"];   break;
     }
   }
 
@@ -2271,9 +2274,153 @@ var board = function()
         }
     }
 
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      self.og_types[i] = self.tiles[i].og_type;
+      self.stamp_nutrition[i] = self.tiles[i].nutrition;
+    }
+
     self.inc_bounds();
     self.hovering = 0;
     self.scratch_item = new item();
+    if(gg.continue_ls) self.load();
+    else self.save();
+  }
+
+  self.save = function()
+  {
+    for(var i = 0; i < self.tiles.length; i++)
+      self.stamp_nutrition[i] = self.tiles[i].nutrition;
+
+    var ls = {};
+    ls.money = gg.money;
+    ls.n_farmbits = gg.farmbits.length;
+    ls.og_types = self.og_types;
+    ls.stamp_nutrition = self.stamp_nutrition;
+    ls.structure_deltas = self.structure_deltas;
+
+    window.localStorage.setItem('save', JSON.stringify(ls));
+  }
+
+  self.load = function()
+  {
+    var ls = JSON.parse(gg.continue_ls);//window.localStorage.getItem('save');
+    gg.money = ls.money;
+    self.og_types = ls.og_types;
+    self.stamp_nutrition = ls.stamp_nutrition;
+    self.structure_deltas = ls.structure_deltas;
+
+    //set raw info
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      self.tiles[i].og_type = self.og_types[i];
+      self.tiles[i].type = self.og_types[i];
+      self.tiles[i].nutrition = self.stamp_nutrition[i];
+    }
+
+    //shoreline
+    for(var i = 0; i < self.tile_groups[TILE_TYPE_SHORE].length; i++)
+    {
+      var shore_d = 2;
+      var t = self.tile_groups[TILE_TYPE_SHORE][i];
+      var st;
+      for(var xd = -shore_d; xd <= shore_d; xd++)
+        for(var yd = -shore_d; yd <= shore_d; yd++)
+        {
+          st = self.tiles_t(clamp(0,self.tw-1,t.tx+xd),clamp(0,self.th-1,t.ty+yd));
+          var d = xd*xd+yd*yd;
+          if(st.type == TILE_TYPE_LAND) st.shoreline = 1;
+        }
+    }
+
+    //apply deltas
+    for(var i = 0; i < self.structure_deltas.length; i++)
+    {
+      var t = self.tiles_t(self.structure_deltas[i].tx,self.structure_deltas[i].ty);
+      t.type = self.structure_deltas[i].type;
+      t.state = TILE_STATE_NULL;
+      t.val = 0;
+      t.state_t = 0;
+      switch(t.type)
+      {
+        case TILE_TYPE_HOME:
+          t.state = TILE_STATE_HOME_VACANT;
+          self.own_tiles(t,2);
+          break;
+        case TILE_TYPE_FARM:
+          t.state = TILE_STATE_FARM_UNPLANTED;
+          self.own_tiles(t,2);
+          break;
+        case TILE_TYPE_LIVESTOCK:
+          t.state = TILE_STATE_LIVESTOCK_EATING;
+          t.marks[0] = MARK_SELL;
+          self.own_tiles(t,2);
+          break;
+      }
+    }
+
+    //move in bits
+    for(var i = 0; i < ls.n_farmbits; i++)
+    {
+      if(gg.farmbits.length == gg.b.bounds_n) { gg.b.inc_bounds(); gg.b.bounds_n++; gg.b.resize(); }
+      var t = gg.b.tiles_t(gg.b.bounds_tx+randIntBelow(gg.b.bounds_tw),gg.b.bounds_ty+randIntBelow(gg.b.bounds_th));
+      var b = new farmbit();
+      b.fullness = max_fullness;
+      b.tile = t;
+      gg.b.tiles_tw(t,b);
+      gg.farmbits.push(b);
+      job_for_b(b);
+      b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
+      if(b.home) b.home.state = TILE_STATE_HOME_OCCUPIED;
+    }
+
+    //group tiles
+    for(var i = 0; i < TILE_TYPE_COUNT; i++)
+      self.tile_groups[i] = [];
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      var t = self.tiles[i];
+      self.tile_groups[t.type].push(t);
+    }
+
+    self.center_tile = self.tiles_t(floor(self.tw/2),floor(self.th/2));
+
+    //find sheds
+    for(var i = 0; i < self.tiles.length; i++)
+    {
+      var t = self.tiles[i];
+      if(t.type == TILE_TYPE_LAKE) continue;
+      var closest_d = max_dist;
+      var d;
+      var tt;
+      for(var ti = 0; ti < self.tiles.length; ti++)
+      {
+        var tt = self.tiles[ti];
+        if(tt.type != TILE_TYPE_LAKE) continue;
+        d = distsqr(t.tx,t.ty,tt.tx,tt.ty);
+        if(d < closest_d)
+        {
+          closest_d = d;
+          t.shed = tt;
+          t.shed_d = floor(d);
+        }
+      }
+      var xdir = 0;
+      var ydir = 0;
+      if(t.shed.tx < t.tx) xdir = -1;
+      if(t.shed.tx > t.tx) xdir =  1;
+      if(t.shed.ty < t.ty) ydir = -1;
+      if(t.shed.ty > t.ty) ydir =  1;
+      if(xdir == 0 && rand() < 0.8) xdir = randIntBelow(3)-1;
+      if(ydir == 0 && rand() < 0.8) ydir = randIntBelow(3)-1;
+      if(xdir ==  1 && t.tx == self.tw-1) xdir = 0;
+      if(xdir == -1 && t.tx == 0)         xdir = 0;
+      if(ydir ==  1 && t.ty == self.th-1) ydir = 0;
+      if(ydir == -1 && t.ty == 0)         ydir = 0;
+      t.shed = self.tiles[t.i+xdir+ydir*self.tw];
+    }
+
+    //gg.advisors.skip_all_tutorials(); //will be done when tutorials load
   }
 
   self.own_tiles = function(t, own_d)
@@ -2285,6 +2432,7 @@ var board = function()
 
   self.alterTile = function(t, type)
   {
+    self.structure_deltas.push({tx:t.tx,ty:t.ty,type:type});
     for(var i = 0; i < self.tile_groups[t.type].length; i++)
       if(self.tile_groups[t.type][i] == t) self.tile_groups[t.type].splice(i,1);
     t.type = type;
@@ -2416,6 +2564,7 @@ var board = function()
   self.last_evt = 0;
   self.dragStart = function(evt)
   {
+    if(platform == PLATFORM_MOBILE) self.hover(evt);
     if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
 
@@ -2444,6 +2593,7 @@ var board = function()
 
     if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !self.drag_ignored) self.click(evt);
     self.drag_ignored = 0;
+    if(platform == PLATFORM_MOBILE) self.unhover(evt);
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
@@ -2467,6 +2617,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_HOME);
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(house_aud);
               return;
             }
             break;
@@ -2502,6 +2653,7 @@ var board = function()
 
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(fertilizer_aud);
               return;
             }
             break;
@@ -2536,6 +2688,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_LIVESTOCK);
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(dairy_aud);
               return;
             }
             break;
@@ -2546,6 +2699,7 @@ var board = function()
               self.alterTile(self.hover_t,TILE_TYPE_SIGN);
               gg.inspector.select_tile(self.hover_t);
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(sign_aud);
               return;
             }
             break;
@@ -2573,6 +2727,7 @@ var board = function()
               else
                 self.spewing_road = roads_per_buy;
               self.hover_t_placable = 0;
+              gg.aud_wrangler.play(road_aud);
               return;
             }
             break;
@@ -2619,6 +2774,7 @@ var board = function()
     if(self.dragging) self.drag_t++;
   }
 
+  self.save_t = 0;
   self.tick = function()
   {
     if(self.autorain)
@@ -2701,6 +2857,7 @@ var board = function()
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
+            my_logger.increment_poop_produced();
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
             else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_FERTILIZE, 0, it))) ;
           }
@@ -2784,6 +2941,8 @@ var board = function()
       }
     }
 
+    self.save_t++;
+    if(self.save_t > 5000) { self.save(); self.save_t = 0; }
   }
 
   self.draw_tile_og = function(t,x,y,w,h)
@@ -3634,6 +3793,7 @@ var farmbit = function()
 
   self.die = function()
   {
+    gg.aud_wrangler.play(death_aud);
     my_logger.farmbit_death(self);
     self.abandon_job(1);
     var t = self.tile;
@@ -4088,6 +4248,7 @@ var farmbit = function()
               gg.b.tiles_tw(it.tile,it);
               kick_item(it);
               gg.items.push(it);
+              my_logger.increment_food_produced();
               if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
               else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
               else if(!(it.mark == MARK_FEED && b_for_job(JOB_TYPE_FEED, 0, it))) ;
@@ -4259,6 +4420,7 @@ var farmbit = function()
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
+            my_logger.increment_milk_produced();
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
             else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
 
@@ -4314,6 +4476,7 @@ var farmbit = function()
               var t = self.job_subject;
 
               gg.money += worth_for_item(self.item.type);
+              gg.aud_wrangler.play(money_aud);
               gg.b.sell_p(t.tile,"+$"+worth_for_item(self.item.type));
 
               break_item(self.item);

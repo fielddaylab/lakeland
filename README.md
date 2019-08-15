@@ -5,6 +5,14 @@ Each log is sent with a number of fields required by [simplelog](https://github.
   event_data_complex: JSON.stringify(log_data)
 Each log_data is a JSON object for that specific category as defined below.
 
+#### Change Log
+Versions:
+1. Alpha
+2. Original Version
+3. Change itemusechange: remove mark, add prev_mark
+4. Remove gzipping.
+5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise.
+6. Add num milk/food/poop produced into the gamestate log
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -33,11 +41,13 @@ Each log_data is a JSON object for that specific category as defined below.
 1. [endgame](#endgame)
 
 ### Enumerators and Constants
+1. [Event Categories](#EventCategories)
 1. [Emotes](#Emotes)
 1. [Buys](#Buys)
 1. [Names](#Names)
 1. [Speed](#SpeedConst)
 1. [Achievements](#Achievements)
+1. [Tutorials](#Tutorials)
 1. [Thing Type](#Thing_Type)
 1. [Inspector Content](#InspectorContent)
 1. [Text Type](#TextType)
@@ -66,9 +76,9 @@ Each log_data is a JSON object for that specific category as defined below.
 #### gamestate (index=0)
 | Key | Value | Description |
 | --- | --- | --- |
-| tiles | pako.gzip(uint8_tile_array()).join() | Gzipped tile [data matrix](#DataMatrices).   |
-| farmbits | pako.gzip(uint8_farmbit_array()).join() | Gzipped farmbit [data matrix](#DataMatrices).   |
-| items | pako.gzip(uint8_item_array()).join() |Gzipped item [data matrix](#DataMatrices).  |
+| tiles | uint8_tile_array().join() | Tile [data matrix](#DataMatrices).   |
+| farmbits | uint8_farmbit_array().join() | Farmbit [data matrix](#DataMatrices).   |
+| items | uint8_item_array().join() | Item [data matrix](#DataMatrices).  |
 | money | gg.money | current money  |
 | speed | gg.speed |  current game speed (see [Speed](#SpeedConst)) |
 | achievements | achievements |A boolean array of whether the player has gotten the [achievement](#Achievements) at that index.   |
@@ -79,6 +89,9 @@ Each log_data is a JSON object for that specific category as defined below.
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
 | client_time | now | current client time  |
+| num_food_produced | num_food_produced | total number of food produced (not bought) since the start of the game |
+| num_poop_produced | num_poop_produced | total number of poop produced (not bought) since the start of the game |
+| num_milk_produced | num_milk_produced | total number of milk produced (not bought) since the start of the game |
 
 <a name="startgame"/>
 
@@ -91,13 +104,13 @@ Each log_data is a JSON object for that specific category as defined below.
 <a name="checkpoint"/>
 
 #### checkpoint (index=2)
-Checkpoints are the google analytics events.
+Checkpoints are the google analytics events. As of 8/14/19 these are always tutorial begins and ends. See [tutorials](#Tutorials).
 
 | Key | Value | Description |
 | --- | --- | --- |
-| event_category | arguments[2]  | Usually (always?) begin or end |
+| event_category | arguments[2]  | Always (as of 8/14/19) begin or end |
 | event_label  |  arguments[2]  | Tutorial name. For example, the name of the tutorial that teaches the player how to build a house is called "build_a_house" |
-| event_type  | arguments[1]  | Usually (always?) tutorial |
+| event_type  | arguments[1]  | Always (as of 8/14/19) tutorial |
 | blurb_history | flush_blurb_history(now) |  List of client time relative to now for each blurb popup. (Blurbs are now logged here instead of the [blurb](#blurb) event.) | 
 | client_time | now | current client time  |
 
@@ -191,7 +204,7 @@ Note that this log occurs even when the player selects the current use/mark, i.e
 | Key | Value | Description |
 | --- | --- | --- |
 | item | item_data_short(it) | See [Data Short](#DataShort).  |
-| mark | it.mark | Item [mark index](#Mark).  |
+| prev_mark | self.prev_item_use | Item's previous [mark index](#Mark).  |
 
 <a name="togglenutrition"/>
 
@@ -230,8 +243,9 @@ Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipp
 #### speed (index=16)
 | Key | Value | Description |
 | --- | --- | --- |
-| cur_speed | gg.speed | From [speed](#SpeedConst) index.  |
-| clicked_speed | speed | To [speed](#SpeedConst) index.  | 
+| cur_speed | gg.speed | To [speed](#SpeedConst) index.  |
+| prev_speed | speed | From [speed](#SpeedConst) index.  | 
+| manual | manual_speed_bool | bool: 1 if speed was manually changed, 0 if not | 
 
 <a name="achievement"/>
 
@@ -293,6 +307,38 @@ Note: a blurb is an utterance from an advisor.
 
 
 ## Enumerators and Constants
+
+<a name="EventCategories"/>
+
+#### Event Categories 
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| gamestate| |
+|1| startgame| |
+|2| checkpoint| |
+|3| selecttile| |
+|4| selectfarmbit| |
+|5| selectitem| |
+|6| selectbuy| |
+|7| buy| |
+|8| cancelbuy| |
+|9| roadbuilds| |
+|10| tileuseselect| |
+|11| itemuseselect| |
+|12| togglenutrition| |
+|13| toggleshop| |
+|14| toggleachievements| |
+|15| skiptutorial| |
+|16| speed| |
+|17| achievement| |
+|18| farmbitdeath| |
+|19| blurb| |
+|20| click| |
+|21| rainstopped| |
+|22| history| |
+|23| endgame| |
+
+
 <a name="Emotes"/>
 
 #### Emotes 
@@ -385,6 +431,41 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 |15| massivebloom | a whole lake destroyed"|
 
 
+<a name="Tutorials"/>
+
+#### Tutorials 
+There are 26 begins and 26 ends. In the constants for the feature extractor, these tutorials are assigned indices alphabetically:
+
+| Index | Name | Description |
+| --- | --- | --- | 
+|0| another_death| |
+|1| another_member| |
+|2| bloom| |
+|3| build_a_farm| tutorial 3 |
+|4| build_a_house| tutorial 1 |
+|5| buy_fertilizer| tutorial 6 |
+|6| buy_food| tutorial 2|
+|7| buy_livestock //last tutorial that all players will encounter (we think)| |
+|8| death| |
+|9| end_life| |
+|10| extra_life| |
+|11| final_death| |
+|12| flooded_fertilizer| |
+|13| gross| |
+|14| gross_again| |
+|15| livestock| tutorial 7 |
+|16| long_travel| |
+|17| low_nutrients| |
+|18| mass_sadness| |
+|19| poop| tutorial 8 |
+|20| rain| |
+|21| sell_food| tutorial 5 |
+|22| successful_harvest| |
+|23| timewarp| tutorial 4 |
+|24| unattended_farm| |
+|25| unused_fertilizer| |
+
+
 <a name="Thing_Type"/>
 
 #### Thing_Type 
@@ -397,7 +478,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="InspectorContent"/>
 
-### Inspector Content
+#### Inspector Content
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -407,7 +488,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="TextType"/>
 
-### Text Type
+#### Text Type
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -417,7 +498,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 
 <a name="AdvisorType"/>
 
-### Advisor Type
+#### Advisor Type
 | Index | Name | Description |
 | --- | --- | --- | 
 |0| null | |
@@ -609,6 +690,7 @@ Note: The gamestate log of all tiles does not contain tile tx,ty. Row of the til
 
 ## Built With
 The logging script (logging.js) was bundled (to bundle.js) using Browserify with Pako.
+NOTE: These are removed in v4.
 
 * [Browserify](http://browserify.org) - Allows the use of Pako in the browser.
 * [Pako](http://github.com/nodeca/pako) - zlib port to javascript used to gzip gamestates.

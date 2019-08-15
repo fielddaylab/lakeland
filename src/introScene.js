@@ -17,15 +17,16 @@ var IntroScene = function()
     self.resize();
     t = 0;
 
+    txts = [
+      loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""],
+      loc[lang]["intro_Yourpeoplelovetoplayinthewater."],
+      loc[lang]["intro_Growyourtownwithoutdestroyingtheirlakes."],
+    ];
   };
 
   var t = 0;
   var txt_len = 200;
-  var txts = [
-    "You set out to form a new town called \"Lakeland.\"",
-    "Your people love to play in the water.",
-    "Grow your town without destroying their lakes.",
-  ];
+  var txts;
 
   self.tick = function()
   {
@@ -46,7 +47,7 @@ var IntroScene = function()
     if(t == 1)
     {
       gg.ctx.textAlign = "left";
-      gg.ctx.fillText("Generating Lakeland...",10,gg.canvas.height-10);
+      gg.ctx.fillText(loc[lang]["GeneratingLakeland..."],10,gg.canvas.height-10);
     }
     else
     {

@@ -436,7 +436,6 @@ var img = new Image();
 img.onload = (function(img){
   return function()
   {
-    console.log("hello");
     img.onload = 0;
     var i = GenIcon(img.width,img.height);
     i.context.scale(-1,1);
