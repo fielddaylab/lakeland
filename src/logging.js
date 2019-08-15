@@ -140,7 +140,7 @@ window.Logger = function(init){
 
   self.camera_history = [] //matrix of tx,ty,auto,time columns
 
-  self.camera_move = function(t=null){
+  self.camera_move = function(t){
     var auto = true;
     if(!t){
       t = gg.b.tiles_wt(gg.cam.wx, gg.cam.wy);
@@ -428,7 +428,7 @@ window.Logger = function(init){
     self.update_raining();
   }
 
-  self.history = function(force=false){
+  self.history = function(force){
     if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH || force){
       var now = Date.now();
       var log_data = {
