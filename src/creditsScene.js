@@ -222,7 +222,10 @@ var CreditsScene = function()
       "",
       "Funding Provided By",
       "",
-      "United States Dairy Association Innovations at the Nexus of Food, Energy, and Water (USDA INFEWS). Principal Investigator: Victor Zavala Tejeda",
+      "United States Dairy Association Innovations",
+      "at the Nexus of Food, Energy, and Water (USDA INFEWS)",
+      "",
+      "Principal Investigator: Victor Zavala Tejeda",
       "",
       "",
       "",
@@ -275,7 +278,7 @@ var CreditsScene = function()
     gg.ctx.fillStyle = black;
     gg.ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
 
-    gg.ctx.font = "30px DisposableDroidBB";
+    gg.ctx.font = "30px "+gg.font;
     var bottom = gg.canvas.height;
     var top = 0-self.credits_o.spacing*self.credits_o.lines.length;
     var p = lerp(bottom,top,self.credits_o.roll_p);
