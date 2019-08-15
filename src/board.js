@@ -2564,6 +2564,7 @@ var board = function()
   self.last_evt = 0;
   self.dragStart = function(evt)
   {
+    if(platform == PLATFORM_MOBILE) self.hover(evt);
     if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
 
@@ -2592,6 +2593,7 @@ var board = function()
 
     if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !self.drag_ignored) self.click(evt);
     self.drag_ignored = 0;
+    if(platform == PLATFORM_MOBILE) self.unhover(evt);
   }
 
   self.click = function(evt) //gets called by dragfinish rather than straight filtered
