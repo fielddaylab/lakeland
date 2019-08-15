@@ -502,9 +502,8 @@ var shop = function()
       gg.ctx.fillStyle = gg.font_color;
       if(self.open)
       {
-        var fs = self.money_display.h*0.7;
-        gg.ctx.font = fs+"px "+gg.font;
-        gg.ctx.fillText("<",self.tab.x+self.tab.w/2,self.tab.y+self.tab.h*3/4);
+        var s = self.tab.w/2;
+        gg.ctx.drawImage(button_close_img,self.tab.x+(self.tab.w+self.pad-s)/2,self.tab.y+self.pad*2/3,s,s);
       }
       else
       {
