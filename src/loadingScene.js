@@ -91,7 +91,8 @@ var LoadingScene = function()
     audio_srcs = [];
 
     //put asset paths in loading_img_srcs (for assets used on loading screen itself)
-    //loading_img_srcs.push("assets/loading_img.png");
+    loading_img_srcs.push("assets/logo_collaborator.png");
+    loading_img_srcs.push("assets/logo_fd.png");
     for(var i = 0; i < loading_img_srcs.length; i++)
     {
       loading_imgs[i] = new Image();
@@ -264,7 +265,7 @@ var LoadingScene = function()
     if(percent_loaded >= 1.0) ticks_since_ready++;
     if(ticks_since_ready >= post_load_countdown)
     {
-      if(ticks_since_loading_ready > 1) gg.game.nextScene(); //set 1 = # ticks in preloading sequence
+      if(ticks_since_loading_ready > 550) gg.game.nextScene(); //set 1 = # ticks in preloading sequence
       //gg.game.nextScene();
     }
   };
@@ -272,17 +273,59 @@ var LoadingScene = function()
   self.draw = function()
   {
     var ctx = gg.ctx;
+    ctx.clearRect(0,0,gg.canvas.width,gg.canvas.height);
+
     if(chase_percent_loaded < 1)
     {
       ctx.fillStyle = "#888888";
       ctx.strokeStyle = "#888888";
-      ctx.fillRect(pad,gg.canvas.height/2,chase_percent_loaded*barw,1);
-      ctx.strokeRect(pad-1,(gg.canvas.height/2)-1,barw+2,3);
+      ctx.fillRect(pad,gg.canvas.height-pad,chase_percent_loaded*barw,1);
+      ctx.strokeRect(pad-1,gg.canvas.height-pad-1,barw+2,3);
     }
 
     if(loading_percent_loaded >= 1)
     {
       //do any special drawing here- use 'ticks_since_loading_ready' as t for preloading sequence
+      if(ticks_since_loading_ready < 50)
+      {
+        ctx.globalAlpha = ticks_since_loading_ready/50;
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+      }
+      else if(ticks_since_loading_ready < 200)
+      {
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+      }
+      else if(ticks_since_loading_ready < 250)
+      {
+        ctx.globalAlpha = 1-((ticks_since_loading_ready-200)/50);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+      }
+      else if(ticks_since_loading_ready < 300)
+      {
+        ctx.globalAlpha = (ticks_since_loading_ready-250)/50;
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+      }
+      else if(ticks_since_loading_ready < 450)
+      {
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+      }
+      else if(ticks_since_loading_ready < 500)
+      {
+        ctx.globalAlpha = 1-((ticks_since_loading_ready-450)/50);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+      }
+      else if(ticks_since_loading_ready < 550)
+      {
+        ctx.globalAlpha = (ticks_since_loading_ready-500)/50;
+        ctx.fillStyle = black;
+        ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+      }
+      else
+      {
+        ctx.fillStyle = black;
+        ctx.fillRect(0,0,gg.canvas.width,gg.canvas.height);
+      }
+      ctx.globalAlpha = 1;
     }
 
 /*
