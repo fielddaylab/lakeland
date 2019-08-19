@@ -22,6 +22,11 @@ var IntroScene = function()
       loc[lang]["intro_Yourpeoplelovetoplayinthewater."],
       loc[lang]["intro_Growyourtownwithoutdestroyingtheirlakes."],
     ];
+    if(AUDIO)
+    {
+      music_aud = gg.aud_wrangler.register_music("assets/audio/game_music.mp3");
+      gg.aud_wrangler.play_music();
+    }
   };
 
   var t = 0;

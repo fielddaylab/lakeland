@@ -4165,7 +4165,7 @@ var advisors = function()
     ffunc, //click
     function() { //end
       gg.speed = SPEED_FAST;
-      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1); }, tut_successful_harvest);
+      self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1) && self.tiles_exist(TILE_TYPE_FARM,1); }, tut_successful_harvest);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
     },
     tfunc, //shouldsim

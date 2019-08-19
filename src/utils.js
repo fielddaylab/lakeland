@@ -760,6 +760,14 @@ var AudWrangler = function()
 
     return i;
   }
+  self.deregister_music = function()
+  {
+    self.music_src = 0;
+    self.music_data = 0;
+    self.music_buffer = 0;
+    self.music_track = 0;
+    self.music_shouldbeplaying = 0;
+  }
   self.play_music = function()
   {
     self.music_shouldbeplaying = 1;
