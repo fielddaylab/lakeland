@@ -434,7 +434,7 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 <a name="Tutorials"/>
 
 #### Tutorials 
-There are 26 begins and 26 ends. In the constants for the feature extractor, these tutorials are assigned indices alphabetically:
+There are 26 begins and 26 ends. In the constants for the feature extractor, these tutorials are assigned indices alphabetically. Tutorials may happen in any order, but the tutorials with descriptions tutorial 1-6 must be completed in order, and are considered "tutorial mode". Players cannot achieve a sustainable farm without completing all 6.
 
 | Index | Name | Description |
 | --- | --- | --- | 
@@ -445,7 +445,7 @@ There are 26 begins and 26 ends. In the constants for the feature extractor, the
 |4| build_a_house| tutorial 1 |
 |5| buy_fertilizer| tutorial 6 |
 |6| buy_food| tutorial 2|
-|7| buy_livestock //last tutorial that all players will encounter (we think)| |
+|7| buy_livestock | (not 100% necessary, but can be thought of as tutorial 7) |
 |8| death| |
 |9| end_life| |
 |10| extra_life| |
@@ -453,11 +453,11 @@ There are 26 begins and 26 ends. In the constants for the feature extractor, the
 |12| flooded_fertilizer| |
 |13| gross| |
 |14| gross_again| |
-|15| livestock| tutorial 7 |
+|15| livestock| |
 |16| long_travel| |
 |17| low_nutrients| |
 |18| mass_sadness| |
-|19| poop| tutorial 8 |
+|19| poop| |
 |20| rain| |
 |21| sell_food| tutorial 5 |
 |22| successful_harvest| |
