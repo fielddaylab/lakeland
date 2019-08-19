@@ -47,7 +47,7 @@ var MenuScene = function()
 
   self.ready = function()
   {
-    if(AUDIO && !gg.music_shouldbeplaying) gg.aud_wrangler.play_music();
+    if(AUDIO && !gg.aud_wrangler.music_shouldbeplaying) gg.aud_wrangler.play_music();
     gg.continue_ls = window.localStorage.getItem('save');
     self.continue_btn = new ButtonBox(0,0,0,0,function(evt){ if(!gg.continue_ls) return; next = 1; });
     self.begin_btn    = new ButtonBox(0,0,0,0,function(){ gg.continue_ls = 0; next = 1; });
@@ -139,6 +139,8 @@ var MenuScene = function()
   self.cleanup = function()
   {
     if(self.clicker) self.clicker.detach(); self.clicker = null;
+    if(AUDIO && gg.aud_wrangler.music_shouldbeplaying) gg.aud_wrangler.stop_music();
+    gg.aud_wrangler.deregister_music();
   };
 };
 

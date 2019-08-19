@@ -238,6 +238,9 @@ var GamePlayScene = function()
     if(gg.dragger) gg.dragger.detach(); gg.dragger = null;
     if(gg.keyer)   gg.keyer.detach();   gg.keyer   = null;
     self.readied = 0;
+    if(AUDIO && gg.aud_wrangler.music_shouldbeplaying) gg.aud_wrangler.stop_music();
+    gg.aud_wrangler.deregister_music();
+    music_aud = gg.aud_wrangler.register_music("assets/audio/menu_music.mp3");
   };
 
 };
