@@ -88,7 +88,7 @@ Versions:
 | curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type.  |
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
-| client_time | now | current client time  |
+| timestamp | now | current client time  |
 | num_food_produced | num_food_produced | total number of food produced (not bought) since the start of the game |
 | num_poop_produced | num_poop_produced | total number of poop produced (not bought) since the start of the game |
 | num_milk_produced | num_milk_produced | total number of milk produced (not bought) since the start of the game |
