@@ -13,6 +13,7 @@ Versions:
 4. Remove gzipping.
 5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise.
 6. Add num milk/food/poop produced into the gamestate log
+7. Change num milk/food/poop produced from "since beginning of game" to "since last gamestate log"
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -89,9 +90,9 @@ Versions:
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
 | timestamp | now | current client time  |
-| num_food_produced | num_food_produced | total number of food produced (not bought) since the start of the game |
-| num_poop_produced | num_poop_produced | total number of poop produced (not bought) since the start of the game |
-| num_milk_produced | num_milk_produced | total number of milk produced (not bought) since the start of the game |
+| num_food_produced | num_food_produced_since_last_gamestate_log | total number of food produced (not bought) since the last gamestate log |
+| num_poop_produced | num_poop_produced_since_last_gamestate_log | total number of poop produced (not bought) since the last gamestate log |
+| num_milk_produced | num_milk_produced_since_last_gamestate_log | total number of milk produced (not bought) since the last gamestate log |
 
 <a name="startgame"/>
 
