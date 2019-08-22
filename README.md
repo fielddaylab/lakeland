@@ -14,6 +14,7 @@ Versions:
 5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise.
 6. Add num milk/food/poop produced into the gamestate log
 7. Change num milk/food/poop produced from "since beginning of game" to "since last gamestate log"
+8. Add parameters for continue, language, audio, and fullscreen in the gamestart. Also now logs endgame when a player dies in addition to when a player exits the page.
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -101,6 +102,10 @@ Versions:
 | --- | --- | --- |
 | tile_states | tile_states | 2500 element array of tile state indices.  |
 | tile_nutritions | tile_nutritions |   2500 element array of tile nutritions on a scale 0-255. | 
+| continue | gg.continue_ls ? 1: 0 | 1/0 boolean to indicate whether the player continued or not |
+| language | g.scenes[1].language_toggle.on ? 'espanol':'english' | language of the game  |
+| audio | AUDIO ? 1: 0 | 1/0 boolean to indicate whether audio was toggled on or not |
+| fullscreen | g.scenes[1].fullscreen_toggle.on ? 1:  | 1/0 boolean to indicate whether the game was toggled into fullscreen whether or not |
 
 <a name="checkpoint"/>
 
@@ -297,7 +302,7 @@ Note: a blurb is an utterance from an advisor.
 | --- | --- | --- |
 | client_time | now | current client time  |
 | camera_history | flush_camera_history(now) | List of [camera moves](#CameraMove) since last history log. |
-| emote_history | flush_emote_history(now) | List of 10 element sublists [[farmbit](#DataShort), [emote index](#Emotes), time before client_time (negative number)] emotes since last history log.  | 
+| emote_history | flush_emote_history(now) | List of 11 element sublists [[farmbit](#DataShort), [emote index](#Emotes), time before client_time (negative number)] emotes since last history log.  | 
 
 <a name="endgame"/>
 

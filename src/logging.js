@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",7);
+  self.mySlog = new slog("LAKELAND",8);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -311,18 +311,24 @@ window.Logger = function(init){
     tile_nutritions = self.nutrition_array();
     log_data = {
       tile_states: tile_states,
-      tile_nutritions: tile_nutritions
+      tile_nutritions: tile_nutritions,
+      continue: gg.continue_ls ? 1: 0,
+      language: g.scenes[1].language_toggle.on ? 'espanol':'english',
+      audio: AUDIO ? 1: 0,
+      fullscreen: g.scenes[1].fullscreen_toggle.on ? 1: 0
+      
     };
     window.onbeforeunload = function(){
       my_logger.endgame();
     }
     self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
+    if(log_data.continue){}
   }
 
   self.gtag = function(arguments){ // checkpoint
     if(arguments[0] === 'event'){
-     var now = Date.now();
-     var log_data = arguments[2];
+      var now = Date.now();
+      var log_data = arguments[2];
       log_data.event_type = arguments[1];
       log_data.blurb_history = self.flush_blurb_history(now);
       log_data.client_time = now;

@@ -4561,6 +4561,7 @@ var advisors = function()
              if(self.trigger_threads[i] == tut_another_death) {           self.triggers.splice(i,1); self.trigger_threads.splice(i,1); i--; }
         else if(self.trigger_threads[i] == tut_death) { self.a_death = 0; self.triggers.splice(i,1); self.trigger_threads.splice(i,1); i--; }
       }
+      my_logger.endgame()
     },
     tfunc, //shouldsim
 
