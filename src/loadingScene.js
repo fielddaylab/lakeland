@@ -289,30 +289,30 @@ var LoadingScene = function()
       if(ticks_since_loading_ready < 50)
       {
         ctx.globalAlpha = ticks_since_loading_ready/50;
-        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
       }
       else if(ticks_since_loading_ready < 200)
       {
-        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
       }
       else if(ticks_since_loading_ready < 250)
       {
         ctx.globalAlpha = 1-((ticks_since_loading_ready-200)/50);
-        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
       }
       else if(ticks_since_loading_ready < 300)
       {
         ctx.globalAlpha = (ticks_since_loading_ready-250)/50;
-        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
       }
       else if(ticks_since_loading_ready < 450)
       {
-        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
       }
       else if(ticks_since_loading_ready < 500)
       {
         ctx.globalAlpha = 1-((ticks_since_loading_ready-450)/50);
-        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,100,ctx);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
       }
       else if(ticks_since_loading_ready < 550)
       {
