@@ -394,12 +394,14 @@ window.Logger = function(init){
   }
 
   self.tile_use_select = function(t){
-   var log_data = self.tile_data(t);
+    var log_data = self.tile_data(t);
     self.send_log(log_data, self.LOG_CATEGORY_TILEUSESELECT);
   }
   self.item_use_select = function(it){
-    var log_data = self.item_data_short(it);
-    log_data.prev_mark =   self.prev_item_use;
+    var log_data = {
+      item: self.item_data_short(it),
+      prev_mark:  self.prev_item_use
+    }
     self.prev_item_use = 0;
     self.send_log(log_data, self.LOG_CATEGORY_ITEMUSESELECT)
   }
