@@ -351,17 +351,18 @@ Note: a blurb is an utterance from an advisor.
 #### Emotes 
 | Index | Name | Description |
 | --- | --- | --- | 
-|0| fullness_motivated_txt | "i'm hungry" |
-|1| fullness_desperate_txt | "i need food" |
-|2| energy_desperate_txt | "i need a nap!" |
-|3| joy_motivated_txt | "i want to play in the water" |
-|4| joy_desperate_txt | "i'm so sad" |
-|5| puke_txt | "🤮" |
-|6| yum_txt | "😋" |
-|7| tired_txt | "😴" |
-|8| happy_txt | "🙂" |
-|9| swim_txt | "swim" |
-|10| sale_txt | "sale" |
+|0| null | |
+|1| fullness_motivated_txt | "i'm hungry" |
+|2| fullness_desperate_txt | "i need food" |
+|3| energy_desperate_txt | "i need a nap!" |
+|4| joy_motivated_txt | "i want to play in the water" |
+|5| joy_desperate_txt | "i'm so sad" |
+|6| puke_txt | "🤮" |
+|7| yum_txt | "😋" |
+|8| tired_txt | "😴" |
+|9| happy_txt | "🙂" |
+|10| swim_txt | "swim" |
+|11| sale_txt | "sale" |
 
 <a name="Buys"/>
 
