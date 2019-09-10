@@ -1,6 +1,13 @@
 lang = "en";
 loc[lang] = [];
 
+loc[lang]["menu_CONTINUE"]   = "CONTINUE";
+loc[lang]["menu_NEWGAME"]    = "NEW GAME";
+loc[lang]["menu_CREDITS"]    = "CREDITS";
+loc[lang]["menu_MUSICFX"]    = "MUSIC FX";
+loc[lang]["menu_FULLSCREEN"] = "FULLSCREEN";
+loc[lang]["menu_LANGUAGE"]   = "LANGUAGE";
+
 loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "You set out to form a new town called \"Lakeland.\"";
 loc[lang]["intro_Yourpeoplelovetoplayinthewater."] = "Your people love to play in the water.";
 loc[lang]["intro_Growyourtownwithoutdestroyingtheirlakes."] = "Grow your town without destroying their lakes.";

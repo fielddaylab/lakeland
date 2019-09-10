@@ -1,5 +1,11 @@
 lang = "es";
 loc[lang] = [];
+loc[lang]["menu_CONTINUE"]   = "CONTINUAR";
+loc[lang]["menu_NEWGAME"]    = "JUEGO NUEVO";
+loc[lang]["menu_CREDITS"]    = "CREDITOS";
+loc[lang]["menu_MUSICFX"]    = "MÚSICA FX";
+loc[lang]["menu_FULLSCREEN"] = "PANTALLA COMPLETA";
+loc[lang]["menu_LANGUAGE"]   = "IDIOMA";
 loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "Te propusiste formar un nuevo pueblo llamado \"Lakeland\".";
 loc[lang]["intro_Yourpeoplelovetoplayinthewater."] = "A tu gente les encanta jugar en los lagos.";
 loc[lang]["intro_Growyourtownwithoutdestroyingtheirlakes."] = "Crece tu pueblo sin destruir los lagos.";
