@@ -23,14 +23,14 @@ var nutrition_color = "#FF599D";
 var cloud_color = "#155D67";
 var sky_color = "#BBEDEA";
 
-var board_w = 50;
-var board_h = 50;
+var board_w = 30;
+var board_h = 30;
 
-var n_lakes = 4;
-var lake_size_min = floor(50*board_w*board_h/2500);
-var lake_size_max = floor(100*board_w*board_h/2500);
+var n_lakes = 2;
+var lake_size_min = floor(80*board_w*board_h/2500);
+var lake_size_max = floor(120*board_w*board_h/2500);
 
-var n_rock_deposits = 8;
+var n_rock_deposits = 4;
 var rock_size_min = floor(20*board_w*board_h/2500);
 var rock_size_max = floor(50*board_w*board_h/2500);
 

@@ -1959,11 +1959,72 @@ var board = function()
 
   self.init = function()
   {
+    var atomic_push = function(n,ar)
+    {
+      var found = false;
+      for(var j = 0; j < ar.length; j++) if(ar[j] == n) found = true;
+      if(!found) ar.push(n);
+    }
+
+    var slow_flood_fill = function(fill)
+    {
+      var type;
+      if(fill.length) type = fill[0].type;
+      for(var i = 0; i < fill.length; i++)
+      {
+        var t = fill[i];
+        var n;
+        n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
+        n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
+      }
+      return fill;
+    }
+
+    var slow_flood_border = function(fill)
+    {
+      var border = [];
+      var type;
+      if(fill.length) type = fill[0].type;
+      for(var i = 0; i < fill.length; i++)
+      {
+        var t = fill[i];
+        var n;
+        n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
+      }
+      return border;
+    }
+
+    var grow_fill = function(t,type,amt,constraint,invert_constraint)
+    {
+      var border = slow_flood_border(slow_flood_fill([t]));
+      for(var j = 0; j < amt && border.length; j++)
+      {
+        var b_i = randIntBelow(border.length);
+        var t = border[b_i];
+        t.type = type;
+        border.splice(b_i,1);
+
+        var n;
+        n = self.safe_tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+        n = self.safe_tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
+      }
+      return border;
+    }
+
     var valid = 0;
     while(!valid)
     {
       valid = 1;
+      console.log("alloc...");
       for(var ty = 0; ty < self.th; ty++)
+      {
         for(var tx = 0; tx < self.tw; tx++)
         {
           var i = self.tiles_i(tx,ty);
@@ -1982,12 +2043,14 @@ var board = function()
           t.nutrition = floor(t.nutrition*nutrition_max);
           self.tiles[i] = t;
         }
+      }
 
       var to;
       var from;
       var dx;
       var dy;
       var d;
+      console.log("direction...");
       for(var i = 0; i < self.tiles.length; i++)
       {
         to = self.tiles[i];
@@ -2001,7 +2064,7 @@ var board = function()
           if(d == 0) to.directions[j] = DIRECTION_NULL;
           else
           {
-            var t = atan2(dy/d,dx/d)
+            var t = atan2(dy/d,dx/d);
             if(t < 0) t+=twopi;
                  if(t < twopi/16*1 ) to.directions[j] = DIRECTION_R;
             else if(t < twopi/16*3 ) to.directions[j] = DIRECTION_UR;
@@ -2016,65 +2079,7 @@ var board = function()
         }
       }
 
-      var atomic_push = function(n,ar)
-      {
-        var found = false;
-        for(var j = 0; j < ar.length; j++) if(ar[j] == n) found = true;
-        if(!found) ar.push(n);
-      }
-
-      var slow_flood_fill = function(fill)
-      {
-        var type;
-        if(fill.length) type = fill[0].type;
-        for(var i = 0; i < fill.length; i++)
-        {
-          var t = fill[i];
-          var n;
-          n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type == type) atomic_push(n,fill);
-          n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type == type) atomic_push(n,fill);
-          n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type == type) atomic_push(n,fill);
-          n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type == type) atomic_push(n,fill);
-        }
-        return fill;
-      }
-
-      var slow_flood_border = function(fill)
-      {
-        var border = [];
-        var type;
-        if(fill.length) type = fill[0].type;
-        for(var i = 0; i < fill.length; i++)
-        {
-          var t = fill[i];
-          var n;
-          n = self.safe_tiles_t(t.tx-1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-          n = self.safe_tiles_t(t.tx+1,t.ty  ); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-          n = self.safe_tiles_t(t.tx  ,t.ty-1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-          n = self.safe_tiles_t(t.tx  ,t.ty+1); if(n.type != type && n.type != TILE_TYPE_NULL) atomic_push(n,border);
-        }
-        return border;
-      }
-
-      var grow_fill = function(t,type,amt,constraint,invert_constraint)
-      {
-        var border = slow_flood_border(slow_flood_fill([t]));
-        for(var j = 0; j < amt && border.length; j++)
-        {
-          var b_i = randIntBelow(border.length);
-          var t = border[b_i];
-          t.type = type;
-          border.splice(b_i,1);
-
-          var n;
-          n = self.safe_tiles_t(t.tx-1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-          n = self.safe_tiles_t(t.tx+1,t.ty  ); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-          n = self.safe_tiles_t(t.tx  ,t.ty-1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-          n = self.safe_tiles_t(t.tx  ,t.ty+1); if((!invert_constraint && n.type == constraint) || (invert_constraint && n.type != constraint && n.type != TILE_TYPE_NULL)) atomic_push(n,border);
-        }
-        return border;
-      }
-
+      console.log("fill...");
       //fill rocks
       for(var i = 0; i < n_rock_deposits; i++)
       {
@@ -2116,6 +2121,7 @@ var board = function()
         var lake_border = grow_fill(t,TILE_TYPE_FOREST,lake_size,TILE_TYPE_LAND,0);
       }
 
+      console.log("check...");
       var nlake = 0;
       var nland = 0;
       var ntiles = 0;
