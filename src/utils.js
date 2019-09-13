@@ -683,8 +683,13 @@ var AudWrangler = function()
     {
       if(self.aud_data[i] && !self.aud_buffer[i])
       {
-        (function(i){self.ctx.decodeAudioData(self.aud_data[i], function(b){ self.aud_buffer[i] = b; },
-        function(e){ console.log("Error with decoding audio data" + e.err); });
+        (function(i)
+        {
+          self.ctx.decodeAudioData(
+            self.aud_data[i],
+            function(b) { self.aud_buffer[i] = b; },
+            function(e) { if(!e) e = {err:"No error meta found"}; console.log("Error with decoding audio data " + e.err); }
+            );
         })(i);
         self.aud_data[i] = 0;
       }
@@ -692,8 +697,11 @@ var AudWrangler = function()
     }
     if(self.music_data && !self.music_buffer)
     {
-      self.ctx.decodeAudioData(self.music_data, function(b){ self.music_buffer = b; if(self.music_shouldbeplaying) self.play_music(); },
-      function(e){ console.log("Error with decoding music data" + e.err); });
+      self.ctx.decodeAudioData(
+        self.music_data,
+        function(b){ self.music_buffer = b; if(self.music_shouldbeplaying) self.play_music(); },
+        function(e){ if(!e) e = {err:"No error meta found"}; console.log("Error with decoding music data " + e.err); }
+      );
       self.music_data = 0;
       if(!self.music_buffer) all_ready = 0;
     }
@@ -717,8 +725,11 @@ var AudWrangler = function()
       self.aud_data[i] = xhr.response;
       if(self.ctx)
       {
-        self.ctx.decodeAudioData(self.aud_data[i], function(b){ self.aud_buffer[i] = b; self.auds_loaded++; },
-        function(e){ console.log("Error with decoding audio data" + e.err); });
+        self.ctx.decodeAudioData(
+          self.aud_data[i],
+          function(b){ self.aud_buffer[i] = b; self.auds_loaded++; },
+          function(e){ if(!e) e = {err:"No error meta found"}; console.log("Error with decoding audio data " + e.err); }
+        );
         self.aud_data[i] = 0;
       }
     };
@@ -751,8 +762,11 @@ var AudWrangler = function()
       self.music_data = xhr.response;
       if(self.ctx)
       {
-        self.ctx.decodeAudioData(self.music_data, function(b){ self.music_buffer = b; if(self.music_shouldbeplaying) self.play_music(); },
-        function(e){ console.log("Error with decoding music data" + e.err); });
+        self.ctx.decodeAudioData(
+          self.music_data,
+          function(b){ self.music_buffer = b; if(self.music_shouldbeplaying) self.play_music(); },
+          function(e){ if(!e) e = {err:"No error meta found"}; console.log("Error with decoding music data " + e.err); }
+        );
         self.music_data = 0;
       }
     };
