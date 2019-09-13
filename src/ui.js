@@ -510,6 +510,7 @@ var shop = function()
         var s = self.tab.w/3;
         gg.ctx.drawImage(icon_money_img,self.tab.x+(self.tab.w+self.pad-s)/2,self.tab.y+self.pad/2,s,s);
         var fs = self.money_display.h*0.3;
+        if(lang != "en") fs = self.money_display.h*0.24;
         gg.ctx.font = fs+"px "+gg.font;
         gg.ctx.fillText(loc[lang]["misc_Buy"],self.tab.x+(self.tab.w+self.pad)/2,self.tab.y+self.tab.h*5/6);
       }
@@ -1267,7 +1268,8 @@ var inspector = function()
         var h = u.autosell_h;
         var img_s = h/2;
         gg.ctx.lineWidth = 1;
-        gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        if(lang == "en") gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        else             gg.ctx.font = (self.font_size*0.6)+"px "+gg.font;
         gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
@@ -1333,7 +1335,8 @@ var inspector = function()
         var h = u.autosell_h;
         var img_s = h/2;
         gg.ctx.lineWidth = 1;
-        gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        if(lang == "en") gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        else             gg.ctx.font = (self.font_size*0.6)+"px "+gg.font;
         gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
@@ -1485,7 +1488,8 @@ var inspector = function()
       var h = u.switch_h;
       var img_s = h/2;
       gg.ctx.lineWidth = 1;
-      gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+      if(lang == "en") gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+      else             gg.ctx.font = (self.font_size*0.6)+"px "+gg.font;
       gg.ctx.textAlign = "center";
 
       y = u.switch_y;

@@ -218,11 +218,11 @@ var LoadingScene = function()
     gg.aud_wrangler = new AudWrangler();
     //must declare variables globally. yikes.
     cow_aud        = gg.aud_wrangler.register("assets/audio/cow.mp3");
-    dairy_aud      = gg.aud_wrangler.register("assets/audio/dairy.wav");
-    death_aud      = gg.aud_wrangler.register("assets/audio/death.wav");
-    fertilizer_aud = gg.aud_wrangler.register("assets/audio/fertilizer.wav");
+    dairy_aud      = gg.aud_wrangler.register("assets/audio/dairy.mp3");
+    death_aud      = gg.aud_wrangler.register("assets/audio/death.mp3");
+    fertilizer_aud = gg.aud_wrangler.register("assets/audio/fertilizer.mp3");
     house_aud      = gg.aud_wrangler.register("assets/audio/house.mp3");
-    lake_aud       = gg.aud_wrangler.register("assets/audio/lake.wav");
+    lake_aud       = gg.aud_wrangler.register("assets/audio/lake.mp3");
     money_aud      = gg.aud_wrangler.register("assets/audio/money.mp3");
     road_aud       = gg.aud_wrangler.register("assets/audio/road.mp3");
     sign_aud       = gg.aud_wrangler.register("assets/audio/sign.mp3");
