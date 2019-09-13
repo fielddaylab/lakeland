@@ -2332,9 +2332,11 @@ var advisors = function()
     if(type == TEXT_TYPE_DISMISS)
     {
       ty += self.pad+self.font_size*txt_fmt.length;
-      gg.ctx.fillStyle = gray;
-      gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
-      //gg.ctx.fillText("(click to continue)", x+self.pad, ty);
+      gg.ctx.fillStyle = self.fgc;
+      if(lang == "en") fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9, self.pad, gg.ctx);
+      else             fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/2, w/9, self.pad, gg.ctx);
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty);
     }
 
     gg.ctx.globalAlpha = 1;
@@ -2754,7 +2756,12 @@ var advisors = function()
         gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
 
       ty += self.pad+self.font_size*txt_fmt.length;
-      gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
+
+      gg.ctx.fillStyle = self.fgc;
+      if(lang == "en") fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9, self.pad, gg.ctx);
+      else             fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/2, w/9, self.pad, gg.ctx);
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty);
 
       gg.ctx.fillStyle = white;
       gg.ctx.fillRect(x,ty+self.pad,w,100*gg.stage.s_mod);
