@@ -87,6 +87,7 @@ loc[lang]["buydesc_Sign"] = "Gross water makes people sad! Put up signs to keep 
 loc[lang]["buydesc_Roadx10"] = "Build roads so that your people can deliver goods faster.";
 
 loc[lang]["misc_next"] = "next";
+loc[lang]["misc_SkipTutorial"] = "Skip Tutorial";
 loc[lang]["misc_Buy"] = "Buy";
 loc[lang]["misc_Cost:"] = "Cost: ";
 loc[lang]["misc_Buildable:"] = "Buildable:";

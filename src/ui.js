@@ -1989,7 +1989,7 @@ var advisors = function()
     self.title_font_size = self.font_size*1.5;
     self.title_font = self.title_font_size+"px "+gg.font;
 
-    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-25*gg.stage.s_mod, 100*gg.stage.s_mod, 25*gg.stage.s_mod);
+    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-25*gg.stage.s_mod, 110*gg.stage.s_mod, 25*gg.stage.s_mod);
   }
   self.skip_btn = new ButtonBox(0,0,0,0,function(){ self.skip_tutorial(); });
   self.skip_btn.active = 0;
@@ -2336,7 +2336,7 @@ var advisors = function()
       if(lang == "en") fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9, self.pad, gg.ctx);
       else             fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/2, w/9, self.pad, gg.ctx);
       gg.ctx.fillStyle = white;
-      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty);
+      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty-self.pad/4);
     }
 
     gg.ctx.globalAlpha = 1;
@@ -2761,7 +2761,7 @@ var advisors = function()
       if(lang == "en") fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9, self.pad, gg.ctx);
       else             fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/2, w/9, self.pad, gg.ctx);
       gg.ctx.fillStyle = white;
-      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty);
+      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty-self.pad/4);
 
       gg.ctx.fillStyle = white;
       gg.ctx.fillRect(x,ty+self.pad,w,100*gg.stage.s_mod);
@@ -2779,8 +2779,11 @@ var advisors = function()
     if(self.skip_btn.active && self.thread)
     {
       gg.ctx.textAlign = "left";
-      gg.ctx.fillStyle = black;
-      gg.ctx.drawImage(button_skip_tutorial_img,self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
+      //gg.ctx.drawImage(button_skip_tutorial_img,);
+      gg.ctx.fillStyle = self.fgc;
+      fillRRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h, self.pad, gg.ctx);
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText(loc[lang]["misc_SkipTutorial"], self.skip_btn.x+self.pad/2, self.skip_btn.y+self.skip_btn.h-self.pad/2);
     }
   }
 

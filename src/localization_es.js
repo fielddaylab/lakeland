@@ -76,6 +76,7 @@ loc[lang]["buydesc_SkimLake"] = "Limpia el lago para deshacerte de las algas. So
 loc[lang]["buydesc_Sign"] = "¡La gente se pone triste cuando el agua esta sucia! Pon letreros para alejar a la gente de las algas.";
 loc[lang]["buydesc_Roadx10"] = "Construye caminos para que tu gente pueda repartir productors para rápidamente.";
 loc[lang]["misc_next"] = "próximo";
+loc[lang]["misc_SkipTutorial"] = "Saltar Tutorial";
 loc[lang]["misc_Buy"] = "Compra";
 loc[lang]["misc_Cost:"] = "Costo";
 loc[lang]["misc_Buildable:"] = "Se puede construir aquí.";
