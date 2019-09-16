@@ -2584,7 +2584,11 @@ var board = function()
   {
     if(gg.ignore_single_board) self.drag_ignored = 1;
     self.last_evt = evt;
-    if(self.drag_t > 10 || lensqr(self.drag_x-evt.doX,self.drag_y-evt.doY) > 10)
+    if(platform == PLATFORM_MOBILE && gg.shop.selected_buy)
+    {
+      self.hover(evt);
+    }
+    else if(self.drag_t > 10 || lensqr(self.drag_x-evt.doX,self.drag_y-evt.doY) > 10)
     {
       gg.cam.wx = self.cam_sx + (self.drag_x-evt.doX)/gg.canvas.width*gg.cam.ww;
       gg.cam.wy = self.cam_sy - (self.drag_y-evt.doY)/gg.canvas.height*gg.cam.wh;
@@ -2597,7 +2601,7 @@ var board = function()
     if(gg.ignore_single_board) self.drag_ignored = 1;
     if(self.last_evt && self.last_evt.doX) { evt.doX = self.last_evt.doX; evt.doY = self.last_evt.doY; }
 
-    if((self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100)) && !gg.advisors.owns_ui && !self.drag_ignored) self.click(evt);
+    if(((platform == PLATFORM_MOBILE && gg.shop.selected_buy) || (self.drag_t < 10 || (self.drag_t < 20 && lensqr(self.drag_x-self.last_evt.doX,self.drag_y-self.last_evt.doY) < 100))) && !gg.advisors.owns_ui && !self.drag_ignored) self.click(evt);
     self.drag_ignored = 0;
     if(platform == PLATFORM_MOBILE) self.unhover(evt);
   }
