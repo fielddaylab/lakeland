@@ -247,7 +247,7 @@ var shop = function()
 
     setBB(self.money_btn, btn_x,btn_y,btn_s*2,btn_s/2);
     setBB(self.money_display, btn_x, btn_y, btn_s*2+self.pad, btn_s/2);
-    setBB(self.tab, self.x+self.w-self.pad,self.y,btn_s/2+self.pad,btn_s/2);
+    setBB(self.tab, self.x+self.w-self.pad,self.y,btn_s/2+self.pad*2,btn_s/2);
 
     btn_x = self.pad;
     btn_y += btn_s/2+self.pad;
@@ -1789,6 +1789,8 @@ var achievements = function()
   var self = this;
   self.open = 0;
   self.open_t = 0;
+  var rows = 4;
+  var cols = 4;
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
@@ -1808,9 +1810,14 @@ var achievements = function()
 
   self.triggers = [];
   self.nullt = {name:"null",local:0,global:0,trigger:ffunc};
+  var tfont = gg.font_size+"px "+gg.font;
+  var tw = ((self.w-self.pad)/cols)-self.pad;
+  var dw = 150*gg.stage.s_mod;
   self.pushtrigger = function(name,description,offimg,onimg,fn,dep)
   {
-    var t = {name:name,description:description,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
+    var t = {name:name,description:description,
+             fname:textToLines(tfont,tw,name,gg.ctx),fdescription:textToLines(tfont,dw,description,gg.ctx),
+             offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
     self.triggers.push(t);
     return t;
   }
@@ -1819,9 +1826,9 @@ var achievements = function()
   self.notif_ts = [];
 
   var t;
-  t = self.pushtrigger(loc[lang]["misc_Exist"], loc[lang]["misc_Getavisitor."],    achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
+  t = self.pushtrigger(loc[lang]["misc_Exist"], loc[lang]["misc_Getavisitor."],     achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
   t = self.pushtrigger(loc[lang]["misc_Group"], loc[lang]["misc_3workers"],         achievement_pop_imgs[1], achievement_pop_imgs[1], function(){ return gg.farmbits.length >= 3;  },t);
-  t = self.pushtrigger(loc[lang]["misc_Town"],  loc[lang]["misc_Asmallcommunity"], achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
+  t = self.pushtrigger(loc[lang]["misc_Town"],  loc[lang]["misc_Asmallcommunity"],  achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
   t = self.pushtrigger(loc[lang]["misc_City"],  loc[lang]["misc_10townmembers"],    achievement_pop_imgs[3], achievement_pop_imgs[3], function(){ return gg.farmbits.length >= 10; },t);
 
   t = self.pushtrigger(loc[lang]["misc_Farmer"],   loc[lang]["misc_Ownafarm!"],      achievement_farm_imgs[0], achievement_farm_imgs[0], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
@@ -1908,8 +1915,6 @@ var achievements = function()
       var fs = gg.font_size;
       gg.ctx.font = fs+"px "+gg.font;
       gg.ctx.fillText(loc[lang]["misc_Achievements"],self.x+self.w/2,self.y);
-      var rows = 4;
-      var cols = 4;
       var s = ((self.w-self.pad)/cols)-self.pad;
       var x = self.x+self.pad;
       var y = self.y+self.pad;
@@ -1932,7 +1937,8 @@ var achievements = function()
             gg.ctx.drawImage(button_achievement_img,x+s/2+s/8,y+s/2+s/8,s/4,s/4);
           }
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
-          gg.ctx.fillText(t.name,x+s/2,y+s);
+          for(var k = 0; k < t.fname.length; k++)
+            gg.ctx.fillText(t.fname[k],x+s/2,y+s+fs*k);
           x += s+self.pad;
           gg.ctx.globalAlpha = 1;
         }
@@ -1962,8 +1968,11 @@ var achievements = function()
       gg.ctx.fillText(loc[lang]["misc_Achievement"],gg.canvas.width/2,y+h*1/3+gg.font_size/2);
       gg.ctx.fillText(loc[lang]["misc_unlocked!"],  gg.canvas.width/2,y+h*1/3+gg.font_size+gg.font_size/2);
       gg.ctx.fillStyle = "#18315B";
-      gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
-      gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
+      //for(var k = 0; k < self.notifs[i].fname.length; k++)
+        //gg.ctx.fillText(self.notifs[i].fname[k],       gg.canvas.width/2,y+h*4/5+gg.font_size*k);
+      gg.ctx.fillText(self.notifs[i].name, gg.canvas.width/2,y+h*4/5);
+      for(var k = 0; k < self.notifs[i].fdescription.length; k++)
+        gg.ctx.fillText(self.notifs[i].fdescription[k],gg.canvas.width/2,y+h*4/5+gg.font_size+gg.font_size*k);
       var imgs = w/2;
       gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
       gg.ctx.drawImage(button_achievement_img,gg.canvas.width/2+imgs/8,y+imgs/6,imgs/4,imgs/4);
