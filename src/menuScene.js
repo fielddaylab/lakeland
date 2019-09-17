@@ -23,9 +23,9 @@ var MenuScene = function()
     h = 30*gg.stage.s_mod;
     x = 60*gg.stage.s_mod;
     y = gg.canvas.height-100*gg.stage.s_mod;
+    if(self.language_toggle)  { self.language_toggle.x = x;   self.language_toggle.y = y;   self.language_toggle.w = w;   self.language_toggle.h = h;   } x += 250*gg.stage.s_mod;
     if(self.audio_toggle)     { self.audio_toggle.x = x;      self.audio_toggle.y = y;      self.audio_toggle.w = w;      self.audio_toggle.h = h;      } x += 250*gg.stage.s_mod;
     if(self.fullscreen_toggle){ self.fullscreen_toggle.x = x; self.fullscreen_toggle.y = y; self.fullscreen_toggle.w = w; self.fullscreen_toggle.h = h; } x += 250*gg.stage.s_mod;
-    if(self.language_toggle)  { self.language_toggle.x = x;   self.language_toggle.y = y;   self.language_toggle.w = w;   self.language_toggle.h = h;   } x += 250*gg.stage.s_mod;
   }
 
   gg.continue_ls = 0;
@@ -97,10 +97,10 @@ var MenuScene = function()
     ctx.font = fs+"px "+gg.font;
     ctx.fillStyle = white;
     if(!gg.continue_ls) ctx.fillStyle = "rgba(255,255,255,0.1)";
-    ctx.fillText("CONTINUE",self.continue_btn.x+15,self.continue_btn.y+self.continue_btn.h-10);
+    ctx.fillText(loc[lang]["menu_CONTINUE"],self.continue_btn.x+15,self.continue_btn.y+self.continue_btn.h-10);
     if(self.continue_btn.hovering) ctx.fillRect(self.continue_btn.x+10,self.continue_btn.y+self.continue_btn.h,self.continue_btn.w-110,3);
     ctx.fillStyle = white;
-    ctx.fillText("NEW GAME",self.begin_btn.x+15,self.begin_btn.y+self.begin_btn.h-10);
+    ctx.fillText(loc[lang]["menu_NEWGAME"],self.begin_btn.x+15,self.begin_btn.y+self.begin_btn.h-10);
     if(self.begin_btn.hovering) ctx.fillRect(self.begin_btn.x+10,self.begin_btn.y+self.begin_btn.h,self.begin_btn.w-105,3);
     /*
     code_txt.draw(canv);
@@ -108,7 +108,7 @@ var MenuScene = function()
     if(!code_valid) ctx.globalAlpha = 0.1;
     ctx.drawImage(go_img,code_btn.x,code_btn.y,code_btn.w,code_btn.h);
     */
-    ctx.fillText("CREDITS",self.credits_btn.x+15,self.credits_btn.y+self.credits_btn.h-10);
+    ctx.fillText(loc[lang]["menu_CREDITS"],self.credits_btn.x+15,self.credits_btn.y+self.credits_btn.h-10);
     if(self.credits_btn.hovering) ctx.fillRect(self.credits_btn.x+10,self.credits_btn.y+self.credits_btn.h,self.credits_btn.w-105,3);
     ctx.globalAlpha = 1;
 
@@ -123,9 +123,9 @@ var MenuScene = function()
     else                          ctx.fillText("EN",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
     fs = gg.font_size*2;
     ctx.font = fs+"px "+gg.font;
-    ctx.fillText("MUSIC FX",self.audio_toggle.x+self.audio_toggle.w+5*gg.stage.s_mod,self.audio_toggle.y+self.audio_toggle.h-5*gg.stage.s_mod);
-    ctx.fillText("FULLSCREEN",self.fullscreen_toggle.x+self.fullscreen_toggle.w+5*gg.stage.s_mod,self.fullscreen_toggle.y+self.fullscreen_toggle.h-5*gg.stage.s_mod);
-    ctx.fillText(" LANGUAGE",self.language_toggle.x+self.language_toggle.w+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-5*gg.stage.s_mod);
+    ctx.fillText(loc[lang]["menu_MUSICFX"],self.audio_toggle.x+self.audio_toggle.w+5*gg.stage.s_mod,self.audio_toggle.y+self.audio_toggle.h-5*gg.stage.s_mod);
+    ctx.fillText(loc[lang]["menu_FULLSCREEN"],self.fullscreen_toggle.x+self.fullscreen_toggle.w+5*gg.stage.s_mod,self.fullscreen_toggle.y+self.fullscreen_toggle.h-5*gg.stage.s_mod);
+    ctx.fillText(loc[lang]["menu_LANGUAGE"],self.language_toggle.x+self.language_toggle.w+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-5*gg.stage.s_mod);
 
     if(next)
     {

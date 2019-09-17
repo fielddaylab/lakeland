@@ -233,7 +233,11 @@ var shop = function()
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
-    self.w = gg.b.cbounds_x-self.pad;
+    //self.w = gg.b.cbounds_x-self.pad; //calculated assuming 1024x660
+    //console.log("shop "+self.w); //shop 192.62500000000023
+    //if(gg.canvas.width > gg.canvas.height) self.w = floor(192/660*gg.canvas.height);
+    //else                                   self.w = floor(192/1024*gg.canvas.width);
+    self.w = floor(192/660*gg.canvas.height)
     self.x = -self.w;
     var btn_s = (self.w-self.pad*3)/2;
     self.h = self.pad+btn_s/2+self.pad+(btn_s+self.pad)*ceil(self.btns.length/2);
@@ -247,7 +251,7 @@ var shop = function()
 
     setBB(self.money_btn, btn_x,btn_y,btn_s*2,btn_s/2);
     setBB(self.money_display, btn_x, btn_y, btn_s*2+self.pad, btn_s/2);
-    setBB(self.tab, self.x+self.w-self.pad,self.y,btn_s/2+self.pad,btn_s/2);
+    setBB(self.tab, self.x+self.w-self.pad,self.y,btn_s/2+self.pad*2,btn_s/2);
 
     btn_x = self.pad;
     btn_y += btn_s/2+self.pad;
@@ -510,6 +514,7 @@ var shop = function()
         var s = self.tab.w/3;
         gg.ctx.drawImage(icon_money_img,self.tab.x+(self.tab.w+self.pad-s)/2,self.tab.y+self.pad/2,s,s);
         var fs = self.money_display.h*0.3;
+        if(lang != "en") fs = self.money_display.h*0.24;
         gg.ctx.font = fs+"px "+gg.font;
         gg.ctx.fillText(loc[lang]["misc_Buy"],self.tab.x+(self.tab.w+self.pad)/2,self.tab.y+self.tab.h*5/6);
       }
@@ -730,7 +735,11 @@ var inspector = function()
     self.pad = 10*gg.stage.s_mod;
     self.font_size = self.pad*1.5;
     self.title_font_size = self.pad*2;
-    self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2;
+    //self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2; //calculated assuming 1024x660
+    //console.log(self.x); //841.3750000000003
+    //if(gg.canvas.width > gg.canvas.height) self.x = floor(841/660*gg.canvas.height);
+    //else                                   self.x = floor(841/1024*gg.canvas.width);
+    self.x = gg.canvas.width-floor((1024-841)/660*gg.canvas.height)
     self.w = gg.canvas.width-self.x;
     self.y = self.pad+gg.stage.s_mod*50;
     self.h = gg.canvas.height-self.y-self.pad;
@@ -1267,7 +1276,8 @@ var inspector = function()
         var h = u.autosell_h;
         var img_s = h/2;
         gg.ctx.lineWidth = 1;
-        gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        if(lang == "en") gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        else             gg.ctx.font = (self.font_size*0.6)+"px "+gg.font;
         gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
@@ -1333,7 +1343,8 @@ var inspector = function()
         var h = u.autosell_h;
         var img_s = h/2;
         gg.ctx.lineWidth = 1;
-        gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        if(lang == "en") gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+        else             gg.ctx.font = (self.font_size*0.6)+"px "+gg.font;
         gg.ctx.textAlign = "center";
 
         y = u.autosell_0_y;
@@ -1485,7 +1496,8 @@ var inspector = function()
       var h = u.switch_h;
       var img_s = h/2;
       gg.ctx.lineWidth = 1;
-      gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+      if(lang == "en") gg.ctx.font = (self.font_size*0.75)+"px "+gg.font;
+      else             gg.ctx.font = (self.font_size*0.6)+"px "+gg.font;
       gg.ctx.textAlign = "center";
 
       y = u.switch_y;
@@ -1785,6 +1797,8 @@ var achievements = function()
   var self = this;
   self.open = 0;
   self.open_t = 0;
+  var rows = 4;
+  var cols = 4;
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
@@ -1804,9 +1818,14 @@ var achievements = function()
 
   self.triggers = [];
   self.nullt = {name:"null",local:0,global:0,trigger:ffunc};
+  var tfont = gg.font_size+"px "+gg.font;
+  var tw = ((self.w-self.pad)/cols)-self.pad;
+  var dw = 150*gg.stage.s_mod;
   self.pushtrigger = function(name,description,offimg,onimg,fn,dep)
   {
-    var t = {name:name,description:description,offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
+    var t = {name:name,description:description,
+             fname:textToLines(tfont,tw,name,gg.ctx),fdescription:textToLines(tfont,dw,description,gg.ctx),
+             offimg:offimg,onimg:onimg,global:0,local:0,trigger:fn,dep:dep};
     self.triggers.push(t);
     return t;
   }
@@ -1815,9 +1834,9 @@ var achievements = function()
   self.notif_ts = [];
 
   var t;
-  t = self.pushtrigger(loc[lang]["misc_Exist"], loc[lang]["misc_Getavisitor."],    achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
+  t = self.pushtrigger(loc[lang]["misc_Exist"], loc[lang]["misc_Getavisitor."],     achievement_pop_imgs[0], achievement_pop_imgs[0], function(){ return gg.farmbits.length;       },0);
   t = self.pushtrigger(loc[lang]["misc_Group"], loc[lang]["misc_3workers"],         achievement_pop_imgs[1], achievement_pop_imgs[1], function(){ return gg.farmbits.length >= 3;  },t);
-  t = self.pushtrigger(loc[lang]["misc_Town"],  loc[lang]["misc_Asmallcommunity"], achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
+  t = self.pushtrigger(loc[lang]["misc_Town"],  loc[lang]["misc_Asmallcommunity"],  achievement_pop_imgs[2], achievement_pop_imgs[2], function(){ return gg.farmbits.length >= 5;  },t);
   t = self.pushtrigger(loc[lang]["misc_City"],  loc[lang]["misc_10townmembers"],    achievement_pop_imgs[3], achievement_pop_imgs[3], function(){ return gg.farmbits.length >= 10; },t);
 
   t = self.pushtrigger(loc[lang]["misc_Farmer"],   loc[lang]["misc_Ownafarm!"],      achievement_farm_imgs[0], achievement_farm_imgs[0], function(){ return gg.b.tile_groups[TILE_TYPE_FARM].length;       },0);
@@ -1904,8 +1923,6 @@ var achievements = function()
       var fs = gg.font_size;
       gg.ctx.font = fs+"px "+gg.font;
       gg.ctx.fillText(loc[lang]["misc_Achievements"],self.x+self.w/2,self.y);
-      var rows = 4;
-      var cols = 4;
       var s = ((self.w-self.pad)/cols)-self.pad;
       var x = self.x+self.pad;
       var y = self.y+self.pad;
@@ -1928,7 +1945,8 @@ var achievements = function()
             gg.ctx.drawImage(button_achievement_img,x+s/2+s/8,y+s/2+s/8,s/4,s/4);
           }
           else if(t.offimg)      gg.ctx.drawImage(t.offimg,x,y,s,s);
-          gg.ctx.fillText(t.name,x+s/2,y+s);
+          for(var k = 0; k < t.fname.length; k++)
+            gg.ctx.fillText(t.fname[k],x+s/2,y+s+fs*k);
           x += s+self.pad;
           gg.ctx.globalAlpha = 1;
         }
@@ -1940,7 +1958,7 @@ var achievements = function()
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
       var w = 150*gg.stage.s_mod;
-      var h = gg.font_size*9;
+      var h = gg.font_size*9+(self.notifs[i].fdescription.length-1)*(gg.font_size*2.5);
       var x = gg.canvas.width/2-w/2;
       var y = gg.canvas.height/2-h/2;
       var pad = gg.font_size;
@@ -1958,8 +1976,11 @@ var achievements = function()
       gg.ctx.fillText(loc[lang]["misc_Achievement"],gg.canvas.width/2,y+h*1/3+gg.font_size/2);
       gg.ctx.fillText(loc[lang]["misc_unlocked!"],  gg.canvas.width/2,y+h*1/3+gg.font_size+gg.font_size/2);
       gg.ctx.fillStyle = "#18315B";
-      gg.ctx.fillText(self.notifs[i].name,       gg.canvas.width/2,y+h*4/5);
-      gg.ctx.fillText(self.notifs[i].description,gg.canvas.width/2,y+h*4/5+gg.font_size);
+      //for(var k = 0; k < self.notifs[i].fname.length; k++)
+        //gg.ctx.fillText(self.notifs[i].fname[k],       gg.canvas.width/2,y+h*4/5+gg.font_size*k);
+      gg.ctx.fillText(self.notifs[i].name, gg.canvas.width/2,y+h*4/5);
+      for(var k = 0; k < self.notifs[i].fdescription.length; k++)
+        gg.ctx.fillText(self.notifs[i].fdescription[k],gg.canvas.width/2,y+h*4/5+gg.font_size+gg.font_size*k);
       var imgs = w/2;
       gg.ctx.drawImage(self.notifs[i].onimg,gg.canvas.width/2-imgs/2,y-imgs/2,imgs,imgs);
       gg.ctx.drawImage(button_achievement_img,gg.canvas.width/2+imgs/8,y+imgs/6,imgs/4,imgs/4);
@@ -1985,7 +2006,7 @@ var advisors = function()
     self.title_font_size = self.font_size*1.5;
     self.title_font = self.title_font_size+"px "+gg.font;
 
-    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-25*gg.stage.s_mod, 100*gg.stage.s_mod, 25*gg.stage.s_mod);
+    setBB(self.skip_btn, self.pad, gg.canvas.height-self.pad-25*gg.stage.s_mod, 110*gg.stage.s_mod, 25*gg.stage.s_mod);
   }
   self.skip_btn = new ButtonBox(0,0,0,0,function(){ self.skip_tutorial(); });
   self.skip_btn.active = 0;
@@ -2328,9 +2349,11 @@ var advisors = function()
     if(type == TEXT_TYPE_DISMISS)
     {
       ty += self.pad+self.font_size*txt_fmt.length;
-      gg.ctx.fillStyle = gray;
-      gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
-      //gg.ctx.fillText("(click to continue)", x+self.pad, ty);
+      gg.ctx.fillStyle = self.fgc;
+      if(lang == "en") fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9, self.pad, gg.ctx);
+      else             fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/2, w/9, self.pad, gg.ctx);
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty-self.pad/4);
     }
 
     gg.ctx.globalAlpha = 1;
@@ -2750,7 +2773,12 @@ var advisors = function()
         gg.ctx.fillText(txt_fmt[i],x+self.pad,ty+self.font_size*i);
 
       ty += self.pad+self.font_size*txt_fmt.length;
-      gg.ctx.drawImage(button_next_img, x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9);
+
+      gg.ctx.fillStyle = self.fgc;
+      if(lang == "en") fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/4, w/9, self.pad, gg.ctx);
+      else             fillRRect(x+self.pad,ty-self.font_size-self.pad/2, w/2, w/9, self.pad, gg.ctx);
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText(loc[lang]["misc_next"], x+self.pad*1.7, ty-self.pad/4);
 
       gg.ctx.fillStyle = white;
       gg.ctx.fillRect(x,ty+self.pad,w,100*gg.stage.s_mod);
@@ -2768,8 +2796,12 @@ var advisors = function()
     if(self.skip_btn.active && self.thread)
     {
       gg.ctx.textAlign = "left";
-      gg.ctx.fillStyle = black;
-      gg.ctx.drawImage(button_skip_tutorial_img,self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h);
+      //gg.ctx.drawImage(button_skip_tutorial_img,);
+      gg.ctx.fillStyle = self.fgc;
+      if(lang == "en") fillRRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,    self.skip_btn.h, self.pad, gg.ctx);
+      else             fillRRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w*1.1,self.skip_btn.h, self.pad, gg.ctx);
+      gg.ctx.fillStyle = white;
+      gg.ctx.fillText(loc[lang]["misc_SkipTutorial"], self.skip_btn.x+self.pad/2, self.skip_btn.y+self.skip_btn.h-self.pad/2);
     }
   }
 

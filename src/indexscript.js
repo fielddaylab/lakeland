@@ -1,6 +1,6 @@
 var g;
 var urlp = jsonFromURL();
-var game_width  = 880;
+var game_width  = 1024;
 var game_height = 660;
 function fullscreen()
 {
@@ -17,7 +17,7 @@ function unfullscreen()
 
 function size_containers(w,h)
 {
-  var stage_container_container = document.getElementById("stage_container_container");
+  var stage_container_container = document.getElementById("BrainPOPsnapArea");
   stage_container_container.style.width = w;
   stage_container_container.style.height = h;
   var stage_container = document.getElementById("stage_container");

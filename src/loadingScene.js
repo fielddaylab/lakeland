@@ -218,11 +218,11 @@ var LoadingScene = function()
     gg.aud_wrangler = new AudWrangler();
     //must declare variables globally. yikes.
     cow_aud        = gg.aud_wrangler.register("assets/audio/cow.mp3");
-    dairy_aud      = gg.aud_wrangler.register("assets/audio/dairy.wav");
-    death_aud      = gg.aud_wrangler.register("assets/audio/death.wav");
-    fertilizer_aud = gg.aud_wrangler.register("assets/audio/fertilizer.wav");
+    dairy_aud      = gg.aud_wrangler.register("assets/audio/dairy.mp3");
+    death_aud      = gg.aud_wrangler.register("assets/audio/death.mp3");
+    fertilizer_aud = gg.aud_wrangler.register("assets/audio/fertilizer.mp3");
     house_aud      = gg.aud_wrangler.register("assets/audio/house.mp3");
-    lake_aud       = gg.aud_wrangler.register("assets/audio/lake.wav");
+    lake_aud       = gg.aud_wrangler.register("assets/audio/lake.mp3");
     money_aud      = gg.aud_wrangler.register("assets/audio/money.mp3");
     road_aud       = gg.aud_wrangler.register("assets/audio/road.mp3");
     sign_aud       = gg.aud_wrangler.register("assets/audio/sign.mp3");
@@ -289,30 +289,30 @@ var LoadingScene = function()
       if(ticks_since_loading_ready < 50)
       {
         ctx.globalAlpha = ticks_since_loading_ready/50;
-        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,150*gg.canvas.height/660,ctx);
       }
       else if(ticks_since_loading_ready < 200)
       {
-        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,150*gg.canvas.height/660,ctx);
       }
       else if(ticks_since_loading_ready < 250)
       {
         ctx.globalAlpha = 1-((ticks_since_loading_ready-200)/50);
-        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
+        drawImageHeightCentered(loading_imgs[0],gg.canvas.width/2,gg.canvas.height/2,150*gg.canvas.height/660,ctx);
       }
       else if(ticks_since_loading_ready < 300)
       {
         ctx.globalAlpha = (ticks_since_loading_ready-250)/50;
-        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,150*gg.canvas.height/660,ctx);
       }
       else if(ticks_since_loading_ready < 450)
       {
-        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,150*gg.canvas.height/660,ctx);
       }
       else if(ticks_since_loading_ready < 500)
       {
         ctx.globalAlpha = 1-((ticks_since_loading_ready-450)/50);
-        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,200,ctx);
+        drawImageHeightCentered(loading_imgs[1],gg.canvas.width/2,gg.canvas.height/2,150*gg.canvas.height/660,ctx);
       }
       else if(ticks_since_loading_ready < 550)
       {
