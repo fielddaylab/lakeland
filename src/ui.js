@@ -233,7 +233,11 @@ var shop = function()
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
-    self.w = gg.b.cbounds_x-self.pad;
+    //self.w = gg.b.cbounds_x-self.pad; //calculated assuming 1024x660
+    //console.log("shop "+self.w); //shop 192.62500000000023
+    //if(gg.canvas.width > gg.canvas.height) self.w = floor(192/660*gg.canvas.height);
+    //else                                   self.w = floor(192/1024*gg.canvas.width);
+    self.w = floor(192/660*gg.canvas.height)
     self.x = -self.w;
     var btn_s = (self.w-self.pad*3)/2;
     self.h = self.pad+btn_s/2+self.pad+(btn_s+self.pad)*ceil(self.btns.length/2);
@@ -731,7 +735,11 @@ var inspector = function()
     self.pad = 10*gg.stage.s_mod;
     self.font_size = self.pad*1.5;
     self.title_font_size = self.pad*2;
-    self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2;
+    //self.x = gg.b.cbounds_x+gg.b.cbounds_w+self.pad*2; //calculated assuming 1024x660
+    //console.log(self.x); //841.3750000000003
+    //if(gg.canvas.width > gg.canvas.height) self.x = floor(841/660*gg.canvas.height);
+    //else                                   self.x = floor(841/1024*gg.canvas.width);
+    self.x = gg.canvas.width-floor((1024-841)/660*gg.canvas.height)
     self.w = gg.canvas.width-self.x;
     self.y = self.pad+gg.stage.s_mod*50;
     self.h = gg.canvas.height-self.y-self.pad;
@@ -1950,7 +1958,7 @@ var achievements = function()
     {
       var offy = bounceup(self.notif_ts[i]/200)*50*gg.stage.s_mod;
       var w = 150*gg.stage.s_mod;
-      var h = gg.font_size*9;
+      var h = gg.font_size*9+(self.notifs[i].fdescription.length-1)*(gg.font_size*2.5);
       var x = gg.canvas.width/2-w/2;
       var y = gg.canvas.height/2-h/2;
       var pad = gg.font_size;
@@ -2790,7 +2798,8 @@ var advisors = function()
       gg.ctx.textAlign = "left";
       //gg.ctx.drawImage(button_skip_tutorial_img,);
       gg.ctx.fillStyle = self.fgc;
-      fillRRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,self.skip_btn.h, self.pad, gg.ctx);
+      if(lang == "en") fillRRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w,    self.skip_btn.h, self.pad, gg.ctx);
+      else             fillRRect(self.skip_btn.x,self.skip_btn.y,self.skip_btn.w*1.1,self.skip_btn.h, self.pad, gg.ctx);
       gg.ctx.fillStyle = white;
       gg.ctx.fillText(loc[lang]["misc_SkipTutorial"], self.skip_btn.x+self.pad/2, self.skip_btn.y+self.skip_btn.h-self.pad/2);
     }

@@ -1,6 +1,6 @@
 var g;
 var urlp = jsonFromURL();
-var game_width  = 880;
+var game_width  = 1024;
 var game_height = 660;
 function fullscreen()
 {
