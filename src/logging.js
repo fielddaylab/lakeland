@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",9);
+  self.mySlog = new slog("LAKELAND",10);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;

@@ -9,13 +9,14 @@ Each log_data is a JSON object for that specific category as defined below.
 Versions:
 1. Alpha
 2. Original Version
-3. Change itemusechange: remove mark, add prev_mark (introduced bug fixed in v9)
-4. Remove gzipping.
-5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise.
-6. Add num milk/food/poop produced into the gamestate log
-7. Change num milk/food/poop produced from "since beginning of game" to "since last gamestate log"
-8. Add fields for continue, language, audio, and fullscreen in the gamestart. Also now logs endgame when a player dies in addition to when a player exits the page.
-9. Fix bug in itemusechange. Previously the itemusechange log did not include a label "item" for the "item" field. Now it does.
+3. Change itemusechange: remove mark, add prev_mark (introduced bug fixed in v9) (8/13/2019)
+4. Remove gzipping. (8/13/2019)
+5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise. (8/14/2019)
+6. Add num milk/food/poop produced into the gamestate log. (8/15/2019)
+7. Change num milk/food/poop produced from "since beginning of game" to "since last gamestate log". (8/21/2019)
+8. Add fields for continue, language, audio, and fullscreen in the gamestart. Also now logs endgame when a player dies in addition to when a player exits the page. (8/22/2019)
+9. Fix bug in itemusechange. Previously the itemusechange log did not include a label "item" for the "item" field. Now it does. (9/4/2019)
+10. Simple log now sends player_id (if present) from the URL to log.php (9/24/2019)
 
 ### Event Categories
 0. [gamestate](#gamestate)
