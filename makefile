@@ -1,3 +1,6 @@
+deploy:
+	rsync -vrc * mli-field@fielddaylab.wisc.edu:/httpdocs/play/lakeland/game --exclude-from rsync-exclude
+
 make: build
 	
 build: run
