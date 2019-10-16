@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",10);
+  self.mySlog = new slog("LAKELAND",11);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -31,6 +31,12 @@ window.Logger = function(init){
   self.LOG_CATEGORY_RAINSTOPPED         = ENUM; ENUM++;
   self.LOG_CATEGORY_HISTORY             = ENUM; ENUM++;
   self.LOG_CATEGORY_ENDGAME             = ENUM; ENUM++;
+  self.LOG_CATEGORY_EMOTE               = ENUM; ENUM++;
+  self.LOG_CATEGORY_FARMFAIL            = ENUM; ENUM++;
+  self.LOG_CATEGORY_BLOOM               = ENUM; ENUM++;
+  self.LOG_CATEGORY_FARMHARVESTED        = ENUM; ENUM++;
+  self.LOG_CATEGORY_MILKPRODUCED        = ENUM; ENUM++;
+  self.LOG_CATEGORY_POOPPRODUCED        = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
   ENUM = 0; 
@@ -149,7 +155,7 @@ window.Logger = function(init){
     if(!self.arraysEqual([t.tx,t.ty],self.prev_center_txty)){
       self.set_prev_center_txty(t.tx,t.ty);
       self.camera_history.push([t.tx,t.ty,auto,Date.now()]);
-      self.history();
+//      self.history();
     }
   }
   self.flush_camera_history = function(now){
@@ -161,38 +167,38 @@ window.Logger = function(init){
     return ret;
   }
 
-  self.emote_history = [] //matrix of x,y,time columns
-  self.emote = function(f, emote) {
-    var emote_id = self.LOG_EMOTE_NULL;  //0
-    if(emote      === self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT) emote_id = self.LOG_EMOTE_FULLNESS_MOTIVATED;
-    else if(emote === self.LOG_EMOTE_FULLNESS_DESPERATE_TXT) emote_id = self.LOG_EMOTE_FULLNESS_DESPERATE;
-    else if(emote === self.LOG_EMOTE_ENERGY_DESPERATE_TXT  ) emote_id = self.LOG_EMOTE_ENERGY_DESPERATE;
-    else if(emote === self.LOG_EMOTE_JOY_MOTIVATED_TXT     ) emote_id = self.LOG_EMOTE_JOY_MOTIVATED;
-    else if(emote === self.LOG_EMOTE_JOY_DESPERATE_TXT     ) emote_id = self.LOG_EMOTE_JOY_DESPERATE;
-    else if(emote === self.LOG_EMOTE_PUKE_TXT              ) emote_id = self.LOG_EMOTE_PUKE;
-    else if(emote === self.LOG_EMOTE_YUM_TXT              ) emote_id = self.LOG_EMOTE_YUM;
-    else if(emote === self.LOG_EMOTE_TIRED_TXT              ) emote_id = self.LOG_EMOTE_TIRED;
-    else if(emote === self.LOG_EMOTE_HAPPY_TXT              ) emote_id = self.LOG_EMOTE_HAPPY;
-    else if(emote === self.LOG_EMOTE_SWIM_TXT              ) emote_id = self.LOG_EMOTE_SWIM;
-    else if(emote === self.LOG_EMOTE_SALE_TXT              ) emote_id = self.LOG_EMOTE_SALE;
+  // self.emote_history = [] //matrix of x,y,time columns
+  // self.emote = function(f, emote) {
+  //   var emote_id = self.LOG_EMOTE_NULL;  //0
+  //   if(emote      === self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT) emote_id = self.LOG_EMOTE_FULLNESS_MOTIVATED;
+  //   else if(emote === self.LOG_EMOTE_FULLNESS_DESPERATE_TXT) emote_id = self.LOG_EMOTE_FULLNESS_DESPERATE;
+  //   else if(emote === self.LOG_EMOTE_ENERGY_DESPERATE_TXT  ) emote_id = self.LOG_EMOTE_ENERGY_DESPERATE;
+  //   else if(emote === self.LOG_EMOTE_JOY_MOTIVATED_TXT     ) emote_id = self.LOG_EMOTE_JOY_MOTIVATED;
+  //   else if(emote === self.LOG_EMOTE_JOY_DESPERATE_TXT     ) emote_id = self.LOG_EMOTE_JOY_DESPERATE;
+  //   else if(emote === self.LOG_EMOTE_PUKE_TXT              ) emote_id = self.LOG_EMOTE_PUKE;
+  //   else if(emote === self.LOG_EMOTE_YUM_TXT              ) emote_id = self.LOG_EMOTE_YUM;
+  //   else if(emote === self.LOG_EMOTE_TIRED_TXT              ) emote_id = self.LOG_EMOTE_TIRED;
+  //   else if(emote === self.LOG_EMOTE_HAPPY_TXT              ) emote_id = self.LOG_EMOTE_HAPPY;
+  //   else if(emote === self.LOG_EMOTE_SWIM_TXT              ) emote_id = self.LOG_EMOTE_SWIM;
+  //   else if(emote === self.LOG_EMOTE_SALE_TXT              ) emote_id = self.LOG_EMOTE_SALE;
 
-    self.emote_history.push(self.farmbit_data_short(f).concat([emote_id,Date.now()]));
-    self.history();
-  }
-  self.emote_swim = function(f){
-    self.emote(f,self.LOG_EMOTE_SWIM_TXT);
-  }
-  self.emote_sale = function(f){
-    self.emote(f,self.LOG_EMOTE_SALE_TXT);
-  }
-  self.flush_emote_history = function(now){
-    ret = self.emote_history.map(function(x){
-      x[x.length-1] -= now;
-      return x;
-    });
-    self.emote_history = [];
-    return ret;
-  }
+  //   self.emote_history.push(self.farmbit_data_short(f).concat([emote_id,Date.now()]));
+  //   self.history();
+  // }
+  // self.emote_swim = function(f){
+  //   self.emote(f,self.LOG_EMOTE_SWIM_TXT);
+  // }
+  // self.emote_sale = function(f){
+  //   self.emote(f,self.LOG_EMOTE_SALE_TXT);
+  // }
+  // self.flush_emote_history = function(now){
+  //   ret = self.emote_history.map(function(x){
+  //     x[x.length-1] -= now;
+  //     return x;
+  //   });
+  //   self.emote_history = [];
+  //   return ret;
+  // }
 
   self.was_raining = 0;
   self.update_raining = function(){
@@ -253,14 +259,20 @@ window.Logger = function(init){
   self.num_food_produced_since_last_gamestate_log = 0;
   self.num_poop_produced_since_last_gamestate_log = 0;
   self.num_milk_produced_since_last_gamestate_log = 0;
-  self.increment_food_produced = function(){
+  self.increment_food_produced = function(t){
     self.num_food_produced_since_last_gamestate_log++;
+    // each farm always produces two corn -- only log farm produced once
+    if(self.num_food_produced_since_last_gamestate_log % 2 == 1){
+      self.farmharvested(t);
+    }
   }
-  self.increment_poop_produced = function(){
+  self.increment_poop_produced = function(t){
     self.num_poop_produced_since_last_gamestate_log++;
+    self.milkproduced(t);
   }
-  self.increment_milk_produced = function(){
+  self.increment_milk_produced = function(t){
     self.num_milk_produced_since_last_gamestate_log++;
+    self.poopproduced(t);
   }
   self.flush_food_produced = function(){
     ret = self.num_food_produced_since_last_gamestate_log;
@@ -276,6 +288,34 @@ window.Logger = function(init){
     ret = self.num_milk_produced_since_last_gamestate_log;
     self.num_milk_produced_since_last_gamestate_log = 0;
     return ret
+  }
+
+  self.farms = {}
+  self.update_farm_nutrition = function(t){
+    let tile_loc = [t.tx, t.ty];
+    let had_failed = self.farms[tile_loc] || 0;
+    let is_failed = t.nutrition < nutrition_desperate;
+    // if hadnt failed and is currently failed
+    if(!had_failed && is_failed){
+      self.farmfail(t);
+    }
+    self.farms[tile_loc] = is_failed;
+
+  }
+  self.lakes = {}
+  self.check_blooms = function(){
+    let lake_tiles = gg.b.tile_groups[TILE_TYPE_LAKE]
+    for(var i = 0; i < lake_tiles.length; i++){
+      t = lake_tiles[i];
+      let tile_loc = [t.tx, t.ty];
+      let had_bloomed = self.lakes[tile_loc] || 0;
+      let is_bloomed = t.nutrition > water_fouled_threshhold;
+      if (!had_bloomed && is_bloomed){
+        self.bloom(t);
+      }
+      self.lakes[tile_loc] = is_bloomed;
+
+    }
   }
   
   
@@ -309,7 +349,7 @@ window.Logger = function(init){
 //  self.prev_nutritions = self.nutrition_array();
     tile_states = gg.b.tiles.map(function(x) {return x.state});
     tile_nutritions = self.nutrition_array();
-    log_data = {
+    let log_data = {
       tile_states: tile_states,
       tile_nutritions: tile_nutritions,
       continue: gg.continue_ls ? 1: 0,
@@ -328,7 +368,7 @@ window.Logger = function(init){
   self.gtag = function(arguments){ // checkpoint
     if(arguments[0] === 'event'){
       var now = Date.now();
-      var log_data = arguments[2];
+      let log_data = arguments[2];
       log_data.event_type = arguments[1];
       log_data.blurb_history = self.flush_blurb_history(now);
       log_data.client_time = now;
@@ -341,25 +381,25 @@ window.Logger = function(init){
     if(gg.shop.selected_buy){ self.buy_hover(t); }
     else 
     {
-      var log_data = self.tile_data(t);
+      let log_data = self.tile_data(t);
       self.send_log(log_data, self.LOG_CATEGORY_SELECTTILE);
     }
   }
   self.select_farmbit = function(f){
-    var log_data = self.farmbit_data(f);
+    let log_data = self.farmbit_data(f);
     self.send_log(log_data, self.LOG_CATEGORY_SELECTFARMBIT);
   }
   self.select_item = function(it){
-    var log_data = self.item_data(it);
+    let log_data = self.item_data(it);
     self.send_log(log_data, self.LOG_CATEGORY_SELECTITEM)
   }
   self.select_buy = function(buy){
-    var log_data = self.buy_data(buy);
+    let log_data = self.buy_data(buy);
     self.send_log(log_data, self.LOG_CATEGORY_SELECTBUY);
   }
   self.buy_item = function(){
     var now = Date.now();
-    var log_data = {
+    let log_data = {
        client_time: now,
        buy: gg.shop.selected_buy,
        tile: self.tile_data_short(gg.b.hover_t),
@@ -371,7 +411,7 @@ window.Logger = function(init){
    }
    self.cancel_buy = function(buy){
     var now = Date.now();
-    var log_data = {
+    let log_data = {
        client_time: now,
        selected_buy: buy,
        cost: gg.shop.buy_cost(buy),
@@ -384,7 +424,7 @@ window.Logger = function(init){
     self.road_hover();
     if (!gg.b.spewing_road) {
       var now = Date.now();
-      var log_data = {
+      let log_data = {
          client_time: now,
          road_builds: self.flush_road_hovers(now)
        };
@@ -394,11 +434,11 @@ window.Logger = function(init){
   }
 
   self.tile_use_select = function(t){
-    var log_data = self.tile_data(t);
+    let log_data = self.tile_data(t);
     self.send_log(log_data, self.LOG_CATEGORY_TILEUSESELECT);
   }
   self.item_use_select = function(it){
-    var log_data = {
+    let log_data = {
       item: self.item_data_short(it),
       prev_mark:  self.prev_item_use
     }
@@ -407,30 +447,30 @@ window.Logger = function(init){
   }
 
   self.toggle_nutrition = function(){
-    var log_data = {
+    let log_data = {
       to_state: gg.b.nutrition_view,
       tile_nutritions: self.nutrition_array()
     };
     self.send_log(log_data, self.LOG_CATEGORY_TOGGLENUTRITION)
   }
   self.toggle_shop = function(){
-   var log_data = {
+   let log_data = {
       shop_open: gg.shop.open
     };
     self.send_log(log_data, self.LOG_CATEGORY_TOGGLESHOP);
   }
   self.toggle_achievements = function(){
-   var log_data = {
+   let log_data = {
       achievements_open: gg.achievements.open
     };
     self.send_log(log_data, self.LOG_CATEGORY_TOGGLEACHIEVEMENTS);
   }
   self.skip_tutorial = function(){
-   var log_data = {};
+   let log_data = {};
     self.send_log(log_data, self.LOG_CATEGORY_SKIPTUTORIAL);
   }
   self.speed = function(){
-   var log_data = {
+   let log_data = {
       cur_speed: gg.speed,
       prev_speed: self.prev_speed,
       manual: self.manual_speed_bool
@@ -439,7 +479,7 @@ window.Logger = function(init){
   }
 
   self.achievement = function(trigger){
-    var log_data = {};
+    let log_data = {};
     for (var i = 0; i < gg.achievements.triggers.length;  i++)
     {
       if(trigger.name === gg.achievements.triggers[i].name) {
@@ -454,24 +494,23 @@ window.Logger = function(init){
   }
 
   self.farmbit_death = function(f){
-   var log_data = {
+   let log_data = {
       farmbit: self.farmbit_data_short(f),
       grave: self.tile_data_short(f.home)
     }
     self.send_log(log_data, self.LOG_CATEGORY_FARMBITDEATH)
   }
 
-//   self.blurb = function(txt){
-//     if(self.log_blurbs){
-//      var log_data = {
-// //        blurb: txt,
-// //        advisor: gg.advisors.advisor
-//       }
-//       self.send_log(log_data, self.LOG_CATEGORY_BLURB);
-//     }
-//   }
+  // self.blurb = function(txt){
+  //   if(self.log_blurbs){
+  //    let log_data = {
+  //      timestamp = Date.now()
+  //     }
+  //     self.send_log(log_data, self.LOG_CATEGORY_BLURB);
+  //   }
+  // }
   self.record = function(txt){
-  //  var log_data = {
+  //  let log_data = {
   //     record: txt,
   //     advisor: gg.advisors.advisor
   //   }
@@ -481,31 +520,83 @@ window.Logger = function(init){
   self.raining = function(){
     if(!gg.b.raining && self.was_raining){
       //self.prev_nutritions = self.nutrition_array();
-     var log_data = {
+     let log_data = {
       //  nutrition: self.prev_nutritions
       };
       self.send_log(log_data, self.LOG_CATEGORY_RAINSTOPPED);
+      self.check_blooms();
     }
     self.update_raining();
   }
 
-  self.history = function(force){
-    if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH || force){
-      var now = Date.now();
-      var log_data = {
-        client_time: now,
-        camera_history: self.flush_camera_history(now),
-        emote_history: self.flush_emote_history(now)
-      };
-      self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
-    }
-  }
+  // self.history = function(force){
+  //   if (self.camera_history.length > self.HISTORY_FLUSH_LENGTH || self.emote_history.length > self.HISTORY_FLUSH_LENGTH || force){
+  //     var now = Date.now();
+  //     let log_data = {
+  //       client_time: now,
+  //       camera_history: self.flush_camera_history(now),
+  //       //emote_history: self.flush_emote_history(now)
+  //     };
+  //     self.send_log(log_data, self.LOG_CATEGORY_HISTORY)
+  //   }
+  // }
   self.endgame = function(){
     // log_data = self.old_gamestate();
-    self.history(true);
+//    self.history(true);
     self.gamestate();
     self.send_log({}, self.LOG_CATEGORY_ENDGAME);
   }
+
+  self.emote = function(f, emote) {
+    var emote_id = self.LOG_EMOTE_NULL;  //0
+    if(emote      === self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT) emote_id = self.LOG_EMOTE_FULLNESS_MOTIVATED;
+    else if(emote === self.LOG_EMOTE_FULLNESS_DESPERATE_TXT) emote_id = self.LOG_EMOTE_FULLNESS_DESPERATE;
+    else if(emote === self.LOG_EMOTE_ENERGY_DESPERATE_TXT  ) emote_id = self.LOG_EMOTE_ENERGY_DESPERATE;
+    else if(emote === self.LOG_EMOTE_JOY_MOTIVATED_TXT     ) emote_id = self.LOG_EMOTE_JOY_MOTIVATED;
+    else if(emote === self.LOG_EMOTE_JOY_DESPERATE_TXT     ) emote_id = self.LOG_EMOTE_JOY_DESPERATE;
+    else if(emote === self.LOG_EMOTE_PUKE_TXT              ) emote_id = self.LOG_EMOTE_PUKE;
+    else if(emote === self.LOG_EMOTE_YUM_TXT              ) emote_id = self.LOG_EMOTE_YUM;
+    else if(emote === self.LOG_EMOTE_TIRED_TXT              ) emote_id = self.LOG_EMOTE_TIRED;
+    else if(emote === self.LOG_EMOTE_HAPPY_TXT              ) emote_id = self.LOG_EMOTE_HAPPY;
+    else if(emote === self.LOG_EMOTE_SWIM_TXT              ) emote_id = self.LOG_EMOTE_SWIM;
+    else if(emote === self.LOG_EMOTE_SALE_TXT              ) emote_id = self.LOG_EMOTE_SALE;
+
+    log_data = {
+      farmbit: self.farmbit_data_short(f),
+      emote_enum: emote_id,
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_EMOTE) 
+  }
+  self.emote_swim = function(f){
+    self.emote(f,self.LOG_EMOTE_SWIM_TXT);
+  }
+  self.emote_sale = function(f){
+    self.emote(f,self.LOG_EMOTE_SALE_TXT);
+  }
+
+  self.farmfail = function(t){
+    let log_data = self.tile_data(t);
+    self.send_log(log_data, self.LOG_CATEGORY_FARMFAIL);
+  }
+  self.bloom = function(t){
+    let log_data = self.tile_data(t);
+    self.send_log(log_data, self.LOG_CATEGORY_BLOOM);
+  }
+
+  self.farmharvested = function(t){
+    let log_data = self.tile_data(t);
+    self.send_log(log_data, self.LOG_CATEGORY_FARMHARVESTED);
+  }
+  self.poopproduced = function(t){
+    let log_data = self.tile_data(t);
+    self.send_log(log_data, self.LOG_CATEGORY_POOPPRODUCED);
+  }
+  self.milkproduced = function(t){
+    let log_data = self.tile_data(t);
+    self.send_log(log_data, self.LOG_CATEGORY_MILKPRODUCED);
+  }
+
+
 
   //Log Sender:
   self.send_log = function(log_data,category){

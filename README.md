@@ -17,6 +17,7 @@ Versions:
 8. Add fields for continue, language, audio, and fullscreen in the gamestart. Also now logs endgame when a player dies in addition to when a player exits the page. (8/22/2019)
 9. Fix bug in itemusechange. Previously the itemusechange log did not include a label "item" for the "item" field. Now it does. (9/4/2019)
 10. Simple log now sends player_id (if present) from the URL to log.php (9/24/2019)
+11. Introduces log indices 24-29. Removes history logs. Changes emote history into separate emote logs. Produced logs now in separate logs. New logs for bloom and farmfail. (10/16/2019)
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -43,6 +44,12 @@ Versions:
 1. [rainstopped](#rainstopped)
 1. [history](#history)
 1. [endgame](#endgame)
+1. [emote](#emote)
+1. [farmfail](#farmfail)
+1. [bloom](#bloom)
+1. [farmharvested](#farmharvested)
+1. [milkproduced](#milkproduced)
+1. [poopproduced](#poopproduced)
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -300,6 +307,7 @@ Note: a blurb is an utterance from an advisor.
 <a name="history"/>
 
 #### history (index=22)
+**Not included in versions 11+**
 | Key | Value | Description |
 | --- | --- | --- |
 | client_time | now | current client time  |
@@ -312,6 +320,67 @@ Note: a blurb is an utterance from an advisor.
 | Key | Value | Description |
 | --- | --- | --- |
 |(none)  |   | Log itself indicates the player has left the game page. Seperate history and gamestate logs are sent.  |
+
+<a name="emote"/>
+
+#### emote (index=24)
+*Introduced in v11.*
+| Index | Name | Description |
+| --- | --- | --- | 
+| farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
+| emote_enum | emote_id | See [emotes](#Emotes).  | 
+
+
+<a name="farmfail"/>
+
+#### farmfail (index=25)
+*Introduced in v11.*
+Occurs when a growing farm's nutrition turns from pink to black (*nutrition < nutrition_desperate*).
+| Index | Name | Description |
+| --- | --- | --- | 
+| tile | tile_data_short(t) | Farm that failed. See [Data Short](#DataShort).  |
+| marks | t.marks | Farm [mark indices](#Mark).  | 
+
+
+<a name="bloom"/>
+
+#### bloom (index=26)
+*Introduced in v11.*
+Occurs after rainfall for each lake tile that bloomed during the rain. Blooming is controlled by nutrition and defined as *nutrition > water_fouled_threshhold*, which is when the lake tile turns green.
+| Index | Name | Description |
+| --- | --- | --- | 
+| tile | tile_data_short(t) | See [Data Short](#DataShort).  |
+| marks | t.marks | Not relevant to lake tiles. Included for uniformity.  | 
+
+
+<a name="farmharvested"/>
+
+#### farmharvested (index=27)
+*Introduced in v11.*
+| Index | Name | Description |
+| --- | --- | --- | 
+| tile | tile_data_short(t) | Farm that produced corn. See [Data Short](#DataShort).  |
+| marks | t.marks | Tile [mark indices](#Mark).  | 
+
+
+<a name="milkproduced"/>
+
+#### milkproduced (index=28)
+*Introduced in v11.*
+| Index | Name | Description |
+| --- | --- | --- | 
+| tile | tile_data_short(t) | Dairy that produced milk. See [Data Short](#DataShort).  |
+| marks | t.marks | Tile [mark indices](#Mark).  | 
+
+
+<a name="poopproduced"/>
+
+#### poopproduced (index=29)
+*Introduced in v11.*
+| Index | Name | Description |
+| --- | --- | --- | 
+| tile | tile_data_short(t) | Dairy that produced poop. See [Data Short](#DataShort).  |
+| marks | t.marks | Tile [mark indices](#Mark).  | 
 
 
 ## Enumerators and Constants

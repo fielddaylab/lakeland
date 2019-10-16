@@ -2835,6 +2835,7 @@ var board = function()
           {
             var d = min(floor(t.nutrition*farm_nutrition_uptake_p),farm_nutrition_uptake_max);
             t.nutrition -= d;
+            my_logger.update_farm_nutrition(t);
             d = max(d,farm_nutrition_uptake_min); //nutrition created out of thin air!
             t.val += d;
             t.fx_t++;
@@ -2867,7 +2868,7 @@ var board = function()
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
-            my_logger.increment_poop_produced();
+            my_logger.increment_poop_produced(t);
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
             else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_FERTILIZE, 0, it))) ;
           }
@@ -4258,7 +4259,7 @@ var farmbit = function()
               gg.b.tiles_tw(it.tile,it);
               kick_item(it);
               gg.items.push(it);
-              my_logger.increment_food_produced();
+              my_logger.increment_food_produced(t);
               if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it);
               else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
               else if(!(it.mark == MARK_FEED && b_for_job(JOB_TYPE_FEED, 0, it))) ;
@@ -4430,7 +4431,7 @@ var farmbit = function()
             gg.b.tiles_tw(it.tile,it);
             kick_item(it);
             gg.items.push(it);
-            my_logger.increment_milk_produced();
+            my_logger.increment_milk_produced(t);
             if(it.mark == MARK_SELL) b_for_job(JOB_TYPE_EXPORT, 0, it) ;
             else if(!(it.mark == MARK_USE && b_for_job(JOB_TYPE_EAT, 0, it))) ;
 
