@@ -308,6 +308,7 @@ Note: a blurb is an utterance from an advisor.
 
 #### history (index=22)
 **Not included in versions 11+**
+
 | Key | Value | Description |
 | --- | --- | --- |
 | client_time | now | current client time  |
@@ -325,58 +326,59 @@ Note: a blurb is an utterance from an advisor.
 
 #### emote (index=24)
 *Introduced in v11.*
+
 | Index | Name | Description |
 | --- | --- | --- | 
 | farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
 | emote_enum | emote_id | See [emotes](#Emotes).  | 
-
 
 <a name="farmfail"/>
 
 #### farmfail (index=25)
 *Introduced in v11.*
 Occurs when a growing farm's nutrition turns from pink to black (*nutrition < nutrition_desperate*).
+
 | Index | Name | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Farm that failed. See [Data Short](#DataShort).  |
 | marks | t.marks | Farm [mark indices](#Mark).  | 
-
 
 <a name="bloom"/>
 
 #### bloom (index=26)
 *Introduced in v11.*
 Occurs after rainfall for each lake tile that bloomed during the rain. Blooming is controlled by nutrition and defined as *nutrition > water_fouled_threshhold*, which is when the lake tile turns green.
+
 | Index | Name | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | See [Data Short](#DataShort).  |
 | marks | t.marks | Not relevant to lake tiles. Included for uniformity.  | 
 
-
 <a name="farmharvested"/>
 
 #### farmharvested (index=27)
 *Introduced in v11.*
+
 | Index | Name | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Farm that produced corn. See [Data Short](#DataShort).  |
 | marks | t.marks | Tile [mark indices](#Mark).  | 
 
-
 <a name="milkproduced"/>
 
 #### milkproduced (index=28)
 *Introduced in v11.*
+
 | Index | Name | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Dairy that produced milk. See [Data Short](#DataShort).  |
 | marks | t.marks | Tile [mark indices](#Mark).  | 
 
-
 <a name="poopproduced"/>
 
 #### poopproduced (index=29)
 *Introduced in v11.*
+
 | Index | Name | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Dairy that produced poop. See [Data Short](#DataShort).  |
