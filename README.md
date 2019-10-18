@@ -96,7 +96,7 @@ Versions:
 | num_checkpoints_completed | get_num_checkpoints_completed() | Number of tutorials began + number of tutorial ended. Includes tutorials skipped.   |
 | raining | gg.b.raining | Boolean - currently raining or not.  |
 | curr_selection_type | gg.inspector.detailed_type |Current selection [inspector content](#InspectorContent) index. (Note that because the game currently (as of 7/25) logs gamestate only after buys, this will always be the type of tile.)  |
-| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type.  |
+| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type. (Warning: this field will not exist if current_selection_type is 0, i.e. there is nothing selected.)  |
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
 | timestamp | now | current client time  |
