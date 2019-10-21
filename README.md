@@ -9,7 +9,7 @@ Each log_data is a JSON object for that specific category as defined below.
 Versions:
 1. Alpha
 2. Original Version
-3. Change itemusechange: remove mark, add prev_mark (introduced bug fixed in v9) (8/13/2019)
+3. Change itemusechange: remove mark, add prev_mark (introduced bug fixed in v9). Also removed mark from selectitem because its already contained in the item data short. (8/13/2019)
 4. Remove gzipping. (8/13/2019)
 5. Restructure speed logs. Old version only logged manual speed changes. New version logs automatic and manual speed changes with a boolean "manual" as 1 if manually changed and 0 otherwise. (8/14/2019)
 6. Add num milk/food/poop produced into the gamestate log. (8/15/2019)
@@ -96,7 +96,7 @@ Versions:
 | num_checkpoints_completed | get_num_checkpoints_completed() | Number of tutorials began + number of tutorial ended. Includes tutorials skipped.   |
 | raining | gg.b.raining | Boolean - currently raining or not.  |
 | curr_selection_type | gg.inspector.detailed_type |Current selection [inspector content](#InspectorContent) index. (Note that because the game currently (as of 7/25) logs gamestate only after buys, this will always be the type of tile.)  |
-| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type.  |
+| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type. (Warning: this field will not exist if current_selection_type is 0, i.e. there is nothing selected.)  |
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
 | timestamp | now | current client time  |
@@ -151,12 +151,12 @@ Note selections may happen automatically by advisors in the tutorials.
 <a name="selectitem"/>
 
 #### selectitem (index=5)
-Note selections may happen automatically by advisors in the tutorials.
+Note selections may happen automatically by advisors in the tutorials. Mark is no longer necessary to send, as it is contained within item's data_short.
 
 | Key | Value | Description |
 | --- | --- | --- |
 | item | item_data_short(it) | See [Data Short](#DataShort).   |
-| mark | it.mark | Item [mark index](#Mark).  | 
+| *deprecated as of v3* mark | it.mark | Item [mark index](#Mark).  | 
 
 <a name="selectbuy"/>
 
