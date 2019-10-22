@@ -34,9 +34,10 @@ window.Logger = function(init){
   self.LOG_CATEGORY_EMOTE               = ENUM; ENUM++;
   self.LOG_CATEGORY_FARMFAIL            = ENUM; ENUM++;
   self.LOG_CATEGORY_BLOOM               = ENUM; ENUM++;
-  self.LOG_CATEGORY_FARMHARVESTED        = ENUM; ENUM++;
+  self.LOG_CATEGORY_FARMHARVESTED       = ENUM; ENUM++;
   self.LOG_CATEGORY_MILKPRODUCED        = ENUM; ENUM++;
   self.LOG_CATEGORY_POOPPRODUCED        = ENUM; ENUM++;
+  self.LOG_CATEGORY_DEBUG               = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
   ENUM = 0; 
@@ -595,6 +596,10 @@ window.Logger = function(init){
     let log_data = self.tile_data(t);
     self.send_log(log_data, self.LOG_CATEGORY_MILKPRODUCED);
   }
+  self.debug = function(){
+    let log_data = {};
+    self.send_log(log_data, self.LOG_CATEGORY_DEBUG);
+  }
 
 
 
@@ -762,7 +767,7 @@ window.Logger = function(init){
 
   self.detailed_data = function(){
     switch(gg.inspector.detailed_type){
-      case INSPECTOR_CONTENT_NULL:      break;
+      case INSPECTOR_CONTENT_NULL:      return [];
       case INSPECTOR_CONTENT_TILE:      return self.tile_data_short(gg.inspector.detailed);
       case INSPECTOR_CONTENT_ITEM:      return self.item_data_short(gg.inspector.detailed);
       case INSPECTOR_CONTENT_FARMBIT:   return self.farmbit_data_short(gg.inspector.detailed);

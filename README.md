@@ -18,6 +18,7 @@ Versions:
 9. Fix bug in itemusechange. Previously the itemusechange log did not include a label "item" for the "item" field. Now it does. (9/4/2019)
 10. Simple log now sends player_id (if present) from the URL to log.php (9/24/2019)
 11. Introduces log indices 24-29. Removes history logs. Changes emote history into separate emote logs. Produced logs now in separate logs. New logs for bloom and farmfail. (10/16/2019)
+12. Introduces log index 30, debug. Also fixes an issue where gamestate's curr_selection_data key would not exist. (Detailed_data would not send a return value if the inspector is not open, and the key would not be assigned a value. Now it returns [] if the inpsector is not open). (10/22/2019)
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -50,6 +51,7 @@ Versions:
 1. [farmharvested](#farmharvested)
 1. [milkproduced](#milkproduced)
 1. [poopproduced](#poopproduced)
+1. [debug] (#debug)
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -96,7 +98,7 @@ Versions:
 | num_checkpoints_completed | get_num_checkpoints_completed() | Number of tutorials began + number of tutorial ended. Includes tutorials skipped.   |
 | raining | gg.b.raining | Boolean - currently raining or not.  |
 | curr_selection_type | gg.inspector.detailed_type |Current selection [inspector content](#InspectorContent) index. (Note that because the game currently (as of 7/25) logs gamestate only after buys, this will always be the type of tile.)  |
-| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type. (Warning: this field will not exist if current_selection_type is 0, i.e. there is nothing selected.)  |
+| curr_selection_data | detailed_data() | SelectFarmbit/SelectItem/SelectTile data, depending on the curr_selection_type. (Warning: Prior to v12, this field will not exist if current_selection_type is 0, i.e. there is nothing selected.)  |
 | camera_center | prev_center_txty | Tile that the game is currently centered on.  |
 | gametime | time | Metric to count speed-adjusted time. Based on number of ticks. |
 | timestamp | now | current client time  |
@@ -327,7 +329,7 @@ Note: a blurb is an utterance from an advisor.
 #### emote (index=24)
 *Introduced in v11.*
 
-| Index | Name | Description |
+| Key | Value | Description |
 | --- | --- | --- | 
 | farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
 | emote_enum | emote_id | See [emotes](#Emotes).  | 
@@ -338,7 +340,7 @@ Note: a blurb is an utterance from an advisor.
 *Introduced in v11.*
 Occurs when a growing farm's nutrition turns from pink to black (*nutrition < nutrition_desperate*).
 
-| Index | Name | Description |
+| Key | Value | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Farm that failed. See [Data Short](#DataShort).  |
 | marks | t.marks | Farm [mark indices](#Mark).  | 
@@ -349,7 +351,7 @@ Occurs when a growing farm's nutrition turns from pink to black (*nutrition < nu
 *Introduced in v11.*
 Occurs after rainfall for each lake tile that bloomed during the rain. Blooming is controlled by nutrition and defined as *nutrition > water_fouled_threshhold*, which is when the lake tile turns green.
 
-| Index | Name | Description |
+| Key | Value | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | See [Data Short](#DataShort).  |
 | marks | t.marks | Not relevant to lake tiles. Included for uniformity.  | 
@@ -359,7 +361,7 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 #### farmharvested (index=27)
 *Introduced in v11.*
 
-| Index | Name | Description |
+| Key | Value | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Farm that produced corn. See [Data Short](#DataShort).  |
 | marks | t.marks | Tile [mark indices](#Mark).  | 
@@ -369,7 +371,7 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 #### milkproduced (index=28)
 *Introduced in v11.*
 
-| Index | Name | Description |
+| Key | Value | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Dairy that produced milk. See [Data Short](#DataShort).  |
 | marks | t.marks | Tile [mark indices](#Mark).  | 
@@ -379,10 +381,20 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 #### poopproduced (index=29)
 *Introduced in v11.*
 
-| Index | Name | Description |
+| Key | Value | Description |
 | --- | --- | --- | 
 | tile | tile_data_short(t) | Dairy that produced poop. See [Data Short](#DataShort).  |
 | marks | t.marks | Tile [mark indices](#Mark).  | 
+
+<a name="debug"/>
+
+#### debug (index=30)
+*Introduced in v12.*
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| (none) |  | Event itself means that someone has used "spyparty" to enter debug mode. |
+
 
 
 ## Enumerators and Constants
