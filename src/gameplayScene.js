@@ -49,6 +49,7 @@ var GamePlayScene = function()
           b.tile = t;
           gg.b.tiles_tw(t,b);
           gg.farmbits.push(b);
+          my_logger.new_farmbit(b);
           job_for_b(b);
           b.home = closest_unlocked_state_tile_from_list(b.tile, TILE_STATE_HOME_VACANT, gg.b.tile_groups[TILE_TYPE_HOME]);
           if(b.home) b.home.state = TILE_STATE_HOME_OCCUPIED;

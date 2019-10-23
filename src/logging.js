@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",12);
+  self.mySlog = new slog("LAKELAND",13);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -38,6 +38,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_MILKPRODUCED        = ENUM; ENUM++;
   self.LOG_CATEGORY_POOPPRODUCED        = ENUM; ENUM++;
   self.LOG_CATEGORY_DEBUG               = ENUM; ENUM++;
+  self.LOG_CATEGORY_NEWFARMBIT          = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
   ENUM = 0; 
@@ -363,7 +364,9 @@ window.Logger = function(init){
       my_logger.endgame();
     }
     self.send_log(log_data, self.LOG_CATEGORY_STARTGAME);
-    if(log_data.continue){}
+    if(log_data.continue){
+      self.gamestate()
+    }
   }
 
   self.gtag = function(arguments){ // checkpoint
@@ -599,6 +602,10 @@ window.Logger = function(init){
   self.debug = function(){
     let log_data = {};
     self.send_log(log_data, self.LOG_CATEGORY_DEBUG);
+  }
+  self.new_farmbit = function(f){
+    let log_data = self.farmbit_data(f)
+    self.send_log(log_data, self.LOG_CATEGORY_NEWFARMBIT)
   }
 
 
