@@ -19,6 +19,7 @@ Versions:
 10. Simple log now sends player_id (if present) from the URL to log.php (9/24/2019)
 11. Introduces log indices 24-29. Removes history logs. Changes emote history into separate emote logs. Produced logs now in separate logs. New logs for bloom and farmfail. (10/16/2019)
 12. Introduces log index 30, debug. Also fixes an issue where gamestate's curr_selection_data key would not exist. (Detailed_data would not send a return value if the inspector is not open, and the key would not be assigned a value. Now it returns [] if the inpsector is not open). (10/22/2019)
+13. Introduces log index 31, newfarmbit. Also now always sends a "gamestate" log immediately after any "startgame" log (10/23/2019)
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -51,7 +52,8 @@ Versions:
 1. [farmharvested](#farmharvested)
 1. [milkproduced](#milkproduced)
 1. [poopproduced](#poopproduced)
-1. [debug] (#debug)
+1. [debug](#debug)
+1. [newfarmbit](#newfarmbit)
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -360,6 +362,7 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 
 #### farmharvested (index=27)
 *Introduced in v11.*
+Occurs when a farmbit harvests a farm (and thus produces 2 corn).
 
 | Key | Value | Description |
 | --- | --- | --- | 
@@ -370,6 +373,7 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 
 #### milkproduced (index=28)
 *Introduced in v11.*
+Occurs when a dairy produces milk.
 
 | Key | Value | Description |
 | --- | --- | --- | 
@@ -380,6 +384,7 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 
 #### poopproduced (index=29)
 *Introduced in v11.*
+Occurs when a dairy produces poop.
 
 | Key | Value | Description |
 | --- | --- | --- | 
@@ -390,10 +395,21 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 
 #### debug (index=30)
 *Introduced in v12.*
+Occurs when someone enters "spyparty" on the keyboard.
 
 | Key | Value | Description |
 | --- | --- | --- | 
 | (none) |  | Event itself means that someone has used "spyparty" to enter debug mode. |
+
+<a name="newfarmbit"/>
+
+#### newfarmbit (index=31)
+*Introduced in v13.*
+Occurs when a new farmbit enters the game.
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
 
 
 
@@ -428,7 +444,14 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 |21| rainstopped| |
 |22| history| |
 |23| endgame| |
-
+|24| emote| |
+|25| farmfail| |
+|26| bloom| |
+|27| farmharvested| |
+|28| milkproduced| |
+|29| poopproduced| |
+|30| debug| |
+|31| newfarmbit| |
 
 <a name="Emotes"/>
 
