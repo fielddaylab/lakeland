@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",13);
+  self.mySlog = new slog("LAKELAND",14);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -46,7 +46,7 @@ window.Logger = function(init){
   self.LOG_EMOTE_FULLNESS_MOTIVATED     = ENUM; ENUM++;
   self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT = "I'm hungry";
   self.LOG_EMOTE_FULLNESS_DESPERATE     = ENUM; ENUM++;
-  self.LOG_EMOTE_FULLNESS_DESPERATE_TXT = "I NEED FOOD";
+  self.LOG_EMOTE_FULLNESS_DESPERATE_TXT = "I NEED FOOD!";
   self.LOG_EMOTE_ENERGY_DESPERATE       = ENUM; ENUM++;
   self.LOG_EMOTE_ENERGY_DESPERATE_TXT   = "I need a nap!";
   self.LOG_EMOTE_JOY_MOTIVATED          = ENUM; ENUM++;

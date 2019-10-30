@@ -20,6 +20,7 @@ Versions:
 11. Introduces log indices 24-29. Removes history logs. Changes emote history into separate emote logs. Produced logs now in separate logs. New logs for bloom and farmfail. (10/16/2019)
 12. Introduces log index 30, debug. Also fixes an issue where gamestate's curr_selection_data key would not exist. (Detailed_data would not send a return value if the inspector is not open, and the key would not be assigned a value. Now it returns [] if the inpsector is not open). (10/22/2019)
 13. Introduces log index 31, newfarmbit. Also now always sends a "gamestate" log immediately after any "startgame" log (10/23/2019)
+14. Small typo fix. Previously the fullness desperate emote (I NEED FOOD!) did not match the logging category (I NEED FOOD). For v13 logs, please reassign any null (index=0) emotes to fullness desperate (index=2) emotes. (10/30/2019)
 
 ### Event Categories
 0. [gamestate](#gamestate)
