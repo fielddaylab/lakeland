@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",14);
+  self.mySlog = new slog("LAKELAND",15);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -72,7 +72,7 @@ window.Logger = function(init){
   //Local variables, Getters and Setters
   self.buy_hovers = [];
   self.buy_hover = function(t){
-    self.buy_hovers.push(self.tile_data_short(t).concat([Date.now()]));
+    self.buy_hovers.push(self.tile_data_short(t).concat([gg.b.placement_valid(t, gg.shop.selected_buy) ? 1:0, Date.now()]));
   }
 
   self.flush_buy_hovers = function(now){

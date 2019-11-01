@@ -21,6 +21,7 @@ Versions:
 12. Introduces log index 30, debug. Also fixes an issue where gamestate's curr_selection_data key would not exist. (Detailed_data would not send a return value if the inspector is not open, and the key would not be assigned a value. Now it returns [] if the inpsector is not open). (10/22/2019)
 13. Introduces log index 31, newfarmbit. Also now always sends a "gamestate" log immediately after any "startgame" log (10/23/2019)
 14. Small typo fix. Previously the fullness desperate emote (I NEED FOOD!) did not match the logging category (I NEED FOOD). For v13 logs, please reassign any null (index=0) emotes to fullness desperate (index=2) emotes. (10/30/2019)
+15. Add placement_valid to each buy hover (11/1/2019).
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -183,7 +184,7 @@ Note: Buys are logged whether the buy was a success or not.
 | buy | gg.shop.selected_buy | [Buy index](#Buys).  |
 | tile | tile_data_short(gg.b.hover_t) | [Data Short](#DataShort) for the tile the buy will be placed on.   |
 | success | gg.b.placement_valid(gg.b.hover_tgg.shop.selected_buy) | Boolean. Whether the buy can be put on the tile. If not, buy fails.  |
-| buy_hovers | flush_buy_hovers(now) |  List of tile [Data Short](#DataShort) appended with client time before now for each hovered tile since either selectbuy log or the previous buy log. | 
+| buy_hovers | flush_buy_hovers(now) |  List of tile [Data Short](#DataShort) appended with placement_valid (boolean denoting whether player can build in that tile, only sent in logging v15+) and client time before now for each hovered tile since either selectbuy log or the previous buy log. | 
 | client_time | now | current client time  |
 
 
