@@ -34,7 +34,7 @@ loc[lang]["item_Corn"] = "Mais";
 loc[lang]["item_Manure"] = "Dung";
 loc[lang]["item_Milk"] = "Milch";
 loc[lang]["item_Fertilizer"] = "Dünger";
-loc[lang]["item_Count"] = "Count";        !!!!!
+loc[lang]["item_Count"] = "Count";        //!!!!!
 
 loc[lang]["job_Null"] = "Null";
 loc[lang]["job_Idle"] = "Untätig";
@@ -47,7 +47,7 @@ loc[lang]["job_Harvest"] = "Ernte";
 loc[lang]["job_Fertilize"] = "Dünge";
 loc[lang]["job_Milk"] = "Melke";
 loc[lang]["job_Export"] = "Verkaufe";
-loc[lang]["job_Count"] = "Anzahl";   !!!!!
+loc[lang]["job_Count"] = "Anzahl";   //!!!!!
 
 loc[lang]["jobstate_Null"] = "Null";
 loc[lang]["jobstate_Get"] = "Holt";
@@ -60,7 +60,7 @@ loc[lang]["jobstate_Null"] = "Null";
 loc[lang]["tilestate_Null"] = "Null";
 loc[lang]["tilestate_Vacant"] = "Frei";
 loc[lang]["tilestate_Occupied"] = "Besetzt";
-loc[lang]["tilestate_Unplanted"] = "Unbepflanzt"; !!!!
+loc[lang]["tilestate_Unplanted"] = "Unbepflanzt"; //!!!!
 loc[lang]["tilestate_Planted"] = "Bepflanzt";
 loc[lang]["tilestate_Grown"] = "Wächst";
 loc[lang]["tilestate_Digesting"] = "Verdaut";
@@ -171,7 +171,7 @@ loc[lang]["misc_MayorAdvisor:"] = "Bürgermeister-Berater:";
 loc[lang]["misc_BusinessAdvisor:"] = "Wirtschaft-Berater:";
 loc[lang]["misc_FarmAdvisor:"] = "Bauernhof-Berater:";
 
-loc[lang]["tut_Shouldn'tbetoohard.LikeIsaid,peoplelovedemlakes!"] = „Sollte nicht zu schwer sein. Wie gesagt, die Leute lieben Seen!";
+loc[lang]["tut_Shouldn'tbetoohard.LikeIsaid,peoplelovedemlakes!"] = "Sollte nicht zu schwer sein. Wie gesagt, die Leute lieben Seen!";
 loc[lang]["tut_It'syourjobtakeep'emaliveandhappy!"] = "Es ist deine Aufgabe sie am Leben halten und Glücklich zu machen!";
 loc[lang]["tut_Clickonyourpeopletoseehowthey'redoin'."] = "Klicke deine Leute an um zu sehen wie es ihnen geht.";
 loc[lang]["tut_movedintoyourtown!"] = " ist in deine Stadt gezogen!";

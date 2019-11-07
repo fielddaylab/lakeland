@@ -453,6 +453,66 @@ function ToggleBox(x,y,w,h,val,callback)
   }
 }
 
+function MultiToggleBox(x,y,w,h,val,nval,callback)
+//register to presser *or* clicker
+{
+  var self = this;
+  self.x = x;
+  self.y = y;
+  self.w = w;
+  self.h = h;
+
+  self.on = val;
+  self.non = nval;
+  self.down = false;
+
+  self.press = function(evt)
+  {
+    evt.hit_ui = true;
+    self.down = true;
+  }
+  self.unpress = function(evt)
+  {
+    evt.hit_ui = true;
+    self.down = false;
+    self.toggle();
+  }
+
+  self.click = function(evt)
+  {
+    evt.hit_ui = true;
+    self.toggle();
+  }
+
+  self.toggle = function()
+  {
+    self.on = (self.on+1)%self.non;
+    callback(self.on);
+  }
+  self.set = function(n)
+  {
+    self.on = n;
+    callback(self.on);
+  }
+
+  self.draw = function(canv)
+  {
+    if(self.down) canv.context.strokeStyle = "#00F400";
+    else          canv.context.strokeStyle = "#000000";
+
+    if(self.on) canv.context.fillStyle = "#00F400";
+    else        canv.context.fillStyle = "#FFFFFF";
+
+    canv.context.fillRect(self.x,self.y,self.w,self.h);
+    canv.context.strokeRect(self.x+0.5,self.y+0.5,self.w,self.h);
+  }
+
+  self.print = function()
+  {
+    console.log("("+self.x+","+self.y+","+self.w+","+self.h+") o:"+self.on+" d:"+self.down+" "+"");
+  }
+}
+
 function SliderBox(x,y,w,h,min_val,max_val,val,callback)
 //register to dragger
 {

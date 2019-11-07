@@ -54,7 +54,7 @@ var MenuScene = function()
     self.credits_btn  = new ButtonBox(0,0,0,0,function(){ tocredits = 1; next = 1; });
     self.audio_toggle      = new ToggleBox(0,0,0,0,AUDIO,function(o){ AUDIO = o; if(AUDIO) gg.aud_wrangler.play_music(); else gg.aud_wrangler.stop_music(); });
     self.fullscreen_toggle = new ToggleBox(0,0,0,0,0,function(o){ /*hijack me from realtime!*/ if(o) fullscreen(); else unfullscreen(); });
-    self.language_toggle = new ToggleBox(0,0,0,0,0,function(o){ if(o) lang = "es"; else lang = "en"; });
+    self.language_toggle = new MultiToggleBox(0,0,0,0,0,3,function(o){ if(o == 0) lang = "en"; else if(o == 1) lang = "es"; else if(o == 2) lang = "de"; });
     self.resize();
   };
 
@@ -119,8 +119,9 @@ var MenuScene = function()
                                   drawImageBB(uncheck_img,self.language_toggle,ctx);
     fs = gg.font_size;
     ctx.font = fs+"px "+gg.font;
-    if(self.language_toggle.on)   ctx.fillText("ES",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
-    else                          ctx.fillText("EN",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
+         if(self.language_toggle.on == 0) ctx.fillText("EN",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
+    else if(self.language_toggle.on == 1) ctx.fillText("ES",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
+    else if(self.language_toggle.on == 2) ctx.fillText("DE",self.language_toggle.x+5*gg.stage.s_mod,self.language_toggle.y+self.language_toggle.h-10*gg.stage.s_mod);
     fs = gg.font_size*2;
     ctx.font = fs+"px "+gg.font;
     ctx.fillText(loc[lang]["menu_MUSICFX"],self.audio_toggle.x+self.audio_toggle.w+5*gg.stage.s_mod,self.audio_toggle.y+self.audio_toggle.h-5*gg.stage.s_mod);
