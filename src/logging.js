@@ -355,10 +355,17 @@ window.Logger = function(init){
       tile_states: tile_states,
       tile_nutritions: tile_nutritions,
       continue: gg.continue_ls ? 1: 0,
-      language: g.scenes[1].language_toggle.on ? 'espanol':'english',
+      language:
+        (function(){
+          switch(g.scenes[1].language_toggle.on)
+          {
+            case 0: return 'english'; break;
+            case 1: return 'espanol'; break;
+            case 2: return 'deutsche'; break;
+          }
+        })(),
       audio: AUDIO ? 1: 0,
       fullscreen: g.scenes[1].fullscreen_toggle.on ? 1: 0
-      
     };
     window.onbeforeunload = function(){
       my_logger.endgame();
