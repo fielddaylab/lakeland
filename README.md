@@ -118,7 +118,7 @@ Versions:
 | tile_states | tile_states | 2500 element array of tile state indices.  |
 | tile_nutritions | tile_nutritions |   2500 element array of tile nutritions on a scale 0-255. | 
 | continue | gg.continue_ls ? 1: 0 | 1/0 boolean to indicate whether the player continued or not |
-| language | g.scenes[1].language_toggle.on ? 'espanol':'english' | language of the game  |
+| language | english, espanol, or deutsche | language of the game  |
 | audio | AUDIO ? 1: 0 | 1/0 boolean to indicate whether audio was toggled on or not |
 | fullscreen | g.scenes[1].fullscreen_toggle.on ? 1:  | 1/0 boolean to indicate whether the game was toggled into fullscreen whether or not |
 
