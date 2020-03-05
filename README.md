@@ -113,6 +113,8 @@ Versions:
 <a name="startgame"/>
 
 #### startgame (index=1)
+Note: In continues, games will first generate farmbits ([newfarmbit]#newfarmbit) before sending a [startgame](#startgame) log.
+
 | Key | Value | Description |
 | --- | --- | --- |
 | tile_states | tile_states | 2500 element array of tile state indices.  |
@@ -138,7 +140,7 @@ Checkpoints are the google analytics events. As of 8/14/19 these are always tuto
 <a name="selecttile"/>
 
 #### selecttile (index=3)
-Note selections may happen automatically by advisors in the tutorials.
+Note: Selections may happen automatically by advisors in the tutorials.
 
 | Key | Value | Description |
 | --- | --- | --- |
@@ -408,6 +410,7 @@ Occurs when someone enters "spyparty" on the keyboard.
 #### newfarmbit (index=31)
 *Introduced in v13.*
 Occurs when a new farmbit enters the game.
+Note: In continues, games will first generate farmbits ([newfarmbit]#newfarmbit) before sending a [startgame](#startgame) log.
 
 | Key | Value | Description |
 | --- | --- | --- | 
