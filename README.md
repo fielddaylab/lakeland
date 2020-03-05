@@ -113,7 +113,7 @@ Versions:
 <a name="startgame"/>
 
 #### startgame (index=1)
-Note: In continues, games will first generate farmbits ([newfarmbit]#newfarmbit) before sending a [startgame](#startgame) log.
+Note: In continues, games will first generate farmbits ([newfarmbit](#newfarmbit)) before sending a [startgame](#startgame) log.
 
 | Key | Value | Description |
 | --- | --- | --- |
@@ -410,7 +410,7 @@ Occurs when someone enters "spyparty" on the keyboard.
 #### newfarmbit (index=31)
 *Introduced in v13.*
 Occurs when a new farmbit enters the game.
-Note: In continues, games will first generate farmbits ([newfarmbit]#newfarmbit) before sending a [startgame](#startgame) log.
+Note: In continues, games will first generate farmbits ([newfarmbit](#newfarmbit)) before sending a [startgame](#startgame) log.
 
 | Key | Value | Description |
 | --- | --- | --- | 
