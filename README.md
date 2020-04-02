@@ -554,36 +554,36 @@ Achievements is stored as a 16 element boolean array, true if the achievement ha
 <a name="Tutorials"/>
 
 #### Tutorials 
-There are 26 begins and 26 ends. In the constants for the feature extractor, these tutorials are assigned indices alphabetically. Tutorials may happen in any order, but the tutorials with descriptions tutorial 1-6 must be completed in order, and are considered "tutorial mode". Players cannot achieve a sustainable farm without completing all 6.
+There are 26 begins and 26 ends. In the constants for the feature extractor, these tutorials are assigned indices alphabetically. Tutorials may happen in any order, but the tutorials with descriptions tutorial 1-11 must be completed in order, and are considered "tutorial mode". Players cannot achieve a sustainable farm without completing the first 6. Rain does not begin until all 11 are completed.
 
-| Index | Name | Description |
-| --- | --- | --- | 
-|0| another_death| |
-|1| another_member| |
-|2| bloom| |
-|3| build_a_farm| tutorial 3 |
-|4| build_a_house| tutorial 1 |
-|5| buy_fertilizer| tutorial 6 |
-|6| buy_food| tutorial 2|
-|7| buy_livestock | (not 100% necessary, but can be thought of as tutorial 7) |
-|8| death| |
-|9| end_life| |
-|10| extra_life| |
-|11| final_death| |
-|12| flooded_fertilizer| |
-|13| gross| |
-|14| gross_again| |
-|15| livestock| |
-|16| long_travel| |
-|17| low_nutrients| |
-|18| mass_sadness| |
-|19| poop| |
-|20| rain| |
-|21| sell_food| tutorial 5 |
-|22| successful_harvest| |
-|23| timewarp| tutorial 4 |
-|24| unattended_farm| |
-|25| unused_fertilizer| |
+| Index | Name | Description | Trigger |
+| --- | --- | --- |  --- |
+|0| another_death| |  |
+|1| another_member| |  |
+|2| bloom| |  |
+|3| build_a_farm| tutorial 3 | tut2 end |
+|4| build_a_house| tutorial 1  | (None) |
+|5| buy_fertilizer| tutorial 7 | tut6 end, exists a farm which has nutrition < nutrition_motivated  |
+|6| buy_food| tutorial 2 | tut1 end |
+|7| buy_livestock | tutorial 8 |  tut7 end, 2+ farms on map|
+|8| death| |  |
+|9| end_life| |  |
+|10| extra_life| |  |
+|11| final_death| |  |
+|12| flooded_fertilizer| |  |
+|13| gross| |  |
+|14| gross_again| |  |
+|15| livestock| tutorial 9 | tut8 end, 1+ livestock on map  |
+|16| long_travel| |  |
+|17| low_nutrients| |  |
+|18| mass_sadness| |  |
+|19| poop| tutorial 10 | tut9 end, 1+ poop on map (distinct from fertilizer) |
+|20| rain| tutorial 11 | tut10 end, 1000 (game?) time units passed |
+|21| sell_food| tutorial 6 | tut5 end  |
+|22| successful_harvest| tutorial 5 | tut4 end, 1+ food on map, 1+ farm on map |
+|23| timewarp| tutorial 4 | tut3 end  |
+|24| unattended_farm| |  |
+|25| unused_fertilizer| |  |
 
 
 <a name="Thing_Type"/>
