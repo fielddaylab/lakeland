@@ -23,6 +23,8 @@ var Game = function(init)
 
   self.resize_requested = 0;
   self.resize_args = 0;
+
+  self.reset_clicked = false;
   self.request_resize = function(args)
   {
     self.resize_requested = 10;
@@ -59,6 +61,7 @@ var Game = function(init)
   {
     requestAnimationFrame(tick);
 
+    console.log(self.reset_clicked);
     if(self.resize_requested)
     {
       self.resize_requested--;
@@ -86,6 +89,11 @@ var Game = function(init)
     self.scenes[scene_i].cleanup();
     scene_i = i;
     self.scenes[scene_i].ready();
+  }
+
+  self.getScene = function()
+  {
+    return scene_i;
   }
 
 };

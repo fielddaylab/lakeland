@@ -32,6 +32,7 @@ var ADVISOR_TYPE_BUSINESS = ENUM; ENUM++;
 var ADVISOR_TYPE_FARMER   = ENUM; ENUM++;
 var ADVISOR_TYPE_COUNT    = ENUM; ENUM++;
 
+
 var draw_nutrition_bar = function(x,y,w,n,color)
 {
   var ox = x;
@@ -1792,6 +1793,48 @@ var inspector = function()
   }
 }
 
+var reset = function()
+{
+  var self = this;
+
+  self.resize = function()
+  {
+    self.pad = 10*gg.stage.s_mod;
+    
+
+    self.w = gg.canvas.width/3;
+    self.h = self.w;
+    self.x = gg.canvas.width/2-self.w/3;
+    self.y = gg.canvas.height/2-self.h/3;
+
+    self.reset_btn.w = 30*gg.stage.s_mod;
+    self.reset_btn.h = 30*gg.stage.s_mod;
+    self.reset_btn.x = gg.canvas.width-self.w-self.pad;
+    self.reset_btn.y = self.pad;
+  }
+  self.reset_btn = new ButtonBox(0,0,0,0,function(){  gg.continue_ls = 0; self.setClicked(); gg.game.setScene(2);});
+  self.resize();
+
+  self.setClicked = function() {
+    gg.game.reset_clicked = true;
+  }
+
+  self.click = function() {
+  }
+
+  self.draw = function() {
+    gg.ctx.drawImage(badge_money_img,self.reset_btn.x,self.reset_btn.y,self.reset_btn.w,self.reset_btn.h);
+  }
+
+  self.filter = function(filter)
+  {
+    var check = true;
+    if(check) check = !filter.filter(self.reset_btn);
+    return !check;
+  }
+
+}
+
 var achievements = function()
 {
   var self = this;
@@ -2496,6 +2539,7 @@ var advisors = function()
   self.another_death = function()
   {
     if(!gg.farmbits.length) { self.pool_thread(function(){ return 1; }, tut_final_death); return; }
+    if(!gg.farmbits.length) { self.pool_thread(function(){ return 1; }, tut_final_death, gg.continue_ls=0); return; }
 
     if(self.thread == tut_another_death) return;
     for(var i = 0; i < self.trigger_threads.length; i++)
@@ -4960,9 +5004,17 @@ var advisors = function()
     },
     tfunc, //shouldsim
 
+
   ];
 
   self.first_thread = tut_build_a_house;
   self.pool_thread(tfunc,self.first_thread);
 }
 
+/**
+ * function() {if(gg.game.reset_clicked && gg.game.getScene() == 3) {
+      self.skip_all_tutorials();
+      gg.game.reset_clicked = false;
+      console.log("WENT HERE");
+    }},
+ */
