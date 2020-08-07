@@ -1812,7 +1812,7 @@ var reset = function()
     self.reset_btn.x = gg.canvas.width-self.w-self.pad;
     self.reset_btn.y = self.pad;
   }
-  self.reset_btn = new ButtonBox(0,0,0,0,function(){  gg.continue_ls = 0; self.setClicked(); gg.game.setScene(2);});
+  self.reset_btn = new ButtonBox(0,0,0,0,function(){  gg.continue_ls = 0; self.setClicked(); gg.game.setScene(3);});
   self.resize();
 
   self.setClicked = function() {
@@ -1980,6 +1980,7 @@ var achievements = function()
         for(var j = 0; j < cols; j++)
         {
           t = self.triggers[i*cols+j];
+          console.log(t)
           if(!t) continue
           if(!t.local) gg.ctx.globalAlpha = 0.5;
           if(t.local && t.onimg)
@@ -2538,7 +2539,7 @@ var advisors = function()
   }
   self.another_death = function()
   {
-    if(!gg.farmbits.length) { self.pool_thread(function(){ return 1; }, tut_final_death); return; }
+    console.log("FARMBIT HERE IS", gg.farmbits.length);
     if(!gg.farmbits.length) { self.pool_thread(function(){ return 1; }, tut_final_death, gg.continue_ls=0); return; }
 
     if(self.thread == tut_another_death) return;
@@ -3556,6 +3557,7 @@ var advisors = function()
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'final_death'});
     },
     tfunc, //shouldsim
+    
 
   ];
 
@@ -5003,6 +5005,7 @@ var advisors = function()
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_house'});
     },
     tfunc, //shouldsim
+
 
 
   ];
