@@ -1823,7 +1823,7 @@ var reset = function()
   }
 
   self.draw = function() {
-    gg.ctx.drawImage(badge_money_img,self.reset_btn.x,self.reset_btn.y,self.reset_btn.w,self.reset_btn.h);
+    gg.ctx.drawImage(reset_img ,self.reset_btn.x,self.reset_btn.y,self.reset_btn.w,self.reset_btn.h);
   }
 
   self.filter = function(filter)
