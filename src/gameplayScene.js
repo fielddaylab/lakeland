@@ -143,7 +143,9 @@ var GamePlayScene = function()
   self.tick = function(times)
   {
     if(gg.reset.filter(gg.clicker)){
-      return;
+      if(gg.reset.reset_game){
+        return;
+      }
     }
     switch(gg.speed)
     {

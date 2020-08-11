@@ -1800,23 +1800,30 @@ var reset = function()
   self.resize = function()
   {
     self.pad = 10*gg.stage.s_mod;
-    
-
+    self.reset_game = false;
     self.w = gg.canvas.width/3;
     self.h = self.w;
     self.x = gg.canvas.width/2-self.w/3;
     self.y = gg.canvas.height/2-self.h/3;
 
-    self.reset_btn.w = 30*gg.stage.s_mod;
-    self.reset_btn.h = 30*gg.stage.s_mod;
+    self.reset_btn.w = 110*gg.stage.s_mod;
+    self.reset_btn.h = 60*gg.stage.s_mod;
     self.reset_btn.x = gg.canvas.width-self.w-self.pad;
-    self.reset_btn.y = self.pad;
+    self.reset_btn.y = gg.canvas.height-self.h/5-self.pad;
   }
-  self.reset_btn = new ButtonBox(0,0,0,0,function(){  gg.continue_ls = 0; self.setClicked(); gg.game.setScene(3);});
+  self.reset_btn = new ButtonBox(0,0,0,0,function(){ 
+    self.setClicked();
+  });
   self.resize();
 
   self.setClicked = function() {
-    gg.game.reset_clicked = true;
+    if (confirm("Are you sure you want to reset the game? Your progress wil be lost.")) {
+      gg.game.setScene(3);
+      self.reset_game = true;
+    }
+    else {
+      self.reset_game = false;
+    }
   }
 
   self.click = function() {
