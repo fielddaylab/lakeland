@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",15);
+  self.mySlog = new slog("LAKELAND",16);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -39,6 +39,9 @@ window.Logger = function(init){
   self.LOG_CATEGORY_POOPPRODUCED        = ENUM; ENUM++;
   self.LOG_CATEGORY_DEBUG               = ENUM; ENUM++;
   self.LOG_CATEGORY_NEWFARMBIT          = ENUM; ENUM++;
+  self.LOG_CATEGORY_AVAILABLEFOOD       = ENUM; ENUM++;
+  self.LOG_CATEGORY_MONEYRATE           = ENUM; ENUM++;
+  self.LOG_CATEGORY_SADFARMBITS         = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
   ENUM = 0; 
@@ -388,6 +391,31 @@ window.Logger = function(init){
     }
   }
 
+  self.sadfarmbits = function(sad) {
+    let log_data = {
+      sad: sad,
+      farmbit: gg.farmbits.length,
+      sad_perfarmbit:sad/gg.farmbits.length
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_SADFARMBITS);
+  }
+
+  self.availablefood = function(food) {
+    let log_data = {
+      food: food,
+      farmbit: gg.farmbits.length,
+      food_perfarmbit: food/gg.farmbits.length,
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_AVAILABLEFOOD);
+  }
+
+  self.moneyrate = function(money, rate) {
+    let log_data = {
+      money: money,
+      rate: rate,
+    }
+    self.send_log(log_data, self.LOG_CATEGORY_MONEYRATE);
+  }
   self.select_tile = function(t){
     if(gg.shop.selected_buy){ self.buy_hover(t); }
     else 

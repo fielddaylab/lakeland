@@ -1808,15 +1808,15 @@ var reset = function()
 
     self.reset_btn.w = 110*gg.stage.s_mod;
     self.reset_btn.h = 60*gg.stage.s_mod;
-    self.reset_btn.x = gg.canvas.width-self.w-self.pad;
+    self.reset_btn.x = gg.canvas.width-self.w/2.5-self.pad;
     self.reset_btn.y = gg.canvas.height-self.h/5-self.pad;
   }
   self.reset_btn = new ButtonBox(0,0,0,0,function(){ 
-    self.setClicked();
+    self.reset_clicked();
   });
   self.resize();
 
-  self.setClicked = function() {
+  self.reset_clicked = function() {
     if (confirm("Are you sure you want to reset the game? Your progress wil be lost.")) {
       gg.game.setScene(3);
       self.reset_game = true;
@@ -2737,6 +2737,7 @@ var advisors = function()
           gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+loc[lang]["misc_%sad"],x+w/2,y+fs*4+self.pad);
         }
         else gg.ctx.fillText(loc[lang]["misc_0%sad"],x+w/2,y+fs*4+self.pad);
+        setInterval(my_logger.sadfarmbits(sad), 5000);
       }
       x += w*1.1;
       if(self.business_active)
@@ -2744,6 +2745,7 @@ var advisors = function()
         gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h*1.05);
         var permin = 60*60;
         gg.ctx.fillText(floor(self.money_rate*permin)+loc[lang]["misc_$/min"],x+w/2,y+fs*3+self.pad/2);
+        setInterval(my_logger.moneyrate(self.money_rate,self.money_rate*permin),5000);
       }
       x += w*1.1;
       if(self.farmer_active)
@@ -2758,6 +2760,7 @@ var advisors = function()
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
         gg.ctx.fillText(gg.food+loc[lang]["misc_food"], x+w/2, y+fs*3+self.pad/2);
         gg.ctx.fillText(loc[lang]["misc_available"], x+w/2, y+fs*4+self.pad);
+        setInterval(my_logger.availablefood(gg.food),5000);
       }
       x += w*1.1;
     }

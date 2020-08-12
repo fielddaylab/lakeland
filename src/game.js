@@ -60,8 +60,6 @@ var Game = function(init)
   var tick = function(cur_t)
   {
     requestAnimationFrame(tick);
-
-    console.log(self.reset_clicked);
     if(self.resize_requested)
     {
       self.resize_requested--;
