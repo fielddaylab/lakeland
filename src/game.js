@@ -19,25 +19,7 @@ var Game = function (init) {
   gg.mrate_tick = 0;
   gg.sadf_tick = 0;
   gg.israining = false;
-  var intervalID = 0;
-  var wait = ms => new Promise(
-    r => setTimeout(r, ms)
-  );
-
-  gg.repeat = (ms, func) => new Promise(
-    r => (
-      intervalID = setInterval(func, ms),
-      wait(ms).then(r)
-    )
-  );
   
-  gg.stopAfter5Secs = () => new Promise(
-    r => r(setTimeout(() => {
-      clearInterval(intervalID);
-      console.log('repeat end')
-    }, 5000))
-  );
-
   self.dpr = window.devicePixelRatio ? window.devicePixelRatio : 1;
   var sargs = { width: init.width, height: init.height, container: init.container, dpr: self.dpr, smoothing: 1 }
   gg.stage = new Stage(sargs);
