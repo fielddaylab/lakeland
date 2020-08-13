@@ -2793,6 +2793,7 @@ var board = function()
   self.save_t = 0;
   self.tick = function()
   {
+    gg.tick_counter++;
     if(self.autorain)
     {
       self.rain_t++;

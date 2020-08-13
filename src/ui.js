@@ -2739,9 +2739,10 @@ var advisors = function()
         }
         else gg.ctx.fillText(loc[lang]["misc_0%sad"],x+w/2,y+fs*4+self.pad);
         gg.sadness = sad;
-        gg.repeat(1000, () => Promise.all([() => new Promise(r => r(my_logger.sadfarmbits(sad)))]))
-        .then(gg.stopAfter5Secs())
-        .then(console.log('repeat start'));
+        if((gg.tick_counter - gg.sadf_tick) > 100) {
+          my_logger.sadfarmbits(sad);
+          gg.sadf_tick = gg.tick_counter;
+        }
       }
       x += w*1.1;
       if(self.business_active)
@@ -2749,9 +2750,10 @@ var advisors = function()
         gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h*1.05);
         var permin = 60*60;
         gg.ctx.fillText(floor(self.money_rate*permin)+loc[lang]["misc_$/min"],x+w/2,y+fs*3+self.pad/2);
-        gg.money = self.money_rate;
-        gg.money_rate = self.money_rate*permin;
-        gg.mrate_startlog = true;
+        if((gg.tick_counter - gg.mrate_tick) > 100) {
+          my_logger.moneyrate(self.money_rate, self.money_rate*permin);
+          gg.mrate_tick = gg.tick_counter;
+        }
       }
       x += w*1.1;
       if(self.farmer_active)
@@ -2766,10 +2768,24 @@ var advisors = function()
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
         gg.ctx.fillText(gg.food+loc[lang]["misc_food"], x+w/2, y+fs*3+self.pad/2);
         gg.ctx.fillText(loc[lang]["misc_available"], x+w/2, y+fs*4+self.pad);
-        gg.avfood_startlog=true;
+        if((gg.tick_counter - gg.avfood_tick) > 100) {
+          my_logger.availablefood(gg.food);
+          gg.avfood_tick = gg.tick_counter;
+        }
       }
       x += w*1.1;
     }
+    if(gg.b.raining) {
+      gg.israining = true;
+    }
+
+    if(gg.israining) {
+      if((gg.tick_counter - gg.lakenut_tick) > 100) {
+        my_logger.lakenutrition(my_logger.uint8_tile_array());
+        gg.lakenut_tick = gg.tick_counter;
+      }
+    }
+
     self.popup_h = lerp(self.popup_h,self.target_popup_h,0.5);
 
     if(self.preview)

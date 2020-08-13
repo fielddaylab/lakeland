@@ -422,15 +422,16 @@ window.Logger = function(init){
   self.lakenutrition = function(t_array) {
     for(t in t_array) {
       if(t[2] == 5) {
-        gg.lake_nutes.append(t[1]);
+        gg.lake_nutes.push(parseInt(t[1], 10));
       }
     }
     let log_data = {
       lake_pos_tile: gg.lake_nutes.length,
-      total_nutrition: math.sum(gg.lake_nutes.length)
+      total_nutrition: gg.lake_nutes.reduce((a,b) => a + b, 0)
     }
 
     self.send_log(log_data, self.LOG_CATEGORY_LAKENUTRITION);
+    gg.lake_nutes = [];
 
   }
 

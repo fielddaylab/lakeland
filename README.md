@@ -57,9 +57,10 @@ Versions:
 1. [poopproduced](#poopproduced)
 1. [debug](#debug)
 1. [newfarmbit](#newfarmbit)
-2. [availablefood](#availablefood)
-3. [moneyrate](#moneyrate)
-4. [sadfarmbits](#sadfarmbits)
+1. [availablefood](#availablefood)
+1. [moneyrate](#moneyrate)
+1. [sadfarmbits](#sadfarmbits)
+1. [lakenutrition][#lakenutrition]
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -451,9 +452,20 @@ Occurs every 5 seconds once a farmbit enters the board.
 
 | Key | Value | Description |
 | --- | --- | --- | 
-| sad | sad | NUmber of farmbits with joy status of DESPERATE  |
+| sad | sad | Number of farmbits with joy status of DESPERATE  |
 | farmbit | gg.farmbits.length | Current number of farmbits on board  |
 | sad_perfarmbit | sad/gg.farmbits.length | Amount of sadness per farmbit  |
+
+<a name="lakenutrition"/>
+
+#### lakenutrition (index=35)
+*Introduced in v17.*
+Occurs every 5 seconds once rain falls to compute lake nutrition
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| lake_pos_tile | gg.lake_nutes.length | Number of lake tiles on the board  |
+| totalnutrition | gg.lake_nutes.reduce((a,b) => a + b, 0) | Total nutrition of the lake  |
 
 ## Enumerators and Constants
 

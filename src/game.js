@@ -9,17 +9,16 @@ var Game = function (init) {
   gg.font = "LeagueSpartan";
   gg.font_color = "#17315B";
   gg.backdrop_color = "#A0DEDB";
+  gg.tick_counter = 0;
 
   // for logging
 
   gg.lake_nutes = []
-  gg.lakenut_startlog = false;
-  gg.avfood_startlog = false;
-  gg.mrate_startlog = false;
-  gg.sadf_startlog = false;
-  gg.money = 0;
-  gg.money_rate = 0;
-  gg.sadness = 0;
+  gg.lakenut_tick = 0;
+  gg.avfood_tick = 0;
+  gg.mrate_tick = 0;
+  gg.sadf_tick = 0;
+  gg.israining = false;
   var intervalID = 0;
   var wait = ms => new Promise(
     r => setTimeout(r, ms)
