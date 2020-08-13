@@ -5,7 +5,7 @@ Each log is sent with a number of fields required by [simplelog](https://github.
   event_data_complex: JSON.stringify(log_data)
 Each log_data is a JSON object for that specific category as defined below.
 
-#### Change Log
+#### Version Log
 Versions:
 1. Alpha
 2. Original Version
@@ -22,6 +22,7 @@ Versions:
 13. Introduces log index 31, newfarmbit. Also now always sends a "gamestate" log immediately after any "startgame" log (10/23/2019)
 14. Small typo fix. Previously the fullness desperate emote (I NEED FOOD!) did not match the logging category (I NEED FOOD). For v13 logs, please reassign any null (index=0) emotes to fullness desperate (index=2) emotes. (10/30/2019)
 15. Add placement_valid to each buy hover (11/1/2019).
+16. Introduces log indices 32-34. The logger now logs food available, money rate and sadness of the farmbits. (8/12/2020).
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -56,6 +57,9 @@ Versions:
 1. [poopproduced](#poopproduced)
 1. [debug](#debug)
 1. [newfarmbit](#newfarmbit)
+2. [availablefood](#availablefood)
+3. [moneyrate](#moneyrate)
+4. [sadfarmbits](#sadfarmbits)
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -416,7 +420,40 @@ Note: In continues, games will first generate farmbits ([newfarmbit](#newfarmbit
 | --- | --- | --- | 
 | farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
 
+<a name="availablefood"/>
 
+#### foodavailable (index=32)
+*Introduced in v16.*
+Occurs every 5 seconds once the player buys food.
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| food | gg.food | Current amount of food available on board  |
+| farmbit | gg.farmbits.length | Current number of farmbits on board  |
+| foodrate | gg.food/gg.farmbits.length | Food available per farmbit  |
+
+<a name="moneyrate"/>
+
+#### moneyrate (index=33)
+*Introduced in v16.*
+Occurs every 5 seconds once the player buys a house.
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| money | sell_rate*item_worth_food | Money accumulated according to amount of available items to sell  |
+| rate | money/permin | Rate of money accumulation  |
+
+<a name="sadfarmbits"/>
+
+#### sadfarmbits (index=34)
+*Introduced in v16.*
+Occurs every 5 seconds once a farmbit enters the board.
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| sad | sad | NUmber of farmbits with joy status of DESPERATE  |
+| farmbit | gg.farmbits.length | Current number of farmbits on board  |
+| sad_perfarmbit | sad/gg.farmbits.length | Amount of sadness per farmbit  |
 
 ## Enumerators and Constants
 

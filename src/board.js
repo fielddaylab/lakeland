@@ -146,6 +146,11 @@ var walkability_check = function(type,state)
   return 1;
 }
 
+if(gg.lakenut_startlog) setInterval(my_logger.lakenutrition(my_logger.gamestate().log_data.tiles), 5000);
+if(gg.avfood_startlog)  setInterval(my_logger.availablefood(gg.food), 5000);
+if(gg.mrate_startlog)   setInterval(my_logger.moneyrate(gg.money, gg.money_rate), 5000);
+// if(gg.sadf_startlog)    setInterval(my_logger.sadfarmbits(gg.sadness), 5000);
+
 var buildability_check = function(building,over)
 {
   switch(building)
@@ -3213,6 +3218,9 @@ var board = function()
 
     gg.ctx.imageSmoothingEnabled = 0;
 
+
+    //rain log
+    
     //og tiles
     i = 0;
     ny = floor(self.y);
@@ -3471,6 +3479,7 @@ var board = function()
     {
       if(self.raining)
       {
+        gg.lakenut_startlog = true;
         gg.ctx.fillStyle = blue;
         var s = 3*gg.stage.s_mod;
         var hs = s/2;
@@ -3690,6 +3699,8 @@ var farmbit = function()
   self.joy_state         = FARMBIT_STATE_CONTENT;
   self.fulfillment_state = FARMBIT_STATE_CONTENT;
 
+  self.emote_desperate_t = 0;
+
   self.emote_c = 0;
   self.emote_w = 0;
   self.emote_t = 0;
@@ -3697,7 +3708,10 @@ var farmbit = function()
 
   self.emote = function(e)
   {
-    if(e == self.emote_c) return;
+    
+    if (e === my_logger.LOG_EMOTE_FULLNESS_DESPERATE_TXT) {
+      self.emote_desperate_t = Date.now();
+    }
     gg.ctx.font = gg.font_size+"px "+gg.font;
     self.emote_c = e;
     self.emote_w = gg.ctx.measureText(e).width;
@@ -3831,6 +3845,7 @@ var farmbit = function()
           break;
       }
     }
+    my_logger.hungerdeath(self.emote_desperate_t, Date.now())
     gg.advisors.another_death();
     gg.b.alterTile(t,TILE_TYPE_GRAVE);
     for(var i = 0; i < gg.farmbits.length; i++)

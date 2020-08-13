@@ -42,6 +42,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_AVAILABLEFOOD       = ENUM; ENUM++;
   self.LOG_CATEGORY_MONEYRATE           = ENUM; ENUM++;
   self.LOG_CATEGORY_SADFARMBITS         = ENUM; ENUM++;
+  self.LOG_CATEGORY_LAKENUTRITION       = ENUM; ENUM++;
   self.LOG_CATEGORY_SALE                = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
@@ -417,6 +418,22 @@ window.Logger = function(init){
     }
     self.send_log(log_data, self.LOG_CATEGORY_MONEYRATE);
   }
+
+  self.lakenutrition = function(t_array) {
+    for(t in t_array) {
+      if(t[2] == 5) {
+        gg.lake_nutes.append(t[1]);
+      }
+    }
+    let log_data = {
+      lake_pos_tile: gg.lake_nutes.length,
+      total_nutrition: math.sum(gg.lake_nutes.length)
+    }
+
+    self.send_log(log_data, self.LOG_CATEGORY_LAKENUTRITION);
+
+  }
+
   self.select_tile = function(t){
     if(gg.shop.selected_buy){ self.buy_hover(t); }
     else 

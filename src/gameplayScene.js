@@ -130,6 +130,13 @@ var GamePlayScene = function()
     self.readied = 1;
     my_logger.startgame();
 
+    if(gg.reset.reset_game) {
+      gg.advisors.skip_all_tutorials();
+      for(var i = 0; i < gg.farmbits.length; i++)
+        gg.farmbits[i].fullness = max_fullness;
+
+    }
+
     if(gg.continue_ls)
     {
       gg.advisors.skip_all_tutorials();

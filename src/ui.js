@@ -2546,7 +2546,7 @@ var advisors = function()
   }
   self.another_death = function()
   {
-    console.log("FARMBIT HERE IS", gg.farmbits.length);
+    
     if(!gg.farmbits.length) { self.pool_thread(function(){ return 1; }, tut_final_death, gg.continue_ls=0); return; }
 
     if(self.thread == tut_another_death) return;
@@ -2726,6 +2726,7 @@ var advisors = function()
       var fs = gg.font_size;
       gg.ctx.fillStyle = self.fgc;
       gg.ctx.textAlign = "center";
+      
       if(self.mayor_active)
       {
         gg.ctx.drawImage(advisor_panel_mayor_img,x,y,w,h*1.05);
@@ -2737,7 +2738,10 @@ var advisors = function()
           gg.ctx.fillText(fdisp(sad/gg.farmbits.length)+loc[lang]["misc_%sad"],x+w/2,y+fs*4+self.pad);
         }
         else gg.ctx.fillText(loc[lang]["misc_0%sad"],x+w/2,y+fs*4+self.pad);
-        setInterval(my_logger.sadfarmbits(sad), 5000);
+        gg.sadness = sad;
+        gg.repeat(1000, () => Promise.all([() => new Promise(r => r(my_logger.sadfarmbits(sad)))]))
+        .then(gg.stopAfter5Secs())
+        .then(console.log('repeat start'));
       }
       x += w*1.1;
       if(self.business_active)
@@ -2745,7 +2749,9 @@ var advisors = function()
         gg.ctx.drawImage(advisor_panel_business_img,x,y,w,h*1.05);
         var permin = 60*60;
         gg.ctx.fillText(floor(self.money_rate*permin)+loc[lang]["misc_$/min"],x+w/2,y+fs*3+self.pad/2);
-        setInterval(my_logger.moneyrate(self.money_rate,self.money_rate*permin),5000);
+        gg.money = self.money_rate;
+        gg.money_rate = self.money_rate*permin;
+        gg.mrate_startlog = true;
       }
       x += w*1.1;
       if(self.farmer_active)
@@ -2760,7 +2766,7 @@ var advisors = function()
         //gg.ctx.fillText(fdisp(edible_rate)    +" food/min (edible)",     x,y+fs*7);
         gg.ctx.fillText(gg.food+loc[lang]["misc_food"], x+w/2, y+fs*3+self.pad/2);
         gg.ctx.fillText(loc[lang]["misc_available"], x+w/2, y+fs*4+self.pad);
-        setInterval(my_logger.availablefood(gg.food),5000);
+        gg.avfood_startlog=true;
       }
       x += w*1.1;
     }

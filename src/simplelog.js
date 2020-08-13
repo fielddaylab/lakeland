@@ -55,9 +55,9 @@ var slog = function(app_id,app_version)
     //console.log(JSON.stringify(self.accrued_log));
     var post = "data="+encodeURIComponent(btoa(JSON.stringify(self.accrued_log)));
 
-    xhr.open("POST", self.req_url+"&req_id="+encodeURIComponent(UUIDint()), true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(post);
+    // xhr.open("POST", self.req_url+"&req_id="+encodeURIComponent(UUIDint()), true);
+    // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    // xhr.send(post);
   }
 }
 
