@@ -4477,7 +4477,6 @@ var farmbit = function()
               if(gg.inspector.detailed == self || gg.inspector.detailed == self.item)
                 gg.inspector.deselect();
               self.item.offscreen = 1;
-              my_logger.emote_sale(self);
             }
           }
             break;
@@ -4491,6 +4490,7 @@ var farmbit = function()
               gg.money += worth_for_item(self.item.type);
               gg.aud_wrangler.play(money_aud);
               gg.b.sell_p(t.tile,"+$"+worth_for_item(self.item.type));
+              my_logger.emote_sale(self, self.item, worth_for_item(self.item.type));
 
               break_item(self.item);
               self.item = 0;

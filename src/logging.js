@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",16);
+  self.mySlog = new slog("LAKELAND",17);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -42,6 +42,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_AVAILABLEFOOD       = ENUM; ENUM++;
   self.LOG_CATEGORY_MONEYRATE           = ENUM; ENUM++;
   self.LOG_CATEGORY_SADFARMBITS         = ENUM; ENUM++;
+  self.LOG_CATEGORY_SALE                = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
   ENUM = 0; 
@@ -609,8 +610,13 @@ window.Logger = function(init){
   self.emote_swim = function(f){
     self.emote(f,self.LOG_EMOTE_SWIM_TXT);
   }
-  self.emote_sale = function(f){
-    self.emote(f,self.LOG_EMOTE_SALE_TXT);
+  self.emote_sale = function(f, it, worth){
+    log_data = {
+      farmbit: self.farmbit_data_short(f),
+      item: self.item_data_short(it),
+      worth: worth
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_SALE) 
   }
 
   self.farmfail = function(t){
