@@ -146,10 +146,6 @@ var walkability_check = function(type,state)
   return 1;
 }
 
-if(gg.lakenut_startlog) setInterval(my_logger.lakenutrition(my_logger.gamestate().log_data.tiles), 5000);
-if(gg.avfood_startlog)  setInterval(my_logger.availablefood(gg.food), 5000);
-if(gg.mrate_startlog)   setInterval(my_logger.moneyrate(gg.money, gg.money_rate), 5000);
-// if(gg.sadf_startlog)    setInterval(my_logger.sadfarmbits(gg.sadness), 5000);
 
 var buildability_check = function(building,over)
 {
@@ -3846,7 +3842,6 @@ var farmbit = function()
           break;
       }
     }
-    my_logger.hungerdeath(self.emote_desperate_t, Date.now())
     gg.advisors.another_death();
     gg.b.alterTile(t,TILE_TYPE_GRAVE);
     for(var i = 0; i < gg.farmbits.length; i++)
@@ -4064,6 +4059,7 @@ var farmbit = function()
             }
             break;
           case JOB_STATE_ACT:
+            my_logger.eat_food(self, self.item)
             break_item(self.item);
             self.item = 0;
             self.fullness = max_fullness;
@@ -4493,6 +4489,7 @@ var farmbit = function()
               if(gg.inspector.detailed == self || gg.inspector.detailed == self.item)
                 gg.inspector.deselect();
               self.item.offscreen = 1;
+              my_logger.sale_start(self, self.item, worth_for_item(self.item.type));
             }
           }
             break;
@@ -4506,7 +4503,7 @@ var farmbit = function()
               gg.money += worth_for_item(self.item.type);
               gg.aud_wrangler.play(money_aud);
               gg.b.sell_p(t.tile,"+$"+worth_for_item(self.item.type));
-              my_logger.emote_sale(self, self.item, worth_for_item(self.item.type));
+              my_logger.sale_end(self, self.item, worth_for_item(self.item.type));
 
               break_item(self.item);
               self.item = 0;

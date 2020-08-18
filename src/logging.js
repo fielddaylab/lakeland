@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",17);
+  self.mySlog = new slog("LAKELAND",18);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -43,7 +43,11 @@ window.Logger = function(init){
   self.LOG_CATEGORY_MONEYRATE           = ENUM; ENUM++;
   self.LOG_CATEGORY_SADFARMBITS         = ENUM; ENUM++;
   self.LOG_CATEGORY_LAKENUTRITION       = ENUM; ENUM++;
-  self.LOG_CATEGORY_SALE                = ENUM; ENUM++;
+  self.LOG_CATEGORY_SALESTART           = ENUM; ENUM++;
+  self.LOG_CATEGORY_SALEEND             = ENUM; ENUM++;
+  self.LOG_CATEGORY_RAINSTARTED         = ENUM; ENUM++;
+  self.LOG_CATEGORY_EATFOOD             = ENUM; ENUM++;
+  self.LOG_CATEGORY_RESET               = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
  
   ENUM = 0; 
@@ -69,12 +73,13 @@ window.Logger = function(init){
   self.LOG_EMOTE_SWIM                   = ENUM; ENUM++;
   self.LOG_EMOTE_SWIM_TXT               = "SWIM";
   self.LOG_EMOTE_SALE                   = ENUM; ENUM++;
-  self.LOG_EMOTE_SALE_TXT               = "SALE";
-  self.LOG_EMOTE_COUNT                  = ENUM; ENUM++;
+  self.LOG_EMOTE_SALE_TXT               = "SALE"; // deprecated
+  self.LOG_EMOTE_COUNT                  = ENUM; ENUM++; // deprecated
    
 
 
   //Local variables, Getters and Setters
+  self.log_stats = 0;
   self.buy_hovers = [];
   self.buy_hover = function(t){
     self.buy_hovers.push(self.tile_data_short(t).concat([gg.b.placement_valid(t, gg.shop.selected_buy) ? 1:0, Date.now()]));
@@ -243,6 +248,14 @@ window.Logger = function(init){
     self.time += time;
     self.raining();
     self.check_speed();
+    // log stats
+    if((gg.tick_counter - self.log_stats) > 1000) {
+      self.lakenutrition(my_logger.uint8_tile_array());
+      self.moneyrate(gg.advisors.money_rate, gg.advisors.money_rate*60*60); //60*60 to get permin
+      self.availablefood(gg.food);
+      self.sadfarmbits(gg.sadness);
+      self.log_stats = gg.tick_counter;
+    }
   }
 
   self.prev_speed = 2;
@@ -395,9 +408,9 @@ window.Logger = function(init){
 
   self.sadfarmbits = function(sad) {
     let log_data = {
-      sad: sad,
+      sad: sad | 0,
       farmbit: gg.farmbits.length,
-      sad_perfarmbit:sad/gg.farmbits.length
+      sad_perfarmbit:sad/gg.farmbits.length | 0
     };
     self.send_log(log_data, self.LOG_CATEGORY_SADFARMBITS);
   }
@@ -406,7 +419,7 @@ window.Logger = function(init){
     let log_data = {
       food: food,
       farmbit: gg.farmbits.length,
-      food_perfarmbit: food/gg.farmbits.length,
+      food_perfarmbit: food/gg.farmbits.length | 0,
     };
     self.send_log(log_data, self.LOG_CATEGORY_AVAILABLEFOOD);
   }
@@ -584,6 +597,10 @@ window.Logger = function(init){
       self.send_log(log_data, self.LOG_CATEGORY_RAINSTOPPED);
       self.check_blooms();
     }
+    else if(gg.b.raining && !self.was_raining){
+      let log_data = {};
+      self.send_log(log_data, self.LOG_CATEGORY_RAINSTARTED);
+    }
     self.update_raining();
   }
 
@@ -628,13 +645,38 @@ window.Logger = function(init){
   self.emote_swim = function(f){
     self.emote(f,self.LOG_EMOTE_SWIM_TXT);
   }
-  self.emote_sale = function(f, it, worth){
+  self.sale_start = function(f, it, worth){
     log_data = {
       farmbit: self.farmbit_data_short(f),
       item: self.item_data_short(it),
       worth: worth
     };
-    self.send_log(log_data, self.LOG_CATEGORY_SALE) 
+    self.send_log(log_data, self.LOG_CATEGORY_SALESTART) 
+  }
+
+  self.sale_end = function(f, it, worth){
+    log_data = {
+      farmbit: self.farmbit_data_short(f),
+      item: self.item_data_short(it),
+      worth: worth
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_SALEEND) 
+  }
+
+  self.eat_food = function(f, it){
+    log_data = {
+      farmbit: self.farmbit_data_short(f),
+      item: self.item_data_short(it),
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_EATFOOD) 
+  }
+
+  self.reset = function(){
+    log_data = {
+
+    };
+    self.send_log(log_data, self.LOG_CATEGORY_RESET);
+    self.gamestate();
   }
 
   self.farmfail = function(t){

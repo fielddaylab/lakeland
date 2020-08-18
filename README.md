@@ -22,45 +22,49 @@ Versions:
 13. Introduces log index 31, newfarmbit. Also now always sends a "gamestate" log immediately after any "startgame" log (10/23/2019)
 14. Small typo fix. Previously the fullness desperate emote (I NEED FOOD!) did not match the logging category (I NEED FOOD). For v13 logs, please reassign any null (index=0) emotes to fullness desperate (index=2) emotes. (10/30/2019)
 15. Add placement_valid to each buy hover (11/1/2019).
-16. Introduces log indices 32-34. The logger now logs food available, money rate and sadness of the farmbits. (8/12/2020).
+16. For these changes, use v18+. Introduces log indices 32-34: 32. [availablefood](#availablefood), [moneyrate](#moneyrate), and [sadfarmbits](#sadfarmbits). This logs food available, money rate and sadness of the farmbits, respectively (8/12/2020).
+17. For these changes, use v18+. Introduces log index 35: [lakenutrition](#lakenutrition).
+18. Introduces log indices 35-36: [salestart](#salestart) and [saleend](#saleend). This logs the farmbit selling, the item sold, and the worth. The farmbit and item leave the field during salestart, and the money is added to total money when the farmbit returns without the item at saleend. This fully deprecates emote_sale in [emotes](#Emotes) (8/14/2020).
 
 ### Event Categories
 0. [gamestate](#gamestate)
 1. [startgame](#startgame)
-1. [checkpoint](#checkpoint)
-1. [selecttile](#selecttile)
-1. [selectfarmbit](#selectfarmbit)
-1. [selectitem](#selectitem)
-1. [selectbuy](#selectbuy)
-1. [buy](#buy)
-1. [cancelbuy](#cancelbuy)
-1. [roadbuilds](#roadbuilds)
-1. [tileuseselect](#tileuseselect)
-1. [itemuseselect](#itemuseselect)
-1. [togglenutrition](#togglenutrition)
-1. [toggleshop](#toggleshop)
-1. [toggleachievements](#toggleachievements)
-1. [skiptutorial](#skiptutorial)
-1. [speed](#speed)
-1. [achievement](#achievement)
-1. [farmbitdeath](#farmbitdeath)
-1. [blurb](#blurb)
-1. [click](#click)
-1. [rainstopped](#rainstopped)
-1. [history](#history)
-1. [endgame](#endgame)
-1. [emote](#emote)
-1. [farmfail](#farmfail)
-1. [bloom](#bloom)
-1. [farmharvested](#farmharvested)
-1. [milkproduced](#milkproduced)
-1. [poopproduced](#poopproduced)
-1. [debug](#debug)
-1. [newfarmbit](#newfarmbit)
-1. [availablefood](#availablefood)
-1. [moneyrate](#moneyrate)
-1. [sadfarmbits](#sadfarmbits)
-1. [lakenutrition][#lakenutrition]
+2. [checkpoint](#checkpoint)
+3. [selecttile](#selecttile)
+4. [selectfarmbit](#selectfarmbit)
+5. [selectitem](#selectitem)
+6. [selectbuy](#selectbuy)
+7. [buy](#buy)
+8. [cancelbuy](#cancelbuy)
+9. [roadbuilds](#roadbuilds)
+10. [tileuseselect](#tileuseselect)
+11. [itemuseselect](#itemuseselect)
+12. [togglenutrition](#togglenutrition)
+13. [toggleshop](#toggleshop)
+14. [toggleachievements](#toggleachievements)
+15. [skiptutorial](#skiptutorial)
+16. [speed](#speed)
+17. [achievement](#achievement)
+18. [farmbitdeath](#farmbitdeath)
+19. [blurb](#blurb)
+20. [click](#click)
+21. [rainstopped](#rainstopped)
+22. [history](#history)
+23. [endgame](#endgame)
+24. [emote](#emote)
+25. [farmfail](#farmfail)
+26. [bloom](#bloom)
+27. [farmharvested](#farmharvested)
+28. [milkproduced](#milkproduced)
+29. [poopproduced](#poopproduced)
+30. [debug](#debug)
+31. [newfarmbit](#newfarmbit)
+32. [availablefood](#availablefood)
+33. [moneyrate](#moneyrate)
+34. [sadfarmbits](#sadfarmbits)
+35. [lakenutrition](#lakenutrition)
+36. [salestart](#salestart)
+37. [saleend](#saleend)]
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -149,7 +153,7 @@ Note: Selections may happen automatically by advisors in the tutorials.
 
 | Key | Value | Description |
 | --- | --- | --- |
-| tile | tile_data_short(t) | See [Data Short](#DataShort).  |
+| tile | tile_data_short(t) | Tile information reduced to an array. See [Data Short](#DataShort).  |
 | marks | t.marks | Tile [mark indices](#Mark).  | 
 
 <a name="selectfarmbit"/>
@@ -159,7 +163,7 @@ Note selections may happen automatically by advisors in the tutorials.
 
 | Key | Value | Description |
 | --- | --- | --- |
-| farmbit | farmbit_data_short(f) | See [Data Short](#DataShort).  | 
+| farmbit | farmbit_data_short(f) | Farmbit information reduced to an array. See [Data Short](#DataShort).  | 
 
 <a name="selectitem"/>
 
@@ -168,7 +172,7 @@ Note selections may happen automatically by advisors in the tutorials. Mark is n
 
 | Key | Value | Description |
 | --- | --- | --- |
-| item | item_data_short(it) | See [Data Short](#DataShort).   |
+| item | item_data_short(it) | Item information reduced to an array. See [Data Short](#DataShort).   |
 | *deprecated as of v3* mark | it.mark | Item [mark index](#Mark).  | 
 
 <a name="selectbuy"/>
@@ -221,7 +225,7 @@ Note that this log occurs even when the player selects the current use/mark, i.e
 
 | Key | Value | Description |
 | --- | --- | --- |
-| tile | tile_data_short(t) | See [Data Short](#DataShort).  |
+| tile | tile_data_short(t) | Tile information reduced to an array. See [Data Short](#DataShort).  |
 | marks | t.marks |  Tile [mark indices](#Mark). | 
 
 <a name="itemuseselect"/>
@@ -231,7 +235,7 @@ Note that this log occurs even when the player selects the current use/mark, i.e
 
 | Key | Value | Description |
 | --- | --- | --- |
-| item | item_data_short(it) | See [Data Short](#DataShort).  |
+| item | item_data_short(it) | Item information reduced to an array. See [Data Short](#DataShort).  |
 | prev_mark | self.prev_item_use | Item's previous [mark index](#Mark).  |
 
 <a name="togglenutrition"/>
@@ -287,8 +291,8 @@ Note: Tutorial checkpoints will be logged regardless of if the tutorial is skipp
 #### farmbitdeath (index=18)
 | Key | Value | Description |
 | --- | --- | --- |
-| farmbit | farmbit_data_short(f) |  See [Data Short](#DataShort). |
-| grave | tile_data_short(f.home) | Tile data short of dead farmbit's home.  | 
+| farmbit | farmbit_data_short(f) | Dead farmbit's information reduced to an array. See [Data Short](#DataShort). |
+| grave | tile_data_short(f.home) | Tile data short of dead farmbit's home. Note that this tile has now changed from type home to type grave (See [tile type](#TileType).)| 
 
 <a name="blurb"/>
 
@@ -326,7 +330,7 @@ Note: a blurb is an utterance from an advisor.
 | --- | --- | --- |
 | client_time | now | current client time  |
 | camera_history | flush_camera_history(now) | List of [camera moves](#CameraMove) since last history log. |
-| emote_history | flush_emote_history(now) | List of 11 element sublists [[farmbit](#DataShort), [emote index](#Emotes), time before client_time (negative number)] emotes since last history log.  | 
+| emote_history | flush_emote_history(now) | List of 11 element sublists: [[farmbit](#DataShort), [emote index](#Emotes), time before client_time (negative number)] emotes since last history log.  | 
 
 <a name="endgame"/>
 
@@ -342,7 +346,7 @@ Note: a blurb is an utterance from an advisor.
 
 | Key | Value | Description |
 | --- | --- | --- | 
-| farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
+| farmbit | farmbit_data_short(t) | Data of the farmbit that made the emote. See [Data Short](#DataShort).  |
 | emote_enum | emote_id | See [emotes](#Emotes).  | 
 
 <a name="farmfail"/>
@@ -364,7 +368,7 @@ Occurs after rainfall for each lake tile that bloomed during the rain. Blooming 
 
 | Key | Value | Description |
 | --- | --- | --- | 
-| tile | tile_data_short(t) | See [Data Short](#DataShort).  |
+| tile | tile_data_short(t) | Data of the tile that bloomed. See [Data Short](#DataShort).  |
 | marks | t.marks | Not relevant to lake tiles. Included for uniformity.  | 
 
 <a name="farmharvested"/>
@@ -419,7 +423,7 @@ Note: In continues, games will first generate farmbits ([newfarmbit](#newfarmbit
 
 | Key | Value | Description |
 | --- | --- | --- | 
-| farmbit | farmbit_data_short(t) | See [Data Short](#DataShort).  |
+| farmbit | farmbit_data_short(t) | New farmbit. See [Data Short](#DataShort).  |
 
 <a name="availablefood"/>
 
@@ -460,12 +464,37 @@ Occurs every 5 seconds once a farmbit enters the board.
 
 #### lakenutrition (index=35)
 *Introduced in v17.*
-Occurs every 5 seconds once rain falls to compute lake nutrition
+Occurs every 5 seconds once rain falls to compute lake nutrition.
 
 | Key | Value | Description |
 | --- | --- | --- | 
 | lake_pos_tile | gg.lake_nutes.length | Number of lake tiles on the board  |
 | totalnutrition | gg.lake_nutes.reduce((a,b) => a + b, 0) | Total nutrition of the lake  |
+
+
+<a name="salestart"/>
+
+#### salestart (index=36)
+*Introduced in v18.*
+This logs the farmbit selling, the item sold, and the worth. The farmbit and item leave the field during salestart, and the money is added to total money when the farmbit returns without the item at saleend. This fully deprecates emote_sale in [emotes](#Emotes) (8/14/2020).
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| farmbit | farmbit_data_short(f) | Farmbit information reduced to an array. See [Data Short](#DataShort) |
+| item | item_data_short(it)| Item information reduced to an array. See [Data Short](#DataShort)  |
+| worth | worth | monetary value of the item to be sold |
+
+
+<a name="saleend"/>
+
+#### saleend (index=37)
+*Introduced in v18.*
+This logs the farmbit selling, the item sold, and the worth. The farmbit and item leave the field during salestart, and the money is added to total money when the farmbit returns without the item at saleend. This fully deprecates emote_sale in [emotes](#Emotes) (8/14/2020).
+| Key | Value | Description |
+| --- | --- | --- | 
+| farmbit | farmbit_data_short(f) | Farmbit information reduced to an array. See [Data Short](#DataShort) |
+| item | item_data_short(it)| Item information reduced to an array. See [Data Short](#DataShort)  |
+| worth | worth | monetary value of the item sold |
 
 ## Enumerators and Constants
 
@@ -523,7 +552,7 @@ Occurs every 5 seconds once rain falls to compute lake nutrition
 |8| tired_txt | "😴" |
 |9| happy_txt | "🙂" |
 |10| swim_txt | "swim" |
-|11| sale_txt | "sale" |
+|11| sale_txt | "sale", deprecated. See [salestart](#salestart) and [saleend](#saleend). |
 
 <a name="Buys"/>
 
