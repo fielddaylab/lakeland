@@ -7,6 +7,8 @@ loc[lang]["menu_CREDITS"]    = "CREDITS";
 loc[lang]["menu_MUSICFX"]    = "MUSIC FX";
 loc[lang]["menu_FULLSCREEN"] = "FULLSCREEN";
 loc[lang]["menu_LANGUAGE"]   = "LANGUAGE";
+loc[lang]["reset"] = "Reset Game";
+loc[lang]["reset_CONFIRM"] = "Are you sure you want to reset the game? Your progress wil be lost.";
 
 loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "You set out to form a new town called \"Lakeland.\"";
 loc[lang]["intro_Yourpeoplelovetoplayinthewater."] = "Your people love to play in the water.";

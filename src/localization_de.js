@@ -7,6 +7,8 @@ loc[lang]["menu_CREDITS"]    = "Credits";
 loc[lang]["menu_MUSICFX"]    = "Musik";
 loc[lang]["menu_FULLSCREEN"] = "Vollbild";
 loc[lang]["menu_LANGUAGE"]   = "Sprache";
+loc[lang]["reset"] = "Spiel zurücksetzen";
+loc[lang]["reset_CONFIRM"] = "Sind Sie sicher, dass Sie das Spiel zurücksetzen möchten? Ihr Fortschritt geht verloren.";
 
 loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "Du machst dich auf um eine neue Stadt zu gründen. Sie trägt den Namen \"Lakeland.\"";
 loc[lang]["intro_Yourpeoplelovetoplayinthewater."] = "Deine Einwohner lieben es im Wasser zu spielen.";

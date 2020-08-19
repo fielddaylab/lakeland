@@ -1801,14 +1801,15 @@ var reset = function()
   {
     self.pad = 10*gg.stage.s_mod;
     self.reset_game = false;
+    self.text_color = gg.font_color;
     self.w = gg.canvas.width/3;
     self.h = self.w;
     self.x = gg.canvas.width/2-self.w/3;
     self.y = gg.canvas.height/2-self.h/3;
 
-    self.reset_btn.w = 110*gg.stage.s_mod;
+    self.reset_btn.w = 150*gg.stage.s_mod;
     self.reset_btn.h = 60*gg.stage.s_mod;
-    self.reset_btn.x = gg.canvas.width-self.w/2.5-self.pad;
+    self.reset_btn.x = gg.canvas.width-self.w/2.2-self.pad;
     self.reset_btn.y = gg.canvas.height-self.h/5-self.pad;
   }
   self.reset_btn = new ButtonBox(0,0,0,0,function(){ 
@@ -1817,7 +1818,7 @@ var reset = function()
   self.resize();
 
   self.reset_clicked = function() {
-    if (confirm("Are you sure you want to reset the game? Your progress wil be lost.")) {
+    if (confirm(loc[lang]["reset_CONFIRM"])) {
       gg.game.setScene(3);
       self.reset_game = true;
       my_logger.reset();
@@ -1832,6 +1833,17 @@ var reset = function()
 
   self.draw = function() {
     gg.ctx.drawImage(reset_img ,self.reset_btn.x,self.reset_btn.y,self.reset_btn.w,self.reset_btn.h);
+    
+    gg.ctx.fillStyle = gg.font_color;
+    gg.textAlign = "center";
+    gg.ctx.font = self.font_size+"px "+gg.font;
+    var text_x = self.reset_btn.x + self.w/10;
+    if(lang != "en") {
+      gg.ctx.font = 10*gg.stage.s_mod+"px "+gg.font; 
+      text_x = self.reset_btn.x + self.w/12;
+    }
+    gg.ctx.fillText(loc[lang]["reset"], text_x,self.reset_btn.y+self.h/10);
+    // 
   }
 
   self.filter = function(filter)
