@@ -65,6 +65,9 @@ Versions:
 35. [lakenutrition](#lakenutrition)
 36. [salestart](#salestart)
 37. [saleend](#saleend)]
+38. [rainstarted](#rainstarted)
+39. [eatfood](#eatfood)
+40. [reset](#reset)
 
 ### Enumerators and Constants
 1. [Event Categories](#EventCategories)
@@ -495,6 +498,45 @@ This logs the farmbit selling, the item sold, and the worth. The farmbit and ite
 | farmbit | farmbit_data_short(f) | Farmbit information reduced to an array. See [Data Short](#DataShort) |
 | item | item_data_short(it)| Item information reduced to an array. See [Data Short](#DataShort)  |
 | worth | worth | monetary value of the item sold |
+
+<a name="rainstarted"/>
+
+#### rainstarted (index=38)
+*Introduced in v18.*
+This logs when rain has started (8/14/2020).
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| (none)| |The log itself indicates that rain has started. |
+
+
+<a name="eatfood"/>
+
+#### eatfood (index=39)
+*Introduced in v18.*
+This logs the farmbit that ate an item. The item then leaves the screen (8/14/2020).
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| farmbit | farmbit_data_short(f) | Farmbit information reduced to an array. See [Data Short](#DataShort) |
+| item | item_data_short(it)| Item information reduced to an array. See [Data Short](#DataShort)  |
+
+
+<a name="reset"/>
+
+#### reset (index=40)
+*Introduced in v18.*
+This logs when the player presses "Reset Game", followed by a "yes" confirmation when asked if they are sure. A gamestate log is logged immediately after (8/14/2020).
+
+| Key | Value | Description |
+| --- | --- | --- | 
+| (none)| |The log itself indicates that the game has recieved the signal to reset. |
+
+
+
+
+
+
 
 ## Enumerators and Constants
 
