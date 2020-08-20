@@ -430,7 +430,7 @@ Note: In continues, games will first generate farmbits ([newfarmbit](#newfarmbit
 
 <a name="availablefood"/>
 
-#### foodavailable (index=32)
+#### availablefood (index=32)
 *Introduced in v16.*
 Occurs every 5 seconds once the player buys food.
 
