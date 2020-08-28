@@ -438,7 +438,7 @@ Occurs every 5 seconds once the player buys food.
 | --- | --- | --- | 
 | food | gg.food | Current amount of food available on board  |
 | farmbit | gg.farmbits.length | Current number of farmbits on board  |
-| foodrate | gg.food/gg.farmbits.length | Food available per farmbit  |
+| food_perfarmbit | food/gg.farmbits.length \| 0 | number of food per farmbits on the board |
 
 <a name="moneyrate"/>
 
@@ -472,7 +472,7 @@ Occurs every 5 seconds once rain falls to compute lake nutrition.
 | Key | Value | Description |
 | --- | --- | --- | 
 | lake_pos_tile | gg.lake_nutes.length | Number of lake tiles on the board  |
-| totalnutrition | gg.lake_nutes.reduce((a,b) => a + b, 0) | Total nutrition of the lake  |
+| total_nutrition | gg.lake_nutes.reduce((a,b) => a + b, 0) | Total nutrition of the lake  |
 
 
 <a name="salestart"/>
