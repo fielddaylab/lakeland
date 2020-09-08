@@ -1819,6 +1819,7 @@ var reset = function()
 
   self.reset_clicked = function() {
     if (confirm(loc[lang]["reset_CONFIRM"])) {
+      gg.speed = SPEED_PLAY;
       gg.game.setScene(3);
       self.reset_game = true;
       my_logger.reset();

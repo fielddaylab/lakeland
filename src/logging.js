@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",18);
+  self.mySlog = new slog("LAKELAND",19);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -251,7 +251,7 @@ window.Logger = function(init){
     // log stats
     if((gg.tick_counter - self.log_stats) > 1000) {
       self.lakenutrition(my_logger.uint8_tile_array());
-      self.moneyrate(gg.advisors.money_rate, gg.advisors.money_rate*60*60); //60*60 to get permin
+      self.moneyrate(gg.money, gg.advisors.money_rate); //60*60 to get permin
       self.availablefood(gg.food);
       self.sadfarmbits(gg.sadness);
       self.log_stats = gg.tick_counter;

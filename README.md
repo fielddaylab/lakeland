@@ -25,6 +25,7 @@ Versions:
 16. For these changes, use v18+. Introduces log indices 32-34: 32. [availablefood](#availablefood), [moneyrate](#moneyrate), and [sadfarmbits](#sadfarmbits). This logs food available, money rate and sadness of the farmbits, respectively (8/12/2020).
 17. For these changes, use v18+. Introduces log index 35: [lakenutrition](#lakenutrition).
 18. Introduces log indices 36-40: [salestart](#salestart), [saleend](#saleend), [rainstarted](#rainstarted), [eatfood](#eatfood), and [reset](#reset). 36-37: This logs the farmbit selling, the item sold, and the worth. The farmbit and item leave the field during salestart, and the money is added to total money when the farmbit returns without the item at saleend. This fully deprecates emote_sale in [emotes](#Emotes). 38: This event signals when rain has started. 39: This event logs the farmbit eating and the food eaten. 40: This event signals when the game is about to reset, and is followed by a gamestate log (8/14/2020).
+19. Changed the field on [moneyrate](#moneyrate) of money to be the actual amount of money of the player instead of the rate. (gg.advisors.money_rate to gg.money). (9/8/2020)
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -448,7 +449,7 @@ Occurs every 5 seconds once the player buys a house.
 
 | Key | Value | Description |
 | --- | --- | --- | 
-| money | sell_rate*item_worth_food | Money accumulated according to amount of available items to sell  |
+| money | gg.money | Money currently accumulated |
 | rate | money/permin | Rate of money accumulation  |
 
 <a name="sadfarmbits"/>
