@@ -7,6 +7,7 @@ Each log_data is a JSON object for that specific category as defined below.
 
 #### Bugs
 1. There would be 'grave' entries from farmbitdeaths that gives nulls. E.g. [0,0,null,null,null]. The bug doesn't come from normal in-game deaths, the last farmbit death or resetting the game.
+2. (FIXED) Game resets don't always function as expected and there have been reset logs that are not followed by startgame events.
 
 #### Version Log
 Versions:
@@ -27,7 +28,7 @@ Versions:
 15. Add placement_valid to each buy hover (11/1/2019).
 16. For these changes, use v18+. Introduces log indices 32-34: 32. [availablefood](#availablefood), [moneyrate](#moneyrate), and [sadfarmbits](#sadfarmbits). This logs food available, money rate and sadness of the farmbits, respectively (8/12/2020).
 17. For these changes, use v18+. Introduces log index 35: [lakenutrition](#lakenutrition).
-18. Introduces log indices 36-40: [salestart](#salestart), [saleend](#saleend), [rainstarted](#rainstarted), [eatfood](#eatfood), and [reset](#reset). 36-37: This logs the farmbit selling, the item sold, and the worth. The farmbit and item leave the field during salestart, and the money is added to total money when the farmbit returns without the item at saleend. This fully deprecates emote_sale in [emotes](#Emotes). 38: This event signals when rain has started. 39: This event logs the farmbit eating and the food eaten. 40: This event signals when the game is about to reset, and is followed by a gamestate log (8/14/2020). Note: Game resets don't always function as expected and there have been reset logs that are not followed by startgame events.
+18. Introduces log indices 36-40: [salestart](#salestart), [saleend](#saleend), [rainstarted](#rainstarted), [eatfood](#eatfood), and [reset](#reset). 36-37: This logs the farmbit selling, the item sold, and the worth. The farmbit and item leave the field during salestart, and the money is added to total money when the farmbit returns without the item at saleend. This fully deprecates emote_sale in [emotes](#Emotes). 38: This event signals when rain has started. 39: This event logs the farmbit eating and the food eaten. 40: This event signals when the game is about to reset, and is followed by a gamestate log (8/14/2020).
 19. Changed the field on [moneyrate](#moneyrate) of money to be the actual amount of money of the player instead of the rate. (gg.advisors.money_rate to gg.money). (9/8/2020)
 
 ### Event Categories
