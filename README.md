@@ -5,6 +5,9 @@ Each log is sent with a number of fields required by [simplelog](https://github.
   event_data_complex: JSON.stringify(log_data)
 Each log_data is a JSON object for that specific category as defined below.
 
+#### Bugs
+1. There would be 'grave' entries from farmbitdeaths that gives nulls. E.g. [0,0,null,null,null]. The bug doesn't come from normal in-game deaths, the last farmbit death or resetting the game.
+
 #### Version Log
 Versions:
 1. Alpha
