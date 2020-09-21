@@ -959,9 +959,9 @@ def read_stringified_array(arr:str) -> List[int]:
 def array_to_mat(num_columns: int, arr: List[int]) -> List[List[int]]:
   """Example:
   >>> array_to_mat(2, [1,2,3,4,5,6,7,8])
-  [[1,2]
-  [3,4]
-  [5,6]
+  [[1,2],
+  [3,4],
+  [5,6],
   [7,8]]
   """
     assert len(arr) % num_columns == 0
