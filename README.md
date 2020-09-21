@@ -981,6 +981,24 @@ farmbits = array_to_mat(9, _farmbits)
 items = array_to_mat(4, _items) 
 ```
 
+Other helpful utilities include the following to convert the data matrix index to a tile (x,y) coordinate on the 50x50 map where (0,0) is at the top-left and (49,49) is bottom left:
+```
+def tile_i_to_xy(i):
+"""
+>>> tile_i_to_xy(1512)
+(12,30)
+"""
+    ty = i//50
+    tx = i%50
+    return tx,ty
+```
+Example usage could be to create a `farm_map: Dict[txy_coor, int]` that maps a txy_coor tuple like (12,25) to the type of farm:
+```
+for i,t in enumerate(tiles):
+    type = t[3]
+    if type in [9,10]: #farm or livestock
+        self.farm_map[tile_i_to_xy(i)] = type
+```
 
 <a name="BuiltWith"/>
 
