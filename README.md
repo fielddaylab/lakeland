@@ -108,6 +108,9 @@ Versions:
 
 ## Event Categories
 #### gamestate (index=0)
+See [parsing data matrices](#ParsingDataMatrices) for an example of how to parse the tiles, farmbits, and items in python.
+
+
 | Key | Value | Description |
 | --- | --- | --- |
 | tiles | uint8_tile_array().join() | Tile [data matrix](#DataMatrices).   |
@@ -939,6 +942,41 @@ These arrays are concatenated data_short arrays, and can be thought of as matric
 is index//vars_per_entry and the column is index%vars_per_entry.
 
 Note: The gamestate log of all tiles does not contain tile tx,ty. Row of the tile is derivable from 50*ty+tx.
+
+<a name="ParsingDataMatrices"/>
+
+##### Parsing Data Matrices:
+Here is an example of how to parse the string data matrices in the gamestate log using python:
+``` # reformat raw variable functions
+def read_stringified_array(arr:str) -> List[int]:
+"""Example:
+>>> read_stringified_array("1,2,3,4,5,6,7,8")
+[1,2,3,4,5,6,7,8]"""
+    if not arr:
+        return []
+    return [int(x) for x in arr.split(',')]
+def array_to_mat(num_columns: int, arr: List[int]) -> List[List[int]]:
+  """Example:
+  >>> array_to_mat(2, [1,2,3,4,5,6,7,8])
+  [[1,2]
+  [3,4]
+  [5,6]
+  [7,8]]
+  """
+    assert len(arr) % num_columns == 0
+    return [arr[i:i + num_columns] for i in range(0, len(arr), num_columns)] ```
+
+We can use the above functions to parse the following raw variables:
+
+``` _tiles, _farmbits, _items = event["tiles"], event["farmbits"], event["items"]
+# reformat array variables
+_tiles = read_stringified_array(_tiles)
+_farmbits = read_stringified_array(_farmbits)
+_items = read_stringified_array(_items)
+tiles = array_to_mat(4, _tiles)
+farmbits = array_to_mat(9, _farmbits)
+items = array_to_mat(4, _items) ```
+
 
 <a name="BuiltWith"/>
 
