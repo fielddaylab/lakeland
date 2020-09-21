@@ -947,7 +947,8 @@ Note: The gamestate log of all tiles does not contain tile tx,ty. Row of the til
 
 ##### Parsing Data Matrices:
 Here is an example of how to parse the string data matrices in the gamestate log using python:
-``` # reformat raw variable functions
+``` 
+# reformat raw variable functions
 def read_stringified_array(arr:str) -> List[int]:
 """Example:
 >>> read_stringified_array("1,2,3,4,5,6,7,8")
@@ -969,7 +970,8 @@ def array_to_mat(num_columns: int, arr: List[int]) -> List[List[int]]:
 
 We can use the above functions to parse the following raw variables:
 
-``` _tiles, _farmbits, _items = event["tiles"], event["farmbits"], event["items"]
+``` 
+_tiles, _farmbits, _items = event["tiles"], event["farmbits"], event["items"]
 # reformat array variables
 _tiles = read_stringified_array(_tiles)
 _farmbits = read_stringified_array(_farmbits)
