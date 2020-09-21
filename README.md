@@ -964,7 +964,8 @@ def array_to_mat(num_columns: int, arr: List[int]) -> List[List[int]]:
   [7,8]]
   """
     assert len(arr) % num_columns == 0
-    return [arr[i:i + num_columns] for i in range(0, len(arr), num_columns)] ```
+    return [arr[i:i + num_columns] for i in range(0, len(arr), num_columns)] 
+```
 
 We can use the above functions to parse the following raw variables:
 
@@ -975,7 +976,8 @@ _farmbits = read_stringified_array(_farmbits)
 _items = read_stringified_array(_items)
 tiles = array_to_mat(4, _tiles)
 farmbits = array_to_mat(9, _farmbits)
-items = array_to_mat(4, _items) ```
+items = array_to_mat(4, _items) 
+```
 
 
 <a name="BuiltWith"/>
