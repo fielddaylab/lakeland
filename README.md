@@ -113,7 +113,7 @@ See [parsing data matrices](#ParsingDataMatrices) for an example of how to parse
 
 | Key | Value | Description |
 | --- | --- | --- |
-| tiles | uint8_tile_array().join() | Tile [data matrix](#DataMatrices).   |
+| tiles | uint8_tile_array().join() | Tile [data matrix](#DataMatrices). Note: Does not include tx,ty of each tile because all the tiles are sorted by position.   |
 | farmbits | uint8_farmbit_array().join() | Farmbit [data matrix](#DataMatrices).   |
 | items | uint8_item_array().join() | Item [data matrix](#DataMatrices).  |
 | money | gg.money | current money  |
@@ -910,8 +910,8 @@ These are each uint8 vectors. They are as follows:
 |1| nutrition/nutrition_max*255 | 0-255 representing nutrition of each tile. |
 |2| og_type | Original [tile type](#TileType) index. |
 |3| type | Current [tile type](#TileType) index. |
-|4| tx | Tile grid x coordinate. *(Not included in data matrix)* |
-|5| ty | Tile grid y coordinate. *(Not included in data matrix)* |
+|4| tx | Tile grid x coordinate. *(Not included in [data matrix](#DataMatrices))* |
+|5| ty | Tile grid y coordinate. *(Not included in [data matrix](#DataMatrices))* |
 2. Farmbit
 
 | Index | Name | Description |
@@ -937,6 +937,17 @@ These are each uint8 vectors. They are as follows:
 <a name="DataMatrices"/>
 
 #### Data Matrices 
+```
+Comma delimited string of uint8s. 
+Example: "15,3,6,9,12,0,0,2,9,...2,0,0,6"
+
+Meant to be parsed to form 2d arrays like:
+[[15,3,6,9],
+ [12,0,0,2,9],
+ ...
+ [2,0,0,6]]
+```
+See [Parsing Data Matrices](#ParsingDataMatrices) for examples of how to parse these strings.
 The gamestate log contains uint8 arrays of all tiles, farmbits, and items. 
 These arrays are concatenated data_short arrays, and can be thought of as matrices where the row (farmbit/tile/item instance)
 is index//vars_per_entry and the column is index%vars_per_entry.
