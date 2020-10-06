@@ -1,6 +1,6 @@
 window.Logger = function(init){
   self = this;
-  self.mySlog = new slog("LAKELAND",19);
+  self.mySlog = new slog("LAKELAND",20);
   //var pako = require('pako');
   //Constants
   self.NUTRITION_DIFFERENCE = 2;
@@ -49,6 +49,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_EATFOOD             = ENUM; ENUM++;
   self.LOG_CATEGORY_RESET               = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
+  self.LOG_CATEGORY_FARMGROWTH            = ENUM; ENUM++;
  
   ENUM = 0; 
   self.LOG_EMOTE_NULL                   = ENUM; ENUM++;
@@ -315,9 +316,14 @@ window.Logger = function(init){
     let tile_loc = [t.tx, t.ty];
     let had_failed = self.farms[tile_loc] || 0;
     let is_failed = t.nutrition < nutrition_desperate;
+    let is_regained = t.nutrition > nutrition_desperate;
     // if hadnt failed and is currently failed
     if(!had_failed && is_failed){
       self.farmfail(t);
+    }
+
+    if(had_failed && is_regained) {
+      self.farmgrowth(t);
     }
     self.farms[tile_loc] = is_failed;
 
@@ -679,6 +685,10 @@ window.Logger = function(init){
     self.gamestate();
   }
 
+  self.farmgrowth = function(t) {
+    let log_data = self.tile_data(t);
+    self.send_log(log_data, self.LOG_CATEGORY_FARMGROWTH);
+  }
   self.farmfail = function(t){
     let log_data = self.tile_data(t);
     self.send_log(log_data, self.LOG_CATEGORY_FARMFAIL);
