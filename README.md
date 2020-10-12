@@ -711,32 +711,32 @@ There are 26 begins and 26 ends. In the constants for the feature extractor, the
 
 | Index | Name | Description | Trigger |
 | --- | --- | --- |  --- |
-|0| another_death| |  |
-|1| another_member| |  |
-|2| bloom| |  |
+|0| another_death| (maybe 2nd death)|  |
+|1| another_member| (maybe 2nd farmbit) |  |
+|2| bloom| (maybe first bloom) |  |
 |3| build_a_farm| tutorial 3 | tut2 end |
 |4| build_a_house| tutorial 1  | (None) |
 |5| buy_fertilizer| tutorial 7 | tut6 end, exists a farm which has nutrition < nutrition_motivated  |
 |6| buy_food| tutorial 2 | tut1 end |
 |7| buy_livestock | tutorial 8 |  tut7 end, 2+ farms on map|
-|8| death| |  |
-|9| end_life| |  |
-|10| extra_life| |  |
-|11| final_death| |  |
-|12| flooded_fertilizer| |  |
-|13| gross| |  |
-|14| gross_again| |  |
+|8| death| (maybe doesnt get used) |  |
+|9| end_life| (??) |  |
+|10| extra_life| (??) |  |
+|11| final_death| (maybe game over)|  |
+|12| flooded_fertilizer| (maybe after it rains while fertilizer present; i.e. runoff starts) |  |
+|13| gross| (maybe first puke emote) |  |
+|14| gross_again| (maybe second puke emote)|  |
 |15| livestock| tutorial 9 | tut8 end, 1+ livestock on map  |
-|16| long_travel| |  |
-|17| low_nutrients| |  |
-|18| mass_sadness| |  |
+|16| long_travel| (??) |  |
+|17| low_nutrients| (maybe farmfail?)|  |
+|18| mass_sadness| (??) |  |
 |19| poop| tutorial 10 | tut9 end, 1+ poop on map (distinct from fertilizer) |
 |20| rain| tutorial 11 | tut10 end, 1000 (game?) time units passed |
 |21| sell_food| tutorial 6 | tut5 end  |
 |22| successful_harvest| tutorial 5 | tut4 end, 1+ food on map, 1+ farm on map |
 |23| timewarp| tutorial 4 | tut3 end  |
-|24| unattended_farm| |  |
-|25| unused_fertilizer| |  |
+|24| unattended_farm| (??)|  |
+|25| unused_fertilizer| (??) |  |
 
 
 <a name="Thing_Type"/>
