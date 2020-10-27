@@ -3,7 +3,7 @@ var slog = function(app_id,app_version)
   var self = this;
   urlparams = new URLSearchParams(window.location.search);
   self.player_id = urlparams.get('player_id');
-  if(self.player_id && !/^([a-zA-Z][0-9]{3})$/.test(self.player_id)){
+  if(self.player_id && !/^([0-9])+$/.test(self.player_id)){
     window.location.replace("https://fielddaylab.wisc.edu/studies/"+encodeURIComponent(app_id.toLowerCase()))
     self.player_id = null;
   }
