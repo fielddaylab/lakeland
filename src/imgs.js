@@ -459,7 +459,7 @@ var play_img  = GenImg("assets/play.png");
 var pause_img = GenImg("assets/pause.png");
 var fast_img  = GenImg("assets/fast.png");
 var faster_img  = GenImg("assets/faster.png");
-var reset_img = GenImg("assets/button-reset-1.png");
+// var reset_img = GenImg("assets/button-reset-1.png");
 
 var ntoggle_on = GenImg("assets/nutrition_on.png");
 var ntoggle_off = GenImg("assets/nutrition_off.png");

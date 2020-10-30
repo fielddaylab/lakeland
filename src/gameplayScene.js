@@ -77,7 +77,7 @@ var GamePlayScene = function()
       gg.b.zoom_bounds(gg.cam);
       gg.b.resize();
       gg.bar.resize();
-      gg.reset.resize();
+      // gg.reset.resize();
       gg.nutrition_toggle.resize();
       gg.shop.resize();
       gg.inspector.resize();
@@ -121,7 +121,7 @@ var GamePlayScene = function()
     }
     gg.jobs = [];
     gg.bar = new bar();
-    gg.reset = new reset();
+    // gg.reset = new reset();
     gg.nutrition_toggle = new nutrition_toggle();
     gg.shop = new shop();
     gg.inspector = new inspector();
@@ -130,11 +130,11 @@ var GamePlayScene = function()
     self.readied = 1;
     my_logger.startgame();
 
-    if(gg.reset.reset_game) {
-      for(var i = 0; i < gg.farmbits.length; i++)
-        gg.farmbits[i].fullness = max_fullness;
+    // if(gg.reset.reset_game) {
+    //   for(var i = 0; i < gg.farmbits.length; i++)
+    //     gg.farmbits[i].fullness = max_fullness;
 
-    }
+    // }
 
     if(gg.continue_ls)
     {
@@ -148,11 +148,11 @@ var GamePlayScene = function()
   gg.speed = SPEED_PLAY;
   self.tick = function(times)
   {
-    if(gg.reset.filter(gg.clicker)){
-      if(gg.reset.reset_game){
-        return;
-      }
-    }
+    // if(gg.reset.filter(gg.clicker)){
+    //   if(gg.reset.reset_game){
+    //     return;
+    //   }
+    // }
     switch(gg.speed)
     {
       case SPEED_PAUSE: times *= 0;  break;
@@ -241,7 +241,7 @@ var GamePlayScene = function()
     gg.shop.draw();
     gg.inspector.draw();
 
-    gg.reset.draw();
+    // gg.reset.draw();
     gg.advisors.draw();
     gg.achievements.draw();
   };

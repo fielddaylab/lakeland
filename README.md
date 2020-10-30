@@ -536,7 +536,7 @@ This logs the farmbit that ate an item. The item then leaves the screen (8/14/20
 
 #### reset (index=40)
 *Introduced in v18.*
-This logs when the player presses "Reset Game", followed by a "yes" confirmation when asked if they are sure. A gamestate log is logged immediately after (8/14/2020).
+This logs when the player presses "Reset Game", followed by a "yes" confirmation when asked if they are sure. A gamestate log is logged immediately after (8/14/2020). (Currently being pulled out for the Fellowship meeting (10/30/2020))
 
 | Key | Value | Description |
 | --- | --- | --- | 

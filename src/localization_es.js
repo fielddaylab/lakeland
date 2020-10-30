@@ -6,8 +6,8 @@ loc[lang]["menu_CREDITS"]    = "CREDITOS";
 loc[lang]["menu_MUSICFX"]    = "MÚSICA FX";
 loc[lang]["menu_FULLSCREEN"] = "PANTALLA COMPLETA";
 loc[lang]["menu_LANGUAGE"]   = "IDIOMA";
-loc[lang]["reset"] = "Reiniciar el Juego";
-loc[lang]["reset_CONFIRM"] = "¿Estás seguro de que quieres reiniciar el juego? Tu progreso se perderá.";
+// loc[lang]["reset"] = "Reiniciar el Juego";
+// loc[lang]["reset_CONFIRM"] = "¿Estás seguro de que quieres reiniciar el juego? Tu progreso se perderá.";
 
 loc[lang]["intro_Yousetouttoformanewtowncalled\"Lakeland.\""] = "Te propusiste formar un nuevo pueblo llamado \"Lakeland\".";
 loc[lang]["intro_Yourpeoplelovetoplayinthewater."] = "A tu gente les encanta jugar en los lagos.";

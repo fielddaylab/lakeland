@@ -33,7 +33,7 @@ var Game = function (init) {
   self.resize_requested = 0;
   self.resize_args = 0;
 
-  self.reset_clicked = false;
+  // self.reset_clicked = false;
   self.request_resize = function (args) {
     self.resize_requested = 10;
     self.resize_args = args;

@@ -1453,7 +1453,7 @@ var atlas = function()
     self.ex = 0;
     self.ey = 0;
     self.context.restore();
-    //self.context.resetTransform();
+    self.context.resetTransform();
   }
   self.getWholeSprite = function(x,y,w,h)
   {
