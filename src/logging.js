@@ -47,7 +47,7 @@ window.Logger = function(init){
   self.LOG_CATEGORY_SALEEND             = ENUM; ENUM++;
   self.LOG_CATEGORY_RAINSTARTED         = ENUM; ENUM++;
   self.LOG_CATEGORY_EATFOOD             = ENUM; ENUM++;
-  // self.LOG_CATEGORY_RESET               = ENUM; ENUM++;
+  self.LOG_CATEGORY_RESET               = ENUM; ENUM++;
   self.LOG_CATEGORY_COUNT               = ENUM; ENUM++;
   self.LOG_CATEGORY_FARMGROWTH            = ENUM; ENUM++;
  
