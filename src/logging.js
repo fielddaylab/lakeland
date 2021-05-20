@@ -238,6 +238,7 @@ window.Logger = function(init){
 
   self.achievements = null;
   self.update_achievements = function(trigger){
+    incrementProgress();
     for (var i = 0; i < gg.achievements.triggers.length;  i++)
       if(trigger.name === gg.achievements.triggers[i].name) {
         self.achievements[i] = 1; return;
@@ -666,6 +667,8 @@ window.Logger = function(init){
       item: self.item_data_short(it),
       worth: worth
     };
+    //Report progress without incrementing progress points - increases score
+    ReportProgress(lolProgress, gg.money);
     self.send_log(log_data, self.LOG_CATEGORY_SALEEND) 
   }
 

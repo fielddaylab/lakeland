@@ -58,6 +58,7 @@ var Game = function (init) {
   var prev_t;
   self.begin = function () {
     console.log("self.begin");
+    InitializeLoL();
     self.scenes[scene_i].ready();
 
     prev_t = performance.now();

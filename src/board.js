@@ -2957,7 +2957,7 @@ var board = function()
     }
 
     self.save_t++;
-    if(self.save_t > 5000) { self.save(); self.save_t = 0; }
+    if(self.save_t > 5000) { self.save(); lolSave(lolProgress); self.save_t = 0; }
   }
 
   self.draw_tile_og = function(t,x,y,w,h)

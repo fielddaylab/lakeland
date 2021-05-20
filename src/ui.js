@@ -2962,6 +2962,7 @@ var advisors = function()
       gg.b.rain_t = 0;
       gg.b.autorain = 1;
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'rain'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -3696,6 +3697,7 @@ var advisors = function()
         return 0;
       }, tut_long_travel);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'poop'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -3764,6 +3766,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_POOP,1); }, tut_poop);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'livestock'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -3804,6 +3807,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_LIVESTOCK,1); }, tut_livestock);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_livestock'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -3937,6 +3941,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return self.tiles_exist(TILE_TYPE_FARM,2); }, tut_buy_livestock);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_fertilizer'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -4194,6 +4199,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ for(var i = 0; i < gg.b.tile_groups[TILE_TYPE_FARM].length; i++) { var t = gg.b.tile_groups[TILE_TYPE_FARM][i]; if(t && t.nutrition < nutrition_motivated) return 1; } return 0; }, tut_buy_fertilizer);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'sell_food'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -4241,6 +4247,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return 1; }, tut_sell_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'successful_harvest'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -4272,6 +4279,7 @@ var advisors = function()
       gg.speed = SPEED_FAST;
       self.pool_thread(function(){ return self.items_exist(ITEM_TYPE_FOOD,1) && self.tiles_exist(TILE_TYPE_FARM,1); }, tut_successful_harvest);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'timewarp'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -4423,6 +4431,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return self.time_passed(500); }, tut_timewarp);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_farm'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -4567,6 +4576,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return !self.items_exist(ITEM_TYPE_FOOD,1); }, tut_build_a_farm);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'buy_food'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
@@ -5030,6 +5040,7 @@ var advisors = function()
     function() { //end
       self.pool_thread(function(){ return self.time_passed(1000); }, tut_buy_food);
       gtag('event', 'tutorial', {'event_category':'end', 'event_label':'build_a_house'});
+      incrementProgress();
     },
     tfunc, //shouldsim
 
