@@ -10,16 +10,6 @@
 <script type="text/javascript" src="src/simplelog.js"></script>
 <script type="text/javascript" src="src/logging.js"></script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D8SYP0QCVG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-D8SYP0QCVG');
-</script>
-
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-72694027-11"></script>
 <script>
@@ -28,7 +18,18 @@
   gtag('js', new Date());
   gtag('config', 'UA-72694027-11');
 </script>
-<title>Doodle</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D8SYP0QCVG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D8SYP0QCVG', {cookie_flags: "max-age=7200;secure;samesite=none" });
+</script>
+
+<title>Lakeland</title>
 <style>
 @font-face {
 font-family:"LeagueSpartan";
