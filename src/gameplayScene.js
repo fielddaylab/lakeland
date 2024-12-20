@@ -11,6 +11,19 @@ var SPEED_FAST  = ENUM; ENUM++;
 var SPEED_VFAST = ENUM; ENUM++;
 var SPEED_COUNT = ENUM; ENUM++;
 
+function remove_vault_dropdown() {
+  const vaultDropdown =
+    window.parent.document.querySelector("floating-dropdown");
+  // console.log("Debug [JSPlugin > DisableVaultButton]");
+  if (vaultDropdown) {
+    vaultDropdown.remove();
+  } else {
+    console.warn(
+      "[Vault Plugin] Failed attempt to remove element <floating-dropdown>"
+    );
+  }
+}
+
 var GamePlayScene = function()
 {
   var self = this;
@@ -128,6 +141,8 @@ var GamePlayScene = function()
     gg.achievements = new achievements();
     gg.advisors = new advisors();
     self.readied = 1;
+
+    remove_vault_dropdown();
     my_logger.startgame();
 
     // if(gg.reset.reset_game) {
