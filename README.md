@@ -32,6 +32,7 @@ Versions:
 19. Changed the field on [moneyrate](#moneyrate) of money to be the actual amount of money of the player instead of the rate. (gg.advisors.money_rate to gg.money). (9/8/2020)
 20. Commented out reset (buggy on the layout/positioning). (10/30/2020)
 21. Uncommented a line of code in the logging file that removes the reset enum. Also, shifted farmgrowth enum from 42 to 41.
+22. Commented out emote logging entirely. (8/5/2025)
 
 ### Event Categories
 0. [gamestate](#gamestate)
@@ -355,8 +356,9 @@ Note: a blurb is an utterance from an advisor.
 
 <a name="emote"/>
 
-#### emote (index=24)
+#### emote (index=24) (DEPRECATED)
 *Introduced in v11.*
+*Removed in v22*
 
 | Key | Value | Description |
 | --- | --- | --- | 

@@ -629,24 +629,24 @@ window.Logger = function(init){
   }
 
   self.emote = function(f, emote) {
-    var emote_id = self.LOG_EMOTE_NULL;  //0
-    if(emote      === self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT) emote_id = self.LOG_EMOTE_FULLNESS_MOTIVATED;
-    else if(emote === self.LOG_EMOTE_FULLNESS_DESPERATE_TXT) emote_id = self.LOG_EMOTE_FULLNESS_DESPERATE;
-    else if(emote === self.LOG_EMOTE_ENERGY_DESPERATE_TXT  ) emote_id = self.LOG_EMOTE_ENERGY_DESPERATE;
-    else if(emote === self.LOG_EMOTE_JOY_MOTIVATED_TXT     ) emote_id = self.LOG_EMOTE_JOY_MOTIVATED;
-    else if(emote === self.LOG_EMOTE_JOY_DESPERATE_TXT     ) emote_id = self.LOG_EMOTE_JOY_DESPERATE;
-    else if(emote === self.LOG_EMOTE_PUKE_TXT              ) emote_id = self.LOG_EMOTE_PUKE;
-    else if(emote === self.LOG_EMOTE_YUM_TXT              ) emote_id = self.LOG_EMOTE_YUM;
-    else if(emote === self.LOG_EMOTE_TIRED_TXT              ) emote_id = self.LOG_EMOTE_TIRED;
-    else if(emote === self.LOG_EMOTE_HAPPY_TXT              ) emote_id = self.LOG_EMOTE_HAPPY;
-    else if(emote === self.LOG_EMOTE_SWIM_TXT              ) emote_id = self.LOG_EMOTE_SWIM;
-    else if(emote === self.LOG_EMOTE_SALE_TXT              ) emote_id = self.LOG_EMOTE_SALE;
+    // var emote_id = self.LOG_EMOTE_NULL;  //0
+    // if(emote      === self.LOG_EMOTE_FULLNESS_MOTIVATED_TXT) emote_id = self.LOG_EMOTE_FULLNESS_MOTIVATED;
+    // else if(emote === self.LOG_EMOTE_FULLNESS_DESPERATE_TXT) emote_id = self.LOG_EMOTE_FULLNESS_DESPERATE;
+    // else if(emote === self.LOG_EMOTE_ENERGY_DESPERATE_TXT  ) emote_id = self.LOG_EMOTE_ENERGY_DESPERATE;
+    // else if(emote === self.LOG_EMOTE_JOY_MOTIVATED_TXT     ) emote_id = self.LOG_EMOTE_JOY_MOTIVATED;
+    // else if(emote === self.LOG_EMOTE_JOY_DESPERATE_TXT     ) emote_id = self.LOG_EMOTE_JOY_DESPERATE;
+    // else if(emote === self.LOG_EMOTE_PUKE_TXT              ) emote_id = self.LOG_EMOTE_PUKE;
+    // else if(emote === self.LOG_EMOTE_YUM_TXT              ) emote_id = self.LOG_EMOTE_YUM;
+    // else if(emote === self.LOG_EMOTE_TIRED_TXT              ) emote_id = self.LOG_EMOTE_TIRED;
+    // else if(emote === self.LOG_EMOTE_HAPPY_TXT              ) emote_id = self.LOG_EMOTE_HAPPY;
+    // else if(emote === self.LOG_EMOTE_SWIM_TXT              ) emote_id = self.LOG_EMOTE_SWIM;
+    // else if(emote === self.LOG_EMOTE_SALE_TXT              ) emote_id = self.LOG_EMOTE_SALE;
 
-    log_data = {
-      farmbit: self.farmbit_data_short(f),
-      emote_enum: emote_id,
-    };
-    self.send_log(log_data, self.LOG_CATEGORY_EMOTE) 
+    // log_data = {
+    //   farmbit: self.farmbit_data_short(f),
+    //   emote_enum: emote_id,
+    // };
+    // self.send_log(log_data, self.LOG_CATEGORY_EMOTE) 
   }
   self.emote_swim = function(f){
     self.emote(f,self.LOG_EMOTE_SWIM_TXT);
